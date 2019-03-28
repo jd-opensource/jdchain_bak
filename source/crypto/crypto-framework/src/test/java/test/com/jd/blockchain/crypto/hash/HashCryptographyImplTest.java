@@ -77,37 +77,37 @@ public class HashCryptographyImplTest {
 		algorithm = CryptoAlgorithm.AES;
 		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,IllegalArgumentException.class);
 
-		// test JNISHA256
-		algorithm = CryptoAlgorithm.JNISHA256;
-		data = new byte[256];
-		rand.nextBytes(data);
-		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
-
-		data = new byte[0];
-		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
-
-		data = new byte[1056];
-		rand.nextBytes(data);
-		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
-
-		data = null;
-		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,IllegalArgumentException.class);
-
-		// test JNIRIPEMD160
-		algorithm = CryptoAlgorithm.JNIRIPEMD160;
-		data=new byte[256];
-		rand.nextBytes(data);
-		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,null);
-
-		data = new byte[0];
-		verifyGetFunction(hashCrypto, algorithm, data, 160/ 8,null);
-
-		data = new byte[1056];
-		rand.nextBytes(data);
-		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,null);
-
-		data = null;
-		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,IllegalArgumentException.class);
+//		// test JNISHA256
+//		algorithm = CryptoAlgorithm.JNISHA256;
+//		data = new byte[256];
+//		rand.nextBytes(data);
+//		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
+//
+//		data = new byte[0];
+//		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
+//
+//		data = new byte[1056];
+//		rand.nextBytes(data);
+//		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,null);
+//
+//		data = null;
+//		verifyGetFunction(hashCrypto, algorithm, data, 256 / 8,IllegalArgumentException.class);
+//
+//		// test JNIRIPEMD160
+//		algorithm = CryptoAlgorithm.JNIRIPEMD160;
+//		data=new byte[256];
+//		rand.nextBytes(data);
+//		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,null);
+//
+//		data = new byte[0];
+//		verifyGetFunction(hashCrypto, algorithm, data, 160/ 8,null);
+//
+//		data = new byte[1056];
+//		rand.nextBytes(data);
+//		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,null);
+//
+//		data = null;
+//		verifyGetFunction(hashCrypto, algorithm, data, 160 / 8,IllegalArgumentException.class);
 	}
 
 	private void verifyGetFunction(HashCryptography hashCrypto, CryptoAlgorithm algorithm, byte[] data,
@@ -184,22 +184,22 @@ public class HashCryptographyImplTest {
 		rand.nextBytes(data);
 		verifyHashDigestByteArray(hashCrypto,algorithm,data,IllegalArgumentException.class);
 
-		//test JNISHA256
-		data=new byte[256];
-		rand = new Random();
-		rand.nextBytes(data);
-		algorithm=CryptoAlgorithm.JNISHA256;
-		verifyHashDigestByteArray(hashCrypto,algorithm,data,null);
-		data=null;
-		verifyHashDigestByteArray(hashCrypto,algorithm,data,IllegalArgumentException.class);
-
-		//test JNIRIPEMD160
-		algorithm=CryptoAlgorithm.JNIRIPEMD160;
-		data=new byte[896];
-		rand.nextBytes(data);
-		verifyHashDigestByteArray(hashCrypto,algorithm,data,null);
-		data=null;
-		verifyHashDigestByteArray(hashCrypto,algorithm,data,IllegalArgumentException.class);
+//		//test JNISHA256
+//		data=new byte[256];
+//		rand = new Random();
+//		rand.nextBytes(data);
+//		algorithm=CryptoAlgorithm.JNISHA256;
+//		verifyHashDigestByteArray(hashCrypto,algorithm,data,null);
+//		data=null;
+//		verifyHashDigestByteArray(hashCrypto,algorithm,data,IllegalArgumentException.class);
+//
+//		//test JNIRIPEMD160
+//		algorithm=CryptoAlgorithm.JNIRIPEMD160;
+//		data=new byte[896];
+//		rand.nextBytes(data);
+//		verifyHashDigestByteArray(hashCrypto,algorithm,data,null);
+//		data=null;
+//		verifyHashDigestByteArray(hashCrypto,algorithm,data,IllegalArgumentException.class);
 	}
 
 	private void verifyHashDigestByteArray(HashCryptography hashCrypto,CryptoAlgorithm algorithm,byte[] data,Class<?> expectedException){
@@ -273,33 +273,33 @@ public class HashCryptographyImplTest {
 		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,32+1,NullPointerException.class);
 
 
-		//test JNISHA256
-		algorithm = CryptoAlgorithm.JNISHA256;
-		data = new byte[256];
-		rand.nextBytes(data);
-		hashDigestBytes = hashCrypto.getFunction(algorithm).hash(data).toBytes();
-		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,32+1,null);
-
-		truncatedHashDigestBytes = new byte[hashDigestBytes.length-2];
-		System.arraycopy(hashDigestBytes,0,truncatedHashDigestBytes,0,truncatedHashDigestBytes.length);
-		verifyResolveHashDigest(algorithm, hashCrypto,truncatedHashDigestBytes,32+1,IllegalArgumentException.class);
-
-		hashDigestBytes = null;
-		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,32+1,NullPointerException.class);
-
-		//test JNIRIPEMD160
-		algorithm = CryptoAlgorithm.JNIRIPEMD160;
-		data = new byte[256];
-		rand.nextBytes(data);
-		hashDigestBytes = hashCrypto.getFunction(algorithm).hash(data).toBytes();
-		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,20+1,null);
-
-		truncatedHashDigestBytes = new byte[hashDigestBytes.length-2];
-		System.arraycopy(hashDigestBytes,0,truncatedHashDigestBytes,0,truncatedHashDigestBytes.length);
-		verifyResolveHashDigest(algorithm, hashCrypto,truncatedHashDigestBytes,20+1,IllegalArgumentException.class);
-
-		hashDigestBytes = null;
-		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,20+1,NullPointerException.class);
+//		//test JNISHA256
+//		algorithm = CryptoAlgorithm.JNISHA256;
+//		data = new byte[256];
+//		rand.nextBytes(data);
+//		hashDigestBytes = hashCrypto.getFunction(algorithm).hash(data).toBytes();
+//		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,32+1,null);
+//
+//		truncatedHashDigestBytes = new byte[hashDigestBytes.length-2];
+//		System.arraycopy(hashDigestBytes,0,truncatedHashDigestBytes,0,truncatedHashDigestBytes.length);
+//		verifyResolveHashDigest(algorithm, hashCrypto,truncatedHashDigestBytes,32+1,IllegalArgumentException.class);
+//
+//		hashDigestBytes = null;
+//		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,32+1,NullPointerException.class);
+//
+//		//test JNIRIPEMD160
+//		algorithm = CryptoAlgorithm.JNIRIPEMD160;
+//		data = new byte[256];
+//		rand.nextBytes(data);
+//		hashDigestBytes = hashCrypto.getFunction(algorithm).hash(data).toBytes();
+//		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,20+1,null);
+//
+//		truncatedHashDigestBytes = new byte[hashDigestBytes.length-2];
+//		System.arraycopy(hashDigestBytes,0,truncatedHashDigestBytes,0,truncatedHashDigestBytes.length);
+//		verifyResolveHashDigest(algorithm, hashCrypto,truncatedHashDigestBytes,20+1,IllegalArgumentException.class);
+//
+//		hashDigestBytes = null;
+//		verifyResolveHashDigest(algorithm, hashCrypto,hashDigestBytes,20+1,NullPointerException.class);
 	}
 
 	private void verifyResolveHashDigest(CryptoAlgorithm algorithm,HashCryptography

@@ -15,9 +15,9 @@ public enum CryptoAlgorithm {
 
 	SM3(CryptoAlgorithmType.HASH, (byte) 0x03, false, false),
 
-	JNISHA256(CryptoAlgorithmType.HASH, (byte) 0x04, false, false),
-
-	JNIRIPEMD160(CryptoAlgorithmType.HASH, (byte) 0x05, false, false),
+//	JNISHA256(CryptoAlgorithmType.HASH, (byte) 0x04, false, false),
+//
+//	JNIRIPEMD160(CryptoAlgorithmType.HASH, (byte) 0x05, false, false),
 
 	// 非对称签名/加密算法；
 
@@ -41,10 +41,10 @@ public enum CryptoAlgorithm {
 	 */
 	SM2(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x04, true, true),
 
-	/**
-	 * JNIED25519 签名算法；只用于签名，没有加密特性；
-	 */
-	JNIED25519(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x05, true, false),
+//	/**
+//	 * JNIED25519 签名算法；只用于签名，没有加密特性；
+//	 */
+//	JNIED25519(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x05, true, false),
 
 	// 对称加密；
 	/**
