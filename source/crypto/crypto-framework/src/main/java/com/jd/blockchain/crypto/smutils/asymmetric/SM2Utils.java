@@ -13,7 +13,9 @@ import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.crypto.signers.SM2Signer;
 import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECMultiplier;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -64,6 +66,13 @@ public class SM2Utils {
         // To generate the key pair
         keyPairGenerator.init(keyGenerationParams);
         return keyPairGenerator.generateKeyPair();
+    }
+
+    public static byte[] retrievePublicKey(byte[] privateKey)
+    {
+        ECMultiplier createBasePointMultiplier = new FixedPointCombMultiplier();
+        ECPoint publicKeyPoint = createBasePointMultiplier.multiply(domainParams.getG(), new BigInteger(1,privateKey)).normalize();
+        return publicKeyPoint.getEncoded(false);
     }
 
 
@@ -265,14 +274,9 @@ public class SM2Utils {
 
     // To retrieve the public key point from publicKey in byte array mode
     private static ECPoint resolvePubKeyBytes(byte[] publicKey){
-
-        byte[] pubKeyX = new byte[COORDS_SIZE];
-        byte[] pubKeyY = new byte[COORDS_SIZE];
-        System.arraycopy(publicKey,1,pubKeyX,0,COORDS_SIZE);
-        System.arraycopy(publicKey,1+COORDS_SIZE,pubKeyY,0,COORDS_SIZE);
-
-        return curve.createPoint(new BigInteger(1,pubKeyX), new BigInteger(1,pubKeyY));
+        return curve.decodePoint(publicKey);
     }
+
     public static ECCurve getCurve(){return curve;}
     public static ECDomainParameters getDomainParams(){return domainParams;}
 }

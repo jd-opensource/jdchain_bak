@@ -679,6 +679,52 @@ public class AsymmtricCryptographyImplTest {
     }
 
     @Test
+    public void testRetrievePubKeyBytes() {
+
+        AsymmetricCryptography asymmetricCrypto =  new AsymmtricCryptographyImpl();
+
+        //test ED25519
+        CryptoAlgorithm algorithm = CryptoAlgorithm.ED25519;
+
+        CryptoKeyPair keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+
+        byte[] expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
+        byte[] expectedPubKeyBytes = keyPair.getPubKey().toBytes();
+
+        byte[] pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+
+        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
+
+
+        //test SM2
+        algorithm = CryptoAlgorithm.SM2;
+
+        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+
+        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
+        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
+
+        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+
+        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
+
+
+        //test JNIED25519
+        algorithm = CryptoAlgorithm.JNIED25519;
+
+        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+
+        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
+        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
+
+        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+
+        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
+
+    }
+
+
+    @Test
     public void testResolvePubKey() {
 
         AsymmetricCryptography asymmetricCrypto =  new AsymmtricCryptographyImpl();

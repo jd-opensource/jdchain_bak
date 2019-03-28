@@ -3,6 +3,7 @@ package com.jd.blockchain.crypto.impl.jni.asymmetric;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.asymmetric.*;
 import com.jd.blockchain.crypto.jniutils.asymmetric.JNIED25519Utils;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 import static com.jd.blockchain.crypto.CryptoAlgorithm.JNIED25519;
 import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_BYTES;
@@ -68,6 +69,15 @@ public class JNIED25519SignatureFunction implements SignatureFunction {
 
         // 调用JNIED25519验签算法验证签名结果
         return ed25519.verify(data, rawPubKeyBytes, rawDigestBytes);
+    }
+
+    @Override
+    public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
+
+        JNIED25519Utils ed25519 = new JNIED25519Utils();
+        byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+        byte[] rawPubKeyBytes = ed25519.getPubKey(rawPrivKeyBytes);
+        return new PubKey(JNIED25519,rawPubKeyBytes).toBytes();
     }
 
     @Override

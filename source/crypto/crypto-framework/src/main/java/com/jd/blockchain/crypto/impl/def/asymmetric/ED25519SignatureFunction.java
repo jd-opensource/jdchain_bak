@@ -7,6 +7,9 @@ import com.jd.blockchain.utils.security.Ed25519Utils;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import net.i2p.crypto.eddsa.KeyPairGenerator;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 
 import java.security.KeyPair;
 
@@ -66,6 +69,16 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 		// 调用ED25519验签算法验证签名结果
 		return Ed25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
+	}
+
+	@Override
+	public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
+
+		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
+		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
+		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
+		return new PubKey(ED25519,rawPubKeyBytes).toBytes();
 	}
 
 	@Override

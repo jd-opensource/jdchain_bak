@@ -38,7 +38,7 @@ import java.util.*;
  * @since 1.0.0
  */
 @Component
-@EnableScheduling
+//@EnableScheduling
 public class PeerTimeTasks implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;

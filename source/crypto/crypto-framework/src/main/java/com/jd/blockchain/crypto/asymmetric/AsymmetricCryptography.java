@@ -61,6 +61,16 @@ public interface AsymmetricCryptography {
 
 	SignatureDigest tryResolveSignatureDigest(byte[] digestBytes);
 
+	/**
+	 * 由私钥恢复公钥；
+	 *
+	 * @param privKeyBytes 包含算法标识、密钥掩码和私钥的字节数组
+	 * @return 包含算法标识、密钥掩码和公钥的字节数组
+	 */
+	byte[] retrievePubKeyBytes(byte[] privKeyBytes);
+
+	byte[] tryRetrievePubKeyBytes(byte[] privKeyBytes);
+
 	PubKey resolvePubKey(byte[] pubKeyBytes);
 
 	PubKey tryResolvePubKey(byte[] pubKeyBytes);

@@ -23,6 +23,14 @@ public interface SignatureFunction extends CryptoKeyPairGenerator, CryptoFunctio
 	boolean verify(SignatureDigest digest, PubKey pubKey, byte[] data);
 
 	/**
+	 * 使用字节数组形式的私钥生成字节数组形式的公钥；
+	 *
+	 * @param privKeyBytes 包含算法标识、密钥掩码和私钥的字节数组
+	 * @return 包含算法标识、密钥掩码和公钥的字节数组
+	 */
+	byte[] retrievePubKeyBytes(byte[] privKeyBytes);
+
+	/**
 	 * 校验私钥格式是否满足要求；
 	 *
 	 * @param privKeyBytes 包含算法标识、密钥掩码和私钥的字节数组

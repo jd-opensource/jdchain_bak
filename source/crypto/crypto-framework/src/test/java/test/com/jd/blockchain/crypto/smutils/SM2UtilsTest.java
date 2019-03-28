@@ -35,6 +35,18 @@ public class SM2UtilsTest {
     }
 
     @Test
+    public void testPubKeyRetrieve() {
+
+        String expectedPrivateKey = "3945208f7b2144b13f36e38ac6d39f95889393692860b51a42fb81ef4df7c5b8";
+        String expectedPublicKey = "04"+"09f9df311e5421a150dd7d161e4bc5c672179fad1833fc076bb08ff356f35020"+"ccea490ce26775a52dc6ea718cc1aa600aed05fbf35e084a6632f6072da9ad13";
+
+        byte[] privateKey = Hex.decode(expectedPrivateKey);
+        byte[] publicKey = SM2Utils.retrievePublicKey(privateKey);
+
+        assertEquals(expectedPublicKey,Hex.toHexString(publicKey));
+    }
+
+    @Test
     public void testSign() {
 
         String expectedPrivateKey = "3945208f7b2144b13f36e38ac6d39f95889393692860b51a42fb81ef4df7c5b8";

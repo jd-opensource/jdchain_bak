@@ -167,7 +167,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 	 */
 	public String getKeyAtIndex(int fromIndex) {
 		MerkleDataNode dataNode = merkleTree.getData(fromIndex);
-		return new String(dataNode.getKey().toBytes());
+	    return new String(dataNode.getKey().toBytes());
 	}
 
 

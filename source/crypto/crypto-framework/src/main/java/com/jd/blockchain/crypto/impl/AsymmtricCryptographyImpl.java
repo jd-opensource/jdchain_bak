@@ -136,6 +136,30 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
     }
 
     @Override
+    public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
+        byte[] pubKeyBytes = tryRetrievePubKeyBytes(privKeyBytes);
+        if (pubKeyBytes == null)
+            throw new IllegalArgumentException("The specified algorithm in privKeyBytes is not signature or asymmetric encryption algorithm!");
+        else return pubKeyBytes;
+    }
+
+    @Override
+    public byte[] tryRetrievePubKeyBytes(byte[] privKeyBytes) {
+        //解析私钥获得算法标识
+        CryptoAlgorithm algorithm = resolvePrivKey(privKeyBytes).getAlgorithm();
+
+        //判断算法是签名算法还是非对称加密算法，并根据算法生成密钥对，否则抛出异常
+        if (algorithm.isSignable() && algorithm.isAsymmetric()){
+            return getSignatureFunction(algorithm).retrievePubKeyBytes(privKeyBytes);
+        }
+        else if (algorithm.isEncryptable() && algorithm.isAsymmetric()){
+            return getAsymmetricEncryptionFunction(algorithm).retrievePubKeyBytes(privKeyBytes);
+        }
+        //否则返回null
+        return null;
+    }
+
+    @Override
     public PubKey resolvePubKey(byte[] pubKeyBytes) {
         PubKey pubKey = tryResolvePubKey(pubKeyBytes);
         if (pubKey == null)

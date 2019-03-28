@@ -7,7 +7,6 @@ import com.jd.blockchain.crypto.smutils.asymmetric.SM2Utils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.util.encoders.Hex;
 
 import static com.jd.blockchain.crypto.CryptoAlgorithm.SM2;
 import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_BYTES;
@@ -63,6 +62,14 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 
         // 调用SM2解密算法得到明文结果
         return SM2Utils.decrypt(rawCiphertextBytes,rawPrivKeyBytes);
+    }
+
+    @Override
+    public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
+
+        byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+        byte[] rawPubKeyBytes = SM2Utils.retrievePublicKey(rawPrivKeyBytes);
+        return new PubKey(SM2,rawPubKeyBytes).toBytes();
     }
 
     @Override
@@ -171,12 +178,13 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
             System.arraycopy(privKeyBytesD,privKeyBytesD.length-PRIVKEY_SIZE,privKeyBytes,0,PRIVKEY_SIZE);
         else System.arraycopy(privKeyBytesD,0,privKeyBytes,PRIVKEY_SIZE-privKeyBytesD.length,privKeyBytesD.length);
 
-        byte[] pubKeyBytesX = ecPub.getQ().getAffineXCoord().getEncoded();
-        byte[] pubKeyBytesY = ecPub.getQ().getAffineYCoord().getEncoded();
-        byte[] pubKeyBytes = new byte[ECPOINT_SIZE];
-        System.arraycopy(Hex.decode("04"),0,pubKeyBytes,0,1);
-        System.arraycopy(pubKeyBytesX,0,pubKeyBytes,1,32);
-        System.arraycopy(pubKeyBytesY,0,pubKeyBytes,1+32,32);
+//        byte[] pubKeyBytesX = ecPub.getQ().getAffineXCoord().getEncoded();
+//        byte[] pubKeyBytesY = ecPub.getQ().getAffineYCoord().getEncoded();
+//        byte[] pubKeyBytes = new byte[ECPOINT_SIZE];
+//        System.arraycopy(Hex.decode("04"),0,pubKeyBytes,0,1);
+//        System.arraycopy(pubKeyBytesX,0,pubKeyBytes,1,32);
+//        System.arraycopy(pubKeyBytesY,0,pubKeyBytes,1+32,32);
+        byte[] pubKeyBytes = ecPub.getQ().getEncoded(false);
 
         return new CryptoKeyPair(new PubKey(SM2,pubKeyBytes),new PrivKey(SM2,privKeyBytes));
     }
