@@ -91,36 +91,36 @@ public class AsymmtricCryptographyImplTest {
 
 
         //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
-
-        assertNotNull(keyPair);
-
-        pubKey = keyPair.getPubKey();
-        privKey = keyPair.getPrivKey();
-
-        assertNotNull(pubKey);
-        assertNotNull(privKey);
-
-        assertEquals(algorithm,pubKey.getAlgorithm());
-        assertEquals(algorithm,privKey.getAlgorithm());
-
-        assertEquals(32,pubKey.getRawKeyBytes().length);
-        assertEquals(32,privKey.getRawKeyBytes().length);
-
-        pubKeyBytes = pubKey.toBytes();
-        privKeyBytes = privKey.toBytes();
-
-        assertEquals(32+1+1,pubKeyBytes.length);
-        assertEquals(32+1+1,privKeyBytes.length);
-
-        assertEquals(CryptoAlgorithm.JNIED25519.CODE,pubKeyBytes[0]);
-        assertEquals(CryptoAlgorithm.JNIED25519.CODE,privKeyBytes[0]);
-        assertEquals(CryptoAlgorithm.JNIED25519, CryptoAlgorithm.valueOf(pubKey.getAlgorithm().CODE));
-        assertEquals(CryptoAlgorithm.JNIED25519, CryptoAlgorithm.valueOf(privKey.getAlgorithm().CODE));
-
-        assertEquals(pubKey.getKeyType().CODE,pubKeyBytes[1]);
-        assertEquals(privKey.getKeyType().CODE,privKeyBytes[1]);
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+//
+//        assertNotNull(keyPair);
+//
+//        pubKey = keyPair.getPubKey();
+//        privKey = keyPair.getPrivKey();
+//
+//        assertNotNull(pubKey);
+//        assertNotNull(privKey);
+//
+//        assertEquals(algorithm,pubKey.getAlgorithm());
+//        assertEquals(algorithm,privKey.getAlgorithm());
+//
+//        assertEquals(32,pubKey.getRawKeyBytes().length);
+//        assertEquals(32,privKey.getRawKeyBytes().length);
+//
+//        pubKeyBytes = pubKey.toBytes();
+//        privKeyBytes = privKey.toBytes();
+//
+//        assertEquals(32+1+1,pubKeyBytes.length);
+//        assertEquals(32+1+1,privKeyBytes.length);
+//
+//        assertEquals(CryptoAlgorithm.JNIED25519.CODE,pubKeyBytes[0]);
+//        assertEquals(CryptoAlgorithm.JNIED25519.CODE,privKeyBytes[0]);
+//        assertEquals(CryptoAlgorithm.JNIED25519, CryptoAlgorithm.valueOf(pubKey.getAlgorithm().CODE));
+//        assertEquals(CryptoAlgorithm.JNIED25519, CryptoAlgorithm.valueOf(privKey.getAlgorithm().CODE));
+//
+//        assertEquals(pubKey.getKeyType().CODE,pubKeyBytes[1]);
+//        assertEquals(privKey.getKeyType().CODE,privKeyBytes[1]);
     }
 
     @Test
@@ -160,19 +160,19 @@ public class AsymmtricCryptographyImplTest {
         verifyGetSignatureFunction(asymmetricCrypto,algorithm,data,65,32,64,NullPointerException.class);
 
 
-        //test JNNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        // 测试256字节的消息进行签名
-        data = new byte[256];
-        random.nextBytes(data);
-        verifyGetSignatureFunction(asymmetricCrypto,algorithm,data,32,32,64,null);
-
-        //错误的算法标识
-        verifyGetSignatureFunction(asymmetricCrypto,CryptoAlgorithm.AES,data,32,32,64,IllegalArgumentException.class);
-
-        data = null;
-        verifyGetSignatureFunction(asymmetricCrypto,algorithm,data,32,32,64,IllegalArgumentException.class);
+//        //test JNNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        // 测试256字节的消息进行签名
+//        data = new byte[256];
+//        random.nextBytes(data);
+//        verifyGetSignatureFunction(asymmetricCrypto,algorithm,data,32,32,64,null);
+//
+//        //错误的算法标识
+//        verifyGetSignatureFunction(asymmetricCrypto,CryptoAlgorithm.AES,data,32,32,64,IllegalArgumentException.class);
+//
+//        data = null;
+//        verifyGetSignatureFunction(asymmetricCrypto,algorithm,data,32,32,64,IllegalArgumentException.class);
     }
 
     private void verifyGetSignatureFunction(AsymmetricCryptography asymmetricCrypto, CryptoAlgorithm algorithm, byte[] data,
@@ -296,30 +296,30 @@ public class AsymmtricCryptographyImplTest {
         signatureDigestBytes = null;
         verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,signatureDigestBytes,NullPointerException.class);
 
-        //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        // 测试256字节的消息进行签名
-        data = new byte[256];
-        randomData.nextBytes(data);
-        sf = asymmetricCrypto.getSignatureFunction(algorithm);
-        keyPair = sf.generateKeyPair();
-        pubKeyBytes = keyPair.getPubKey().toBytes();
-
-        signatureDigestBytes = sf.sign(keyPair.getPrivKey(),data).toBytes();
-        verifyVerify(asymmetricCrypto,true,data,pubKeyBytes,signatureDigestBytes,null);
-
-        //签名数据末尾两个字节丢失情况下，抛出异常
-        truncatedSignatureDigestBytes = new byte[signatureDigestBytes.length-2];
-        System.arraycopy(signatureDigestBytes,0,truncatedSignatureDigestBytes,0,truncatedSignatureDigestBytes.length);
-        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,truncatedSignatureDigestBytes,IllegalArgumentException.class);
-
-        signatureDigestBytesWithWrongAlgCode = signatureDigestBytes;
-        signatureDigestBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
-        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,signatureDigestBytesWithWrongAlgCode,IllegalArgumentException.class);
-
-        signatureDigestBytes = null;
-        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,signatureDigestBytes,NullPointerException.class);
+//        //test JNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        // 测试256字节的消息进行签名
+//        data = new byte[256];
+//        randomData.nextBytes(data);
+//        sf = asymmetricCrypto.getSignatureFunction(algorithm);
+//        keyPair = sf.generateKeyPair();
+//        pubKeyBytes = keyPair.getPubKey().toBytes();
+//
+//        signatureDigestBytes = sf.sign(keyPair.getPrivKey(),data).toBytes();
+//        verifyVerify(asymmetricCrypto,true,data,pubKeyBytes,signatureDigestBytes,null);
+//
+//        //签名数据末尾两个字节丢失情况下，抛出异常
+//        truncatedSignatureDigestBytes = new byte[signatureDigestBytes.length-2];
+//        System.arraycopy(signatureDigestBytes,0,truncatedSignatureDigestBytes,0,truncatedSignatureDigestBytes.length);
+//        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,truncatedSignatureDigestBytes,IllegalArgumentException.class);
+//
+//        signatureDigestBytesWithWrongAlgCode = signatureDigestBytes;
+//        signatureDigestBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
+//        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,signatureDigestBytesWithWrongAlgCode,IllegalArgumentException.class);
+//
+//        signatureDigestBytes = null;
+//        verifyVerify(asymmetricCrypto,false,data,pubKeyBytes,signatureDigestBytes,NullPointerException.class);
     }
 
     private void verifyVerify(AsymmetricCryptography asymmetricCrypto,boolean expectedResult,byte[] data,
@@ -620,25 +620,25 @@ public class AsymmtricCryptographyImplTest {
         signatureDigestBytes = null;
         verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,signatureDigestBytes,NullPointerException.class);
 
-        //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        // 测试256字节的消息进行签名
-        data = new byte[256];
-        randomData.nextBytes(data);
-        sf = asymmetricCrypto.getSignatureFunction(algorithm);
-        keyPair = sf.generateKeyPair();
-
-        signatureDigestBytes = sf.sign(keyPair.getPrivKey(),data).toBytes();
-        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,signatureDigestBytes,null);
-
-        //签名数据末尾两个字节丢失情况下，抛出异常
-        truncatedSignatureDigestBytes = new byte[signatureDigestBytes.length-2];
-        System.arraycopy(signatureDigestBytes,0,truncatedSignatureDigestBytes,0,truncatedSignatureDigestBytes.length);
-        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,truncatedSignatureDigestBytes,IllegalArgumentException.class);
-
-        signatureDigestBytes = null;
-        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,signatureDigestBytes,NullPointerException.class);
+//        //test JNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        // 测试256字节的消息进行签名
+//        data = new byte[256];
+//        randomData.nextBytes(data);
+//        sf = asymmetricCrypto.getSignatureFunction(algorithm);
+//        keyPair = sf.generateKeyPair();
+//
+//        signatureDigestBytes = sf.sign(keyPair.getPrivKey(),data).toBytes();
+//        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,signatureDigestBytes,null);
+//
+//        //签名数据末尾两个字节丢失情况下，抛出异常
+//        truncatedSignatureDigestBytes = new byte[signatureDigestBytes.length-2];
+//        System.arraycopy(signatureDigestBytes,0,truncatedSignatureDigestBytes,0,truncatedSignatureDigestBytes.length);
+//        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,truncatedSignatureDigestBytes,IllegalArgumentException.class);
+//
+//        signatureDigestBytes = null;
+//        verifyResolveSignatureDigest(asymmetricCrypto,algorithm,64,signatureDigestBytes,NullPointerException.class);
     }
 
     private void verifyResolveSignatureDigest(AsymmetricCryptography asymmetricCrypto, CryptoAlgorithm algorithm,
@@ -709,17 +709,17 @@ public class AsymmtricCryptographyImplTest {
         assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
 
 
-        //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
-
-        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
-        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
-
-        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
-
-        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
+//        //test JNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+//
+//        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
+//        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
+//
+//        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+//
+//        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
 
     }
 
@@ -776,28 +776,28 @@ public class AsymmtricCryptographyImplTest {
         pubKeyBytes = null;
         verifyResolvePubKey(asymmetricCrypto,algorithm,65,pubKeyBytes,NullPointerException.class);
 
-        //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
-
-        pubKeyBytes = keyPair.getPubKey().toBytes();
-        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytes,null);
-
-        truncatedPubKeyBytes = new byte[pubKeyBytes.length-2];
-        System.arraycopy(pubKeyBytes,0,truncatedPubKeyBytes,0,truncatedPubKeyBytes.length);
-        verifyResolvePubKey(asymmetricCrypto,algorithm,32,truncatedPubKeyBytes,IllegalArgumentException.class);
-
-        pubKeyBytesWithWrongAlgCode = pubKeyBytes;
-        pubKeyBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
-        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
-
-        pubKeyBytesWithWrongKeyType= pubKeyBytes;
-        pubKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
-        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongKeyType,IllegalArgumentException.class);
-
-        pubKeyBytes = null;
-        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytes,NullPointerException.class);
+//        //test JNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+//
+//        pubKeyBytes = keyPair.getPubKey().toBytes();
+//        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytes,null);
+//
+//        truncatedPubKeyBytes = new byte[pubKeyBytes.length-2];
+//        System.arraycopy(pubKeyBytes,0,truncatedPubKeyBytes,0,truncatedPubKeyBytes.length);
+//        verifyResolvePubKey(asymmetricCrypto,algorithm,32,truncatedPubKeyBytes,IllegalArgumentException.class);
+//
+//        pubKeyBytesWithWrongAlgCode = pubKeyBytes;
+//        pubKeyBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
+//        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
+//
+//        pubKeyBytesWithWrongKeyType= pubKeyBytes;
+//        pubKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongKeyType,IllegalArgumentException.class);
+//
+//        pubKeyBytes = null;
+//        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytes,NullPointerException.class);
     }
 
     private void verifyResolvePubKey(AsymmetricCryptography asymmetricCrypto, CryptoAlgorithm algorithm,
@@ -886,28 +886,28 @@ public class AsymmtricCryptographyImplTest {
         privKeyBytes = null;
         verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytes,NullPointerException.class);
 
-        //test JNIED25519
-        algorithm = CryptoAlgorithm.JNIED25519;
-
-        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
-
-        privKeyBytes = keyPair.getPrivKey().toBytes();
-        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytes,null);
-
-        truncatedPrivKeyBytes = new byte[privKeyBytes.length-2];
-        System.arraycopy(privKeyBytes,0,truncatedPrivKeyBytes,0,truncatedPrivKeyBytes.length);
-        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,truncatedPrivKeyBytes,IllegalArgumentException.class);
-
-        privKeyBytesWithWrongAlgCode = privKeyBytes;
-        privKeyBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
-        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
-
-        privKeyBytesWithWrongKeyType = privKeyBytes;
-        privKeyBytesWithWrongKeyType[1] = PUB_KEY.CODE;
-        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongKeyType,IllegalArgumentException.class);
-
-        privKeyBytes = null;
-        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytes,NullPointerException.class);
+//        //test JNIED25519
+//        algorithm = CryptoAlgorithm.JNIED25519;
+//
+//        keyPair = asymmetricCrypto.generateKeyPair(algorithm);
+//
+//        privKeyBytes = keyPair.getPrivKey().toBytes();
+//        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytes,null);
+//
+//        truncatedPrivKeyBytes = new byte[privKeyBytes.length-2];
+//        System.arraycopy(privKeyBytes,0,truncatedPrivKeyBytes,0,truncatedPrivKeyBytes.length);
+//        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,truncatedPrivKeyBytes,IllegalArgumentException.class);
+//
+//        privKeyBytesWithWrongAlgCode = privKeyBytes;
+//        privKeyBytesWithWrongAlgCode[0] = CryptoAlgorithm.SHA256.CODE;
+//        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
+//
+//        privKeyBytesWithWrongKeyType = privKeyBytes;
+//        privKeyBytesWithWrongKeyType[1] = PUB_KEY.CODE;
+//        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongKeyType,IllegalArgumentException.class);
+//
+//        privKeyBytes = null;
+//        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytes,NullPointerException.class);
     }
 
     private void verifyResolvePrivKey(AsymmetricCryptography asymmetricCrypto, CryptoAlgorithm algorithm,

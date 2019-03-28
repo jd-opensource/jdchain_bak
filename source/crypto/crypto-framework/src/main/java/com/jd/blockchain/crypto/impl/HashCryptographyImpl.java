@@ -6,8 +6,6 @@ import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.crypto.hash.HashFunction;
 import com.jd.blockchain.crypto.impl.def.hash.RIPEMD160HashFunction;
 import com.jd.blockchain.crypto.impl.def.hash.SHA256HashFunction;
-import com.jd.blockchain.crypto.impl.jni.hash.JNIRIPEMD160HashFunction;
-import com.jd.blockchain.crypto.impl.jni.hash.JNISHA256HashFunction;
 import com.jd.blockchain.crypto.impl.sm.hash.SM3HashFunction;
 
 public class HashCryptographyImpl implements HashCryptography {
@@ -16,8 +14,8 @@ public class HashCryptographyImpl implements HashCryptography {
 	private static final HashFunction RIPEMD160_FUNC = new RIPEMD160HashFunction();
 	private static final HashFunction SM3_FUNC = new SM3HashFunction();
 
-	private static final HashFunction JNISHA256_FUNC = new JNISHA256HashFunction();
-	private static final HashFunction JNIRIPEMD160_FUNC = new JNIRIPEMD160HashFunction();
+//	private static final HashFunction JNISHA256_FUNC = new JNISHA256HashFunction();
+//	private static final HashFunction JNIRIPEMD160_FUNC = new JNIRIPEMD160HashFunction();
 
 	@Override
 	public HashFunction getFunction(CryptoAlgorithm algorithm) {
@@ -30,10 +28,10 @@ public class HashCryptographyImpl implements HashCryptography {
 			return RIPEMD160_FUNC;
 		case SM3:
 			return SM3_FUNC;
-		case JNISHA256:
-				return JNISHA256_FUNC;
-		case JNIRIPEMD160:
-				return JNIRIPEMD160_FUNC;
+//		case JNISHA256:
+//				return JNISHA256_FUNC;
+//		case JNIRIPEMD160:
+//				return JNIRIPEMD160_FUNC;
 		default:
 			break;
 		}
@@ -72,12 +70,12 @@ public class HashCryptographyImpl implements HashCryptography {
 		if (SM3_FUNC.supportHashDigest(digestBytes)) {
 			return SM3_FUNC.resolveHashDigest(digestBytes);
 		}
-		if (JNISHA256_FUNC.supportHashDigest(digestBytes)) {
-			return JNISHA256_FUNC.resolveHashDigest(digestBytes);
-		}
-		if (JNIRIPEMD160_FUNC.supportHashDigest(digestBytes)) {
-			return JNIRIPEMD160_FUNC.resolveHashDigest(digestBytes);
-		}
+//		if (JNISHA256_FUNC.supportHashDigest(digestBytes)) {
+//			return JNISHA256_FUNC.resolveHashDigest(digestBytes);
+//		}
+//		if (JNIRIPEMD160_FUNC.supportHashDigest(digestBytes)) {
+//			return JNIRIPEMD160_FUNC.resolveHashDigest(digestBytes);
+//		}
 		//否则返回null
 		return null;
 	}

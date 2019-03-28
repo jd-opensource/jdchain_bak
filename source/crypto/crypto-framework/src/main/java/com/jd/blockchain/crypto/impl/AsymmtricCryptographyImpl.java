@@ -2,9 +2,14 @@ package com.jd.blockchain.crypto.impl;
 
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.*;
+import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.asymmetric.AsymmetricEncryptionFunction;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.PrivKey;
+import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.impl.def.asymmetric.ED25519SignatureFunction;
-import com.jd.blockchain.crypto.impl.jni.asymmetric.JNIED25519SignatureFunction;
 import com.jd.blockchain.crypto.impl.sm.asymmetric.SM2CryptoFunction;
 
 public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
@@ -13,7 +18,7 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
 
     private static final SignatureFunction SM2_SIGF = new SM2CryptoFunction();
 
-    private static final SignatureFunction JNIED25519_SIGF = new JNIED25519SignatureFunction();
+//    private static final SignatureFunction JNIED25519_SIGF = new JNIED25519SignatureFunction();
 
     private static final AsymmetricEncryptionFunction SM2_ENCF = new SM2CryptoFunction();
 
@@ -41,8 +46,8 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
                 return ED25519_SIGF;
             case SM2:
                 return SM2_SIGF;
-            case JNIED25519:
-                return JNIED25519_SIGF;
+//            case JNIED25519:
+//                return JNIED25519_SIGF;
             default:
                 break;
         }
@@ -128,9 +133,9 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
         if (SM2_SIGF.supportDigest(digestBytes)){
             return SM2_SIGF.resolveDigest(digestBytes);
         }
-        if (JNIED25519_SIGF.supportDigest(digestBytes)){
-            return JNIED25519_SIGF.resolveDigest(digestBytes);
-        }
+//        if (JNIED25519_SIGF.supportDigest(digestBytes)){
+//            return JNIED25519_SIGF.resolveDigest(digestBytes);
+//        }
         //否则返回null
         return null;
     }
@@ -177,9 +182,9 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
         if (SM2_SIGF.supportPubKey(pubKeyBytes)){
             return SM2_SIGF.resolvePubKey(pubKeyBytes);
         }
-        if (JNIED25519_SIGF.supportPubKey(pubKeyBytes)){
-            return JNIED25519_SIGF.resolvePubKey(pubKeyBytes);
-        }
+//        if (JNIED25519_SIGF.supportPubKey(pubKeyBytes)){
+//            return JNIED25519_SIGF.resolvePubKey(pubKeyBytes);
+//        }
         //遍历非对称加密算法，如果满足，则返回解析结果
         if (SM2_ENCF.supportPubKey(pubKeyBytes)){
             return SM2_ENCF.resolvePubKey(pubKeyBytes);
@@ -205,9 +210,9 @@ public class AsymmtricCryptographyImpl implements AsymmetricCryptography {
         if (SM2_SIGF.supportPrivKey(privKeyBytes)){
             return SM2_SIGF.resolvePrivKey(privKeyBytes);
         }
-        if (JNIED25519_SIGF.supportPrivKey(privKeyBytes)){
-            return JNIED25519_SIGF.resolvePrivKey(privKeyBytes);
-        }
+//        if (JNIED25519_SIGF.supportPrivKey(privKeyBytes)){
+//            return JNIED25519_SIGF.resolvePrivKey(privKeyBytes);
+//        }
         //遍历非对称加密算法，如果满足，则返回解析结果
         if (SM2_ENCF.supportPrivKey(privKeyBytes)){
             return SM2_ENCF.resolvePrivKey(privKeyBytes);
