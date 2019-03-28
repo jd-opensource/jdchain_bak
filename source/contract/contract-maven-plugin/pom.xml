@@ -1,0 +1,142 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>contract</artifactId>
+		<version>0.8.2.RELEASE</version>
+	</parent>
+	<artifactId>contract-maven-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+	<properties>
+		<contract.version>${parent.version}</contract.version>
+		<utils.version>${parent.version}</utils.version>
+		<junit.version>4.12</junit.version>
+	</properties>
+
+	<version>0.8.2.RELEASE</version>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>contract-model</artifactId>
+			<version>${contract.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>utils-common</artifactId>
+			<version>${utils.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-annotations -->
+		<dependency>
+			<groupId>org.apache.maven.plugin-tools</groupId>
+			<artifactId>maven-plugin-annotations</artifactId>
+			<version>3.6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.javaparser</groupId>
+			<artifactId>javaparser-core</artifactId>
+			<version>${javaparser.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.5</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+					<optimize>false</optimize>
+					<debug>true</debug>
+					<showDeprecation>false</showDeprecation>
+					<showWarnings>false</showWarnings>
+				</configuration>
+			</plugin>
+			<!--<plugin>-->
+				<!--<artifactId>maven-assembly-plugin</artifactId>-->
+				<!--<configuration>-->
+					<!--<archive>-->
+						<!--<manifest>-->
+							<!--&lt;!&ndash;这里要替换成jar包main方法所在类 &ndash;&gt;-->
+							<!--<mainClass>com.jd.blockchain.ContractDeployMojo</mainClass>-->
+						<!--</manifest>-->
+					<!--</archive>-->
+					<!--<descriptorRefs>-->
+						<!--<descriptojar-rRef>jar-with-dependencies</descriptojar-rRef>-->
+					<!--</descriptorRefs>-->
+				<!--</configuration>-->
+				<!--<executions>-->
+					<!--<execution>-->
+						<!--<id>make-assembly</id> &lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
+						<!--<phase>package</phase> &lt;!&ndash; 指定在打包节点执行jar包合并操作 &ndash;&gt;-->
+						<!--<goals>-->
+							<!--<goal>single</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+				<!--</executions>-->
+			<!--</plugin>-->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+
+			<!-- 配置Maven插件(mvn jetty:run可以运行项目) -->
+			<!--<plugin> -->
+			<!--<groupId>org.mortbay.jetty</groupId> -->
+			<!--<artifactId>maven-jetty-plugin</artifactId> -->
+			<!--<version>6.1.26</version> -->
+			<!--<configuration> -->
+			<!--<connectors> -->
+			<!--<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector"> -->
+			<!--<port>8000</port> -->
+			<!--</connector> -->
+			<!--</connectors> -->
+			<!--</configuration> -->
+			<!--</plugin> -->
+
+		</plugins>
+	</build>
+</project>

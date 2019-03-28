@@ -1,0 +1,119 @@
+
+Environment：Mac Book Pro（IDE + Redis Server 3.2.9）；
+
+
+==============================================================================================
+======================================= In Memory : 1 ========================================
+==============================================================================================
+
+Inserted 1000 keys[round=1000, batchCount=1], takes 311 ms! -- TPS=3215.43, KPS=3215.43;
+Inserted 10000 keys[round=10000, batchCount=1], takes 894 ms! -- TPS=11185.68, KPS=11185.68;
+Inserted 20000 keys[round=20000, batchCount=1], takes 1367 ms! -- TPS=14630.58, KPS=14630.58;
+Inserted 40000 keys[round=40000, batchCount=1], takes 2706 ms! -- TPS=14781.97, KPS=14781.97;
+============================================================
+Inserted 2000 keys[round=500, batchCount=4], takes 34 ms! -- TPS=14705.88, KPS=58823.53;
+Inserted 4000 keys[round=1000, batchCount=4], takes 72 ms! -- TPS=13888.89, KPS=55555.56;
+Inserted 40000 keys[round=10000, batchCount=4], takes 811 ms! -- TPS=12330.46, KPS=49321.82;
+Inserted 80000 keys[round=20000, batchCount=4], takes 1957 ms! -- TPS=10219.72, KPS=40878.90;
+============================================================
+Inserted 1000 keys[round=100, batchCount=10], takes 12 ms! -- TPS=8333.33, KPS=83333.33;
+Inserted 10000 keys[round=1000, batchCount=10], takes 118 ms! -- TPS=8474.58, KPS=84745.76;
+Inserted 20000 keys[round=2000, batchCount=10], takes 226 ms! -- TPS=8849.56, KPS=88495.58;
+Inserted 40000 keys[round=4000, batchCount=10], takes 468 ms! -- TPS=8547.01, KPS=85470.09;
+Inserted 40000 keys[round=2000, batchCount=20], takes 384 ms! -- TPS=5208.33, KPS=104166.67;
+Inserted 4000 keys[round=200, batchCount=20], takes 31 ms! -- TPS=6451.61, KPS=129032.26;
+Inserted 80000 keys[round=4000, batchCount=20], takes 723 ms! -- TPS=5532.50, KPS=110650.07;
+Inserted 8000 keys[round=400, batchCount=20], takes 65 ms! -- TPS=6153.85, KPS=123076.92;
+============================================================
+Inserted 10000 keys[round=100, batchCount=100], takes 73 ms! -- TPS=1369.86, KPS=136986.30;
+Inserted 100000 keys[round=100, batchCount=1000], takes 711 ms! -- TPS=140.65, KPS=140646.98;
+Inserted 1000000 keys[round=100, batchCount=10000], takes 9096 ms! -- TPS=10.99, KPS=109938.43;
+============================================================
+Inserted 80 keys[round=20, batchCount=4], takes 1 ms! -- TPS=20000.00, KPS=80000.00;
+Inserted 160 keys[round=20, batchCount=8], takes 1 ms! -- TPS=20000.00, KPS=160000.00;
+Inserted 200 keys[round=20, batchCount=10], takes 1 ms! -- TPS=20000.00, KPS=200000.00;
+Inserted 400 keys[round=20, batchCount=20], takes 3 ms! -- TPS=6666.67, KPS=133333.33;
+Inserted 800 keys[round=20, batchCount=40], takes 6 ms! -- TPS=3333.33, KPS=133333.33;
+Inserted 2000 keys[round=20, batchCount=100], takes 13 ms! -- TPS=1538.46, KPS=153846.15;
+Inserted 8000 keys[round=20, batchCount=400], takes 55 ms! -- TPS=363.64, KPS=145454.55;
+Inserted 20000 keys[round=20, batchCount=1000], takes 164 ms! -- TPS=121.95, KPS=121951.22;
+
+
+==============================================================================================
+======================= In Redis : 1 [存量记录数：0][最终记录数：5161945] ========================
+==============================================================================================
+
+Inserted 1000 keys[round=1000, batchCount=1], takes 897 ms! -- TPS=1114.83, KPS=1114.83;
+Inserted 10000 keys[round=10000, batchCount=1], takes 6293 ms! -- TPS=1589.07, KPS=1589.07;
+Inserted 20000 keys[round=20000, batchCount=1], takes 12515 ms! -- TPS=1598.08, KPS=1598.08;
+Inserted 40000 keys[round=40000, batchCount=1], takes 26683 ms! -- TPS=1499.08, KPS=1499.08;
+============================================================
+Inserted 2000 keys[round=500, batchCount=4], takes 633 ms! -- TPS=789.89, KPS=3159.56;
+Inserted 4000 keys[round=1000, batchCount=4], takes 1251 ms! -- TPS=799.36, KPS=3197.44;
+Inserted 40000 keys[round=10000, batchCount=4], takes 13840 ms! -- TPS=722.54, KPS=2890.17;
+Inserted 80000 keys[round=20000, batchCount=4], takes 27632 ms! -- TPS=723.80, KPS=2895.19;
+============================================================
+Inserted 1000 keys[round=100, batchCount=10], takes 277 ms! -- TPS=361.01, KPS=3610.11;
+Inserted 10000 keys[round=1000, batchCount=10], takes 2787 ms! -- TPS=358.81, KPS=3588.09;
+Inserted 20000 keys[round=2000, batchCount=10], takes 5596 ms! -- TPS=357.40, KPS=3573.98;
+Inserted 40000 keys[round=4000, batchCount=10], takes 11133 ms! -- TPS=359.29, KPS=3592.92;
+Inserted 40000 keys[round=2000, batchCount=20], takes 10680 ms! -- TPS=187.27, KPS=3745.32;
+Inserted 4000 keys[round=200, batchCount=20], takes 1036 ms! -- TPS=193.05, KPS=3861.00;
+Inserted 80000 keys[round=4000, batchCount=20], takes 21045 ms! -- TPS=190.07, KPS=3801.38;
+Inserted 8000 keys[round=400, batchCount=20], takes 2125 ms! -- TPS=188.24, KPS=3764.71;
+============================================================
+Inserted 10000 keys[round=100, batchCount=100], takes 2614 ms! -- TPS=38.26, KPS=3825.55;
+Inserted 100000 keys[round=100, batchCount=1000], takes 25076 ms! -- TPS=3.99, KPS=3987.88;
+Inserted 1000000 keys[round=100, batchCount=10000], takes 250569 ms! -- TPS=0.40, KPS=3990.92;
+============================================================
+Inserted 80 keys[round=20, batchCount=4], takes 25 ms! -- TPS=800.00, KPS=3200.00;
+Inserted 160 keys[round=20, batchCount=8], takes 45 ms! -- TPS=444.44, KPS=3555.56;
+Inserted 200 keys[round=20, batchCount=10], takes 58 ms! -- TPS=344.83, KPS=3448.28;
+Inserted 400 keys[round=20, batchCount=20], takes 125 ms! -- TPS=160.00, KPS=3200.00;
+Inserted 800 keys[round=20, batchCount=40], takes 227 ms! -- TPS=88.11, KPS=3524.23;
+Inserted 2000 keys[round=20, batchCount=100], takes 537 ms! -- TPS=37.24, KPS=3724.39;
+Inserted 8000 keys[round=20, batchCount=400], takes 2054 ms! -- TPS=9.74, KPS=3894.84;
+Inserted 20000 keys[round=20, batchCount=1000], takes 5252 ms! -- TPS=3.81, KPS=3808.07;
+
+
+==============================================================================================
+======================= In Redis : 2 [存量记录数：3246278][最终记录数：8408223] ==================
+==============================================================================================
+
+Inserted 1000 keys[round=1000, batchCount=1], takes 1084 ms! -- TPS=922.51, KPS=922.51;
+Inserted 10000 keys[round=10000, batchCount=1], takes 6716 ms! -- TPS=1488.98, KPS=1488.98;
+Inserted 20000 keys[round=20000, batchCount=1], takes 13520 ms! -- TPS=1479.29, KPS=1479.29;
+Inserted 40000 keys[round=40000, batchCount=1], takes 26724 ms! -- TPS=1496.78, KPS=1496.78;
+============================================================
+Inserted 2000 keys[round=500, batchCount=4], takes 689 ms! -- TPS=725.69, KPS=2902.76;
+Inserted 4000 keys[round=1000, batchCount=4], takes 1441 ms! -- TPS=693.96, KPS=2775.85;
+Inserted 40000 keys[round=10000, batchCount=4], takes 14211 ms! -- TPS=703.68, KPS=2814.72;
+Inserted 80000 keys[round=20000, batchCount=4], takes 29281 ms! -- TPS=683.04, KPS=2732.15;
+============================================================
+Inserted 1000 keys[round=100, batchCount=10], takes 304 ms! -- TPS=328.95, KPS=3289.47;
+Inserted 10000 keys[round=1000, batchCount=10], takes 3001 ms! -- TPS=333.22, KPS=3332.22;
+Inserted 20000 keys[round=2000, batchCount=10], takes 5910 ms! -- TPS=338.41, KPS=3384.09;
+Inserted 40000 keys[round=4000, batchCount=10], takes 12445 ms! -- TPS=321.41, KPS=3214.14;
+Inserted 40000 keys[round=2000, batchCount=20], takes 10792 ms! -- TPS=185.32, KPS=3706.45;
+Inserted 4000 keys[round=200, batchCount=20], takes 1102 ms! -- TPS=181.49, KPS=3629.76;
+Inserted 80000 keys[round=4000, batchCount=20], takes 21885 ms! -- TPS=182.77, KPS=3655.47;
+Inserted 8000 keys[round=400, batchCount=20], takes 2081 ms! -- TPS=192.22, KPS=3844.31;
+============================================================
+Inserted 10000 keys[round=100, batchCount=100], takes 2484 ms! -- TPS=40.26, KPS=4025.76;
+Inserted 100000 keys[round=100, batchCount=1000], takes 24897 ms! -- TPS=4.02, KPS=4016.55;
+Inserted 1000000 keys[round=100, batchCount=10000], takes 252557 ms! -- TPS=0.40, KPS=3959.50;
+============================================================
+Inserted 80 keys[round=20, batchCount=4], takes 26 ms! -- TPS=769.23, KPS=3076.92;
+Inserted 160 keys[round=20, batchCount=8], takes 49 ms! -- TPS=408.16, KPS=3265.31;
+Inserted 200 keys[round=20, batchCount=10], takes 62 ms! -- TPS=322.58, KPS=3225.81;
+Inserted 400 keys[round=20, batchCount=20], takes 127 ms! -- TPS=157.48, KPS=3149.61;
+Inserted 800 keys[round=20, batchCount=40], takes 227 ms! -- TPS=88.11, KPS=3524.23;
+Inserted 2000 keys[round=20, batchCount=100], takes 560 ms! -- TPS=35.71, KPS=3571.43;
+Inserted 8000 keys[round=20, batchCount=400], takes 2100 ms! -- TPS=9.52, KPS=3809.52;
+Inserted 20000 keys[round=20, batchCount=1000], takes 5161 ms! -- TPS=3.88, KPS=3875.22;
+
+
+
+
+
+

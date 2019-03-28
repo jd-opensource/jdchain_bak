@@ -1,0 +1,13 @@
+grant codeBase "file:${java.ext.dirs}/*" {
+    permission java.security.AllPermission;
+};
+grant codeBase "file:/E:/gitCode\\block\\prototype\\source\\*" {
+    permission java.security.AllPermission;
+};
+grant {
+	permission java.io.FilePermission "f:\\tmp\\1.txt", "read";
+	permission java.util.PropertyPermission "file.encoding", "read";
+	permission java.lang.RuntimePermission "setSecurityManager";
+	permission java.util.PropertyPermission "*", " read,write";
+	permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
