@@ -11,7 +11,7 @@ package test.com.jd.blockchain.ledger.data;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.data.ContractCodeDeployOpTemplate;
 import com.jd.blockchain.utils.io.BytesUtils;

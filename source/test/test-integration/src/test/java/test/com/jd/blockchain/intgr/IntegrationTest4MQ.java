@@ -1,8 +1,8 @@
 package test.com.jd.blockchain.intgr;
 
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.*;
@@ -130,8 +130,6 @@ public class IntegrationTest4MQ {
 				BlockchainKeyPair da = dataAccountResponse.keyPair;
 				IntegrationBase.KvResponse kvResponse = IntegrationBase.testSDK_InsertData(adminKey, ledgerHash, blockchainService, da.getAddress());
 				validKvWrite(kvResponse, ledgerRepository, blockchainService);
-				//more page
-				testSDK_InsertData_morePage(adminKey, ledgerHash, blockchainService, da.getAddress());
 			}
 		}
 

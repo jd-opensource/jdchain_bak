@@ -8,8 +8,8 @@
  */
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 
 /**

@@ -11,7 +11,6 @@ public class MuduleClassLoader extends URLClassLoader {
     }
 
 
-    @Override
     public  Class<?> loadClass(String name)
             throws ClassNotFoundException{
         if (name.equals("com.jd.blockchain.contract.model.ContractEventContext") ){

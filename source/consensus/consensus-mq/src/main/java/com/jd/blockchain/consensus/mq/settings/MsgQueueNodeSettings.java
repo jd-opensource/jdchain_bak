@@ -8,9 +8,9 @@
  */
 package com.jd.blockchain.consensus.mq.settings;
 
-import com.jd.blockchain.base.data.TypeCodes;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.consensus.NodeSettings;
+import com.jd.blockchain.consts.TypeCodes;
 
 /**
  *

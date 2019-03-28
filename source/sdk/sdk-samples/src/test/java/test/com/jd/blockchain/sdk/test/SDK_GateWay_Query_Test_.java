@@ -8,19 +8,41 @@
  */
 package test.com.jd.blockchain.sdk.test;
 
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.sdk.client.ClientOperationUtil;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.impl.AsymmtricCryptographyImpl;
+import com.jd.blockchain.crypto.serialize.ByteArrayObjectDeserializer;
+import com.jd.blockchain.crypto.serialize.ByteArrayObjectSerializer;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.EndpointRequest;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.NodeRequest;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.Transaction;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.data.TxResponseMessage;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-
+import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
 /**
  * 插入数据测试
@@ -30,6 +52,16 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
  */
 
 public class SDK_GateWay_Query_Test_ {
+
+    private static Class<?>[] byteArrayClasss = new Class<?>[]{HashDigest.class, PubKey.class, SignatureDigest.class};
+
+    static {
+        for (Class<?> byteArrayClass : byteArrayClasss) {
+            JSONSerializeUtils.configSerialization(byteArrayClass,
+                    ByteArrayObjectSerializer.getInstance(byteArrayClass),
+                    ByteArrayObjectDeserializer.getInstance(byteArrayClass));
+        }
+    }
 
     private BlockchainKeyPair CLIENT_CERT = null;
 
@@ -41,169 +73,82 @@ public class SDK_GateWay_Query_Test_ {
 
     private BlockchainService service;
 
+    private AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
+
     @Before
     public void init() {
         CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
         GATEWAY_IPADDR = "127.0.0.1";
-        GATEWAY_PORT = 8081;
+        GATEWAY_PORT = 11000;
         SECURE = false;
         GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
                 CLIENT_CERT);
         service = serviceFactory.getBlockchainService();
+
+        DataContractRegistry.register(TransactionContent.class);
+        DataContractRegistry.register(TransactionContentBody.class);
+        DataContractRegistry.register(TransactionRequest.class);
+        DataContractRegistry.register(NodeRequest.class);
+        DataContractRegistry.register(EndpointRequest.class);
+        DataContractRegistry.register(TransactionResponse.class);
     }
 
     @Test
     public void query_Test() {
 
-        // Get First Ledger
-        HashDigest ledgerHash = service.getLedgerHashs()[0];
-        System.out.println("ledgerHash=" + ledgerHash.toBase58());
+        HashDigest ledgerHash = service.getLedgerHashs()[0];;
+//        ParserConfig.global.setAutoTypeSupport(true);
 
-        // Show Ledger Info
         LedgerInfo ledgerInfo = service.getLedger(ledgerHash);
-
-        // Get highest block height
-        long latestBlockHeight = ledgerInfo.getLatestBlockHeight();
-
-        // Get highest block hash
-        HashDigest latestBlockHash = ledgerInfo.getLatestBlockHash();
-
-        System.out.println("latestBlockHeight=" + latestBlockHeight);
-
-        System.out.println("latestBlockHash=" + latestBlockHash.toBase58());
-
-        System.out.println("LedgerHash=" + ledgerInfo.getHash().toBase58());
-
-        // Get newest block
-        LedgerBlock latestBlock = service.getBlock(ledgerHash, latestBlockHeight);
-
+        long ledgerNumber = ledgerInfo.getLatestBlockHeight();
+        System.out.println(ledgerNumber);
+        HashDigest hashDigest = ledgerInfo.getHash();
+        System.out.println(hashDigest);
+//      最新区块；
+        LedgerBlock latestBlock = service.getBlock(ledgerHash, ledgerNumber);
         System.out.println("latestBlock.Hash=" + latestBlock.getHash());
-
-        // Get total contract size
-        long count = service.getContractCount(ledgerHash, latestBlockHeight);
-
+        long count = service.getContractCount(ledgerHash, 3L);
         System.out.println("contractCount=" + count);
-
-        count = service.getContractCount(ledgerHash, latestBlockHash);
-
+        count = service.getContractCount(ledgerHash, hashDigest);
         System.out.println("contractCount=" + count);
+        AccountHeader contract = service.getContract(ledgerHash, "12345678");
+        System.out.println(contract);
 
-        if (count != 0) {
-            AccountHeader[] accountHeaders = service.getContractAccounts(ledgerHash, 0, (int)count);
-            for (AccountHeader accountHeader : accountHeaders) {
-                String contractAddress = accountHeader.getAddress().toBase58();
-                System.out.println("Contract address = " + contractAddress);
-                // Get one contract by contract address
-                AccountHeader contract = service.getContract(ledgerHash, contractAddress);
-            }
-        }
-
-        // Get other block info
-        LedgerBlock block = service.getBlock(ledgerHash, latestBlockHeight - 1);
+        LedgerBlock block = service.getBlock(ledgerHash, hashDigest);
         System.out.println("block.Hash=" + block.getHash());
 
-        // Get Total DataAccount Size
-        count = service.getDataAccountCount(ledgerHash, latestBlockHeight);
-
+        count = service.getDataAccountCount(ledgerHash, 123456);
+        System.out.println("dataAccountCount=" + count);
+        count = service.getDataAccountCount(ledgerHash, hashDigest);
         System.out.println("dataAccountCount=" + count);
 
-        count = service.getDataAccountCount(ledgerHash, latestBlockHash);
+        AccountHeader dataAccount =  service.getDataAccount(ledgerHash, "1245633");
+        System.out.println(dataAccount.getAddress());
 
-        System.out.println("dataAccountCount=" + count);
-
-        String queryDataAccountAddress = null;
-
-        if (count > 0) {
-            AccountHeader[] accountHeaders = service.getDataAccounts(ledgerHash, 0, (int)count);
-            for (AccountHeader accountHeader : accountHeaders) {
-                String dataAccountAddress = accountHeader.getAddress().toBase58();
-                System.out.println("DataAccount address = " + dataAccountAddress);
-                // Get one Data Account by address
-                AccountHeader dataAccount = service.getDataAccount(ledgerHash, dataAccountAddress);
-                queryDataAccountAddress = dataAccountAddress;
-            }
-        }
-
-        // Get total transaction size
-        count = service.getTransactionCount(ledgerHash, latestBlockHash);
+        count = service.getTransactionCount(ledgerHash, hashDigest);
+        System.out.println("transactionCount=" + count);
+        count = service.getTransactionCount(ledgerHash, 12456);
         System.out.println("transactionCount=" + count);
 
-        count = service.getTransactionCount(ledgerHash, latestBlockHeight);
-        System.out.println("transactionCount=" + count);
-
-        // Get transaction list
-        LedgerTransaction[] txList = service.getTransactions(ledgerHash, 0, 0, 100);
-        for (LedgerTransaction ledgerTransaction : txList) {
-            System.out.println("transaction.executionState=" + ledgerTransaction.getExecutionState());
-//            System.out.println("transaction.hash=" + ledgerTransaction.getHash().toBase58());
-            TransactionContent txContent = ledgerTransaction.getTransactionContent();
-            System.out.println("transactionContent.hash=" + txContent.getHash().toBase58());
-            Operation[] operations = txContent.getOperations();
-            if (operations != null && operations.length > 0) {
-                for (Operation operation : operations) {
-                    operation = ClientOperationUtil.read(operation);
-                    if (operation instanceof  DataAccountRegisterOperation) {
-                        DataAccountRegisterOperation daro = (DataAccountRegisterOperation) operation;
-                        BlockchainIdentity blockchainIdentity = daro.getAccountID();
-                        System.out.println("register account = " + blockchainIdentity.getAddress().toBase58());
-                    } else if (operation instanceof UserRegisterOperation) {
-                        UserRegisterOperation uro = (UserRegisterOperation) operation;
-                        BlockchainIdentity blockchainIdentity = uro.getUserID();
-                        System.out.println("register user = " + blockchainIdentity.getAddress().toBase58());
-                    } else if (operation instanceof LedgerInitOperation) {
-
-                        LedgerInitOperation ledgerInitOperation = (LedgerInitOperation)operation;
-                        LedgerInitSetting ledgerInitSetting = ledgerInitOperation.getInitSetting();
-
-                        System.out.println(Hex.encodeHexString(ledgerInitSetting.getLedgerSeed()));
-                        System.out.println(ledgerInitSetting.getConsensusProvider());
-                        System.out.println(ledgerInitSetting.getConsensusSettings().toBase58());
-
-                        ParticipantNode[] participantNodes = ledgerInitSetting.getConsensusParticipants();
-                        if (participantNodes != null && participantNodes.length > 0) {
-                            for (ParticipantNode participantNode : participantNodes) {
-                                System.out.println("participantNode.id=" + participantNode.getId());
-                                System.out.println("participantNode.name=" + participantNode.getName());
-                                System.out.println("participantNode.address=" + participantNode.getAddress());
-                                System.out.println("participantNode.pubKey=" + participantNode.getPubKey().toBase58());
-                            }
-                        }
-
-                    } else if (operation instanceof ContractCodeDeployOperation) {
-                        ContractCodeDeployOperation ccdo = (ContractCodeDeployOperation) operation;
-                        BlockchainIdentity blockchainIdentity = ccdo.getContractID();
-                        System.out.println("deploy contract = " + blockchainIdentity.getAddress());
-                    } else if (operation instanceof ContractEventSendOperation) {
-                        ContractEventSendOperation ceso = (ContractEventSendOperation) operation;
-                        System.out.println("event = " + ceso.getEvent());
-                        System.out.println("execute contract address = " + ceso.getContractAddress().toBase58());
-                    } else if (operation instanceof DataAccountKVSetOperation) {
-                        DataAccountKVSetOperation.KVWriteEntry[] kvWriteEntries =
-                                ((DataAccountKVSetOperation) operation).getWriteSet();
-                        if (kvWriteEntries != null && kvWriteEntries.length > 0) {
-                            for (DataAccountKVSetOperation.KVWriteEntry kvWriteEntry : kvWriteEntries) {
-                                System.out.println("writeSet.key=" + kvWriteEntry.getKey());
-                                BytesValue bytesValue = kvWriteEntry.getValue();
-                                DataType dataType = bytesValue.getType();
-                                Object showVal = ClientOperationUtil.readValueByBytesValue(bytesValue);
-                                System.out.println("writeSet.value=" + showVal);
-                                System.out.println("writeSet.type=" + dataType);
-                                System.out.println("writeSet.version=" + kvWriteEntry.getExpectedVersion());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Get txs by block height
-        txList = service.getTransactions(ledgerHash, latestBlockHash, 0, 100);
+        LedgerTransaction[] txList = service.getTransactions(ledgerHash, ledgerNumber, 0, 100);
         for (LedgerTransaction ledgerTransaction : txList) {
             System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getHash());
         }
 
+        txList = service.getTransactions(ledgerHash, hashDigest, 0, 100);
+        for (LedgerTransaction ledgerTransaction : txList) {
+            System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getHash());
+        }
 
-        // Get total ParticipantNode array
+        Transaction tx = service.getTransactionByContentHash(ledgerHash, hashDigest);
+        DigitalSignature[] signatures = tx.getEndpointSignatures();
+        for (DigitalSignature signature : signatures) {
+            System.out.println(signature.getDigest().getAlgorithm());
+        }
+        System.out.println("transaction.blockHeight=" + tx.getBlockHeight());
+        System.out.println("transaction.executionState=" + tx.getExecutionState());
+
+
         ParticipantNode[] participants = service.getConsensusParticipants(ledgerHash);
         for (ParticipantNode participant : participants) {
             System.out.println("participant.name=" + participant.getName());
@@ -214,27 +159,47 @@ public class SDK_GateWay_Query_Test_ {
             System.out.println("participant.getRawKeyBytes=" + participant.getPubKey().getRawKeyBytes());
             System.out.println("participant.algorithm=" + participant.getPubKey().getAlgorithm());
         }
-
-        // Get total kvs
-        KVDataEntry[] kvData = service.getDataEntries(ledgerHash, queryDataAccountAddress, 0, 100);
-        if (kvData != null && kvData.length > 0) {
-            for (KVDataEntry kvDatum : kvData) {
-                System.out.println("kvData.key=" + kvDatum.getKey());
-                System.out.println("kvData.version=" + kvDatum.getVersion());
-                System.out.println("kvData.type=" + kvDatum.getType());
-                System.out.println("kvData.value=" + kvDatum.getValue());
-
-                // Get one kvData by key
-                KVDataEntry[] kvDataEntries = service.getDataEntries(ledgerHash,
-                        queryDataAccountAddress, kvDatum.getKey());
-
-                for (KVDataEntry kv : kvDataEntries) {
-                    System.out.println("kv.key=" + kv.getKey());
-                    System.out.println("kv.version=" + kv.getVersion());
-                    System.out.println("kv.type=" + kv.getType());
-                    System.out.println("kv.value=" + kv.getValue());
-                }
-            }
+        
+        String commerceAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
+        String[] objKeys = new String[] { "x001", "x002" };
+        KVDataEntry[] kvData = service.getDataEntries(ledgerHash, commerceAccount, objKeys);
+        for (KVDataEntry kvDatum : kvData) {
+            System.out.println("kvData.key=" + kvDatum.getKey());
+            System.out.println("kvData.version=" + kvDatum.getVersion());
+            System.out.println("kvData.value=" + kvDatum.getValue());
         }
+
+        HashDigest[] hashs = service.getLedgerHashs();
+        for (HashDigest hash : hashs) {
+            System.out.println("hash.toBase58=" + hash.toBase58());
+        }
+    }
+
+    private HashDigest getLedgerHash() {
+        HashDigest ledgerHash = new HashDigest(CryptoAlgorithm.SHA256, "jd-gateway".getBytes());
+        return ledgerHash;
+    }
+
+    private SignatureFunction getSignatureFunction() {
+        return asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+    }
+
+    private BlockchainKeyPair getSponsorKey() {
+        SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+        CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
+        BlockchainKeyPair blockchainKeyPair = new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
+        return blockchainKeyPair;
+    }
+
+    private TransactionResponse initResponse() {
+        HashDigest contentHash = new HashDigest(CryptoAlgorithm.SHA256, "contentHash".getBytes());
+        HashDigest blockHash = new HashDigest(CryptoAlgorithm.SHA256, "blockHash".getBytes());
+        long blockHeight = 9998L;
+
+        TxResponseMessage resp = new TxResponseMessage(contentHash);
+        resp.setBlockHash(blockHash);
+        resp.setBlockHeight(blockHeight);
+        resp.setExecutionState(TransactionState.SUCCESS);
+        return resp;
     }
 }

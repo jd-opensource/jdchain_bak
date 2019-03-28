@@ -23,6 +23,8 @@ import com.jd.blockchain.utils.http.agent.AuthorizationAlgs;
 import com.jd.blockchain.utils.http.agent.AuthorizationHeader;
 import com.jd.blockchain.utils.http.agent.HttpServiceAgent;
 import com.jd.blockchain.utils.http.agent.ServiceEndpoint;
+import com.jd.blockchain.utils.io.BytesUtils;
+import com.jd.blockchain.utils.security.ShaUtils;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 import com.jd.blockchain.utils.web.server.WebServer;
 
@@ -30,7 +32,7 @@ public class HttpServiceAgentTest {
 
 	private static final String host = "127.0.0.1";
 
-	private static final int port = 10809;
+//	private static final int port = 10809;
 
 	private static final String SENDER_NAME = "upush_test";
 
@@ -48,13 +50,22 @@ public class HttpServiceAgentTest {
 			server.stop();
 		}
 	}
+	
+	private int getRandomPort() {
+		byte[] nanoTime = BytesUtils.toBytes(System.nanoTime());
+		byte[] hash = ShaUtils.hash_256(nanoTime);
+		return hash[0];
+	}
 
-	private void prepareEnvironment(String contextPath, HttpServlet servlet, String servletMapping) {
-		int port = 10809;
+	private int prepareEnvironment(String contextPath, HttpServlet servlet, String servletMapping) {
+		//随机化端口，避免测试用例的端口冲突
+		int port = 11000 + getRandomPort();
 		server = new WebServer(host, port);
 		server.registServlet("test-servlet", servlet, servletMapping);
 		server.setContextPath(contextPath);
 		server.start();
+		
+		return port;
 	}
 
 	@Test
@@ -66,7 +77,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint endpoint = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authorization = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -169,7 +180,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
 		HttpTestService testService = HttpServiceAgent.createService(HttpTestService.class, setting, authSetting);
@@ -229,7 +240,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -267,7 +278,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -332,7 +343,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -373,7 +384,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -414,7 +425,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseText);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -453,7 +464,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseBytes);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);
@@ -506,7 +517,7 @@ public class HttpServiceAgentTest {
 		HttpRequestCollector servlet = new HttpRequestCollector(expectedResponseBytes);
 
 		// 准备环境；
-		prepareEnvironment(contextPath, servlet, servicePath);
+		int port = prepareEnvironment(contextPath, servlet, servicePath);
 
 		ServiceEndpoint setting = new ServiceEndpoint(host, port, false, contextPath);
 		AuthorizationHeader authSetting = new AuthorizationHeader(AuthorizationAlgs.DEFAULT, SENDER_NAME, SECRET_KEY);

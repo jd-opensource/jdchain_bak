@@ -4,10 +4,11 @@ import java.util.Random;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
@@ -22,7 +23,7 @@ public class LedgerTestUtils {
 	
 	
 	public static TransactionRequest createTxRequest(HashDigest ledgerHash) {
-		return createTxRequest(ledgerHash, CryptoUtils.sign(CryptoAlgorithm.ED25519));
+		return createTxRequest(ledgerHash, CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM));
 	}
 	
 	public static TransactionRequest createTxRequest(HashDigest ledgerHash, SignatureFunction signatureFunction) {
@@ -68,14 +69,14 @@ public class LedgerTestUtils {
 	public static HashDigest generateRandomHash() {
 		byte[] data = new byte[64];
 		rand.nextBytes(data);
-		return CryptoUtils.hash(CryptoAlgorithm.SHA256).hash(data);
+		return CryptoUtils.hash(ClassicCryptoService.SHA256_ALGORITHM).hash(data);
 	}
 	
 	
 	public static CryptoSetting createDefaultCryptoSetting() {
 		CryptoConfig cryptoSetting = new CryptoConfig();
 		cryptoSetting.setAutoVerifyHash(true);
-		cryptoSetting.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		return cryptoSetting;
 	}
 	

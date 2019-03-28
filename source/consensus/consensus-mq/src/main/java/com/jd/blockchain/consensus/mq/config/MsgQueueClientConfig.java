@@ -11,7 +11,7 @@ package com.jd.blockchain.consensus.mq.config;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNetworkSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 
 /**
  *

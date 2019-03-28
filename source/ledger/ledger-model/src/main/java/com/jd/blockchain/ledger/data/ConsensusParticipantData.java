@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.utils.net.NetworkAddress;
 

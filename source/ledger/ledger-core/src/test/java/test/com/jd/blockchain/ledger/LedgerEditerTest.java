@@ -1,7 +1,9 @@
 package test.com.jd.blockchain.ledger;
 
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -12,7 +14,19 @@ import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.impl.AsymmtricCryptographyImpl;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.core.CryptoConfig;
+import com.jd.blockchain.ledger.core.DataAccount;
+import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerEditor;
+import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.data.ConsensusParticipantData;
 import com.jd.blockchain.ledger.data.LedgerInitSettingData;
@@ -20,8 +34,6 @@ import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
-
-import static org.junit.Assert.*;
 
 public class LedgerEditerTest {
 
@@ -32,8 +44,9 @@ public class LedgerEditerTest {
 	}
 
 	String ledgerKeyPrefix = "LDG://";
-	AsymmetricCryptography asymmetricCryptography = new AsymmtricCryptographyImpl();
-	SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+	AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
+	SignatureFunction signatureFunction = asymmetricCryptography
+			.getSignatureFunction(ClassicCryptoService.ED25519_ALGORITHM);
 
 	// 存储；
 	MemoryKVStorage storage = new MemoryKVStorage();
@@ -100,7 +113,7 @@ public class LedgerEditerTest {
 	private LedgerInitSetting createLedgerInitSetting() {
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		defCryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
 
@@ -110,7 +123,7 @@ public class LedgerEditerTest {
 		parties[0] = new ConsensusParticipantData();
 		parties[0].setId(0);
 		parties[0].setName("John");
-		CryptoKeyPair kp0 = CryptoUtils.sign(CryptoAlgorithm.ED25519).generateKeyPair();
+		CryptoKeyPair kp0 = CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM).generateKeyPair();
 		parties[0].setPubKey(kp0.getPubKey());
 		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
 		parties[0].setHostAddress(new NetworkAddress("192.168.1.6", 9000));
@@ -118,7 +131,7 @@ public class LedgerEditerTest {
 		parties[1] = new ConsensusParticipantData();
 		parties[1].setId(1);
 		parties[1].setName("John");
-		CryptoKeyPair kp1 = CryptoUtils.sign(CryptoAlgorithm.ED25519).generateKeyPair();
+		CryptoKeyPair kp1 = CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM).generateKeyPair();
 		parties[1].setPubKey(kp1.getPubKey());
 		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
 		parties[1].setHostAddress(new NetworkAddress("192.168.1.7", 9000));

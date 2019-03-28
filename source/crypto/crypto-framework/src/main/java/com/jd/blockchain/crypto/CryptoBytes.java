@@ -13,7 +13,7 @@ public interface CryptoBytes extends BytesSerializable {
 	/**
 	 * 算法标识符的长度；
 	 */
-	int ALGORYTHM_BYTES = 1;
+	int ALGORYTHM_CODE_SIZE = CryptoAlgorithm.CODE_SIZE;
 
 	/**
 	 * 算法；
@@ -25,10 +25,12 @@ public interface CryptoBytes extends BytesSerializable {
 	/**
 	 * 返回编码后的摘要信息；<br>
 	 * 
-	 * 这是算法标识 {@link #getAlgorithm()} 与原始的摘要数据 {@link #getRawDigest()}
+	 * 这是算法标识 {@link #getAlgorithm()} 与原始的摘要数据
 	 * 按照特定的编码方式合并后的结果；
 	 */
 	@Override
 	byte[] toBytes();
+	
+	
 
 }

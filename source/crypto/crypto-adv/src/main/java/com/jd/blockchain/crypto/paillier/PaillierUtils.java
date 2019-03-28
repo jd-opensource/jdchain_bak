@@ -11,9 +11,12 @@ public class PaillierUtils {
     public static byte[] BigIntegerToLBytes(BigInteger b, int l){
         byte[] tmp = b.toByteArray();
         byte[] result = new byte[l];
-        if (tmp.length > result.length)
-            System.arraycopy(tmp, tmp.length-result.length, result, 0, result.length);
-        else System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        if (tmp.length > result.length) {
+            System.arraycopy(tmp, tmp.length - result.length, result, 0, result.length);
+        }
+        else {
+            System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        }
         return result;
     }
 

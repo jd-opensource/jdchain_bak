@@ -3,17 +3,17 @@ package com.jd.blockchain.crypto;
 public enum CryptoKeyType {
 
 	/**
-	 * 非对称密码算法的公钥
+	 * 非对称密钥的公钥
 	 */
 	PUB_KEY((byte)0x01),
 
 	/**
-	 * 非对称密码算法的私钥；
+	 * 非对称密钥的私钥；
 	 */
 	PRIV_KEY((byte)0x02),
 
 	/**
-	 * 对称密码算法的密钥；
+	 * 对称密钥；
 	 */
 	SYMMETRIC_KEY((byte)0x03);
 
@@ -29,7 +29,7 @@ public enum CryptoKeyType {
 				return alg;
 			}
 		}
-		throw new IllegalArgumentException("CryptoKeyType doesn't support enum code[" + code + "]!");
+		throw new CryptoException("CryptoKeyType doesn't support enum code[" + code + "]!");
 	}
 
 	public byte getCODE() {

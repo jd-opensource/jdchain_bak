@@ -1,15 +1,15 @@
 package com.jd.blockchain.contract.model;
 
 /**
- * ErrorCodeEnum
- * @author zhaogw
- * date 2018/11/8 15:32
+ * 给每个错误编码，编译快速定位;
+ * @Author zhaogw
+ * @Date 2018/11/8 15:32
  */
 public enum  ErrorCodeEnum {
-    //<100为fatal error;
+    //<100为致命错误;
     GATEWAY_CONNECT_ERROR(1,ErrorType.ERROR,"GatewayServiceFactory connect error.!"),
     CONTRACT_CLASSPATH_NOT_SET(2,ErrorType.ERROR,"in private contract classLoader,no jar in the contract folder!"),
-    //Other errors are counted from 101.
+    //其它错误从101开始计数;
     AMOUNT_NEGATIVE(101,ErrorType.ALARM,"The amount is negative!");
 
 
@@ -40,7 +40,7 @@ public enum  ErrorCodeEnum {
 }
 
 /**
- * Classify the errors so that they can be summarized easily.
+ * 给错误分个类，便于汇总;
  */
 class ErrorType {
     public static final int ALARM = 0;

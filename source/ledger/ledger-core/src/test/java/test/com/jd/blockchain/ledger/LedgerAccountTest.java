@@ -3,8 +3,10 @@ package test.com.jd.blockchain.ledger;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.UserInfo;
@@ -44,8 +46,8 @@ public class LedgerAccountTest {
     @Test
     public void testSerialize_AccountHeader() {
         String address = "xxxxxxxxxxxx";
-        PubKey pubKey = new PubKey(CryptoAlgorithm.SM2, rawDigestBytes);
-        HashDigest hashDigest = new HashDigest(CryptoAlgorithm.SHA256, rawDigestBytes);
+        PubKey pubKey = new PubKey(SMCryptoService.SM2_ALGORITHM, rawDigestBytes);
+        HashDigest hashDigest = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, rawDigestBytes);
         AccountSet.AccountHeaderData accountHeaderData = new AccountSet.AccountHeaderData(Bytes.fromString(address), pubKey, hashDigest);
 
         //encode and decode

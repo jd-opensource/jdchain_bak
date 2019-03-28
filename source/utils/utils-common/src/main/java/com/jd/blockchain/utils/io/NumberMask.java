@@ -139,13 +139,6 @@ public enum NumberMask {
 	 * @return
 	 */
 	public int getBoundarySize(int headerLength) {
-//		if (headerLength < 1) {
-//			throw new IllegalArgumentException("Header length is less than one!");
-//		}
-//		if (headerLength > MAX_HEADER_LENGTH) {
-//			throw new IllegalArgumentException(
-//					"Header length is great than MAX_HEADER_LENGTH[" + MAX_HEADER_LENGTH + "]!");
-//		}
 		return boundarySizes[headerLength - 1];
 	}
 

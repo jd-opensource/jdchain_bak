@@ -8,7 +8,7 @@ import com.jd.blockchain.consensus.bftsmart.client.BftsmartMessageService;
 import com.jd.blockchain.consensus.bftsmart.service.BftsmartNodeServer;
 import com.jd.blockchain.consensus.bftsmart.service.BftsmartServerSettingConfig;
 import com.jd.blockchain.consensus.service.ServerSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.utils.PropertiesUtils;

@@ -4,8 +4,8 @@ import com.jd.blockchain.contract.model.*;
 import com.jd.blockchain.utils.BaseConstant;
 
 /**
- * mock the smart contract;
- * Do only the simplest addition operation.
+ * 模拟用智能合约;
+ * 只做最简单的加法运算;
  */
 @Contract
 public class AssetContract5 implements EventProcessingAwire {

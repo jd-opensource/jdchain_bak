@@ -10,52 +10,52 @@ import java.util.Set;
 public interface ContractEventContext  {
 
 	/**
-	 * current ledger hash；
+	 * 当前账本哈希；
 	 *
 	 * @return
 	 */
 	HashDigest getCurrentLedgerHash();
 
 	/**
-	 * Transaction requests for execution of contract events;
+	 * 执行合约事件的交易请求；
 	 *
 	 * @return
 	 */
 	TransactionRequest getTransactionRequest();
 
 	/**
-	 * Collection of signatories of the transaction;
+	 * 交易的签署人集合；
 	 *
 	 * @return
 	 */
 	Set<BlockchainIdentity> getTxSigners();
 
 	/**
-	 * event name;
+	 * 事件名称；
 	 *
 	 * @return
 	 */
 	String getEvent();
 
 	/**
-	 * param list；
+	 * 参数列表；
 	 *
 	 * @return
 	 */
 	byte[] getArgs();
 
 	/**
-	 * ledger operation context；
+	 * 账本操作上下文；
 	 *
 	 * @return
 	 */
 	LedgerContext getLedger();
 
 	/**
-	 * Collection of Contracts Owners；
+	 * 合约的拥有者集合；
 	 *
 	 * <br>
-	 * The owner of the contract is the signer when the contract is deployed.
+	 * 合约的拥有者是部署合约时的签名者；
 	 *
 	 * @return
 	 */

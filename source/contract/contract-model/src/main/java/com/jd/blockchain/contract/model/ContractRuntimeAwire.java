@@ -1,7 +1,8 @@
 package com.jd.blockchain.contract.model;
 
 /**
- * The sub-interface of contract implementation {@link ContractRuntimeAwire} can listen for life cycle events at runtime.
+ * 合约实现 {@link ContractRuntimeAwire} 的子接口可以监听运行时的生命周期事件；
+ * 
  * @author huanghaiquan
  *
  */

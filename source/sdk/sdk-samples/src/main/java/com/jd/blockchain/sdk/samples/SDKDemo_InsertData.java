@@ -1,11 +1,11 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.impl.AsymmtricCryptographyImpl;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -25,7 +25,7 @@ public class SDKDemo_InsertData {
 
 	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
 
-	public static AsymmetricCryptography asymmetricCryptography = new AsymmtricCryptographyImpl();
+	public static AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
 	/**
 	 * 演示数据写入的调用过程；

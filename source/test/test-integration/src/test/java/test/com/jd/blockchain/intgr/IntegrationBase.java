@@ -158,28 +158,7 @@ public class IntegrationBase {
         return kvResponse;
     }
 
-    public static void testSDK_InsertData_morePage(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
-                                                Bytes dataAccount) {
 
-        // 在本地定义注册账号的 TX；
-        TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
-
-        // --------------------------------------
-        // 将商品信息写入到指定的账户中；
-        // 对象将被序列化为 JSON 形式存储，并基于 JSON 结构建立查询索引；
-        for(int i=0;i<12;i++){
-            String dataKey = "jingdong" + System.currentTimeMillis() + new Random().nextInt(100000);
-            byte[] dataVal = "www.jd.com".getBytes();
-            txTemp.dataAccount(dataAccount).set(dataKey, dataVal, -1);
-        }
-
-        // TX 准备就绪；
-        PreparedTransaction prepTx = txTemp.prepare();
-        // 使用私钥进行签名；
-        prepTx.sign(adminKey);
-        // 提交交易；
-        prepTx.commit();
-    }
 
     public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerRepository ledgerRepository, KeyPairType keyPairType) {
         TransactionResponse txResp = keyPairResponse.txResp;

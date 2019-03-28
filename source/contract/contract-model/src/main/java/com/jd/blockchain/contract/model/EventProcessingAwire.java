@@ -7,35 +7,33 @@ package com.jd.blockchain.contract.model;
 public interface EventProcessingAwire extends ContractRuntimeAwire {
 
 	/**
-	 * Called before the event handling method is executed;
+	 * 在事件处理方法执行之前调用；
 	 * 
 	 * @param eventContext
 	 */
 	void beforeEvent(ContractEventContext eventContext);
 
 	/**
-	 * Called after the event handling method is successfully executed;
+	 * 在事件处理方法成功执行之后调用；
 	 * 
 	 * @param eventContext
-	 *            evenet；
+	 *            事件上下文；
 	 * @param error
-	 *            Error; if the event processing ends normally, this parameter is null;
-	 *            if an event processing error occurs, this parameter is not empty;
+	 *            错误；如果事件处理正常结束，则此参数为 null；如果事件处理发生了错误，此参数非空；
 	 */
 	void postEvent(ContractEventContext eventContext, ContractException error);
 
 
 	/**
-	 * Called after the event handling method is successfully executed;
+	 * 在事件处理方法成功执行之后调用；
 	 *
 	 * @param error
-	 *            Error; if the event processing ends normally, this parameter is null;
-	 *            if an event processing error occurs, this parameter is not empty;
+	 *            错误；如果事件处理正常结束，则此参数为 null；如果事件处理发生了错误，此参数非空；
 	 */
 	void postEvent(ContractException error);
 
 	/**
-	 * Called after the event handling method is successfully executed;
+	 * 在事件处理方法成功执行之后调用；
 	 */
 	void postEvent();
 }

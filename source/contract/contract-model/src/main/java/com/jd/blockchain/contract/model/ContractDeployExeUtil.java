@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
@@ -130,10 +130,10 @@ public enum ContractDeployExeUtil {
         txTpl.contracts().deploy(contractIdentity, chainCode);
         PreparedTransaction ptx = txTpl.prepare();
         ptx.sign(ownerKey);
-        // Submit and wait for consensus to return;
+        // 提交并等待共识返回；
         TransactionResponse txResp = ptx.commit();
 
-        // Verification results;
+        // 验证结果；
         contractAddress = contractIdentity.getAddress();
         this.setContractAddress(contractAddress);
         System.out.println("contract's address="+contractAddress);
@@ -147,7 +147,7 @@ public enum ContractDeployExeUtil {
         return deploy(ledgerHash, contractIdentity, ownerKey, chainCode);
     }
 
-    // Generate contract addresses based on user-specified public keys
+    // 根据用户指定的公钥生成合约地址
     public boolean deploy(String host, int port, String ledger,String ownerPubPath, String ownerPrvPath,
                           String ownerPassword, String chainCodePath,String pubPath){
         PubKey pubKey = getPubKey(pubPath);
@@ -165,18 +165,18 @@ public enum ContractDeployExeUtil {
         BlockchainKeyPair ownerKey = getKeyPair(ownerPubPath, ownerPrvPath, ownerPassword);
         HashDigest ledgerHash = new HashDigest(Base58Utils.decode(ledger));
 
-        // Define the transaction, transfer the simplest numbers, strings, extract the address in the contract;
+        // 定义交易,传输最简单的数字、字符串、提取合约中的地址;
         TransactionTemplate txTpl = bcsrv.newTransaction(ledgerHash);
         txTpl.contractEvents().send(getContractAddress(),event,contractArgs.getBytes());
 
-        // sign；
+        // 签名；
         PreparedTransaction ptx = txTpl.prepare();
         ptx.sign(ownerKey);
 
-        // Submit and wait for consensus to return;
+        // 提交并等待共识返回；
         TransactionResponse txResp = ptx.commit();
 
-        // Verification results;
+        // 验证结果；
         return txResp.isSuccess();
     }
 

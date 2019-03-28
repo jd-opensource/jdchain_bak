@@ -1,107 +1,101 @@
 package com.jd.blockchain.crypto;
 
-import com.jd.blockchain.base.data.TypeCodes;
-import com.jd.blockchain.binaryproto.EnumContract;
-import com.jd.blockchain.binaryproto.EnumField;
+import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.binaryproto.DataField;
+import com.jd.blockchain.consts.TypeCodes;
 import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.utils.io.BytesUtils;
 
-
-@EnumContract(code= TypeCodes.ENUM_TYPE_CRYPTO_ALGORITHM)
-public enum CryptoAlgorithm {
-
-	SHA256(CryptoAlgorithmType.HASH, (byte) 0x01, false, false),
-
-	RIPEMD160(CryptoAlgorithmType.HASH, (byte) 0x02, false, false),
-
-	SM3(CryptoAlgorithmType.HASH, (byte) 0x03, false, false),
-
-	JNISHA256(CryptoAlgorithmType.HASH, (byte) 0x04, false, false),
-
-	JNIRIPEMD160(CryptoAlgorithmType.HASH, (byte) 0x05, false, false),
-
-	// 非对称签名/加密算法；
+@DataContract(code = TypeCodes.CRYPTO_ALGORITHM)
+public interface CryptoAlgorithm {
 
 	/**
-	 * RSA 签名算法；可签名，可加密；
+	 * 随机数算法标识；
 	 */
-	RSA(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x01, true, true),
+	static final int RANDOM_ALGORITHM = 0x1000;
 
 	/**
-	 * ED25519 签名算法；只用于签名，没有加密特性；
+	 * 哈希数算法标识；
 	 */
-	ED25519(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x02, true, false),
+	static final int HASH_ALGORITHM = 0x2000;
 
 	/**
-	 * ECDSA 签名算法；只用于签名，没有加密特性；
+	 * 签名算法标识；
 	 */
-	ECDSA(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x03, true, false),
+	static final int SIGNATURE_ALGORITHM = 0x4000;
 
 	/**
-	 * 国密 SM2 算法；可签名，可加密；
+	 * 加密算法标识；
 	 */
-	SM2(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x04, true, true),
+	static final int ENCRYPTION_ALGORITHM = 0x8000;
 
 	/**
-	 * JNIED25519 签名算法；只用于签名，没有加密特性；
+	 * 扩展密码算法标识； <br>
+	 * 表示除了
+	 * {@link #RANDOM_ALGORITHM}、{@link #HASH_ALGORITHM}、{@link #SIGNATURE_ALGORITHM}、{@link #ENCRYPTION_ALGORITHM}
+	 * 之外的其它非标准分类的密码算法，诸如加法同态算法、多方求和算法等；
 	 */
-	JNIED25519(CryptoAlgorithmType.ASYMMETRIC, (byte) 0x05, true, false),
+	static final int EXT_ALGORITHM = 0x0000;
 
-	// 对称加密；
 	/**
-	 * AES 算法；可加密；
+	 * 非对称密钥标识；
 	 */
-	AES(CryptoAlgorithmType.SYMMETRIC, (byte) 0x01, false, true),
+	static final int ASYMMETRIC_KEY = 0x0100;
 
-	SM4(CryptoAlgorithmType.SYMMETRIC, (byte) 0x02, false, true),
-
-	// 随机性；
 	/**
-	 * 随机数算法，待定；
+	 * 对称密钥标识；
 	 */
-	JAVA_SECURE(CryptoAlgorithmType.RANDOM, (byte) 0x01, false, false);
+	static final int SYMMETRIC_KEY = 0x0200;
 
 	/**
-	 * 密码算法的代号；<br>
-	 * 注：只占16位；
+	 * 算法编码的字节长度；等同于 {@link #toBytes(CryptoAlgorithm)} 返回的字节数组的长度；
 	 */
-	@EnumField(type= ValueType.INT8)
-	public final byte CODE;
-
-	private final boolean signable;
-
-	private final boolean encryptable;
-
-	private CryptoAlgorithm(byte algType, byte algId, boolean signable, boolean encryptable) {
-		this.CODE = (byte) (algType | algId);
-		this.signable = signable;
-		this.encryptable = encryptable;
-	}
+	static final int CODE_SIZE = 2;
 
 	/**
-	 * 是否属于摘要算法；
+	 * 密码算法的唯一编码；
+	 * <p>
+	 * 长度16位，高4位标识算法类型（包括： {@link #RANDOM_ALGORITHM}, {@link #HASH_ALGORITHM},
+	 * {@link #SIGNATURE_ALGORITHM}, {@link #ENCRYPTION_ALGORITHM},
+	 * {@link #EXT_ALGORITHM}) 5 种）; 接下来4位标识密钥类型（包括：{@link #SYMMETRIC_KEY},
+	 * {@link #ASYMMETRIC_KEY}）； 最后8位是算法唯一ID；
+	 */
+	@DataField(primitiveType = ValueType.INT16, order = 0)
+	short code();
+
+	/**
+	 * 算法名称；
+	 * <p>
+	 * 
+	 * 实现者应该遵循“英文字符大写”的命名规范，并确保唯一性；<br>
+	 * 例如，sha256 和 SHA256 将被视为相同的名称；
 	 * 
 	 * @return
 	 */
-	public boolean isHash() {
-		return (CODE & CryptoAlgorithmType.HASH) == CryptoAlgorithmType.HASH;
-	}
+	String name();
 
 	/**
-	 * 是否属于非对称密码算法；
 	 * 
 	 * @return
 	 */
-	public boolean isAsymmetric() {
-		return (CODE & CryptoAlgorithmType.ASYMMETRIC) == CryptoAlgorithmType.ASYMMETRIC;
+	static byte[] toBytes(CryptoAlgorithm algorithm) {
+		return BytesUtils.toBytes(algorithm.code());
 	}
 
-	/**
-	 * 是否属于对称密码算法；
-	 * 
-	 * @return
-	 */
-	public boolean isSymmetric() {
-		return (CODE & CryptoAlgorithmType.SYMMETRIC) == CryptoAlgorithmType.SYMMETRIC;
+	static short resolveCode(byte[] algorithmBytes) {
+		return BytesUtils.toShort(algorithmBytes, 0);
+	}
+
+	static short resolveCode(byte[] algorithmBytes, int offset) {
+		return BytesUtils.toShort(algorithmBytes, offset);
+	}
+
+	static boolean match(CryptoAlgorithm algorithm, byte[] algorithmBytes) {
+		return algorithm.code() == BytesUtils.toShort(algorithmBytes, 0);
+	}
+
+	static boolean match(CryptoAlgorithm algorithm, byte[] algorithmBytes, int offset) {
+		return algorithm.code() == BytesUtils.toShort(algorithmBytes, offset);
 	}
 
 	/**
@@ -109,42 +103,82 @@ public enum CryptoAlgorithm {
 	 * 
 	 * @return
 	 */
-	public boolean isRandom() {
-		return (CODE & CryptoAlgorithmType.RANDOM) == CryptoAlgorithmType.RANDOM;
+	static boolean isRandomAlgorithm(CryptoAlgorithm algorithm) {
+		return RANDOM_ALGORITHM == (algorithm.code() & RANDOM_ALGORITHM);
 	}
 
 	/**
-	 * 是否支持签名操作；
+	 * 是否属于摘要算法；
 	 * 
 	 * @return
 	 */
-	public boolean isSignable() {
-		return signable;
+	static boolean isHashAlgorithm(CryptoAlgorithm algorithm) {
+		return HASH_ALGORITHM == (algorithm.code() & HASH_ALGORITHM);
 	}
 
 	/**
-	 * 是否支持加密操作；
+	 * 是否属于签名算法；
 	 * 
 	 * @return
 	 */
-	public boolean isEncryptable() {
-		return encryptable;
+	static boolean isSignatureAlgorithm(CryptoAlgorithm algorithm) {
+		return SIGNATURE_ALGORITHM == (algorithm.code() & SIGNATURE_ALGORITHM);
 	}
 
 	/**
-	 * 返回指定编码对应的枚举实例；<br>
+	 * 是否属于加密算法；
 	 * 
-	 * 如果不存在，则返回 null；
-	 * 
-	 * @param code
 	 * @return
 	 */
-	public static CryptoAlgorithm valueOf(byte code) {
-		for (CryptoAlgorithm alg : CryptoAlgorithm.values()) {
-			if (alg.CODE == code) {
-				return alg;
-			}
-		}
-		throw new IllegalArgumentException("CryptoAlgorithm doesn't support enum code[" + code + "]!");
+	static boolean isEncryptionAlgorithm(CryptoAlgorithm algorithm) {
+		return ENCRYPTION_ALGORITHM == (algorithm.code() & ENCRYPTION_ALGORITHM);
 	}
+
+	/**
+	 * 是否属于扩展密码算法；
+	 * 
+	 * @return
+	 */
+	static boolean isExtAlgorithm(CryptoAlgorithm algorithm) {
+		return EXT_ALGORITHM == (algorithm.code() & 0xF000);
+	}
+
+	/**
+	 * 算法是否包含非对称密钥；
+	 * 
+	 * @return
+	 */
+	static boolean hasAsymmetricKey(CryptoAlgorithm algorithm) {
+		return ASYMMETRIC_KEY == (algorithm.code() & ASYMMETRIC_KEY);
+	}
+
+	/**
+	 * 算法是否包含对称密钥；
+	 * 
+	 * @return
+	 */
+	static boolean hasSymmetricKey(CryptoAlgorithm algorithm) {
+		return SYMMETRIC_KEY == (algorithm.code() & SYMMETRIC_KEY);
+	}
+
+	/**
+	 * 是否属于对称加密算法；
+	 * 
+	 * @param algorithm
+	 * @return
+	 */
+	static boolean isSymmetricEncryptionAlgorithm(CryptoAlgorithm algorithm) {
+		return isEncryptionAlgorithm(algorithm) && hasSymmetricKey(algorithm);
+	}
+
+	/**
+	 * 是否属于非对称加密算法；
+	 * 
+	 * @param algorithm
+	 * @return
+	 */
+	static boolean isAsymmetricEncryptionAlgorithm(CryptoAlgorithm algorithm) {
+		return isEncryptionAlgorithm(algorithm) && hasAsymmetricKey(algorithm);
+	}
+
 }

@@ -48,8 +48,15 @@
 		<dependency>
 			<groupId>io.nats</groupId>
 			<artifactId>jnats</artifactId>
-			<version>2.2.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-impl</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>

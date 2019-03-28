@@ -1,8 +1,8 @@
 package test.com.jd.blockchain.intgr;
 
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.ledger.BlockchainKeyPair;

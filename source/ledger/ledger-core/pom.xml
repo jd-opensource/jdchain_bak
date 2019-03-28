@@ -49,6 +49,20 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
+		<!-- dependencies for test -->
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-sm</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 
 	<build>

@@ -1,8 +1,8 @@
 package com.jd.blockchain.crypto.symmetric;
 
+import com.jd.blockchain.crypto.BaseCryptoBytes;
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.base.BaseCryptoBytes;
 
 public class SymmetricCiphertext extends BaseCryptoBytes implements Ciphertext {
 
@@ -23,7 +23,7 @@ public class SymmetricCiphertext extends BaseCryptoBytes implements Ciphertext {
 
 	@Override
 	protected boolean support(CryptoAlgorithm algorithm) {
-		return algorithm.isSymmetric();
+		return CryptoAlgorithm.isEncryptionAlgorithm(algorithm) && CryptoAlgorithm.hasSymmetricKey(algorithm);
 	}
 	
 	@Override

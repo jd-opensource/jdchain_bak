@@ -5,7 +5,7 @@ public interface ContractServiceProvider {
 	String getName();
 
 	/**
-	 * Return the contract code execution engine instance;
+	 * 返回合约代码执行引擎实例；
 	 * 
 	 * @return
 	 */

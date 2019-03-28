@@ -8,12 +8,12 @@
  */
 package com.jd.blockchain.consensus.mq.settings;
 
-import com.jd.blockchain.base.data.TypeCodes;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consensus.ClientIncomingSettings;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.ValueType;
 
 /**

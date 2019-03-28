@@ -13,10 +13,9 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.util.StringUtils;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
 import com.jd.blockchain.ledger.core.MerkleProof;
@@ -34,7 +33,7 @@ public class MerkleDataSetTest {
 	public void testStorageIncreasement() {
 		String keyPrefix = "";
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();
@@ -118,7 +117,7 @@ public class MerkleDataSetTest {
 		Random rand = new Random();
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();
@@ -283,7 +282,7 @@ public class MerkleDataSetTest {
 		Random rand = new Random();
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();

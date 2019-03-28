@@ -12,6 +12,8 @@ import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
 import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.*;
 import com.jd.blockchain.utils.http.agent.HttpServiceAgent;
 import com.jd.blockchain.utils.http.agent.ServiceEndpoint;

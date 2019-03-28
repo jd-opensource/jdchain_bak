@@ -6,7 +6,7 @@ import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.utils.BaseConstant;
 
 /**
- * mock the smart contract;
+ * 模拟用智能合约;
  */
 @Contract
 public class AssetContract2 implements EventProcessingAwire {
@@ -31,11 +31,12 @@ public class AssetContract2 implements EventProcessingAwire {
 		HashDigest hashDigest = eventContext.getCurrentLedgerHash();
 		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(hashDigest, contractDataAddress,
 				KEY_TOTAL,LEDGER_HASH); //,"latestBlockHash"
+		//当前mock设定值为：TOTAL="total value,dataAccount";abc="abc value,dataAccount";
 
 		//
 //		assert ByteArray.toHex("total value,dataAccount".getBytes()).equals(kvEntries[0].getValue())
 //				&& ByteArray.toHex("abc value,dataAccount".getBytes()).equals(kvEntries[1].getValue()) :
-//				"getDataEntries() test,expect=actual;";
+//				"getDataEntries() test,期望值=设定值;";
 		System.out.println("in dataSet,KEY_TOTAL="+new String(kvEntries[0].getValue().toString()));
 		System.out.println("in dataSet,LEDGER_HASH="+new String(kvEntries[1].getValue().toString()));
 	}

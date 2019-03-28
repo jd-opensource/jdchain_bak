@@ -8,22 +8,17 @@
  */
 package test.com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
-import com.jd.blockchain.crypto.base.BaseCryptoKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.LedgerDataSnapshot;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
-import com.jd.blockchain.ledger.data.ContractEventSendOpTemplate;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.ledger.LedgerDataSnapshot;
+import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
 
 /**
  *
@@ -40,10 +35,10 @@ public class TransactionStagedSnapshotTest {
     public void initTransactionStagedSnapshot() {
         DataContractRegistry.register(LedgerDataSnapshot.class);
         data = new TransactionStagedSnapshot();
-        data.setAdminAccountHash(new HashDigest(CryptoAlgorithm.SHA256, "zhangsan".getBytes()));
-        data.setContractAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "lisi".getBytes()));
-        data.setDataAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "wangwu".getBytes()));
-        data.setUserAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "zhaoliu".getBytes()));
+        data.setAdminAccountHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhangsan".getBytes()));
+        data.setContractAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "lisi".getBytes()));
+        data.setDataAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "wangwu".getBytes()));
+        data.setUserAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhaoliu".getBytes()));
     }
 
     @Test

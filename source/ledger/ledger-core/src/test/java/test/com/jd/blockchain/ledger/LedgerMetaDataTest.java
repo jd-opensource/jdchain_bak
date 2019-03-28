@@ -13,11 +13,11 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
@@ -54,11 +54,11 @@ public class LedgerMetaDataTest {
 
 		// prepare work
 		// ConsensusConfig consensusConfig = new ConsensusConfig();
-		// consensusConfig.setValue(settingValue);
+		// consensusConfig.setValue(settingValue);ClassicCryptoService.ED25519_ALGORITHM
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 
 		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider,
 				new Bytes(consensusSettingBytes), cryptoConfig);
@@ -67,7 +67,7 @@ public class LedgerMetaDataTest {
 		ledgerMetadata.setSeed(seed);
 		ledgerMetadata.setSetting(ledgerConfiguration);
 
-		HashDigest hashDigest = new HashDigest(CryptoAlgorithm.SHA256, rawDigestBytes);
+		HashDigest hashDigest = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, rawDigestBytes);
 		ledgerMetadata.setParticipantsHash(hashDigest);
 
 		// encode and decode
@@ -95,7 +95,7 @@ public class LedgerMetaDataTest {
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 
 		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider, new Bytes(csSettingsBytes), cryptoConfig);
 		byte[] encodeBytes = BinaryEncodingUtils.encode(ledgerConfiguration, LedgerSetting.class);
@@ -134,7 +134,7 @@ public class LedgerMetaDataTest {
 		// LedgerCodes.METADATA_LEDGER_SETTING_CRYPTO
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		byte[] encodeBytes = BinaryEncodingUtils.encode(cryptoConfig, CryptoSetting.class);
 		CryptoSetting deCryptoConfig = BinaryEncodingUtils.decode(encodeBytes);
 
@@ -150,7 +150,7 @@ public class LedgerMetaDataTest {
 		// prepare work
 		int id = 1;
 		// String address = "xxxxxxxxxxxxxx";
-		PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, rawDigestBytes);
+		PubKey pubKey = new PubKey(ClassicCryptoService.ED25519_ALGORITHM, rawDigestBytes);
 		// ParticipantInfo info = new ParticipantCertData.ParticipantInfoData(1, "yyy");
 		// SignatureDigest signature = new SignatureDigest(CryptoAlgorithm.SM2,
 		// rawDigestBytes);

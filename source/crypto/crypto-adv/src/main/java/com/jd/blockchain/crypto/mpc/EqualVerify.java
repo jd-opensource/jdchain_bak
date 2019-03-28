@@ -1,5 +1,6 @@
 package com.jd.blockchain.crypto.mpc;
 
+import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.elgamal.ElGamalUtils;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -56,8 +57,9 @@ public class EqualVerify {
     public static byte[] responder(int responderInput, byte[] sponsorOutput, byte[] responderEPubKeyBytes,
                                    byte[] responderEPrivKeyBytes) {
 
-        if (sponsorOutput.length != ELEMENTLENGTH)
-            throw new IllegalArgumentException("The sponsorOutput' length is not 64!");
+        if (sponsorOutput.length != ELEMENTLENGTH) {
+            throw new CryptoException("The sponsorOutput' length is not 64!");
+        }
 
         BigInteger responderBigInt = BigInteger.valueOf(responderInput);
         BigInteger responderEPubKey = new BigInteger(1,responderEPubKeyBytes);
@@ -72,8 +74,9 @@ public class EqualVerify {
 
     public static boolean sponsorCheck(int sponsorInput, byte[] responderOutput, byte[] sponsorEPrivKeyBytes){
 
-        if (responderOutput.length != 2 * ELEMENTLENGTH)
-            throw new IllegalArgumentException("The responderOutput's length is not 128!");
+        if (responderOutput.length != 2 * ELEMENTLENGTH) {
+            throw new CryptoException("The responderOutput's length is not 128!");
+        }
 
         byte[] responderCipherBytes = new byte[ELEMENTLENGTH];
         byte[] dhValueBytes = new byte[ELEMENTLENGTH];
@@ -99,9 +102,12 @@ public class EqualVerify {
     private static byte[] bigIntegerTo64Bytes(BigInteger b){
         byte[] tmp = b.toByteArray();
         byte[] result = new byte[64];
-        if (tmp.length > result.length)
-            System.arraycopy(tmp, tmp.length-result.length, result, 0, result.length);
-        else System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        if (tmp.length > result.length) {
+            System.arraycopy(tmp, tmp.length - result.length, result, 0, result.length);
+        }
+        else {
+            System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        }
         return result;
     }
 }

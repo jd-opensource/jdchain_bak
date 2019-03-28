@@ -3,17 +3,16 @@ package com.jd.blockchain.sdk.client;
 import java.io.Closeable;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.consensus.ClientIdentification;
-import com.jd.blockchain.consensus.ClientIdentifications;
-import com.jd.blockchain.consensus.action.ActionRequest;
-import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
+import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.impl.AsymmtricCryptographyImpl;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
 import com.jd.blockchain.ledger.data.TransactionService;
 import com.jd.blockchain.ledger.data.TxRequestMessage;
@@ -26,7 +25,6 @@ import com.jd.blockchain.utils.http.agent.ServiceConnection;
 import com.jd.blockchain.utils.http.agent.ServiceConnectionManager;
 import com.jd.blockchain.utils.http.agent.ServiceEndpoint;
 import com.jd.blockchain.utils.net.NetworkAddress;
-import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
 
 public class GatewayServiceFactory implements BlockchainServiceFactory, Closeable {
 
@@ -35,30 +33,6 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 	private BlockchainKeyPair userKey;
 
 	private BlockchainService blockchainService;
-
-	static {
-		DataContractRegistry.register(TransactionContent.class);
-		DataContractRegistry.register(TransactionContentBody.class);
-		DataContractRegistry.register(TransactionRequest.class);
-		DataContractRegistry.register(NodeRequest.class);
-		DataContractRegistry.register(EndpointRequest.class);
-		DataContractRegistry.register(TransactionResponse.class);
-		DataContractRegistry.register(DataAccountKVSetOperation.class);
-		DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
-
-		DataContractRegistry.register(Operation.class);
-		DataContractRegistry.register(ContractCodeDeployOperation.class);
-		DataContractRegistry.register(ContractEventSendOperation.class);
-		DataContractRegistry.register(DataAccountRegisterOperation.class);
-		DataContractRegistry.register(UserRegisterOperation.class);
-
-		DataContractRegistry.register(ActionRequest.class);
-		DataContractRegistry.register(ActionResponse.class);
-		DataContractRegistry.register(ClientIdentifications.class);
-		DataContractRegistry.register(ClientIdentification.class);
-
-		ByteArrayObjectUtil.init();
-	}
 
 	protected GatewayServiceFactory(ServiceEndpoint gatewayEndpoint, BlockchainKeyPair userKey) {
 		httpConnectionManager = new ServiceConnectionManager();
@@ -169,10 +143,10 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 				SignatureFunction signatureFunction = null;
 				switch (userAlgorithm) {
 				case ED25519:
-					signatureFunction = new AsymmtricCryptographyImpl().getSignatureFunction(CryptoAlgorithm.ED25519);
+					signatureFunction = CryptoUtils.asymmCrypto().getSignatureFunction(CryptoAlgorithm.ED25519);
 					break;
 				default:
-					signatureFunction = new AsymmtricCryptographyImpl().getSignatureFunction(CryptoAlgorithm.ED25519);
+					signatureFunction = CryptoUtils.asymmCrypto().getSignatureFunction(CryptoAlgorithm.ED25519);
 					break;
 				}
 				if (signatureFunction != null) {

@@ -14,7 +14,7 @@ import com.jd.blockchain.runtime.boot.HomeBooter;
 import com.jd.blockchain.runtime.boot.HomeContext;
 
 /**
- * Peer starter；
+ * Peer 启动器；
  * 
  * @author huanghaiquan
  *

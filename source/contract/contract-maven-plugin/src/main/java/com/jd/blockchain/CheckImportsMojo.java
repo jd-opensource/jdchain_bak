@@ -45,7 +45,7 @@ public class CheckImportsMojo extends AbstractMojo {
                     String importName = imp.getName().asString();
                     for (String item : packageBlackList) {
                         if (importName.startsWith(item)) {
-                            throw new MojoFailureException("Inclusion of this import package is not allowed in source code:" + importName);
+                            throw new MojoFailureException("在源码中不允许包含此引入包:" + importName);
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract;
 
 /**
- * contract engine.
+ * 合约引擎；
  * 
  * @author huanghaiquan
  *
@@ -9,9 +9,9 @@ package com.jd.blockchain.contract;
 public interface ContractEngine {
 
 	/**
-	 * Returns the contract code for the specified address;<br>
+	 * 返回指定地址的合约代码；<br>
 	 * 
-	 * If not, return null；
+	 * 如果不存在，则返回 null；
 	 * 
 	 * @param address
 	 * @return
@@ -19,9 +19,9 @@ public interface ContractEngine {
 	ContractCode getContract(String address, long version);
 
 	/**
-	 * Load contract code;<br>
+	 * 装入合约代码；<br>
 	 * 
-	 * If it already exists, it returns the existing instance directly.
+	 * 如果已经存在，则直接返回已有实例；
 	 * 
 	 * @param address
 	 * @param code

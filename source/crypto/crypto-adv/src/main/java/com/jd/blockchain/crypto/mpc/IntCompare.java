@@ -1,5 +1,6 @@
 package com.jd.blockchain.crypto.mpc;
 
+import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.elgamal.ElGamalUtils;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -67,13 +68,15 @@ public class IntCompare {
 
     public static byte[][] responder(int responderInt, byte[][] cipherArray, byte[] pubKeyBytes){
 
-        if (cipherArray.length != 2 * INTLENGTH)
-            throw new IllegalArgumentException("The cipherArray has wrong format!");
+        if (cipherArray.length != 2 * INTLENGTH) {
+            throw new CryptoException("The cipherArray has wrong format!");
+        }
 
         int i,j;
         for (i = 0; i < cipherArray.length; i++){
-            if(cipherArray[i].length != CIPHERLENGTH)
-            throw new IllegalArgumentException("The cipherArray has wrong format!");
+            if(cipherArray[i].length != CIPHERLENGTH) {
+                throw new CryptoException("The cipherArray has wrong format!");
+            }
         }
 
         String[] responderStrSet = encoding(responderInt, false);
@@ -131,16 +134,18 @@ public class IntCompare {
 
     public static int sponsorOutput(byte[][] aggregatedCipherArray, byte[] privKeyBytes){
 
-        if (aggregatedCipherArray.length != INTLENGTH)
-            throw new IllegalArgumentException("The aggregatedCipherArray has wrong format!");
+        if (aggregatedCipherArray.length != INTLENGTH) {
+            throw new CryptoException("The aggregatedCipherArray has wrong format!");
+        }
 
         int i;
         byte[] plaintext;
 
         for (i = 0; i < aggregatedCipherArray.length; i++){
 
-            if(aggregatedCipherArray[i].length != CIPHERLENGTH)
-                throw new IllegalArgumentException("The aggregatedCipherArray has wrong format!");
+            if(aggregatedCipherArray[i].length != CIPHERLENGTH) {
+                throw new CryptoException("The aggregatedCipherArray has wrong format!");
+            }
 
             plaintext = ElGamalUtils.decrypt(aggregatedCipherArray[i], privKeyBytes);
 
@@ -186,8 +191,9 @@ public class IntCompare {
 
     private static String to32BinaryString(int integer) {
 
-        if (integer < 0)
-            throw new IllegalArgumentException("integer must be non-negative!");
+        if (integer < 0) {
+            throw new CryptoException("integer must be non-negative!");
+        }
 
         int i;
         String str = Integer.toBinaryString(integer);
@@ -204,16 +210,19 @@ public class IntCompare {
      * @return the next pseudorandom, uniformly distributed {@code int}
      * value between min (inclusive) and max (inclusive)
      * from this random number generator's sequence
-     * @throws IllegalArgumentException if min is not non-negative,
+     * @throws CryptoException if min is not non-negative,
      *                                  max is not positive, or min is bigger than max
      */
     private static int randInt(int min, int max) {
-        if (min < 0)
-            throw new IllegalArgumentException("min must be non-negative!");
-        if (max <= 0)
-            throw new IllegalArgumentException("max must be positive!");
-        if (min > max)
-            throw new IllegalArgumentException("min must not be greater than max");
+        if (min < 0) {
+            throw new CryptoException("min must be non-negative!");
+        }
+        if (max <= 0) {
+            throw new CryptoException("max must be positive!");
+        }
+        if (min > max) {
+            throw new CryptoException("min must not be greater than max");
+        }
 
         Random random = new Random();
         return random.nextInt(max) % (max - min + 1) + min;
@@ -244,23 +253,28 @@ public class IntCompare {
     private static byte[] bigIntegerTo64Bytes(BigInteger b){
         byte[] tmp = b.toByteArray();
         byte[] result = new byte[64];
-        if (tmp.length > result.length)
-            System.arraycopy(tmp, tmp.length-result.length, result, 0, result.length);
-        else System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        if (tmp.length > result.length) {
+            System.arraycopy(tmp, tmp.length - result.length, result, 0, result.length);
+        }
+        else {
+            System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        }
         return result;
     }
 
     private static BigInteger getLeftBigIntegerFrom128Bytes(byte[] byteArray){
-        if (byteArray.length != 128)
-            throw new IllegalArgumentException("The byteArray's length must be 128!");
+        if (byteArray.length != 128) {
+            throw new CryptoException("The byteArray's length must be 128!");
+        }
         byte[] tmp = new byte[64];
         System.arraycopy(byteArray, 0, tmp, 0, tmp.length);
         return new BigInteger(1, tmp);
     }
 
     private static BigInteger getRightBigIntegerFrom128Bytes(byte[] byteArray){
-        if (byteArray.length != 128)
-            throw new IllegalArgumentException("The byteArray's length must be 128!");
+        if (byteArray.length != 128) {
+            throw new CryptoException("The byteArray's length must be 128!");
+        }
         byte[] tmp = new byte[64];
         System.arraycopy(byteArray, 64, tmp, 0, tmp.length);
         return new BigInteger(1, tmp);

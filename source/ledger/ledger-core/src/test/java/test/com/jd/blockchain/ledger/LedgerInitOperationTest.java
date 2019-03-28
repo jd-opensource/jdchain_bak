@@ -4,6 +4,7 @@ import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.LedgerInitOperation;
@@ -45,7 +46,7 @@ public class LedgerInitOperationTest {
 
         CryptoConfig cryptoConfig = new CryptoConfig();
         cryptoConfig.setAutoVerifyHash(true);
-        cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+        cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 
 
         ledgerInitSettingData.setConsensusSettings(new Bytes(csSysSettingBytes));

@@ -9,7 +9,7 @@
 package com.jd.blockchain.consensus.mq.config;
 
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNodeSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 
 /**
  * peer节点IP

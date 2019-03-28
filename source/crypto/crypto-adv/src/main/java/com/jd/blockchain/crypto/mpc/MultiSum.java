@@ -1,11 +1,6 @@
 package com.jd.blockchain.crypto.mpc;
 
-import com.jd.blockchain.crypto.paillier.KeyPair;
-import com.jd.blockchain.crypto.paillier.PaillierUtils;
-import com.jd.blockchain.crypto.paillier.PublicKey;
-import com.jd.blockchain.crypto.smutils.asymmetric.SM2Utils;
-import com.jd.blockchain.crypto.smutils.hash.SM3Utils;
-import com.jd.blockchain.utils.io.BytesUtils;
+import java.math.BigInteger;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.CipherParameters;
@@ -17,7 +12,12 @@ import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
-import java.math.BigInteger;
+import com.jd.blockchain.crypto.paillier.KeyPair;
+import com.jd.blockchain.crypto.paillier.PaillierUtils;
+import com.jd.blockchain.crypto.paillier.PublicKey;
+import com.jd.blockchain.crypto.utils.sm.SM2Utils;
+import com.jd.blockchain.crypto.utils.sm.SM3Utils;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 public class MultiSum {
 

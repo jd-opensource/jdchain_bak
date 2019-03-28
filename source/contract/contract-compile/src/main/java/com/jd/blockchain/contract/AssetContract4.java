@@ -8,9 +8,8 @@ import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.io.ByteArray;
 
 /**
- * mock the smart contract;
- * The test takes data from the chain and compares it with the expected value;
- * the value of param1Val should be consistent with that of Integration Test;
+ * 模拟用智能合约;
+ * 测试从链中取数据，然后对比是否与预定值一致；param1Val 的值要与IntegrationTest中保持一致;
  */
 @Contract
 public class AssetContract4 implements EventProcessingAwire {
@@ -32,6 +31,7 @@ public class AssetContract4 implements EventProcessingAwire {
 				",contractDataAddress= "+contractDataAddress);
 
 		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+		//TODO:register牵扯到账本中的事务处理，需要优化;
 //		contractEventContext.getLedger().dataAccounts().register(dataAccount.getIdentity());
 //		contractEventContext.getLedger().dataAccount(dataAccount.getAddress()).
 //				set(param1,param1Val.getBytes(),-1).getOperation();
@@ -55,9 +55,9 @@ public class AssetContract4 implements EventProcessingAwire {
 		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(),
 				contractDataAddress, param1);
 		if (ByteArray.toHex(param1Val.getBytes()).equals(kvEntries[0].getValue())){
-			System.out.println("getDataEntries() test,expect==actual;");
+			System.out.println("getDataEntries() test,期望值==设定值;");
 		} else {
-            System.out.println("getDataEntries() test,expect==actual;");
+            System.out.println("getDataEntries() test,期望值!=设定值;");
         }
 	}
 

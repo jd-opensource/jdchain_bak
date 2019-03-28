@@ -21,9 +21,9 @@ import com.jd.blockchain.utils.codec.HexUtils;
 public class AESUtils {
 
 	/**
-	 * 用指定的种子生成 128 位的秘钥； <br>
+	 * 用指定的种子生成 128 位的密钥； <br>
 	 *
-	 * 如果指定的种子为空（null 或长度为 0 ），则生成随机的秘钥；
+	 * 如果指定的种子为空（null 或长度为 0 ），则生成随机的密钥；
 	 *
 	 * @param seed
 	 *            种子；
@@ -35,7 +35,7 @@ public class AESUtils {
 	}
 
 	/**
-	 * 用指定的种子生成 128 位的秘钥；
+	 * 用指定的种子生成 128 位的密钥；
 	 *
 	 * @param seed
 	 *            种子；
@@ -47,7 +47,7 @@ public class AESUtils {
 	}
 
 	/**
-	 * 用指定的种子生成 128 位的秘钥；
+	 * 用指定的种子生成 128 位的密钥；
 	 *
 	 * @param seed
 	 *            种子； 不允许为空；
@@ -57,7 +57,7 @@ public class AESUtils {
 		if (seed == null || seed.length == 0) {
 			throw new IllegalArgumentException("Empty seed!");
 		}
-		// 注：AES 算法只支持 128 位，不支持 192, 256 位的秘钥加密；
+		// 注：AES 算法只支持 128 位，不支持 192, 256 位的密钥加密；
 		byte[] hashBytes = ShaUtils.hash_128(seed);
 		return new SecretKeySpec(hashBytes, "AES");
 
@@ -67,7 +67,7 @@ public class AESUtils {
 	}
 
 	/**
-	 * 生成 128 位的随机秘钥；
+	 * 生成 128 位的随机密钥；
 	 *
 	 * @return
 	 */
@@ -77,7 +77,7 @@ public class AESUtils {
 	}
 
 	/**
-	 * 生成以 16 进制编码的 128 位的随机秘钥；
+	 * 生成以 16 进制编码的 128 位的随机密钥；
 	 *
 	 * @return
 	 */
@@ -92,11 +92,11 @@ public class AESUtils {
 	}
 
 	/**
-	 * 用指定的 16 进制的AES秘钥进行加密；
+	 * 用指定的 16 进制的AES密钥进行加密；
 	 *
 	 * @param content
 	 * @param key
-	 *            16进制编码的 AES 秘钥；
+	 *            16进制编码的 AES 密钥；
 	 * @return
 	 */
 	public static byte[] encrypt(byte[] content, String key) {

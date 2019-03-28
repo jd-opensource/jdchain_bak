@@ -1,6 +1,6 @@
 package com.jd.blockchain.consensus.bftsmart;
 
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 
 public class BftsmartClientIncomingConfig implements BftsmartClientIncomingSettings {
 

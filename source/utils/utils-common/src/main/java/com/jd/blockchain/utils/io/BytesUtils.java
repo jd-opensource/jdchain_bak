@@ -166,6 +166,8 @@ public class BytesUtils {
 
 	/**
 	 * 将 int 值转为4字节的二进制数组；
+	 * <p>
+	 * 以“高位在前”的方式转换，即：数值的高位保存在数组地址的低位；
 	 * 
 	 * @param value
 	 *            要转换的int整数；
@@ -183,23 +185,69 @@ public class BytesUtils {
 		return 4;
 	}
 
-//	public static int toBytes(int value, OutputStream out) {
-//		try {
-//			out.write((value >>> 24) & 0x00FF);
-//			out.write((value >>> 16) & 0x00FF);
-//			out.write((value >>> 8) & 0x00FF);
-//			out.write(value & 0x00FF);
-//			return 4;
-//		} catch (IOException e) {
-//			throw new RuntimeIOException(e.getMessage(), e);
-//		}
-//	}
+	/**
+	 * 将 int 值转为4字节的二进制数组；
+	 * <p>
+	 * 以“高位在后”的方式转换，即：数值的高位保存在数组地址的高位；
+	 * 
+	 * @param value
+	 *            要转换的int整数；
+	 * @param bytes
+	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
+	 * @param offset
+	 *            写入转换结果的起始位置；
+	 * @return 返回写入的长度；
+	 */
+	public static int toBytesInReverse(int value, byte[] bytes, int offset) {
+		bytes[offset] = (byte) (value & 0x00FF);
+		bytes[offset + 1] = (byte) ((value >>> 8) & 0x00FF);
+		bytes[offset + 2] = (byte) ((value >>> 16) & 0x00FF);
+		bytes[offset + 3] = (byte) ((value >>> 24) & 0x00FF);
+		return 4;
+	}
+
+
+	/**
+	 * 将 int 值转为4字节的二进制数组；
+	 * <p>
+	 * 以“高位在后”的方式转换，即：数值的高位保存在数组地址的高位；
+	 * 
+	 * @param value
+	 *            要转换的int整数；
+	 * @param bytes
+	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
+	 * @param offset
+	 *            写入转换结果的起始位置；
+	 * @param len 写入长度；必须大于 0 ，小于等于 4；
+	 * @return 返回写入的长度；
+	 */
+	public static int toBytesInReverse(int value, byte[] bytes, int offset, int len) {
+		int i = 0;
+		int l = len > 4 ? 4 : len;
+		for (; i < l; i++) {
+			bytes[offset + i] = (byte) ((value >>> (8*i)) & 0x00FF);
+		}
+		
+		return i;
+	}
+
+
+	// public static int toBytes(int value, OutputStream out) {
+	// try {
+	// out.write((value >>> 24) & 0x00FF);
+	// out.write((value >>> 16) & 0x00FF);
+	// out.write((value >>> 8) & 0x00FF);
+	// out.write(value & 0x00FF);
+	// return 4;
+	// } catch (IOException e) {
+	// throw new RuntimeIOException(e.getMessage(), e);
+	// }
+	// }
 
 	public static void toBytes(short value, byte[] bytes, int offset) {
 		bytes[offset] = (byte) ((value >>> 8) & 0x00FF);
 		bytes[offset + 1] = (byte) (value & 0x00FF);
 	}
-	
 
 	public static void toBytes(char value, byte[] bytes, int offset) {
 		bytes[offset] = (byte) ((value >>> 8) & 0x00FF);
@@ -229,21 +277,21 @@ public class BytesUtils {
 		return 8;
 	}
 
-//	public static int toBytes(long value, OutputStream out) {
-//		try {
-//			out.write((int) ((value >>> 56) & 0x00FF));
-//			out.write((int) ((value >>> 48) & 0x00FF));
-//			out.write((int) ((value >>> 40) & 0x00FF));
-//			out.write((int) ((value >>> 32) & 0x00FF));
-//			out.write((int) ((value >>> 24) & 0x00FF));
-//			out.write((int) ((value >>> 16) & 0x00FF));
-//			out.write((int) ((value >>> 8) & 0x00FF));
-//			out.write((int) (value & 0x00FF));
-//			return 8;
-//		} catch (IOException e) {
-//			throw new RuntimeIOException(e.getMessage(), e);
-//		}
-//	}
+	// public static int toBytes(long value, OutputStream out) {
+	// try {
+	// out.write((int) ((value >>> 56) & 0x00FF));
+	// out.write((int) ((value >>> 48) & 0x00FF));
+	// out.write((int) ((value >>> 40) & 0x00FF));
+	// out.write((int) ((value >>> 32) & 0x00FF));
+	// out.write((int) ((value >>> 24) & 0x00FF));
+	// out.write((int) ((value >>> 16) & 0x00FF));
+	// out.write((int) ((value >>> 8) & 0x00FF));
+	// out.write((int) (value & 0x00FF));
+	// return 8;
+	// } catch (IOException e) {
+	// throw new RuntimeIOException(e.getMessage(), e);
+	// }
+	// }
 
 	public static byte[] toBytes(String str) {
 		return toBytes(str, DEFAULT_CHARSET);
@@ -261,11 +309,11 @@ public class BytesUtils {
 	public static String toString(byte[] bytes) {
 		return toString(bytes, DEFAULT_CHARSET);
 	}
-	
+
 	public static String toString(byte[] bytes, int offset) {
 		return toString(bytes, offset, bytes.length - offset, DEFAULT_CHARSET);
 	}
-	
+
 	public static String toString(byte[] bytes, int offset, int len) {
 		return toString(bytes, offset, len, DEFAULT_CHARSET);
 	}
@@ -273,7 +321,7 @@ public class BytesUtils {
 	public static String toString(byte[] bytes, String charset) {
 		return toString(bytes, 0, bytes.length, charset);
 	}
-	
+
 	public static String toString(byte[] bytes, int offset, int len, String charset) {
 		try {
 			if (bytes == null) {
@@ -321,17 +369,14 @@ public class BytesUtils {
 
 		return value;
 	}
-	
-	
+
 	public static char toChar(byte[] bytes, int offset) {
 		char value = 0;
 		value = (char) ((value | (bytes[offset] & 0xFF)) << 8);
 		value = (char) (value | (bytes[offset + 1] & 0xFF));
-		
+
 		return value;
 	}
-	
-	
 
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 4 个字节转换为 int 整数；
@@ -447,6 +492,17 @@ public class BytesUtils {
 	 * @return int
 	 */
 	public static int readInt(InputStream in) {
+//		try {
+//			byte[] buf = new byte[4];
+//			if (in.read(buf) < 4) {
+//				throw new IllegalDataException("No enough data to read as integer from the specified input stream!");
+		// specified input stream!");
+//			}
+//			return toInt(buf);
+//		} catch (IOException e) {
+//			throw new RuntimeIOException(e.getMessage(), e);
+//		}
+		
 		try {
 			int value = 0;
 			for (int i = 0; i < 4; i++) {
@@ -465,7 +521,7 @@ public class BytesUtils {
 		// } catch (IOException e) {
 		// throw new RuntimeIOException(e.getMessage(), e);
 		// }
-		
+
 		try {
 			out.write((value >>> 24) & 0x00FF);
 			out.write((value >>> 16) & 0x00FF);
@@ -515,7 +571,7 @@ public class BytesUtils {
 		// } catch (IOException e) {
 		// throw new RuntimeIOException(e.getMessage(), e);
 		// }
-		
+
 		try {
 			out.write((int) ((value >>> 56) & 0x00FF));
 			out.write((int) ((value >>> 48) & 0x00FF));

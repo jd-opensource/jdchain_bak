@@ -1,7 +1,7 @@
 package com.jd.blockchain.consensus.client;
 
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 
 /**
  * 共识客户端的配置参数；

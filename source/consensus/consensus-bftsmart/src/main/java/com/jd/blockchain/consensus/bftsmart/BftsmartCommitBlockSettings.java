@@ -1,8 +1,8 @@
 package com.jd.blockchain.consensus.bftsmart;
 
-import com.jd.blockchain.base.data.TypeCodes;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
+import com.jd.blockchain.consts.TypeCodes;
 import com.jd.blockchain.utils.ValueType;
 
 

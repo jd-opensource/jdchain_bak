@@ -3,7 +3,7 @@ package com.jd.blockchain.runtime.modular;
 public class ModularFactory {
 
 	/**
-	 * start system；
+	 * 启动系统；
 	 */
 	public static void startSystem(String runtimeDir, boolean productMode,
 			ClassLoader libClassLoader,String mainClassName,  ClassLoader systemClassLoader, String[] args) {

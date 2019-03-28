@@ -2,7 +2,7 @@ package com.jd.blockchain.consensus.bftsmart.client;
 
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 
 
 public class BftsmartClientConfig implements BftsmartClientSettings {

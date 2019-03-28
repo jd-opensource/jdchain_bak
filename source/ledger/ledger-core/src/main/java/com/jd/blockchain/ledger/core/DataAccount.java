@@ -1,17 +1,18 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.QueryUtil;
 import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class DataAccount implements AccountHeader, MerkleProvable {
+
 	private BaseAccount baseAccount;
 
 	public DataAccount(BaseAccount accBase) {
@@ -118,12 +119,19 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 */
 
 	public KVDataEntry[] getDataEntries(int fromIndex, int count) {
+
 		if (getDataEntriesTotalCount() == 0 || count == 0) {
 			return null;
 		}
-		int pages[]  = QueryUtil.calFromIndexAndCount(fromIndex,count,(int)getDataEntriesTotalCount());
-		fromIndex = pages[0];
-		count = pages[1];
+
+		if (count == -1 || count > getDataEntriesTotalCount()) {
+			fromIndex = 0;
+			count = (int)getDataEntriesTotalCount();
+		}
+
+		if (fromIndex < 0 || fromIndex > getDataEntriesTotalCount() - 1) {
+			fromIndex = 0;
+		}
 
 		KVDataEntry[] kvDataEntries = new KVDataEntry[count];
 		byte[] value;

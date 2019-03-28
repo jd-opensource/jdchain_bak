@@ -2,7 +2,7 @@ package com.jd.blockchain.contract;
 
 import com.jd.blockchain.contract.model.*;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.BaseConstant;
@@ -14,23 +14,23 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * mock the smart contract;
+ * 模拟用智能合约;
  */
 @Contract
 public class AssetContract1 implements EventProcessingAwire {
 	//    private static final Logger LOGGER = LoggerFactory.getLogger(AssetContract1.class);
-	// the address of asset manager;
+	// 资产管理账户的地址；
 //	private static String ASSET_ADDRESS = "2njZBNbFQcmKd385DxVejwSjy4driRzf9Pk";
 	private static String ASSET_ADDRESS = "";
-	//account address;
+	//账户地址;
 	private static final String ACCOUNT_ADDRESS = "accountAddress";
 	String contractAddress = "2njZBNbFQcmKd385DxVejwSjy4driRzf9Pk";
 	String userPubKeyVal = "this is user's pubKey";
 
-	// the key of save asset;
+	// 保存资产总数的键；
 	private static final String KEY_TOTAL = "TOTAL";
 
-	// contractEvent context;
+	// 合约事件上下文；
 	private ContractEventContext eventContext;
 	private Object eventContextObj;
 	private byte[] eventContextBytes;
@@ -59,7 +59,7 @@ public class AssetContract1 implements EventProcessingAwire {
 	}
 
 	/**
-	 * issue-asset；
+	 * 发行资产；
 	 * @param contractEventContext
 	 * @throws Exception
 	 */
@@ -83,6 +83,7 @@ public class AssetContract1 implements EventProcessingAwire {
 
 //		checkAllOwnersAgreementPermission();
 
+		// 新发行的资产数量；在传递过程中都改为字符串，需要反转;
 //		long amount = BytesUtils.toLong(args[0]);
 
 		if (amount < 0) {
@@ -92,77 +93,83 @@ public class AssetContract1 implements EventProcessingAwire {
 			return;
 		}
 
+		// 校验持有者账户的有效性；
 //		BlockchainAccount holderAccount = eventContext.getLedger().getAccount(currentLedgerHash(), assetHolderAddress);
 //		if (holderAccount == null) {
 //			throw new ContractError("The holder is not exist!");
 //		}
+		// 查询当前值；
 		HashDigest hashDigest = eventContext.getCurrentLedgerHash();
 
+		//赋值;mock的对象直接赋值无效;
 //		eventContext.getLedger().dataAccount(ACCOUNT_ADDRESS).set(KEY_TOTAL,"total new dataAccount".getBytes(),2);
 //		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(hashDigest, ASSET_ADDRESS, KEY_TOTAL,assetHolderAddress);
 //		assert ByteArray.toHex("total new dataAccount".getBytes()).equals(kvEntries[0].getValue())
 //				&& ByteArray.toHex("abc new dataAccount".getBytes()).equals(kvEntries[1].getValue()) :
-//				"getDataEntries() test,expect!=actual;";
+//				"getDataEntries() test,期望值!=设定值;";
 
 		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(hashDigest, ASSET_ADDRESS,
 				KEY_TOTAL,assetHolderAddress,"ledgerHash"); //,"latestBlockHash"
+		//当前mock设定值为：TOTAL="total value,dataAccount";abc="abc value,dataAccount";
 
 		assert ByteArray.toHex("total value,dataAccount".getBytes()).equals(kvEntries[0].getValue())
 				&& ByteArray.toHex("abc value,dataAccount".getBytes()).equals(kvEntries[1].getValue()) :
-				"getDataEntries() test,expect=actual;";
+				"getDataEntries() test,期望值=设定值;";
 
-		//get the latest block;
+		//高度只是一个模拟，看结果是否与期望相同;//get the latest block;
 		LedgerBlock ledgerBlock = eventContext.getLedger().getBlock(hashDigest,
 				eventContext.getLedger().getLedger(hashDigest).getLatestBlockHeight());
 
 
 //		assert "zhaogw".equals(new String(ledgerBlock.getLedgerHash().getRawDigest())) &&
 //				"lisi".equals(new String(ledgerBlock.getPreviousHash().getRawDigest())) :
-//				"getBlock(hash,long) test,expect!=actual;";
+//				"getBlock(hash,long) test,期望值!=设定值;";
 		assert ByteArray.toHex(eventContext.getCurrentLedgerHash().getRawDigest()).equals(kvEntries[2].getValue()) &&
 				ledgerBlock.getPreviousHash().toBase58().equals(previousBlockHash) :
-				"getPreviousHash() test,expect!=acutal;";
+				"getPreviousHash() test,期望值!=设定值;";
 
 		//模拟：根据hash来获得区块;
 		LedgerBlock ledgerBlock1 = eventContext.getLedger().getBlock(hashDigest,ledgerBlock.getHash());
 
 		assert eventContext.getLedger().getTransactionCount(hashDigest,1) == 2 :
-				"getTransactionCount(),expect!=acutal";
+				"getTransactionCount(),期望值!=设定值";
 
 //		assert "zhaogw".equals(new String(ledgerBlock1.getLedgerHash().getRawDigest())) &&
 //				"lisi".equals(new String(ledgerBlock1.getPreviousHash().getRawDigest())) :
-//				"getBlock(hash,blockHash) test,expect!=acutal;";
+//				"getBlock(hash,blockHash) test,期望值!=设定值;";
 		assert ByteArray.toHex(eventContext.getCurrentLedgerHash().getRawDigest()).equals(kvEntries[2].getValue()) &&
 				ledgerBlock1.getPreviousHash().toBase58().equals(previousBlockHash) :
-				"getBlock(hash,blockHash) test,expect!=acutal;";
+				"getBlock(hash,blockHash) test,期望值!=设定值;";
 
 		assert ASSET_ADDRESS.equals(eventContext.getLedger().getDataAccount(hashDigest,ASSET_ADDRESS).getAddress()) :
-				"getDataAccount(hash,address), expect!=acutal";
+				"getDataAccount(hash,address), 期望值！=设定值";
 
+		//mock user()等;内部赋值，验证外部是否能够得到;
 		PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, pubKeyVal.getBytes());
 		BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
 //		assert contractID == contractEventContext.getLedger().dataAccounts().register(contractID).getAccountID() :
-//				"dataAccounts(),expect!=acutal";
+//				"dataAccounts(),期望值！=设定值";
 		contractEventContext.getLedger().dataAccounts().register(contractID);
 		contractEventContext.getLedger().dataAccount(contractID.getAddress()).
 				set(KEY_TOTAL,"hello".getBytes(),-1).getOperation();
 
 		assert userAddress.equals(eventContext.getLedger().getUser(hashDigest,userAddress).getAddress()) :
-				"getUser(hash,address), expect!=acutal";
+				"getUser(hash,address), 期望值！=设定值";
 
 		assert contractAddress.equals(eventContext.getLedger().getContract(hashDigest,contractAddress).getAddress())  :
-				"getContract(hash,address), expect!=acutal";
+				"getContract(hash,address), 期望值！=设定值";
 
 		PubKey userPubKey = new PubKey(CryptoAlgorithm.ED25519, userPubKeyVal.getBytes());
 		BlockchainIdentity userBlockId = new BlockchainIdentityData(userPubKey);
 		contractEventContext.getLedger().users().register(userBlockId);
 
 //		txRootHash
+		//此方法未实现;需要相关人员进一步完善;
 //		eventContext.getLedger().getTransactions(hashDigest,ledgerBlock1.getHash(),0,10);
 
 		HashDigest txHashDigest = new HashDigest(Base58Utils.decode(txHash));
 		LedgerTransaction ledgerTransactions = eventContext.getLedger().getTransactionByContentHash(hashDigest,txHashDigest);
-		assert ledgerTransactions != null : "getTransactionByContentHash(hashDigest,txHashDigest),expect!=acutal";
+		assert ledgerTransactions != null : "getTransactionByContentHash(hashDigest,txHashDigest),期望值!=设定值";
 
 		System.out.println("issue(),over.");
 	}
@@ -185,6 +192,9 @@ public class AssetContract1 implements EventProcessingAwire {
 		System.out.println("transfer(),over.");
 	}
 
+	/**
+	 * 只有全部的合约拥有者同意才能通过校验；
+	 */
 	private void checkAllOwnersAgreementPermission() {
 		Set<BlockchainIdentity> owners = eventContext.getContracOwners();
 		Set<BlockchainIdentity> requestors = eventContext.getTxSigners();
@@ -204,6 +214,11 @@ public class AssetContract1 implements EventProcessingAwire {
 		}
 	}
 
+	/**
+	 * 校验指定的账户是否签署了当前交易；
+	 *
+	 * @param address
+	 */
 	private void checkSignerPermission(String address) {
 		Set<BlockchainIdentity> requestors = eventContext.getTxSigners();
 		for (BlockchainIdentity r : requestors) {

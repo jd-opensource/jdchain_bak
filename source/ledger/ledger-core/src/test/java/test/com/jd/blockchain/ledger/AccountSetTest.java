@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.core.AccountSet;
@@ -26,7 +27,7 @@ public class AccountSetTest {
 
 		CryptoConfig cryptoConf = new CryptoConfig();
 		cryptoConf.setAutoVerifyHash(true);
-		cryptoConf.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConf.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		
 		String keyPrefix = "";
 		AccountSet accset = new AccountSet(cryptoConf,keyPrefix, storage, storage, accessPolicy);

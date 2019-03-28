@@ -22,8 +22,7 @@ public abstract class AbstractModule implements Module {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-
-	@Override
+	
 	public InputStream loadResourceAsStream(String name) {
 		return getModuleClassLoader().getResourceAsStream(name);
 	}

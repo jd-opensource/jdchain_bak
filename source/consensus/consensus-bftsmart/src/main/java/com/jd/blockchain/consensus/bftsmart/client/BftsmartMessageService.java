@@ -27,16 +27,16 @@ public class BftsmartMessageService implements MessageService {
         AsynchServiceProxy asynchServiceProxy = null;
         try {
             asynchServiceProxy = asyncPeerProxyPool.borrowObject();
-//            //0: Transaction msg, 1: Commitblock msg
-//            byte[] msgType = BytesUtils.toBytes(0);
-//            byte[] wrapMsg = new byte[message.length + 4];
-//            System.arraycopy(message, 0, wrapMsg, 4, message.length);
-//            System.arraycopy(msgType, 0, wrapMsg, 0, 4);
-//
-//            System.out.printf("BftsmartMessageService invokeOrdered time = %s, id = %s threadId = %s \r\n",
-//                    System.currentTimeMillis(),  asynchServiceProxy.getProcessId(), Thread.currentThread().getId());
+            //0: Transaction msg, 1: Commitblock msg
+            byte[] msgType = BytesUtils.toBytes(0);
+            byte[] wrapMsg = new byte[message.length + 4];
+            System.arraycopy(message, 0, wrapMsg, 4, message.length);
+            System.arraycopy(msgType, 0, wrapMsg, 0, 4);
 
-            byte[] result = asynchServiceProxy.invokeOrdered(message);
+            System.out.printf("BftsmartMessageService invokeOrdered time = %s, id = %s threadId = %s \r\n",
+                    System.currentTimeMillis(),  asynchServiceProxy.getProcessId(), Thread.currentThread().getId());
+
+            byte[] result = asynchServiceProxy.invokeOrdered(wrapMsg);
             asyncFuture.complete(result);
 
         } catch (Exception e) {

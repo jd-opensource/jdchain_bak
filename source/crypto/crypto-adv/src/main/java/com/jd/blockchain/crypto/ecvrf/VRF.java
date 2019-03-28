@@ -1,6 +1,7 @@
 package com.jd.blockchain.crypto.ecvrf;
 
 
+import com.jd.blockchain.crypto.CryptoException;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
@@ -27,7 +28,9 @@ public class VRF {
         }
 
         // unsupported OS
-        else throw new IllegalArgumentException("The VRF implementation is not supported in this Operation System!");
+        else {
+            throw new CryptoException("The VRF implementation is not supported in this Operation System!");
+        }
 
         path = Objects.requireNonNull(VRF.class.getClassLoader().getResource(lib)).getPath();
         return path;

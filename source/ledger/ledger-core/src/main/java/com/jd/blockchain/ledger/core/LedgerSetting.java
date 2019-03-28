@@ -1,8 +1,8 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.base.data.TypeCodes;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
+import com.jd.blockchain.consts.TypeCodes;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.ValueType;

@@ -3,7 +3,7 @@ package test.com.jd.blockchain.ledger.data;
 import java.util.Random;
 
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 

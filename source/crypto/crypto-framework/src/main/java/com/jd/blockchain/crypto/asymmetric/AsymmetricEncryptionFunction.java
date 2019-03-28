@@ -3,6 +3,8 @@ package com.jd.blockchain.crypto.asymmetric;
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoFunction;
 import com.jd.blockchain.crypto.CryptoKeyPairGenerator;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 
 public interface AsymmetricEncryptionFunction extends CryptoKeyPairGenerator, CryptoFunction {
 

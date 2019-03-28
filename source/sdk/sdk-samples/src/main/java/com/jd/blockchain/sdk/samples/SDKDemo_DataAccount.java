@@ -1,13 +1,15 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.impl.AsymmtricCryptographyImpl;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.data.CryptoKeyEncoding;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainTransactionService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -16,7 +18,7 @@ public class SDKDemo_DataAccount {
 
 	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
 
-	public static AsymmetricCryptography asymmetricCryptography = new AsymmtricCryptographyImpl();
+	public static AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
 	/**
 	 * 生成一个区块链用户，并注册到区块链；

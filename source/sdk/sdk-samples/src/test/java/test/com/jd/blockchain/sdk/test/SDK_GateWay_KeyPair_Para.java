@@ -1,7 +1,7 @@
 package test.com.jd.blockchain.sdk.test;
 
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 
 /**

@@ -21,6 +21,14 @@
 			<artifactId>crypto-framework</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-impl</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-common</artifactId>
@@ -31,6 +39,8 @@
 			<artifactId>utils-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		
 
 		<!-- <dependency> <groupId>net.i2p.crypto</groupId> <artifactId>eddsa</artifactId> 
 			<version>0.1.0</version> </dependency> -->

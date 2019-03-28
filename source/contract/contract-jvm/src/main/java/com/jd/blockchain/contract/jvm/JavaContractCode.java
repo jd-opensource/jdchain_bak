@@ -52,32 +52,31 @@ public class JavaContractCode implements ContractCode {
 	}
 
 	class ContractThread implements Runnable{
-		@Override
 		public void run(){
 			LOGGER.info("ContractThread execute().");
 			try {
-				//Perform pretreatment;
+				//执行预处理;
 				long startTime = System.currentTimeMillis();
 
 				String contractClassName = codeModule.getMainClass();
 				Class myClass = codeModule.loadClass(contractClassName);
-				Object contractMainClassObj = myClass.newInstance();
+				Object contractMainClassObj = myClass.newInstance();//合约主类生成的类实例;
 
 				Method beforeMth_ = myClass.getMethod("beforeEvent",codeModule.loadClass(ContractEventContext.class.getName()));
 				ReflectionUtils.invokeMethod(beforeMth_,contractMainClassObj,contractEventContext);
-				LOGGER.info("beforeEvent,spend time:"+(System.currentTimeMillis()-startTime));
+				LOGGER.info("beforeEvent,耗时:"+(System.currentTimeMillis()-startTime));
 
 				Method eventMethod = this.getMethodByAnno(contractMainClassObj,contractEventContext.getEvent());
 				startTime = System.currentTimeMillis();
 
 				ReflectionUtils.invokeMethod(eventMethod,contractMainClassObj,contractEventContext);
 
-				LOGGER.info("execute contract,spend time:"+(System.currentTimeMillis()-startTime));
+				LOGGER.info("合约执行,耗时:"+(System.currentTimeMillis()-startTime));
 
 				Method mth2 = myClass.getMethod("postEvent");
 				startTime = System.currentTimeMillis();
 				ReflectionUtils.invokeMethod(mth2,contractMainClassObj);
-				LOGGER.info("postEvent,spend time:"+(System.currentTimeMillis()-startTime));
+				LOGGER.info("postEvent,耗时:"+(System.currentTimeMillis()-startTime));
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -85,7 +84,7 @@ public class JavaContractCode implements ContractCode {
 			}
 		}
 
-		//get the relation between the methods and annotations
+		//得到当前类中相关方法和注解对应关系;
 		Method getMethodByAnno(Object classObj, String eventName){
 			Class<?> c = classObj.getClass();
 			Class <ContractEvent> contractEventClass = null;
@@ -100,9 +99,9 @@ public class JavaContractCode implements ContractCode {
 			for(int i = 0;i<classMethods.length;i++){
 				Annotation[] a = classMethods[i].getDeclaredAnnotations();
 				methodAnnoMap.put(classMethods[i], a);
-				//if contain @ContractEvent in the method,then put it to the map;
+				//如果当前方法中包含@ContractEvent注解，则将其放入Map;
 				for(Annotation annotation_ : a){
-					//if is the type of contractEvent,then put it to the map;
+					//如果是合同事件类型，则放入map;
 					if(classMethods[i].isAnnotationPresent(contractEventClass)){
 						Object obj = classMethods[i].getAnnotation(contractEventClass);
 						String annoAllName = obj.toString();

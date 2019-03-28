@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract.model;
 
 /**
- * The contract implements this interface to monitor the life cycle events of the contract application.
+ * 合约实现此接口可以监听合约应用的生命周期事件；
  * 
  * 
  * @author huanghaiquan

@@ -8,18 +8,19 @@
  */
 package test.com.jd.blockchain.ledger;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.core.impl.LedgerBlockData;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -37,17 +38,17 @@ public class LedgerBlockImplTest {
         DataContractRegistry.register(LedgerBlock.class);
         DataContractRegistry.register(LedgerDataSnapshot.class);
         long height = 9999L;
-        HashDigest ledgerHash = new HashDigest(CryptoAlgorithm.SHA256, "zhangsan".getBytes());
-        HashDigest previousHash = new HashDigest(CryptoAlgorithm.SHA256, "lisi".getBytes());
+        HashDigest ledgerHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhangsan".getBytes());
+        HashDigest previousHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "lisi".getBytes());
         data = new LedgerBlockData(height, ledgerHash, previousHash);
-        data.setHash(new HashDigest(CryptoAlgorithm.SHA256, "wangwu".getBytes()));
-        data.setTransactionSetHash(new HashDigest(CryptoAlgorithm.SHA256, "zhaoliu".getBytes()));
+        data.setHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "wangwu".getBytes()));
+        data.setTransactionSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhaoliu".getBytes()));
 
         // 设置LedgerDataSnapshot相关属性
-        data.setAdminAccountHash(new HashDigest(CryptoAlgorithm.SHA256, "jd1".getBytes()));
-        data.setDataAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "jd2".getBytes()));
-        data.setUserAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "jd3".getBytes()));
-        data.setContractAccountSetHash(new HashDigest(CryptoAlgorithm.SHA256, "jd4".getBytes()));
+        data.setAdminAccountHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jd1".getBytes()));
+        data.setDataAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jd2".getBytes()));
+        data.setUserAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jd3".getBytes()));
+        data.setContractAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jd4".getBytes()));
 
     }
 
@@ -88,10 +89,10 @@ public class LedgerBlockImplTest {
     public void testSerialize_LedgerDataSnapshot() throws Exception {
         TransactionStagedSnapshot transactionStagedSnapshot = new TransactionStagedSnapshot();
 
-        HashDigest admin = new HashDigest(CryptoAlgorithm.SHA256, "alice".getBytes());
-        HashDigest contract = new HashDigest(CryptoAlgorithm.SHA256, "bob".getBytes());
-        HashDigest data = new HashDigest(CryptoAlgorithm.SHA256, "jerry".getBytes());
-        HashDigest user = new HashDigest(CryptoAlgorithm.SHA256, "tom".getBytes());
+        HashDigest admin = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "alice".getBytes());
+        HashDigest contract = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "bob".getBytes());
+        HashDigest data = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jerry".getBytes());
+        HashDigest user = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "tom".getBytes());
 
         transactionStagedSnapshot.setAdminAccountHash(admin);
         transactionStagedSnapshot.setContractAccountSetHash(contract);

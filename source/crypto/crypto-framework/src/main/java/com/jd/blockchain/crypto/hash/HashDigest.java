@@ -2,9 +2,9 @@ package com.jd.blockchain.crypto.hash;
 
 import java.io.Serializable;
 
+import com.jd.blockchain.crypto.BaseCryptoBytes;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoDigest;
-import com.jd.blockchain.crypto.base.BaseCryptoBytes;
 
 public class HashDigest extends BaseCryptoBytes implements CryptoDigest,Serializable {
 
@@ -24,7 +24,7 @@ public class HashDigest extends BaseCryptoBytes implements CryptoDigest,Serializ
 	
 	@Override
 	protected boolean support(CryptoAlgorithm algorithm) {
-		return algorithm.isHash();
+		return CryptoAlgorithm.isHashAlgorithm(algorithm);
 	}
 
 	@Override

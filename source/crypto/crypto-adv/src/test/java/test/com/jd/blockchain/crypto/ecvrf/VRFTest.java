@@ -1,5 +1,6 @@
 package test.com.jd.blockchain.crypto.ecvrf;
 
+import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.ecvrf.VRF;
 import org.junit.Test;
 
@@ -66,7 +67,7 @@ public class VRFTest {
         }
         else {
             assertNotNull(actualEx);
-            Class<?> expectedException = IllegalArgumentException.class;
+            Class<?> expectedException = CryptoException.class;
             assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
         }
     }

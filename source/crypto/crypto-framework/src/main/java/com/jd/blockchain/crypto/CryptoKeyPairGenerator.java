@@ -9,6 +9,4 @@ public interface CryptoKeyPairGenerator {
      */
     CryptoKeyPair generateKeyPair();
 
-
-
 }

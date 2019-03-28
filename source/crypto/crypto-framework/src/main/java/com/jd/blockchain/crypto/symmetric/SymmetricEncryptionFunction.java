@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoFunction;
 import com.jd.blockchain.crypto.CryptoSymmetricKeyGenerator;
+import com.jd.blockchain.crypto.SymmetricKey;
 
 public interface SymmetricEncryptionFunction extends CryptoSymmetricKeyGenerator, CryptoFunction {
 
@@ -37,14 +38,15 @@ public interface SymmetricEncryptionFunction extends CryptoSymmetricKeyGenerator
 	byte[] decrypt(SymmetricKey key, Ciphertext ciphertext);
 	
 	/**
-	 * 解密密文的输入流，把明文写入输出流；
+	 * 解密密文的输入流，把明文写入输出流；<br>
+	 * 
+	 * 注：实现者不应在方法内部关闭参数指定的输入输出流；
 	 * 
 	 * @param key 密钥；
 	 * @param in 密文的输入流；
 	 * @param out 明文的输出流；
 	 */
 	void decrypt(SymmetricKey key, InputStream in, OutputStream out);
-
 
 	/**
 	 * 校验对称密钥格式是否满足要求；

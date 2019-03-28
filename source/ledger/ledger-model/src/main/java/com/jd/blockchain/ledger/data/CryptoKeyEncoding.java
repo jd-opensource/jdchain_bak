@@ -7,8 +7,8 @@ import java.io.OutputStream;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoKey;
-import com.jd.blockchain.crypto.asymmetric.PrivKey;
-import com.jd.blockchain.crypto.asymmetric.PubKey;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.MagicNumber;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.io.BytesEncoding;
@@ -34,7 +34,7 @@ public class CryptoKeyEncoding {
 			}
 
 			out.write(magicNum);
-			out.write(key.getAlgorithm().CODE);
+			out.write(key.getAlgorithm().code());
 
 			int size = 2;// 已经写入 2 字节；
 			size += BytesEncoding.write(key.getRawKeyBytes(), NumberMask.SHORT, out);
