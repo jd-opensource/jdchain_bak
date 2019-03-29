@@ -20,6 +20,10 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 	private static final int KEY_SIZE = 128 / 8;
 	private static final int BLOCK_SIZE = 128 / 8;
 
+	// SM4-CBC
+	private static final int PLAINTEXT_BUFFER_LENGTH = 256;
+	private static final int CIPHERTEXT_BUFFER_LENGTH = 256 + 32 + 2;
+
 	private static final int SYMMETRICKEY_LENGTH = ALGORYTHM_CODE_SIZE + KEY_TYPE_BYTES + KEY_SIZE;
 
 	SM4EncryptionFunction() {
@@ -49,12 +53,32 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 
 		// 读输入流得到明文，加密，密文数据写入输出流
 		try {
-			byte[] sm4Data = new byte[in.available()];
-			in.read(sm4Data);
-			in.close();
+			byte[] buffBytes = new byte[PLAINTEXT_BUFFER_LENGTH];
 
-			out.write(encrypt(key, sm4Data).toBytes());
-			out.close();
+			// The final byte of plaintextWithPadding represents the length of padding in the first 256 bytes,
+			// and the padded value in hexadecimal
+			byte[] plaintextWithPadding = new byte[buffBytes.length + 1];
+
+			byte padding;
+
+			int len;
+			int i;
+
+			while((len=in.read(buffBytes)) > 0) {
+				padding = (byte) (PLAINTEXT_BUFFER_LENGTH - len);
+				i = len;
+				while (i < plaintextWithPadding.length) {
+					plaintextWithPadding[i] = padding;
+					i++;
+				}
+				out.write(encrypt(key,plaintextWithPadding).toBytes());
+			}
+//			byte[] sm4Data = new byte[in.available()];
+//			in.read(sm4Data);
+//			in.close();
+//
+//			out.write(encrypt(key, sm4Data).toBytes());
+//			out.close();
 		} catch (IOException e) {
 			throw new CryptoException(e.getMessage(), e);
 		}
@@ -94,16 +118,51 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 	public void decrypt(SymmetricKey key, InputStream in, OutputStream out) {
 		// 读输入流得到密文数据，解密，明文写入输出流
 		try {
-			byte[] sm4Data = new byte[in.available()];
-			in.read(sm4Data);
-			in.close();
+			byte[] buffBytes = new byte[CIPHERTEXT_BUFFER_LENGTH];
+			byte[] plaintextWithPadding;
 
-			if (!supportCiphertext(sm4Data)) {
-				throw new CryptoException("InputStream is not valid SM4 ciphertext!");
+			byte padding;
+			byte[] plaintext;
+
+			int len,i;
+			while ((len = in.read(buffBytes)) > 0) {
+				if (len != CIPHERTEXT_BUFFER_LENGTH) {
+					throw new CryptoException("inputStream's length is wrong!");
+				}
+				if (!supportCiphertext(buffBytes)) {
+					throw new CryptoException("InputStream is not valid SM4 ciphertext!");
+				}
+
+				plaintextWithPadding = decrypt(key,resolveCiphertext(buffBytes));
+
+				if (plaintextWithPadding.length != (PLAINTEXT_BUFFER_LENGTH + 1)) {
+					throw new CryptoException("The decrypted plaintext is invalid");
+				}
+
+				padding = plaintextWithPadding[PLAINTEXT_BUFFER_LENGTH];
+				i = PLAINTEXT_BUFFER_LENGTH;
+
+				while ((PLAINTEXT_BUFFER_LENGTH - padding) < i) {
+
+					if (plaintextWithPadding[i] != padding) {
+						throw new CryptoException("The inputSteam padding is invalid!");
+					}
+					i--;
+				}
+				plaintext = new byte[PLAINTEXT_BUFFER_LENGTH - padding];
+				System.arraycopy(plaintextWithPadding,0,plaintext,0,plaintext.length);
+				out.write(plaintext);
 			}
-
-			out.write(decrypt(key, resolveCiphertext(sm4Data)));
-			out.close();
+//			byte[] sm4Data = new byte[in.available()];
+//			in.read(sm4Data);
+//			in.close();
+//
+//			if (!supportCiphertext(sm4Data)) {
+//				throw new CryptoException("InputStream is not valid SM4 ciphertext!");
+//			}
+//
+//			out.write(decrypt(key, resolveCiphertext(sm4Data)));
+//			out.close();
 		} catch (IOException e) {
 			throw new CryptoException(e.getMessage(), e);
 		}

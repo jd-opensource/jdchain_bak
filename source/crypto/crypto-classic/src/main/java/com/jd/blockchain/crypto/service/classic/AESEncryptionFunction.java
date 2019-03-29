@@ -21,6 +21,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 	private static final int KEY_SIZE = 128 / 8;
 	private static final int BLOCK_SIZE = 128 / 8;
 
+	// AES-ECB
 	private static final int PLAINTEXT_BUFFER_LENGTH = 256;
 	private static final int CIPHERTEXT_BUFFER_LENGTH = 256 + 16 + 2;
 
@@ -52,7 +53,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 	public void encrypt(SymmetricKey key, InputStream in, OutputStream out) {
 		// 读输入流得到明文，加密，密文数据写入输出流
 		try {
-			// TODO: 错误地使用 available 方法；
+
 
 			byte[] buffBytes = new byte[PLAINTEXT_BUFFER_LENGTH];
 
@@ -65,15 +66,16 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 			int len;
 			int i;
 
-			while((len=in.read(buffBytes)) > 0){
+			while((len=in.read(buffBytes)) > 0) {
 				padding = (byte) (PLAINTEXT_BUFFER_LENGTH - len);
 				i = len;
-				while (i < plaintextWithPadding.length){
+				while (i < plaintextWithPadding.length) {
 					plaintextWithPadding[i] = padding;
 					i++;
 				}
 				out.write(encrypt(key,plaintextWithPadding).toBytes());
 			}
+//			// TODO: 错误地使用 available 方法；
 //			int size = in.available();
 //			if (size < 1){
 //				throw new CryptoException("The input is null!");
@@ -127,14 +129,14 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 		// 读输入流得到密文数据，解密，明文写入输出流
 		try {
 			byte[] buffBytes = new byte[CIPHERTEXT_BUFFER_LENGTH];
-			byte[] plaintextWithPadding = new byte[PLAINTEXT_BUFFER_LENGTH + 1];
+			byte[] plaintextWithPadding;
 
 			byte padding;
 			byte[] plaintext;
 
 			int len,i;
-			while ((len = in.read(buffBytes)) > 0){
-				if (len != CIPHERTEXT_BUFFER_LENGTH){
+			while ((len = in.read(buffBytes)) > 0) {
+				if (len != CIPHERTEXT_BUFFER_LENGTH) {
 					throw new CryptoException("inputStream's length is wrong!");
 				}
 				if (!supportCiphertext(buffBytes)) {
@@ -143,17 +145,18 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 
 				plaintextWithPadding = decrypt(key,resolveCiphertext(buffBytes));
 
-				if (plaintextWithPadding.length != (PLAINTEXT_BUFFER_LENGTH +1)){
-					throw new CryptoException("The decrypted plaintext is valid");
+				if (plaintextWithPadding.length != (PLAINTEXT_BUFFER_LENGTH + 1)) {
+					throw new CryptoException("The decrypted plaintext is invalid");
 				}
-
 
 				padding = plaintextWithPadding[PLAINTEXT_BUFFER_LENGTH];
 				i = PLAINTEXT_BUFFER_LENGTH;
 
+				while ((PLAINTEXT_BUFFER_LENGTH - padding) < i) {
 
-				while ((PLAINTEXT_BUFFER_LENGTH - padding) < i){
-
+					if (plaintextWithPadding[i] != padding) {
+						throw new CryptoException("The inputSteam padding is invalid!");
+					}
 					i--;
 				}
 				plaintext = new byte[PLAINTEXT_BUFFER_LENGTH - padding];
