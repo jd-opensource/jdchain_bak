@@ -18,8 +18,8 @@ public class HashDigest extends BaseCryptoBytes implements CryptoDigest,Serializ
 		super();
 	}
 
-	public HashDigest(byte[] encodedDigestBytes) {
-		super(encodedDigestBytes);
+	public HashDigest(byte[] cryptoBytes) {
+		super(cryptoBytes);
 	}
 	
 	@Override

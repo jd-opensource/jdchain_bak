@@ -55,6 +55,6 @@ public abstract class BaseCryptoBytes extends Bytes implements CryptoBytes {
 
 	protected BytesSlice getRawCryptoBytes() {
 		// return resolveRawCryptoBytes(encodedBytes);
-		return new BytesSlice(getDirectBytes(), 1);
+		return new BytesSlice(getDirectBytes(), 2);
 	}
 }

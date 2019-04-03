@@ -30,7 +30,7 @@ public class SHA256HashFunction implements HashFunction {
 	public HashDigest hash(byte[] data) {
 
 		if (data == null) {
-			throw new CryptoException("The input is null!");
+			throw new CryptoException("data is null!");
 		}
 
 		byte[] digestBytes = ShaUtils.hash_256(data);
@@ -50,9 +50,11 @@ public class SHA256HashFunction implements HashFunction {
 	}
 
 	@Override
-	public HashDigest resolveHashDigest(byte[] hashDigestBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new HashDigest(hashDigestBytes);
+	public HashDigest resolveHashDigest(byte[] digestBytes) {
+		if (supportHashDigest(digestBytes)) {
+			return new HashDigest(digestBytes);
+		} else {
+			throw new CryptoException("digestBytes is invalid!");
+		}
 	}
-
 }

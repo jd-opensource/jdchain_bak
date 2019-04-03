@@ -14,7 +14,7 @@
 		<module>crypto-framework</module>
 		<module>crypto-classic</module>
 		<module>crypto-sm</module>
-		<module>crypto-jni-clib</module>
+		<!--	<module>crypto-jni-clib</module> -->
 		<module>crypto-adv</module>
 	</modules>
 

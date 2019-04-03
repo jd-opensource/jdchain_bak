@@ -1,15 +1,12 @@
-package test.com.jd.blockchain.crypto.smutils;
+package test.com.jd.blockchain.crypto.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import com.jd.blockchain.utils.security.AESUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.utils.sm.SM4Utils;
-
-import java.util.Random;
 
 public class SM4UtilsTest {
 

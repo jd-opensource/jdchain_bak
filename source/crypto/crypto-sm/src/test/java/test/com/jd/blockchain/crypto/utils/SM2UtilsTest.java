@@ -1,13 +1,9 @@
-package test.com.jd.blockchain.crypto.smutils;
+package test.com.jd.blockchain.crypto.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.jd.blockchain.utils.security.Ed25519Utils;
-import net.i2p.crypto.eddsa.EdDSAPrivateKey;
-import net.i2p.crypto.eddsa.EdDSAPublicKey;
-import net.i2p.crypto.eddsa.KeyPairGenerator;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -16,10 +12,6 @@ import org.bouncycastle.util.test.TestRandomBigInteger;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
-
-import java.security.KeyPair;
-import java.util.Arrays;
-import java.util.Random;
 
 public class SM2UtilsTest {
 

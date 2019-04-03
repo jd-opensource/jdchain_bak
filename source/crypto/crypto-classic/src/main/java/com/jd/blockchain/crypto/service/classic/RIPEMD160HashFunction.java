@@ -30,7 +30,7 @@ public class RIPEMD160HashFunction implements HashFunction {
 	public HashDigest hash(byte[] data) {
 
 		if (data == null) {
-			throw new CryptoException("The input is null!");
+			throw new CryptoException("data is null!");
 		}
 
 		byte[] digestBytes = RipeMD160Utils.hash(data);
@@ -51,7 +51,10 @@ public class RIPEMD160HashFunction implements HashFunction {
 
 	@Override
 	public HashDigest resolveHashDigest(byte[] digestBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new HashDigest(digestBytes);
+		if (supportHashDigest(digestBytes)) {
+			return new HashDigest(digestBytes);
+		} else {
+			throw new CryptoException("digestBytes is invalid!");
+		}
 	}
 }

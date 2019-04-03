@@ -4,7 +4,7 @@
 //
 //import java.util.Random;
 //
-//import com.jd.blockchain.crypto.smutils.hash.SM3Utils;
+//import com.jd.blockchain.crypto.utils.hash.SM3Utils;
 //import com.jd.blockchain.utils.io.BytesUtils;
 //import com.jd.blockchain.utils.security.RipeMD160Utils;
 //import com.jd.blockchain.utils.security.ShaUtils;
