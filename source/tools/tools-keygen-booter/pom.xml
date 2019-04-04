@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>tools</artifactId>
-		<version>0.8.2.RELEASE</version>
+		<version>0.8.3.RELEASE</version>
 	</parent>
 	<artifactId>tools-keygen-booter</artifactId>
 

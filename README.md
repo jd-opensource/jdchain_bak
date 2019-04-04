@@ -1,5 +1,9 @@
 [TOC]
-#JD区块链 0.8.3-SNAPSHOT
+#JD区块链
+
+
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+
 
 ------------------------------------------------------------------------
 ### 版本修订历史

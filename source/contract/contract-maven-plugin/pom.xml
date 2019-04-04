@@ -5,17 +5,17 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>contract</artifactId>
-		<version>0.8.2.RELEASE</version>
+		<version>0.8.3.RELEASE</version>
 	</parent>
 	<artifactId>contract-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
+
 	<properties>
 		<contract.version>${parent.version}</contract.version>
 		<utils.version>${parent.version}</utils.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 
-	<version>0.8.2.RELEASE</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
