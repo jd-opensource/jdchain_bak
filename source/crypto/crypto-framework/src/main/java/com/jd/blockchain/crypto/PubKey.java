@@ -11,7 +11,7 @@ public class PubKey extends BaseCryptoKey {
 	private static final long serialVersionUID = -2055071197736385328L;
 
 	public PubKey(CryptoAlgorithm algorithm, byte[] rawCryptoBytes) {
-		super(algorithm, rawCryptoBytes, CryptoKeyType.PUB_KEY);
+		super(algorithm, rawCryptoBytes, CryptoKeyType.PUBLIC);
 	}
 
 	public PubKey(byte[] cryptoBytes) {
@@ -20,6 +20,6 @@ public class PubKey extends BaseCryptoKey {
 	
 	@Override
 	public CryptoKeyType getKeyType() {
-		return CryptoKeyType.PUB_KEY;
+		return CryptoKeyType.PUBLIC;
 	}
 }

@@ -16,8 +16,8 @@
 //import java.io.OutputStream;
 //import java.util.Random;
 //
-//import static com.jd.blockchain.crypto.CryptoKeyType.PRIV_KEY;
-//import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC_KEY;
+//import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
+//import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC;
 //import static org.junit.Assert.*;
 //
 //public class SymmetricCryptographyImplTest {
@@ -147,7 +147,7 @@
 //            //验证SymmetricKey的getRawKeyBytes方法
 //            assertEquals(16, symmetricKey.getRawKeyBytes().length);
 //            //验证SymmetricKey的toBytes方法
-//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC_KEY.CODE},symmetricKey.getRawKeyBytes()), symmetricKey.toBytes());
+//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC.CODE},symmetricKey.getRawKeyBytes()), symmetricKey.toBytes());
 //
 //
 //            Ciphertext ciphertext = sef.encrypt(symmetricKey,data);
@@ -393,7 +393,7 @@
 //        byte[] key = new byte[16];
 //        randomKey.nextBytes(key);
 //
-//        byte[] symmetricKeyBytes = BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC_KEY.CODE},key);
+//        byte[] symmetricKeyBytes = BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC.CODE},key);
 //        verifyResolveSymmetricKey(symmetricCrypto,algorithm,symmetricKeyBytes,null);
 //
 //        byte[] truncatedSymmetricKeyBytes = new byte[symmetricKeyBytes.length-2];
@@ -406,7 +406,7 @@
 //
 //        byte[] symmetricKeyBytesWithWrongKeyType= symmetricKeyBytes;
 //        System.arraycopy(symmetricKeyBytes,0,symmetricKeyBytesWithWrongKeyType,0,symmetricKeyBytesWithWrongKeyType.length);
-//        symmetricKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        symmetricKeyBytesWithWrongKeyType[1] = PRIVATE.CODE;
 //        verifyResolveSymmetricKey(symmetricCrypto,algorithm,symmetricKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        symmetricKeyBytes = null;
@@ -415,7 +415,7 @@
 //
 //        //test SM4
 //        algorithm = CryptoAlgorithm.SM4;
-//        symmetricKeyBytes = BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC_KEY.CODE},key);
+//        symmetricKeyBytes = BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{SYMMETRIC.CODE},key);
 //
 //        verifyResolveSymmetricKey(symmetricCrypto,algorithm,symmetricKeyBytes,null);
 //
@@ -429,7 +429,7 @@
 //
 //        symmetricKeyBytesWithWrongKeyType= symmetricKeyBytes;
 //        System.arraycopy(symmetricKeyBytes,0,symmetricKeyBytesWithWrongKeyType,0,symmetricKeyBytesWithWrongKeyType.length);
-//        symmetricKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        symmetricKeyBytesWithWrongKeyType[1] = PRIVATE.CODE;
 //        verifyResolveSymmetricKey(symmetricCrypto,algorithm,symmetricKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        symmetricKeyBytes = null;

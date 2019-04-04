@@ -65,7 +65,7 @@ public class SDKDemo_User {
 
 		// 在本地产生要注册的账户的秘钥；
 		//BlockchainKeyGenerator generator = BlockchainKeyGenerator.getInstance();
-		//BlockchainKeyPair user = generator.generate(CryptoKeyType.PUB_KEY);
+		//BlockchainKeyPair user = generator.generate(CryptoKeyType.PUBLIC);
 
         SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
 		CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();

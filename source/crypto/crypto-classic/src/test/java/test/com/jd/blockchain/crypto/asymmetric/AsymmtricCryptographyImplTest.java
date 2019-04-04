@@ -1,7 +1,7 @@
 //package test.com.jd.blockchain.crypto.asymmetric;
 //
-//import static com.jd.blockchain.crypto.CryptoKeyType.PRIV_KEY;
-//import static com.jd.blockchain.crypto.CryptoKeyType.PUB_KEY;
+//import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
+//import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 //import static org.junit.Assert.assertArrayEquals;
 //import static org.junit.Assert.assertEquals;
 //import static org.junit.Assert.assertNotNull;
@@ -207,8 +207,8 @@
 //            assertEquals(expectedPubKeyLength,rawPubKeyBytes.length);
 //            assertEquals(expectedPrivKeyLength,rawPrivKeyBytes.length);
 //
-//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PUB_KEY.CODE},rawPubKeyBytes), pubKeyBytes);
-//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PRIV_KEY.CODE},rawPrivKeyBytes), privKeyBytes);
+//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PUBLIC.CODE},rawPubKeyBytes), pubKeyBytes);
+//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PRIVATE.CODE},rawPrivKeyBytes), privKeyBytes);
 //
 //            SignatureDigest signatureDigest = sf.sign(privKey,data);
 //            byte[] rawDigest = signatureDigest.getRawDigest();
@@ -414,8 +414,8 @@
 //            assertEquals(expectedPubKeyLength,rawPubKeyBytes.length);
 //            assertEquals(expectedPrivKeyLength,rawPrivKeyBytes.length);
 //
-//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PUB_KEY.CODE},rawPubKeyBytes), pubKeyBytes);
-//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PRIV_KEY.CODE},rawPrivKeyBytes), privKeyBytes);
+//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PUBLIC.CODE},rawPubKeyBytes), pubKeyBytes);
+//            assertArrayEquals(BytesUtils.concat(new byte[]{algorithm.CODE},new byte[]{CryptoKeyType.PRIVATE.CODE},rawPrivKeyBytes), privKeyBytes);
 //
 //            Ciphertext ciphertext = aef.encrypt(pubKey,data);
 //            byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
@@ -753,7 +753,7 @@
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        byte[] pubKeyBytesWithWrongKeyType= pubKeyBytes;
-//        pubKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        pubKeyBytesWithWrongKeyType[1] = PRIVATE.CODE;
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        pubKeyBytes = null;
@@ -777,7 +777,7 @@
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,65,pubKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        pubKeyBytesWithWrongKeyType= pubKeyBytes;
-//        pubKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        pubKeyBytesWithWrongKeyType[1] = PRIVATE.CODE;
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,65,pubKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        pubKeyBytes = null;
@@ -800,7 +800,7 @@
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        pubKeyBytesWithWrongKeyType= pubKeyBytes;
-//        pubKeyBytesWithWrongKeyType[1] = PRIV_KEY.CODE;
+//        pubKeyBytesWithWrongKeyType[1] = PRIVATE.CODE;
 //        verifyResolvePubKey(asymmetricCrypto,algorithm,32,pubKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        pubKeyBytes = null;
@@ -863,7 +863,7 @@
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        byte[] privKeyBytesWithWrongKeyType = privKeyBytes;
-//        privKeyBytesWithWrongKeyType[1] = PUB_KEY.CODE;
+//        privKeyBytesWithWrongKeyType[1] = PUBLIC.CODE;
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        privKeyBytes = null;
@@ -887,7 +887,7 @@
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        privKeyBytesWithWrongKeyType = privKeyBytes;
-//        privKeyBytesWithWrongKeyType[1] = PUB_KEY.CODE;
+//        privKeyBytesWithWrongKeyType[1] = PUBLIC.CODE;
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        privKeyBytes = null;
@@ -910,7 +910,7 @@
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongAlgCode,IllegalArgumentException.class);
 //
 //        privKeyBytesWithWrongKeyType = privKeyBytes;
-//        privKeyBytesWithWrongKeyType[1] = PUB_KEY.CODE;
+//        privKeyBytesWithWrongKeyType[1] = PUBLIC.CODE;
 //        verifyResolvePrivKey(asymmetricCrypto,algorithm,32,privKeyBytesWithWrongKeyType,IllegalArgumentException.class);
 //
 //        privKeyBytes = null;

@@ -1,6 +1,6 @@
 package com.jd.blockchain.crypto;
 
-import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC_KEY;
+import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC;
 
 /**
  * 单密钥；
@@ -13,7 +13,7 @@ public class SymmetricKey extends BaseCryptoKey {
 	private static final long serialVersionUID = 5055547663903904933L;
 
 	public SymmetricKey(CryptoAlgorithm algorithm, byte[] rawKeyBytes) {
-		super(algorithm, rawKeyBytes, SYMMETRIC_KEY);
+		super(algorithm, rawKeyBytes, SYMMETRIC);
 	}
 
 	public SymmetricKey(byte[] keyBytes) {
@@ -22,7 +22,7 @@ public class SymmetricKey extends BaseCryptoKey {
 
 	@Override
 	public CryptoKeyType getKeyType() {
-		return SYMMETRIC_KEY;
+		return SYMMETRIC;
 	}
 
 }

@@ -5,17 +5,17 @@ public enum CryptoKeyType {
 	/**
 	 * 非对称密钥的公钥
 	 */
-	PUB_KEY((byte)0x01),
+	PUBLIC((byte)0x01),
 
 	/**
 	 * 非对称密钥的私钥；
 	 */
-	PRIV_KEY((byte)0x02),
+	PRIVATE((byte)0x02),
 
 	/**
 	 * 对称密钥；
 	 */
-	SYMMETRIC_KEY((byte)0x03);
+	SYMMETRIC((byte)0x03);
 
 	public final byte CODE;
 

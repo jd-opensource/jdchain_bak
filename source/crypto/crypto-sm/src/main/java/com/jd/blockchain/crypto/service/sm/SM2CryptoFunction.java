@@ -2,8 +2,8 @@ package com.jd.blockchain.crypto.service.sm;
 
 import static com.jd.blockchain.crypto.BaseCryptoKey.KEY_TYPE_BYTES;
 import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
-import static com.jd.blockchain.crypto.CryptoKeyType.PRIV_KEY;
-import static com.jd.blockchain.crypto.CryptoKeyType.PUB_KEY;
+import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
+import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 
 import com.jd.blockchain.crypto.*;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -90,7 +90,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 	public boolean supportPrivKey(byte[] privKeyBytes) {
 		// 验证输入字节数组长度=算法标识长度+密钥类型长度+密钥长度，密钥数据的算法标识对应SM2算法，并且密钥类型是私钥
 		return privKeyBytes.length == PRIVKEY_LENGTH && CryptoAlgorithm.match(SM2, privKeyBytes)
-				&& privKeyBytes[ALGORYTHM_CODE_SIZE] == PRIV_KEY.CODE;
+				&& privKeyBytes[ALGORYTHM_CODE_SIZE] == PRIVATE.CODE;
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 	public boolean supportPubKey(byte[] pubKeyBytes) {
 		// 验证输入字节数组长度=算法标识长度+密钥类型长度+椭圆曲线点长度，密钥数据的算法标识对应SM2算法，并且密钥类型是公钥
 		return pubKeyBytes.length == PUBKEY_LENGTH && CryptoAlgorithm.match(SM2, pubKeyBytes)
-				&& pubKeyBytes[ALGORYTHM_CODE_SIZE] == PUB_KEY.CODE;
+				&& pubKeyBytes[ALGORYTHM_CODE_SIZE] == PUBLIC.CODE;
 	}
 
 	@Override

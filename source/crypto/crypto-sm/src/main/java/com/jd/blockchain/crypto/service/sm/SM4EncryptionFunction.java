@@ -2,7 +2,7 @@ package com.jd.blockchain.crypto.service.sm;
 
 import static com.jd.blockchain.crypto.BaseCryptoKey.KEY_TYPE_BYTES;
 import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
-import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC_KEY;
+import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -172,7 +172,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 	public boolean supportSymmetricKey(byte[] symmetricKeyBytes) {
 		// 验证输入字节数组长度=算法标识长度+密钥类型长度+密钥长度，字节数组的算法标识对应SM4算法且密钥密钥类型是对称密钥
 		return symmetricKeyBytes.length == SYMMETRICKEY_LENGTH && CryptoAlgorithm.match(SM4, symmetricKeyBytes)
-				&& symmetricKeyBytes[ALGORYTHM_CODE_SIZE] == SYMMETRIC_KEY.CODE;
+				&& symmetricKeyBytes[ALGORYTHM_CODE_SIZE] == SYMMETRIC.CODE;
 	}
 
 	@Override
