@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static com.jd.blockchain.crypto.CryptoAlgorithm.HASH_ALGORITHM;
 import static org.junit.Assert.*;
 
 /**
@@ -130,11 +131,10 @@ public class SM3HashFunctionTest {
 
         HashDigest resolvedDigest = hashFunction.resolveHashDigest(digestBytes);
 
-        assertArrayEquals(digest.toBytes(),resolvedDigest.toBytes());
-        assertArrayEquals(digest.getRawDigest(),resolvedDigest.getRawDigest());
-        assertEquals(digest.getAlgorithm().name(),resolvedDigest.getAlgorithm().name());
-        assertEquals(digest.getAlgorithm().code(),resolvedDigest.getAlgorithm().code());
-
+        assertEquals(256 / 8,resolvedDigest.getRawDigest().length);
+        assertEquals("SM3",resolvedDigest.getAlgorithm().name());
+        assertEquals((short) (HASH_ALGORITHM | ((byte) 3 & 0x00FF)),resolvedDigest.getAlgorithm().code());
+        assertArrayEquals(digestBytes,resolvedDigest.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("sm4");
         assertNotNull(algorithm);
@@ -151,21 +151,5 @@ public class SM3HashFunctionTest {
         }
         assertNotNull(actualEx);
         assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-//
-//        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-//        assertNotNull(algorithm);
-//        algoBytes = CryptoAlgorithm.toBytes(algorithm);
-//        rawDigestBytes = digest.getRawDigest();
-//        byte[] ripemd160DigestBytes = BytesUtils.concat(algoBytes,rawDigestBytes);
-//
-//        expectedException = CryptoException.class;
-//        actualEx = null;
-//        try {
-//            hashFunction.resolveHashDigest(ripemd160DigestBytes);
-//        } catch (Exception e) {
-//            actualEx = e;
-//        }
-//        assertNotNull(actualEx);
-//        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
     }
 }

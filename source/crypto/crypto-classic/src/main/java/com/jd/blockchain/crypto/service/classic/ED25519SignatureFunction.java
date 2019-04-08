@@ -83,14 +83,23 @@ public class ED25519SignatureFunction implements SignatureFunction {
 	}
 
 	@Override
-	public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
-
-		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+	public PubKey retrievePubKey(PrivKey privKey) {
+		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
 		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
 		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
 		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
-		return new PubKey(ED25519, rawPubKeyBytes).toBytes();
+		return new PubKey(ED25519, rawPubKeyBytes);
 	}
+//
+//	@Override
+//	public byte[] retrievePubKey(byte[] privKeyBytes) {
+//
+//		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+//		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
+//		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
+//		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
+//		return new PubKey(ED25519, rawPubKeyBytes).toBytes();
+//	}
 
 	@Override
 	public boolean supportPrivKey(byte[] privKeyBytes) {

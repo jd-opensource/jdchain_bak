@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 
+import static com.jd.blockchain.crypto.CryptoAlgorithm.ENCRYPTION_ALGORITHM;
+import static com.jd.blockchain.crypto.CryptoAlgorithm.SYMMETRIC_KEY;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC;
 import static org.junit.Assert.*;
@@ -58,7 +60,7 @@ public class AESEncryptionFunctionTest {
         assertEquals(128 / 8, symmetricKey.getRawKeyBytes().length);
 
         assertEquals(algorithm.name(),symmetricKey.getAlgorithm().name());
-        assertEquals(algorithm.toString(),symmetricKey.getAlgorithm().toString());
+        assertEquals(algorithm.code(),symmetricKey.getAlgorithm().code());
 
         assertEquals(2 + 1 + 128 / 8, symmetricKey.toBytes().length);
         byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
@@ -89,8 +91,8 @@ public class AESEncryptionFunctionTest {
         byte[] ciphertextBytes = ciphertext.toBytes();
         assertEquals(2 + 16 + 1024 , ciphertextBytes.length);
         CryptoAlgorithm ciphertextAlgo = ciphertext.getAlgorithm();
-        assertEquals(algorithm.name(),ciphertext.getAlgorithm().name());
-        assertEquals(algorithm.toString(),ciphertext.getAlgorithm().toString());
+        assertEquals("AES",ciphertextAlgo.name());
+        assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 26 & 0x00FF)),ciphertextAlgo.code());
 
         byte[] algoBytes = CryptoAlgorithm.toBytes(ciphertextAlgo);
         byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
@@ -150,6 +152,7 @@ public class AESEncryptionFunctionTest {
 
     @Test
     public void supportSymmetricKeyTest(){
+
         CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("aes");
         assertNotNull(algorithm);
 
@@ -173,6 +176,7 @@ public class AESEncryptionFunctionTest {
 
     @Test
     public void resolveSymmetricKeyTest(){
+
         CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("aes");
         assertNotNull(algorithm);
 
@@ -186,10 +190,9 @@ public class AESEncryptionFunctionTest {
 
         assertEquals(SYMMETRIC.CODE,resolvedKey.getKeyType().CODE);
         assertEquals(128 / 8, resolvedKey.getRawKeyBytes().length);
-
-        assertEquals(algorithm.name(),resolvedKey.getAlgorithm().name());
-        assertEquals(algorithm.toString(),resolvedKey.getAlgorithm().toString());
-
+        assertEquals("AES",resolvedKey.getAlgorithm().name());
+        assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 26 & 0x00FF)),resolvedKey.getAlgorithm().code());
+        assertArrayEquals(symmetricKeyBytes,resolvedKey.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
         assertNotNull(algorithm);
@@ -257,18 +260,29 @@ public class AESEncryptionFunctionTest {
         Ciphertext ciphertext = symmetricEncryptionFunction.encrypt(symmetricKey,data);
 
         byte[] ciphertextBytes = ciphertext.toBytes();
-        assertTrue(symmetricEncryptionFunction.supportCiphertext(ciphertextBytes));
+
+        Ciphertext resolvedCiphertext = symmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
+
+        assertEquals(1024 + 16 , resolvedCiphertext.getRawCiphertext().length);
+        assertEquals("AES",resolvedCiphertext.getAlgorithm().name());
+        assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 26 & 0x00FF)),resolvedCiphertext.getAlgorithm().code());
+        assertArrayEquals(ciphertextBytes,resolvedCiphertext.toBytes());
+
+        assertArrayEquals(ciphertext.toBytes(),resolvedCiphertext.toBytes());
+        assertArrayEquals(ciphertext.getRawCiphertext(),resolvedCiphertext.getRawCiphertext());
+        assertEquals(ciphertext.getAlgorithm().name(),resolvedCiphertext.getAlgorithm().name());
+        assertEquals(ciphertext.getAlgorithm().code(),resolvedCiphertext.getAlgorithm().code());
 
         algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
         assertNotNull(algorithm);
         byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawCiphertextBytes =  ciphertext.toBytes();
+        byte[] rawCiphertextBytes =  ciphertext.getRawCiphertext();
         byte[] ripemd160CiphertextBytes = BytesUtils.concat(algoBytes,rawCiphertextBytes);
 
         Class<?> expectedException = CryptoException.class;
         Exception actualEx = null;
         try {
-            symmetricEncryptionFunction.resolveSymmetricKey(ripemd160CiphertextBytes);
+            symmetricEncryptionFunction.resolveCiphertext(ripemd160CiphertextBytes);
         } catch (Exception e) {
             actualEx = e;
         }

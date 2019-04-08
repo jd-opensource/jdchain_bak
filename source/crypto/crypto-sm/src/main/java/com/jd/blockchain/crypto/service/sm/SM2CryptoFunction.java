@@ -79,12 +79,19 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 	}
 
 	@Override
-	public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
-
-		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+	public PubKey retrievePubKey(PrivKey privKey) {
+		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
 		byte[] rawPubKeyBytes = SM2Utils.retrievePublicKey(rawPrivKeyBytes);
-		return new PubKey(SM2, rawPubKeyBytes).toBytes();
+		return new PubKey(SM2, rawPubKeyBytes);
 	}
+
+//	@Override
+//	public byte[] retrievePubKey(byte[] privKeyBytes) {
+//
+//		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
+//		byte[] rawPubKeyBytes = SM2Utils.retrievePublicKey(rawPrivKeyBytes);
+//		return new PubKey(SM2, rawPubKeyBytes).toBytes();
+//	}
 
 	@Override
 	public boolean supportPrivKey(byte[] privKeyBytes) {

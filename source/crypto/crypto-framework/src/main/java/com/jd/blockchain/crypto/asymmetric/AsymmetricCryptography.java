@@ -69,7 +69,7 @@
 //	 * @param privKeyBytes 包含算法标识、密钥掩码和私钥的字节数组
 //	 * @return 包含算法标识、密钥掩码和公钥的字节数组
 //	 */
-//	byte[] retrievePubKeyBytes(byte[] privKeyBytes);
+//	byte[] retrievePubKey(byte[] privKeyBytes);
 //
 //	byte[] tryRetrievePubKeyBytes(byte[] privKeyBytes);
 //

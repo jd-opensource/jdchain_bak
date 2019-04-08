@@ -21,8 +21,8 @@ public class ECDSASignatureFunction implements SignatureFunction {
 	}
 
 	@Override
-	public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
-		return new byte[0];
+	public PubKey retrievePubKey(PrivKey privKey) {
+		return null;
 	}
 
 	@Override

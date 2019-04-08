@@ -26,12 +26,12 @@ public interface AsymmetricEncryptionFunction extends CryptoKeyPairGenerator, Cr
 	byte[] decrypt(PrivKey privKey, Ciphertext ciphertext);
 
 	/**
-	 * 使用字节数组形式的私钥生成字节数组形式的公钥；
+	 * 使用私钥恢复公钥；
 	 *
-	 * @param privKeyBytes 包含算法标识、密钥掩码和私钥的字节数组
-	 * @return 包含算法标识、密钥掩码和公钥的字节数组
+	 * @param privKey PrivKey形式的私钥信息
+	 * @return PubKey形式的公钥信息
 	 */
-	byte[] retrievePubKeyBytes(byte[] privKeyBytes);
+	PubKey retrievePubKey(PrivKey privKey);
 
 	/**
 	 * 校验私钥格式是否满足要求；

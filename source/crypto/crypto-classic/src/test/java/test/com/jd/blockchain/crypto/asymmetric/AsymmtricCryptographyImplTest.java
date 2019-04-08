@@ -698,7 +698,7 @@
 //        byte[] expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
 //        byte[] expectedPubKeyBytes = keyPair.getPubKey().toBytes();
 //
-//        byte[] pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+//        byte[] pubKeyBytes = asymmetricCrypto.retrievePubKey(expectedPrivKeyBytes);
 //
 //        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
 //
@@ -711,7 +711,7 @@
 //        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
 //        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
 //
-//        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+//        pubKeyBytes = asymmetricCrypto.retrievePubKey(expectedPrivKeyBytes);
 //
 //        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
 //
@@ -724,7 +724,7 @@
 //        expectedPrivKeyBytes = keyPair.getPrivKey().toBytes();
 //        expectedPubKeyBytes = keyPair.getPubKey().toBytes();
 //
-//        pubKeyBytes = asymmetricCrypto.retrievePubKeyBytes(expectedPrivKeyBytes);
+//        pubKeyBytes = asymmetricCrypto.retrievePubKey(expectedPrivKeyBytes);
 //
 //        assertArrayEquals(expectedPubKeyBytes,pubKeyBytes);
 //

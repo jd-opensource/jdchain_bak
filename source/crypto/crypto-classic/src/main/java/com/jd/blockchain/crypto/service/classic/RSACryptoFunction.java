@@ -24,6 +24,11 @@ public class RSACryptoFunction implements AsymmetricEncryptionFunction, Signatur
     }
 
     @Override
+    public PubKey retrievePubKey(PrivKey privKey) {
+        return null;
+    }
+
+    @Override
     public SignatureDigest sign(PrivKey privKey, byte[] data) {
         return null;
     }
@@ -31,11 +36,6 @@ public class RSACryptoFunction implements AsymmetricEncryptionFunction, Signatur
     @Override
     public boolean verify(SignatureDigest digest, PubKey pubKey, byte[] data) {
         return false;
-    }
-
-    @Override
-    public byte[] retrievePubKeyBytes(byte[] privKeyBytes) {
-        return new byte[0];
     }
 
     @Override

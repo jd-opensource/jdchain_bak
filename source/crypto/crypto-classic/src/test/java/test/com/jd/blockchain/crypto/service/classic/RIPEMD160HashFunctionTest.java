@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static com.jd.blockchain.crypto.CryptoAlgorithm.HASH_ALGORITHM;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -132,11 +133,10 @@ public class RIPEMD160HashFunctionTest {
 
         HashDigest resolvedDigest = hashFunction.resolveHashDigest(digestBytes);
 
-        assertArrayEquals(digest.toBytes(),resolvedDigest.toBytes());
-        assertArrayEquals(digest.getRawDigest(),resolvedDigest.getRawDigest());
-        assertEquals(digest.getAlgorithm().name(),resolvedDigest.getAlgorithm().name());
-        assertEquals(digest.getAlgorithm().code(),resolvedDigest.getAlgorithm().code());
-
+        assertEquals(160 / 8,resolvedDigest.getRawDigest().length);
+        assertEquals("RIPEMD160",resolvedDigest.getAlgorithm().name());
+        assertEquals((short) (HASH_ALGORITHM | ((byte) 25 & 0x00FF)),resolvedDigest.getAlgorithm().code());
+        assertArrayEquals(digestBytes,resolvedDigest.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("aes");
         assertNotNull(algorithm);
