@@ -89,8 +89,8 @@ public class AESEncryptionFunctionTest {
         byte[] ciphertextBytes = ciphertext.toBytes();
         assertEquals(2 + 16 + 1024 , ciphertextBytes.length);
         CryptoAlgorithm ciphertextAlgo = ciphertext.getAlgorithm();
-        assertEquals(algorithm.name(),symmetricKey.getAlgorithm().name());
-        assertEquals(algorithm.toString(),symmetricKey.getAlgorithm().toString());
+        assertEquals(algorithm.name(),ciphertext.getAlgorithm().name());
+        assertEquals(algorithm.toString(),ciphertext.getAlgorithm().toString());
 
         byte[] algoBytes = CryptoAlgorithm.toBytes(ciphertextAlgo);
         byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();

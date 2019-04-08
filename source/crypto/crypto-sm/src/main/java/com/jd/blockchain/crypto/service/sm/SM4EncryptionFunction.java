@@ -177,8 +177,11 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 
 	@Override
 	public SymmetricKey resolveSymmetricKey(byte[] symmetricKeyBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new SymmetricKey(symmetricKeyBytes);
+		if (supportSymmetricKey(symmetricKeyBytes)) {
+			return new SymmetricKey(symmetricKeyBytes);
+		} else {
+			throw new CryptoException("symmetricKeyBytes is invalid!");
+		}
 	}
 
 	@Override
@@ -190,8 +193,11 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 
 	@Override
 	public SymmetricCiphertext resolveCiphertext(byte[] ciphertextBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new SymmetricCiphertext(ciphertextBytes);
+		if (supportCiphertext(ciphertextBytes)) {
+			return new SymmetricCiphertext(ciphertextBytes);
+		} else {
+			throw new CryptoException("ciphertextBytes is invalid!");
+		}
 	}
 
 	@Override

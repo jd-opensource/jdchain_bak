@@ -101,8 +101,11 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 	@Override
 	public PrivKey resolvePrivKey(byte[] privKeyBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new PrivKey(privKeyBytes);
+		if (supportPrivKey(privKeyBytes)) {
+			return new PrivKey(privKeyBytes);
+		} else {
+			throw new CryptoException("privKeyBytes is invalid!");
+		}
 	}
 
 	@Override
@@ -115,8 +118,11 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 	@Override
 	public PubKey resolvePubKey(byte[] pubKeyBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new PubKey(pubKeyBytes);
+		if (supportPubKey(pubKeyBytes)) {
+			return new PubKey(pubKeyBytes);
+		} else {
+			throw new CryptoException("pubKeyBytes is invalid!");
+		}
 	}
 
 	@Override
@@ -127,8 +133,11 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 	@Override
 	public SignatureDigest resolveDigest(byte[] digestBytes) {
-		// 由框架调用 support 方法检查有效性，在此不做重复检查；
-		return new SignatureDigest(digestBytes);
+		if (supportDigest(digestBytes)) {
+			return new SignatureDigest(digestBytes);
+		} else {
+			throw new CryptoException("digestBytes is invalid!");
+		}
 	}
 
 	@Override
