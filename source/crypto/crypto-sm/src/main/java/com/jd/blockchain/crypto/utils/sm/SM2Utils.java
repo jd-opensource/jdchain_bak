@@ -12,10 +12,7 @@ import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.crypto.signers.SM2Signer;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECMultiplier;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.math.ec.FixedPointCombMultiplier;
+import org.bouncycastle.math.ec.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -35,12 +32,13 @@ public class SM2Utils {
     private static final BigInteger SM2_A = new BigInteger("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16);
     private static final BigInteger SM2_B = new BigInteger("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93", 16);
     private static final BigInteger SM2_N = new BigInteger("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123", 16);
+    private static final BigInteger SM2_H = ECConstants.ONE;
     private static final BigInteger SM2_GX = new BigInteger("32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7", 16);
     private static final BigInteger SM2_GY = new BigInteger("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16);
 
     // To get the curve from the equation y^2=x^3+ax+b according the coefficient a and b,
-    // with the big prime p, and obtain the generator g and the domain's parameters
-    private static final ECCurve CURVE = new ECCurve.Fp(SM2_P, SM2_A, SM2_B);
+    // with the big prime p, the order n, the cofactor h, and obtain the generator g and the domain's parameters
+    private static final ECCurve CURVE = new ECCurve.Fp(SM2_P, SM2_A, SM2_B, SM2_N, SM2_H);
     private static final ECPoint G = CURVE.createPoint(SM2_GX, SM2_GY);
     private static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, G, SM2_N);
 
