@@ -5,8 +5,6 @@ import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 
-import java.security.KeyPair;
-
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.PrivKey;
@@ -14,14 +12,11 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.utils.security.Ed25519Utils;
+import com.jd.blockchain.crypto.utils.classic.ED25519Utils;
 
-import net.i2p.crypto.eddsa.EdDSAPrivateKey;
-import net.i2p.crypto.eddsa.EdDSAPublicKey;
-import net.i2p.crypto.eddsa.KeyPairGenerator;
-import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
-import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
-import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 public class ED25519SignatureFunction implements SignatureFunction {
 
@@ -54,7 +49,9 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 调用ED25519签名算法计算签名结果
-		return new SignatureDigest(ED25519, Ed25519Utils.sign_512(data, rawPrivKeyBytes));
+//		return new SignatureDigest(ED25519, Ed25519Utils.sign_512(data, rawPrivKeyBytes));
+		return new SignatureDigest(ED25519, ED25519Utils.sign(data, rawPrivKeyBytes));
+
 	}
 
 	@Override
@@ -79,15 +76,17 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 调用ED25519验签算法验证签名结果
-		return Ed25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
+//		return Ed25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
+		return ED25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
 	}
 
 	@Override
 	public PubKey retrievePubKey(PrivKey privKey) {
 		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
-		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
-		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
-		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
+		byte[] rawPubKeyBytes = ED25519Utils.retrievePublicKey(rawPrivKeyBytes);
+//		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
+//		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
+//		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
 		return new PubKey(ED25519, rawPubKeyBytes);
 	}
 //
@@ -157,11 +156,18 @@ public class ED25519SignatureFunction implements SignatureFunction {
 	@Override
 	public CryptoKeyPair generateKeyPair() {
 		// 调用ED25519算法的密钥生成算法生成公私钥对priKey和pubKey，返回密钥对
-		KeyPairGenerator keyPairGenerator = new KeyPairGenerator();
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		EdDSAPrivateKey privKey = (EdDSAPrivateKey) keyPair.getPrivate();
-		EdDSAPublicKey pubKey = (EdDSAPublicKey) keyPair.getPublic();
-		return new CryptoKeyPair(new PubKey(ED25519, pubKey.getAbyte()), new PrivKey(ED25519, privKey.getSeed()));
+		AsymmetricCipherKeyPair keyPair = ED25519Utils.generateKeyPair();
+		Ed25519PrivateKeyParameters privKeyParams = (Ed25519PrivateKeyParameters) keyPair.getPrivate();
+		Ed25519PublicKeyParameters pubKeyParams = (Ed25519PublicKeyParameters) keyPair.getPublic();
+
+		byte[] privKeyBytes = privKeyParams.getEncoded();
+		byte[] pubKeyBytes = pubKeyParams.getEncoded();
+//		KeyPairGenerator keyPairGenerator = new KeyPairGenerator();
+//		KeyPair keyPair = keyPairGenerator.generateKeyPair();
+//		EdDSAPrivateKey privKey = (EdDSAPrivateKey) keyPair.getPrivate();
+//		EdDSAPublicKey pubKey = (EdDSAPublicKey) keyPair.getPublic();
+//		return new CryptoKeyPair(new PubKey(ED25519, pubKey.getAbyte()), new PrivKey(ED25519, privKey.getSeed()));
+		return new CryptoKeyPair(new PubKey(ED25519, pubKeyBytes), new PrivKey(ED25519, privKeyBytes));
 
 	}
 }

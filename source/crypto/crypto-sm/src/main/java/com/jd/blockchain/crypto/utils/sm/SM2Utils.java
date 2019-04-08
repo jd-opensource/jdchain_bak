@@ -68,8 +68,13 @@ public class SM2Utils {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static byte[] retrievePublicKey(byte[] privateKey)
-    {
+    /**
+     * public retrieval
+     *
+     * @param privateKey private key
+     * @return publicKey
+     */
+    public static byte[] retrievePublicKey(byte[] privateKey) {
         ECMultiplier createBasePointMultiplier = new FixedPointCombMultiplier();
         ECPoint publicKeyPoint = createBasePointMultiplier.multiply(DOMAIN_PARAMS.getG(), new BigInteger(1,privateKey)).normalize();
         return publicKeyPoint.getEncoded(false);
@@ -103,12 +108,12 @@ public class SM2Utils {
         return sign(data,param);
     }
 
-    public static byte[] sign(byte[] data, CipherParameters param){
+    public static byte[] sign(byte[] data, CipherParameters params){
 
         SM2Signer signer = new SM2Signer();
 
         // To get Z_A and prepare parameters
-        signer.init(true,param);
+        signer.init(true,params);
         // To fill the whole message to be signed
         signer.update(data,0,data.length);
         // To get and return the signature result;
@@ -137,6 +142,7 @@ public class SM2Utils {
      *
      * @param data data to be signed
      * @param publicKey public key
+     * @param signature signature to be verified
      * @return true or false
      */
     public static boolean verify(byte[] data, byte[] publicKey, byte[] signature){
