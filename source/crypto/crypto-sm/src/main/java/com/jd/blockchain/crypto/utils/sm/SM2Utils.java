@@ -43,15 +43,14 @@ public class SM2Utils {
     private static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, G, SM2_N);
 
 
-    //-----------------Key Pair Generation Algorithm-----------------
+    //-----------------Key Generation Algorithm-----------------
 
     /**
-     * key generation
+     * key pair generation
      *
      * @return key pair
      */
     public static AsymmetricCipherKeyPair generateKeyPair(){
-
         SecureRandom random = new SecureRandom();
         return generateKeyPair(random);
     }
@@ -67,7 +66,7 @@ public class SM2Utils {
     }
 
     /**
-     * public retrieval
+     * public key retrieval
      *
      * @param privateKey private key
      * @return publicKey
@@ -81,7 +80,6 @@ public class SM2Utils {
 
     //-----------------Digital Signature Algorithm-----------------
 
-
     /**
      * signature generation
      *
@@ -93,17 +91,17 @@ public class SM2Utils {
 
         SecureRandom random = new SecureRandom();
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(new BigInteger(1,privateKey), DOMAIN_PARAMS);
-        CipherParameters param = new ParametersWithRandom(privKey,random);
+        CipherParameters params = new ParametersWithRandom(privKey,random);
 
-        return sign(data,param);
+        return sign(data,params);
     }
 
     public static byte[] sign(byte[] data, byte[] privateKey, SecureRandom random, String ID){
 
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(new BigInteger(1,privateKey), DOMAIN_PARAMS);
-        CipherParameters param = new ParametersWithID(new ParametersWithRandom(privKey,random),ID.getBytes());
+        CipherParameters params = new ParametersWithID(new ParametersWithRandom(privKey,random),ID.getBytes());
 
-        return sign(data,param);
+        return sign(data,params);
     }
 
     public static byte[] sign(byte[] data, CipherParameters params){
@@ -155,18 +153,18 @@ public class SM2Utils {
 
         ECPoint pubKeyPoint = resolvePubKeyBytes(publicKey);
         ECPublicKeyParameters pubKey = new ECPublicKeyParameters(pubKeyPoint, DOMAIN_PARAMS);
-        ParametersWithID param = new ParametersWithID(pubKey,ID.getBytes());
+        ParametersWithID params = new ParametersWithID(pubKey,ID.getBytes());
 
-        return verify(data,param,signature);
+        return verify(data,params,signature);
     }
 
-    public static boolean verify(byte[] data, CipherParameters param, byte[] signature){
+    public static boolean verify(byte[] data, CipherParameters params, byte[] signature){
 
 
         SM2Signer verifier = new SM2Signer();
 
         // To get Z_A and prepare parameters
-        verifier.init(false,param);
+        verifier.init(false,params);
         // To fill the whole message
         verifier.update(data,0,data.length);
         // To verify the signature
@@ -211,25 +209,25 @@ public class SM2Utils {
 
         ECPoint pubKeyPoint = resolvePubKeyBytes(publicKey);
         ECPublicKeyParameters pubKey = new ECPublicKeyParameters(pubKeyPoint, DOMAIN_PARAMS);
-        ParametersWithRandom param = new ParametersWithRandom(pubKey,random);
+        ParametersWithRandom params = new ParametersWithRandom(pubKey,random);
 
-        return encrypt(plainBytes,param);
+        return encrypt(plainBytes,params);
     }
 
     public static byte[] encrypt(byte[] plainBytes, ECPublicKeyParameters pubKey){
 
         SecureRandom random = new SecureRandom();
-        ParametersWithRandom param = new ParametersWithRandom(pubKey,random);
+        ParametersWithRandom params = new ParametersWithRandom(pubKey,random);
 
-        return encrypt(plainBytes,param);
+        return encrypt(plainBytes,params);
     }
 
-    public static byte[] encrypt(byte[] plainBytes, CipherParameters param){
+    public static byte[] encrypt(byte[] plainBytes, CipherParameters params){
 
         SM2Engine encryptor = new SM2Engine();
 
         // To prepare parameters
-        encryptor.init(true,param);
+        encryptor.init(true,params);
 
         // To generate the twisted ciphertext c1c2c3.
         // The latest standard specification indicates that the correct ordering is c1c3c2
@@ -263,12 +261,12 @@ public class SM2Utils {
         return decrypt(cipherBytes,privKey);
     }
 
-    public static byte[] decrypt(byte[] cipherBytes, CipherParameters param){
+    public static byte[] decrypt(byte[] cipherBytes, CipherParameters params){
 
         SM2Engine decryptor = new SM2Engine();
 
         // To prepare parameters
-        decryptor.init(false,param);
+        decryptor.init(false,params);
 
         // To get c1c2c3 from ciphertext whose ordering is c1c3c2
         byte[] c1c2c3 = new byte[cipherBytes.length];

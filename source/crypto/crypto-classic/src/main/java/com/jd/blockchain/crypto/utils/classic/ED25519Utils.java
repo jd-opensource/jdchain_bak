@@ -18,10 +18,10 @@ import java.security.SecureRandom;
  */
 public class ED25519Utils {
 
-    //-----------------Key Pair Generation Algorithm-----------------
+    //-----------------Key Generation Algorithm-----------------
 
     /**
-     * key generation
+     * key pair generation
      *
      * @return key pair
      */
@@ -37,7 +37,7 @@ public class ED25519Utils {
     }
 
     /**
-     * public retrieval
+     * public key retrieval
      *
      * @param privateKey private key
      * @return publicKey
