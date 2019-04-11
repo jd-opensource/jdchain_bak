@@ -36,6 +36,7 @@
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
+		<module>stp</module>
 	</modules>
 
 	<properties>
