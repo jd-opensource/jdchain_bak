@@ -32,6 +32,7 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
+		<module>state-transfer</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
