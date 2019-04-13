@@ -13,7 +13,7 @@ import com.jd.blockchain.crypto.utils.sm.SM4Utils;
 
 public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 
-	private static final CryptoAlgorithm SM4 = SMCryptoService.SM4_ALGORITHM;
+	private static final CryptoAlgorithm SM4 = SMAlgorithm.SM4;
 
 	private static final int KEY_SIZE = 128 / 8;
 	private static final int BLOCK_SIZE = 128 / 8;
@@ -38,7 +38,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密钥数据的算法标识对应SM4算法
-		if (key.getAlgorithm().code() != SM4.code()) {
+		if (key.getAlgorithm() != SM4.code()) {
 			throw new CryptoException("The is not SM4 symmetric key!");
 		}
 
@@ -53,7 +53,8 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 		try {
 			byte[] buffBytes = new byte[PLAINTEXT_BUFFER_LENGTH];
 
-			// The final byte of plaintextWithPadding represents the length of padding in the first 256 bytes,
+			// The final byte of plaintextWithPadding represents the length of padding in
+			// the first 256 bytes,
 			// and the padded value in hexadecimal
 			byte[] plaintextWithPadding = new byte[buffBytes.length + 1];
 
@@ -62,21 +63,21 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 			int len;
 			int i;
 
-			while((len=in.read(buffBytes)) > 0) {
+			while ((len = in.read(buffBytes)) > 0) {
 				padding = (byte) (PLAINTEXT_BUFFER_LENGTH - len);
 				i = len;
 				while (i < plaintextWithPadding.length) {
 					plaintextWithPadding[i] = padding;
 					i++;
 				}
-				out.write(encrypt(key,plaintextWithPadding).toBytes());
+				out.write(encrypt(key, plaintextWithPadding).toBytes());
 			}
-//			byte[] sm4Data = new byte[in.available()];
-//			in.read(sm4Data);
-//			in.close();
-//
-//			out.write(encrypt(key, sm4Data).toBytes());
-//			out.close();
+			// byte[] sm4Data = new byte[in.available()];
+			// in.read(sm4Data);
+			// in.close();
+			//
+			// out.write(encrypt(key, sm4Data).toBytes());
+			// out.close();
 		} catch (IOException e) {
 			throw new CryptoException(e.getMessage(), e);
 		}
@@ -94,7 +95,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密钥数据的算法标识对应SM4算法
-		if (key.getAlgorithm().code() != SM4.code()) {
+		if (key.getAlgorithm() != SM4.code()) {
 			throw new CryptoException("The is not SM4 symmetric key!");
 		}
 
@@ -104,7 +105,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密文数据算法标识对应SM4算法
-		if (ciphertext.getAlgorithm().code() != SM4.code()) {
+		if (ciphertext.getAlgorithm() != SM4.code()) {
 			throw new CryptoException("This is not SM4 ciphertext!");
 		}
 
@@ -122,7 +123,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 			byte padding;
 			byte[] plaintext;
 
-			int len,i;
+			int len, i;
 			while ((len = in.read(buffBytes)) > 0) {
 				if (len != CIPHERTEXT_BUFFER_LENGTH) {
 					throw new CryptoException("inputStream's length is wrong!");
@@ -131,7 +132,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 					throw new CryptoException("InputStream is not valid SM4 ciphertext!");
 				}
 
-				plaintextWithPadding = decrypt(key,resolveCiphertext(buffBytes));
+				plaintextWithPadding = decrypt(key, resolveCiphertext(buffBytes));
 
 				if (plaintextWithPadding.length != (PLAINTEXT_BUFFER_LENGTH + 1)) {
 					throw new CryptoException("The decrypted plaintext is invalid");
@@ -148,19 +149,19 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 					i--;
 				}
 				plaintext = new byte[PLAINTEXT_BUFFER_LENGTH - padding];
-				System.arraycopy(plaintextWithPadding,0,plaintext,0,plaintext.length);
+				System.arraycopy(plaintextWithPadding, 0, plaintext, 0, plaintext.length);
 				out.write(plaintext);
 			}
-//			byte[] sm4Data = new byte[in.available()];
-//			in.read(sm4Data);
-//			in.close();
-//
-//			if (!supportCiphertext(sm4Data)) {
-//				throw new CryptoException("InputStream is not valid SM4 ciphertext!");
-//			}
-//
-//			out.write(decrypt(key, resolveCiphertext(sm4Data)));
-//			out.close();
+			// byte[] sm4Data = new byte[in.available()];
+			// in.read(sm4Data);
+			// in.close();
+			//
+			// if (!supportCiphertext(sm4Data)) {
+			// throw new CryptoException("InputStream is not valid SM4 ciphertext!");
+			// }
+			//
+			// out.write(decrypt(key, resolveCiphertext(sm4Data)));
+			// out.close();
 		} catch (IOException e) {
 			throw new CryptoException(e.getMessage(), e);
 		}

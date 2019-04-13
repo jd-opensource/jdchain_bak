@@ -12,6 +12,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.MagicNumber;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.io.BytesEncoding;
+import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.NumberMask;
 import com.jd.blockchain.utils.io.RuntimeIOException;
 
@@ -34,9 +35,9 @@ public class CryptoKeyEncoding {
 			}
 
 			out.write(magicNum);
-			out.write(key.getAlgorithm().code());
+			BytesUtils.writeShort(key.getAlgorithm(), out);
 
-			int size = 2;// 已经写入 2 字节；
+			int size = 3;// 已经写入 3 字节；
 			size += BytesEncoding.write(key.getRawKeyBytes(), NumberMask.SHORT, out);
 			return size;
 		} catch (IOException e) {
@@ -55,8 +56,7 @@ public class CryptoKeyEncoding {
 			if (magicNum != MagicNumber.PUB_KEY && magicNum != MagicNumber.PRIV_KEY) {
 				throw new IllegalArgumentException("The CryptoKey MagicNumber read from the InputStream is Illegal!");
 			}
-			byte code = (byte) in.read();
-			CryptoAlgorithm algorithm = CryptoAlgorithm.valueOf(code);
+			short algorithm = CryptoAlgorithm.resolveCode(in);
 			ByteArray value = BytesEncoding.readAsByteArray(NumberMask.SHORT, in);
 
 			if (magicNum == MagicNumber.PUB_KEY) {
@@ -80,8 +80,7 @@ public class CryptoKeyEncoding {
 			if (magicNum != MagicNumber.PUB_KEY) {
 				throw new IllegalArgumentException("The PubKey MagicNumber read from the InputStream is Illegal!");
 			}
-			byte code = (byte) in.read();
-			CryptoAlgorithm algorithm = CryptoAlgorithm.valueOf(code);
+			short algorithm = CryptoAlgorithm.resolveCode(in);
 			ByteArray value = BytesEncoding.readAsByteArray(NumberMask.SHORT, in);
 			return new PubKey(algorithm, value.bytes());
 		} catch (IOException e) {
@@ -100,8 +99,7 @@ public class CryptoKeyEncoding {
 			if (magicNum != MagicNumber.PRIV_KEY) {
 				throw new IllegalArgumentException("The PrivKey MagicNumber read from the InputStream is Illegal!");
 			}
-			byte code = (byte) in.read();
-			CryptoAlgorithm algorithm = CryptoAlgorithm.valueOf(code);
+			short algorithm = CryptoAlgorithm.resolveCode(in);
 			ByteArray value = BytesEncoding.readAsByteArray(NumberMask.SHORT, in);
 			return new PrivKey(algorithm, value.bytes());
 		} catch (IOException e) {

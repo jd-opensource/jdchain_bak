@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.security.ShaUtils;
 
 public class SHA256HashFunction implements HashFunction {
 
-	private static final CryptoAlgorithm SHA256 = ClassicCryptoService.SHA256_ALGORITHM;
+	private static final CryptoAlgorithm SHA256 = ClassicAlgorithm.SHA256;
 
 	private static final int DIGEST_BYTES = 256 / 8;
 

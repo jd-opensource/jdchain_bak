@@ -11,7 +11,7 @@ public class SymmetricCiphertext extends BaseCryptoBytes implements Ciphertext {
 	}
 
 	@Override
-	protected boolean support(CryptoAlgorithm algorithm) {
+	protected boolean support(short algorithm) {
 		return CryptoAlgorithm.isEncryptionAlgorithm(algorithm) && CryptoAlgorithm.hasSymmetricKey(algorithm);
 	}
 	

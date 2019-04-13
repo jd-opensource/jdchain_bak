@@ -8,7 +8,7 @@ import com.jd.blockchain.crypto.RandomGenerator;
 
 public class JVMSecureRandomFunction implements RandomFunction {
 
-	private static final CryptoAlgorithm JVM_SECURE_RANDOM = ClassicCryptoService.JVM_SECURE_RANDOM_ALGORITHM;
+	private static final CryptoAlgorithm JVM_SECURE_RANDOM = ClassicAlgorithm.JVM_SECURE_RANDOM;
 
 
 	JVMSecureRandomFunction() {

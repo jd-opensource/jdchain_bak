@@ -14,7 +14,7 @@ public class SignatureDigest extends BaseCryptoBytes implements CryptoDigest {
 	}
 
 	@Override
-	protected boolean support(CryptoAlgorithm algorithm) {
+	protected boolean support(short algorithm) {
 		return CryptoAlgorithm.isSignatureAlgorithm(algorithm);
 	}
 

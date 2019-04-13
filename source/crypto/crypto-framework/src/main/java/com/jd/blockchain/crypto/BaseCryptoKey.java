@@ -13,6 +13,10 @@ public abstract class BaseCryptoKey extends BaseCryptoBytes implements CryptoKey
 //	public BaseCryptoKey() {
 //		super();
 //	}
+	
+	protected BaseCryptoKey(short algorithm, byte[] rawKeyBytes, CryptoKeyType keyType) {
+		super(algorithm, encodeKeyBytes(rawKeyBytes, keyType));
+	}
 
 	protected BaseCryptoKey(CryptoAlgorithm algorithm, byte[] rawKeyBytes, CryptoKeyType keyType) {
 		super(algorithm, encodeKeyBytes(rawKeyBytes, keyType));
@@ -35,7 +39,7 @@ public abstract class BaseCryptoKey extends BaseCryptoBytes implements CryptoKey
 	}
 
 	@Override
-	protected boolean support(CryptoAlgorithm algorithm) {
+	protected boolean support(short algorithm) {
 		return CryptoAlgorithm.hasAsymmetricKey(algorithm) || CryptoAlgorithm.hasSymmetricKey(algorithm);
 	}
 

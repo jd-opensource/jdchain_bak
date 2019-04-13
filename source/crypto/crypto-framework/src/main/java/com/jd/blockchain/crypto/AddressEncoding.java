@@ -55,7 +55,7 @@ public class AddressEncoding {
 	public static Bytes generateAddress(PubKey pubKey) {
 		byte[] h1Bytes = ShaUtils.hash_256(pubKey.getRawKeyBytes());
 		byte[] h2Bytes = RipeMD160Utils.hash(h1Bytes);
-		byte[] xBytes = BytesUtils.concat(new byte[] { AddressVersion.V1.CODE}, CryptoAlgorithm.toBytes(pubKey.getAlgorithm()), h2Bytes);
+		byte[] xBytes = BytesUtils.concat(new byte[] { AddressVersion.V1.CODE}, BytesUtils.toBytes(pubKey.getAlgorithm()), h2Bytes);
 		byte[] checksum = Arrays.copyOf(ShaUtils.hash_256(ShaUtils.hash_256(xBytes)), 4);
 		byte[] addressBytes = BytesUtils.concat(xBytes, checksum);
 

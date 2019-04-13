@@ -11,7 +11,7 @@ import com.jd.blockchain.crypto.utils.sm.SM3Utils;
 
 public class SM3HashFunction implements HashFunction {
 
-	private static final CryptoAlgorithm SM3 = SMCryptoService.SM3_ALGORITHM;
+	private static final CryptoAlgorithm SM3 = SMAlgorithm.SM3;
 
 	private static final int DIGEST_BYTES = 256 / 8;
 

@@ -1,5 +1,8 @@
 package com.jd.blockchain.crypto;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
@@ -90,6 +93,14 @@ public interface CryptoAlgorithm {
 		return BytesUtils.toShort(algorithmBytes, offset);
 	}
 
+	static short resolveCode(InputStream in) {
+		return BytesUtils.readShort(in);
+	}
+
+	static int writeCode(short code, OutputStream out) {
+		return BytesUtils.writeShort(code, out);
+	}
+
 	static boolean match(CryptoAlgorithm algorithm, byte[] algorithmBytes) {
 		return algorithm.code() == BytesUtils.toShort(algorithmBytes, 0);
 	}
@@ -117,12 +128,39 @@ public interface CryptoAlgorithm {
 	}
 
 	/**
+	 * 是否属于摘要算法；
+	 * 
+	 * @return
+	 */
+	static boolean isHashAlgorithm(short algorithm) {
+		return HASH_ALGORITHM == (algorithm & HASH_ALGORITHM);
+	}
+
+	/**
+	 * 是否属于签名算法；
+	 * 
+	 * @return
+	 */
+	static boolean isSignatureAlgorithm(short algorithm) {
+		return SIGNATURE_ALGORITHM == (algorithm & SIGNATURE_ALGORITHM);
+	}
+
+	/**
 	 * 是否属于签名算法；
 	 * 
 	 * @return
 	 */
 	static boolean isSignatureAlgorithm(CryptoAlgorithm algorithm) {
 		return SIGNATURE_ALGORITHM == (algorithm.code() & SIGNATURE_ALGORITHM);
+	}
+
+	/**
+	 * 是否属于加密算法；
+	 * 
+	 * @return
+	 */
+	static boolean isEncryptionAlgorithm(short algorithm) {
+		return ENCRYPTION_ALGORITHM == (algorithm & ENCRYPTION_ALGORITHM);
 	}
 
 	/**
@@ -148,8 +186,26 @@ public interface CryptoAlgorithm {
 	 * 
 	 * @return
 	 */
+	static boolean hasAsymmetricKey(short algorithm) {
+		return ASYMMETRIC_KEY == (algorithm & ASYMMETRIC_KEY);
+	}
+
+	/**
+	 * 算法是否包含非对称密钥；
+	 * 
+	 * @return
+	 */
 	static boolean hasAsymmetricKey(CryptoAlgorithm algorithm) {
 		return ASYMMETRIC_KEY == (algorithm.code() & ASYMMETRIC_KEY);
+	}
+
+	/**
+	 * 算法是否包含对称密钥；
+	 * 
+	 * @return
+	 */
+	static boolean hasSymmetricKey(short algorithm) {
+		return SYMMETRIC_KEY == (algorithm & SYMMETRIC_KEY);
 	}
 
 	/**
@@ -169,6 +225,16 @@ public interface CryptoAlgorithm {
 	 */
 	static boolean isSymmetricEncryptionAlgorithm(CryptoAlgorithm algorithm) {
 		return isEncryptionAlgorithm(algorithm) && hasSymmetricKey(algorithm);
+	}
+
+	/**
+	 * 是否属于非对称加密算法；
+	 * 
+	 * @param algorithm
+	 * @return
+	 */
+	static boolean isAsymmetricEncryptionAlgorithm(short algorithm) {
+		return isEncryptionAlgorithm(algorithm) && hasAsymmetricKey(algorithm);
 	}
 
 	/**

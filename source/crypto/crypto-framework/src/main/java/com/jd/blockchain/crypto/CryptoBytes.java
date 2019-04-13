@@ -20,7 +20,7 @@ public interface CryptoBytes extends BytesSerializable {
 	 * 
 	 * @return
 	 */
-	CryptoAlgorithm getAlgorithm();
+	short getAlgorithm();
 
 	/**
 	 * 返回编码后的摘要信息；<br>

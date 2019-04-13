@@ -28,8 +28,10 @@ public class BytesUtils {
 	 * 
 	 * 此方法不处理两者其中之一为 null 的情形，因为无法定义相等性，所以将引发 {@link NullPointerException} 异常；
 	 * 
-	 * @param bytes1 bytes1
-	 * @param bytes2 bytes2
+	 * @param bytes1
+	 *            bytes1
+	 * @param bytes2
+	 *            bytes2
 	 * @return boolean
 	 */
 	public static boolean equals(byte[] bytes1, byte[] bytes2) {
@@ -59,9 +61,11 @@ public class BytesUtils {
 	}
 
 	/**
-	 * 将输入流的所有内容都读入到字节数组返回；
-	 * 如果输入流的长度超出 MAX_BUFFER_SIZE 定义的值，则抛出 IllegalArgumentException ;
-	 * @param in in
+	 * 将输入流的所有内容都读入到字节数组返回； 如果输入流的长度超出 MAX_BUFFER_SIZE 定义的值，则抛出
+	 * IllegalArgumentException ;
+	 * 
+	 * @param in
+	 *            in
 	 * @return byte[]
 	 */
 	public static byte[] copyToBytes(InputStream in) {
@@ -98,7 +102,8 @@ public class BytesUtils {
 	 * @param maxSize
 	 *            最大字节大小；
 	 * @return 返回实际复制的字节数；
-	 * @throws IOException exception
+	 * @throws IOException
+	 *             exception
 	 */
 	public static int copy(InputStream in, OutputStream out, int maxSize) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
@@ -121,7 +126,8 @@ public class BytesUtils {
 	/**
 	 * 将 int 值转为4字节的二进制数组；
 	 * 
-	 * @param value value
+	 * @param value
+	 *            value
 	 * @return 转换后的二进制数组，高位在前，低位在后；
 	 */
 	public static byte[] toBytes(int value) {
@@ -139,7 +145,8 @@ public class BytesUtils {
 	/**
 	 * 将 long 值转为8字节的二进制数组；
 	 * 
-	 * @param value value
+	 * @param value
+	 *            value
 	 * @return 转换后的二进制数组，高位在前，低位在后；
 	 */
 	public static byte[] toBytes(long value) {
@@ -206,7 +213,6 @@ public class BytesUtils {
 		return 4;
 	}
 
-
 	/**
 	 * 将 int 值转为4字节的二进制数组；
 	 * <p>
@@ -218,19 +224,19 @@ public class BytesUtils {
 	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
 	 * @param offset
 	 *            写入转换结果的起始位置；
-	 * @param len 写入长度；必须大于 0 ，小于等于 4；
+	 * @param len
+	 *            写入长度；必须大于 0 ，小于等于 4；
 	 * @return 返回写入的长度；
 	 */
 	public static int toBytesInReverse(int value, byte[] bytes, int offset, int len) {
 		int i = 0;
 		int l = len > 4 ? 4 : len;
 		for (; i < l; i++) {
-			bytes[offset + i] = (byte) ((value >>> (8*i)) & 0x00FF);
+			bytes[offset + i] = (byte) ((value >>> (8 * i)) & 0x00FF);
 		}
-		
+
 		return i;
 	}
-
 
 	// public static int toBytes(int value, OutputStream out) {
 	// try {
@@ -487,26 +493,59 @@ public class BytesUtils {
 	}
 
 	/**
+	 * 从指定的输入流中读入2个字节，由前到后按由高位到低位的方式转为 short 整数；
+	 * 
+	 * @param in
+	 *            in
+	 * @return short
+	 */
+	public static short readShort(InputStream in) {
+		try {
+			int v = in.read();
+			if (v < 0) {
+				throw new IllegalDataException("No enough data to read as short from the specified input stream!");
+			}
+			int value = (v & 0xFF) << 8;
+
+			v = in.read();
+			if (v < 0) {
+				throw new IllegalDataException("No enough data to read as short from the specified input stream!");
+			}
+			value = value | (v & 0xFF);
+			return (short) value;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e.getMessage(), e);
+		}
+	}
+
+	public static int writeShort(short value, OutputStream out) {
+		try {
+			out.write((value >>> 8) & 0x00FF);
+			out.write(value & 0x00FF);
+			return 2;
+		} catch (IOException e) {
+			throw new RuntimeIOException(e.getMessage(), e);
+		}
+	}
+
+	/**
 	 * 从指定的输入流中读入4个字节，由前到后按由高位到低位的方式转为 int 整数；
-	 * @param in in
+	 * 
+	 * @param in
+	 *            in
 	 * @return int
 	 */
 	public static int readInt(InputStream in) {
-//		try {
-//			byte[] buf = new byte[4];
-//			if (in.read(buf) < 4) {
-//				throw new IllegalDataException("No enough data to read as integer from the specified input stream!");
-		// specified input stream!");
-//			}
-//			return toInt(buf);
-//		} catch (IOException e) {
-//			throw new RuntimeIOException(e.getMessage(), e);
-//		}
-		
 		try {
 			int value = 0;
+			int v;
 			for (int i = 0; i < 4; i++) {
-				value = value | ((in.read() & 0xFF) << (8 * (3 - i)));
+				v = in.read();
+				if (v < 0) {
+					throw new IllegalDataException(
+							"No enough data to read as integer from the specified input stream!");
+				}
+				value = value | ((v & 0xFF) << (8 * (3 - i)));
 			}
 			return value;
 		} catch (IOException e) {
@@ -515,13 +554,6 @@ public class BytesUtils {
 	}
 
 	public static int writeInt(int value, OutputStream out) {
-		// byte[] bytes = toBytes(value);
-		// try {
-		// out.write(bytes);
-		// } catch (IOException e) {
-		// throw new RuntimeIOException(e.getMessage(), e);
-		// }
-
 		try {
 			out.write((value >>> 24) & 0x00FF);
 			out.write((value >>> 16) & 0x00FF);
@@ -534,17 +566,6 @@ public class BytesUtils {
 	}
 
 	public static long readLong(InputStream in) {
-		// try {
-		// byte[] buf = new byte[8];
-		// if (in.read(buf) < 8) {
-		// throw new IllegalDataException(
-		// "No enough data to read as long integer from the specified input stream!");
-		// }
-		// return toLong(buf);
-		// } catch (IOException e) {
-		// throw new RuntimeIOException(e.getMessage(), e);
-		// }
-
 		try {
 			long value = 0;
 			int v;
@@ -565,13 +586,6 @@ public class BytesUtils {
 	}
 
 	public static int writeLong(long value, OutputStream out) {
-		// byte[] bytes = toBytes(value);
-		// try {
-		// out.write(bytes);
-		// } catch (IOException e) {
-		// throw new RuntimeIOException(e.getMessage(), e);
-		// }
-
 		try {
 			out.write((int) ((value >>> 56) & 0x00FF));
 			out.write((int) ((value >>> 48) & 0x00FF));
@@ -644,25 +658,29 @@ public class BytesUtils {
 	/**
 	 * 从字节数组获取对象
 	 * 
-	 * @param objBytes objBytes
+	 * @param objBytes
+	 *            objBytes
 	 * @return object
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
-//	public static Object getObjectFromBytes(byte[] objBytes) throws Exception {
-//		if (objBytes == null || objBytes.length == 0) {
-//			return null;
-//		}
-//		ByteArrayInputStream bi = new ByteArrayInputStream(objBytes);
-//		ObjectInputStream oi = new ObjectInputStream(bi);
-//		return oi.readObject();
-//	}
+	// public static Object getObjectFromBytes(byte[] objBytes) throws Exception {
+	// if (objBytes == null || objBytes.length == 0) {
+	// return null;
+	// }
+	// ByteArrayInputStream bi = new ByteArrayInputStream(objBytes);
+	// ObjectInputStream oi = new ObjectInputStream(bi);
+	// return oi.readObject();
+	// }
 
 	/**
 	 * 从对象获取一个字节数组;
 	 * 
-	 * @param obj obj
+	 * @param obj
+	 *            obj
 	 * @return byte array
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	public static byte[] getBytesFromObject(Object obj) throws Exception {
 		if (obj == null) {

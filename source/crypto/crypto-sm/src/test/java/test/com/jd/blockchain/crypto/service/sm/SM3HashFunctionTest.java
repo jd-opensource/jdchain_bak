@@ -5,6 +5,7 @@ import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.crypto.service.sm.SMAlgorithm;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.junit.Test;
 
@@ -60,8 +61,7 @@ public class SM3HashFunctionTest {
         assertEquals(256 / 8 + 2,digestBytes.length);
         assertArrayEquals(digestBytes, BytesUtils.concat(algoBytes, rawDigestBytes));
 
-        assertEquals(algorithm.code(),digest.getAlgorithm().code());
-        assertEquals(algorithm.name(),digest.getAlgorithm().name());
+        assertEquals(algorithm.code(),digest.getAlgorithm());
 
         Class<?> expectedException = CryptoException.class;
         Exception actualEx = null;
@@ -132,8 +132,8 @@ public class SM3HashFunctionTest {
         HashDigest resolvedDigest = hashFunction.resolveHashDigest(digestBytes);
 
         assertEquals(256 / 8,resolvedDigest.getRawDigest().length);
-        assertEquals("SM3",resolvedDigest.getAlgorithm().name());
-        assertEquals((short) (HASH_ALGORITHM | ((byte) 3 & 0x00FF)),resolvedDigest.getAlgorithm().code());
+        assertEquals(SMAlgorithm.SM3,resolvedDigest.getAlgorithm());
+        assertEquals((short) (HASH_ALGORITHM | ((byte) 3 & 0x00FF)),resolvedDigest.getAlgorithm());
         assertArrayEquals(digestBytes,resolvedDigest.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("sm4");

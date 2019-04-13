@@ -673,7 +673,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 				return false;
 			}
 
-			return validateAndRecordDecision(targetDecision, resultHandle, privKey.getAlgorithm());
+			return validateAndRecordDecision(targetDecision, resultHandle);
 		} catch (Exception e) {
 			prompter.error(e, "Error occurred on synchronizing decision from participant[%s] to participant[%s] ! --%s",
 					currentId, targetId, e.getMessage());
@@ -693,7 +693,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	 * @return
 	 */
 	private synchronized boolean validateAndRecordDecision(LedgerInitDecision targetDecision,
-			DecisionResultHandle resultHandle, CryptoAlgorithm hashAlgorithm) {
+			DecisionResultHandle resultHandle) {
 		if ((!localDecision.getLedgerHash().equals(targetDecision.getLedgerHash()))
 				&& resultHandle.getResult() == null) {
 			// 如果结果已经被
@@ -730,9 +730,8 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			// 当前参与者尚未准备就绪,返回 null；
 			return null;
 		}
-		PubKey pubKey = ledgerInitSetting.getConsensusParticipants()[remoteId].getPubKey();
 		DecisionResultHandle resultHandle = this.decisions[remoteId];
-		if (!validateAndRecordDecision(initDecision, resultHandle, pubKey.getAlgorithm())) {
+		if (!validateAndRecordDecision(initDecision, resultHandle)) {
 			// 签名无效；
 			throw new LedgerInitException(
 					String.format("Reject decision because of invalid signature! --[Id=%s]", remoteId));

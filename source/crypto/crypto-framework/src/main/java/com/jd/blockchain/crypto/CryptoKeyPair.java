@@ -6,7 +6,7 @@ public class CryptoKeyPair {
 
 	private PrivKey privKey;
 
-	public CryptoAlgorithm getAlgorithm() {
+	public short getAlgorithm() {
 		return pubKey.getAlgorithm();
 	}
 
@@ -19,7 +19,7 @@ public class CryptoKeyPair {
 	}
 
 	public CryptoKeyPair(PubKey pubKey, PrivKey privKey) {
-		if (!CryptoAlgorithm.equals(pubKey.getAlgorithm(), privKey.getAlgorithm())) {
+		if (pubKey.getAlgorithm() != privKey.getAlgorithm()) {
 			throw new IllegalArgumentException("The algorithms of PubKey and PrivKey don't match!");
 		}
 		this.pubKey = pubKey;

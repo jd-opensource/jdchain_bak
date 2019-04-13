@@ -20,7 +20,7 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 public class ED25519SignatureFunction implements SignatureFunction {
 
-	private static final CryptoAlgorithm ED25519 = ClassicCryptoService.ED25519_ALGORITHM;
+	private static final CryptoAlgorithm ED25519 = ClassicAlgorithm.ED25519;
 
 	private static final int PUBKEY_SIZE = 32;
 	private static final int PRIVKEY_SIZE = 32;
@@ -44,7 +44,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 验证密钥数据的算法标识对应ED25519签名算法
-		if (privKey.getAlgorithm().code() != ED25519.code()) {
+		if (privKey.getAlgorithm() != ED25519.code()) {
 			throw new CryptoException("This key is not ED25519 private key!");
 		}
 
@@ -66,12 +66,12 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 验证密钥数据的算法标识对应ED25519签名算法
-		if (pubKey.getAlgorithm().code() != ED25519.code()) {
+		if (pubKey.getAlgorithm() != ED25519.code()) {
 			throw new CryptoException("This key is not ED25519 public key!");
 		}
 
 		// 验证密文数据的算法标识对应ED25519签名算法，并且原始摘要长度为64字节
-		if (digest.getAlgorithm().code() != ED25519.code() || rawDigestBytes.length != SIGNATUREDIGEST_SIZE) {
+		if (digest.getAlgorithm() != ED25519.code() || rawDigestBytes.length != SIGNATUREDIGEST_SIZE) {
 			throw new CryptoException("This is not ED25519 signature digest!");
 		}
 

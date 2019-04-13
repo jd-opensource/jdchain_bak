@@ -66,14 +66,14 @@ public class NodeSigningAppender implements TransactionService {
 		// 生成网关签名；
 		byte[] endpointRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
 
-		CryptoAlgorithm signAlgorithm = nodeKeyPair.getAlgorithm();
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(nodeKeyPair.getAlgorithm());
+		short signAlgorithm = nodeKeyPair.getAlgorithm();
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(signAlgorithm);
 		SignatureDigest signDigest = signFunc.sign(nodeKeyPair.getPrivKey(), endpointRequestBytes);
 		txMessage.addNodeSignatures(new DigitalSignatureBlob(nodeKeyPair.getPubKey(), signDigest));
 
 		// 计算交易哈希；
 		byte[] nodeRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(nodeKeyPair.getAlgorithm());
+		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(signAlgorithm);
 		HashDigest txHash = hashFunc.hash(nodeRequestBytes);
 		txMessage.setHash(txHash);
 

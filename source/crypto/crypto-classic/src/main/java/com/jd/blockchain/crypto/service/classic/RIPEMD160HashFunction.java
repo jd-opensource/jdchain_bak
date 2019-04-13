@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.security.RipeMD160Utils;
 
 public class RIPEMD160HashFunction implements HashFunction {
 
-	private static final CryptoAlgorithm RIPEMD160 = ClassicCryptoService.RIPEMD160_ALGORITHM;
+	private static final CryptoAlgorithm RIPEMD160 = ClassicAlgorithm.RIPEMD160;
 
 	private static final int DIGEST_BYTES = 160 / 8;
 

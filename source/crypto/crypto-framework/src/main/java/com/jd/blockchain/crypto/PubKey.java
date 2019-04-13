@@ -9,6 +9,10 @@ package com.jd.blockchain.crypto;
 public class PubKey extends BaseCryptoKey {
 
 	private static final long serialVersionUID = -2055071197736385328L;
+	
+	public PubKey(short algorithm, byte[] rawCryptoBytes) {
+		super(algorithm, rawCryptoBytes, CryptoKeyType.PUBLIC);
+	}
 
 	public PubKey(CryptoAlgorithm algorithm, byte[] rawCryptoBytes) {
 		super(algorithm, rawCryptoBytes, CryptoKeyType.PUBLIC);

@@ -1,16 +1,30 @@
 package test.com.jd.blockchain.crypto.service.classic;
 
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.utils.io.BytesUtils;
-import org.junit.Test;
-
-import java.util.Random;
-
 import static com.jd.blockchain.crypto.CryptoAlgorithm.ASYMMETRIC_KEY;
 import static com.jd.blockchain.crypto.CryptoAlgorithm.SIGNATURE_ALGORITHM;
 import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
+
+import org.junit.Test;
+
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoException;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
  * @author zhanglin33
@@ -60,10 +74,8 @@ public class ED25519SignatureFunctionTest {
         assertEquals(PRIVATE.CODE,privKey.getKeyType().CODE);
         assertEquals(32, privKey.getRawKeyBytes().length);
 
-        assertEquals(algorithm.name(),pubKey.getAlgorithm().name());
-        assertEquals(algorithm.code(),pubKey.getAlgorithm().code());
-        assertEquals(algorithm.name(),privKey.getAlgorithm().name());
-        assertEquals(algorithm.code(),privKey.getAlgorithm().code());
+        assertEquals(algorithm.code(),pubKey.getAlgorithm());
+        assertEquals(algorithm.code(),privKey.getAlgorithm());
 
         assertEquals(2 + 1 + 32, pubKey.toBytes().length);
         assertEquals(2 + 1 + 32, privKey.toBytes().length);
@@ -94,8 +106,7 @@ public class ED25519SignatureFunctionTest {
 
         assertEquals(pubKey.getKeyType(),retrievedPubKey.getKeyType());
         assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
-        assertEquals(pubKey.getAlgorithm().name(),retrievedPubKey.getAlgorithm().name());
-        assertEquals(pubKey.getAlgorithm().code(),retrievedPubKey.getAlgorithm().code());
+        assertEquals(pubKey.getAlgorithm(),retrievedPubKey.getAlgorithm());
         assertArrayEquals(pubKey.toBytes(),retrievedPubKey.toBytes());
     }
 
@@ -119,12 +130,11 @@ public class ED25519SignatureFunctionTest {
         byte[] signatureBytes = signatureDigest.toBytes();
 
         assertEquals(2 + 64, signatureBytes.length);
-        CryptoAlgorithm signatureAlgo = signatureDigest.getAlgorithm();
-        assertEquals("ED25519",signatureAlgo.name());
+        assertEquals(ClassicAlgorithm.ED25519.code(),signatureDigest.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                signatureAlgo.code());
+        		signatureDigest.getAlgorithm());
 
-        byte[] algoBytes = CryptoAlgorithm.toBytes(signatureAlgo);
+        byte[] algoBytes = BytesUtils.toBytes(signatureDigest.getAlgorithm());
         byte[] rawSinatureBytes = signatureDigest.getRawDigest();
         assertArrayEquals(BytesUtils.concat(algoBytes,rawSinatureBytes),signatureBytes);
     }
@@ -192,9 +202,9 @@ public class ED25519SignatureFunctionTest {
 
         assertEquals(PRIVATE.CODE,resolvedPrivKey.getKeyType().CODE);
         assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
-        assertEquals("ED25519",resolvedPrivKey.getAlgorithm().name());
+        assertEquals(ClassicAlgorithm.ED25519.code(),resolvedPrivKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedPrivKey.getAlgorithm().code());
+                resolvedPrivKey.getAlgorithm());
         assertArrayEquals(privKeyBytes,resolvedPrivKey.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
@@ -257,9 +267,9 @@ public class ED25519SignatureFunctionTest {
 
         assertEquals(PUBLIC.CODE,resolvedPubKey.getKeyType().CODE);
         assertEquals(32, resolvedPubKey.getRawKeyBytes().length);
-        assertEquals("ED25519",resolvedPubKey.getAlgorithm().name());
+        assertEquals(ClassicAlgorithm.ED25519.code(),resolvedPubKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedPubKey.getAlgorithm().code());
+                resolvedPubKey.getAlgorithm());
         assertArrayEquals(pubKeyBytes,resolvedPubKey.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
@@ -336,9 +346,9 @@ public class ED25519SignatureFunctionTest {
         SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
 
         assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
-        assertEquals("ED25519",resolvedSignatureDigest.getAlgorithm().name());
+        assertEquals(ClassicAlgorithm.ED25519,resolvedSignatureDigest.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedSignatureDigest.getAlgorithm().code());
+                resolvedSignatureDigest.getAlgorithm());
         assertArrayEquals(signatureDigestBytes,resolvedSignatureDigest.toBytes());
 
         algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");

@@ -1,6 +1,7 @@
 package test.com.jd.blockchain.crypto.service.sm;
 
 import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.crypto.service.sm.SMAlgorithm;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.junit.Test;
 
@@ -19,479 +20,469 @@ import static org.junit.Assert.*;
  */
 public class SM2CyptoFunctionTest {
 
-    @Test
-    public void getAlgorithmTest(){
+	@Test
+	public void getAlgorithmTest() {
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
+		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
+		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-        assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
-        assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
+		algorithm = CryptoServiceProviders.getAlgorithm("sM2");
+		assertNotNull(algorithm);
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sM2");
-        assertNotNull(algorithm);
+		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
+		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-        assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
-        assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
+		algorithm = CryptoServiceProviders.getAlgorithm("sm22");
+		assertNull(algorithm);
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm22");
-        assertNull(algorithm);
-    }
+	@Test
+	public void generateKeyPairTest() {
 
-    @Test
-    public void generateKeyPairTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
+		assertEquals(PUBLIC.CODE, pubKey.getKeyType().CODE);
+		assertEquals(65, pubKey.getRawKeyBytes().length);
+		assertEquals(PRIVATE.CODE, privKey.getKeyType().CODE);
+		assertEquals(32, privKey.getRawKeyBytes().length);
 
-        assertEquals(PUBLIC.CODE,pubKey.getKeyType().CODE);
-        assertEquals(65, pubKey.getRawKeyBytes().length);
-        assertEquals(PRIVATE.CODE,privKey.getKeyType().CODE);
-        assertEquals(32, privKey.getRawKeyBytes().length);
+		assertEquals(algorithm.code(), pubKey.getAlgorithm());
+		assertEquals(algorithm.code(), privKey.getAlgorithm());
 
-        assertEquals(algorithm.name(),pubKey.getAlgorithm().name());
-        assertEquals(algorithm.code(),pubKey.getAlgorithm().code());
-        assertEquals(algorithm.name(),privKey.getAlgorithm().name());
-        assertEquals(algorithm.code(),privKey.getAlgorithm().code());
+		assertEquals(2 + 1 + 65, pubKey.toBytes().length);
+		assertEquals(2 + 1 + 32, privKey.toBytes().length);
 
-        assertEquals(2 + 1 + 65, pubKey.toBytes().length);
-        assertEquals(2 + 1 + 32, privKey.toBytes().length);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawPubKeyBytes = pubKey.getRawKeyBytes();
+		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
+		assertArrayEquals(BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawPubKeyBytes), pubKey.toBytes());
+		assertArrayEquals(BytesUtils.concat(algoBytes, privKeyTypeBytes, rawPrivKeyBytes), privKey.toBytes());
+	}
 
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawPubKeyBytes = pubKey.getRawKeyBytes();
-        byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
-        assertArrayEquals(BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawPubKeyBytes),pubKey.toBytes());
-        assertArrayEquals(BytesUtils.concat(algoBytes,privKeyTypeBytes,rawPrivKeyBytes),privKey.toBytes());
-    }
+	@Test
+	public void retrievePubKeyTest() {
 
-    @Test
-    public void retrievePubKeyTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
+		PubKey retrievedPubKey = signatureFunction.retrievePubKey(privKey);
 
-        PubKey retrievedPubKey = signatureFunction.retrievePubKey(privKey);
+		assertEquals(pubKey.getKeyType(), retrievedPubKey.getKeyType());
+		assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
+		assertEquals(pubKey.getAlgorithm(), retrievedPubKey.getAlgorithm());
+		assertArrayEquals(pubKey.toBytes(), retrievedPubKey.toBytes());
+	}
 
-        assertEquals(pubKey.getKeyType(),retrievedPubKey.getKeyType());
-        assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
-        assertEquals(pubKey.getAlgorithm().name(),retrievedPubKey.getAlgorithm().name());
-        assertEquals(pubKey.getAlgorithm().code(),retrievedPubKey.getAlgorithm().code());
-        assertArrayEquals(pubKey.toBytes(),retrievedPubKey.toBytes());
-    }
+	@Test
+	public void signTest() {
 
-    @Test
-    public void signTest(){
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PrivKey privKey = keyPair.getPrivKey();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PrivKey privKey = keyPair.getPrivKey();
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		byte[] signatureBytes = signatureDigest.toBytes();
 
-        byte[] signatureBytes = signatureDigest.toBytes();
+		assertEquals(2 + 64, signatureBytes.length);
+		assertEquals(algorithm.code(), signatureDigest.getAlgorithm());
 
-        assertEquals(2 + 64, signatureBytes.length);
-        CryptoAlgorithm signatureAlgo = signatureDigest.getAlgorithm();
-        assertEquals(algorithm.name(),signatureDigest.getAlgorithm().name());
-        assertEquals(algorithm.code(),signatureDigest.getAlgorithm().code());
+		assertEquals(SMAlgorithm.SM2, signatureDigest.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				signatureDigest.getAlgorithm());
 
-        assertEquals("SM2",signatureAlgo.name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                signatureAlgo.code());
+		byte[] algoBytes = BytesUtils.toBytes(signatureDigest.getAlgorithm());
+		byte[] rawSinatureBytes = signatureDigest.getRawDigest();
+		assertArrayEquals(BytesUtils.concat(algoBytes, rawSinatureBytes), signatureBytes);
+	}
 
-        byte[] algoBytes = CryptoAlgorithm.toBytes(signatureAlgo);
-        byte[] rawSinatureBytes = signatureDigest.getRawDigest();
-        assertArrayEquals(BytesUtils.concat(algoBytes,rawSinatureBytes),signatureBytes);
-    }
+	@Test
+	public void verifyTest() {
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void verifyTest(){
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		assertTrue(signatureFunction.verify(signatureDigest, pubKey, data));
+	}
 
-        assertTrue(signatureFunction.verify(signatureDigest,pubKey,data));
-    }
+	@Test
+	public void encryptTest() {
 
-    @Test
-    public void encryptTest(){
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+				.getAsymmetricEncryptionFunction(algorithm);
 
-        AsymmetricEncryptionFunction asymmetricEncryptionFunction =
-                CryptoServiceProviders.getAsymmetricEncryptionFunction(algorithm);
+		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		PubKey pubKey = keyPair.getPubKey();
 
-        PubKey pubKey = keyPair.getPubKey();
+		Ciphertext ciphertext = asymmetricEncryptionFunction.encrypt(pubKey, data);
 
-        Ciphertext ciphertext =asymmetricEncryptionFunction.encrypt(pubKey,data);
+		byte[] ciphertextBytes = ciphertext.toBytes();
+		assertEquals(2 + 65 + 256 / 8 + 1024, ciphertextBytes.length);
+		assertEquals(SMAlgorithm.SM2, ciphertext.getAlgorithm());
 
-        byte[] ciphertextBytes = ciphertext.toBytes();
-        assertEquals(2 + 65 + 256 / 8 + 1024, ciphertextBytes.length);
-        CryptoAlgorithm ciphertextAlgo = ciphertext.getAlgorithm();
-        assertEquals("SM2",ciphertext.getAlgorithm().name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                ciphertextAlgo.code());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				ciphertext.getAlgorithm());
 
-        byte[] algoBytes = CryptoAlgorithm.toBytes(ciphertextAlgo);
-        byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
-        assertArrayEquals(BytesUtils.concat(algoBytes,rawCiphertextBytes),ciphertextBytes);
-    }
+		byte[] algoBytes = BytesUtils.toBytes(ciphertext.getAlgorithm());
+		byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
+		assertArrayEquals(BytesUtils.concat(algoBytes, rawCiphertextBytes), ciphertextBytes);
+	}
 
+	@Test
+	public void decryptTest() {
 
-    @Test
-    public void decryptTest(){
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+				.getAsymmetricEncryptionFunction(algorithm);
 
-        AsymmetricEncryptionFunction asymmetricEncryptionFunction =
-                CryptoServiceProviders.getAsymmetricEncryptionFunction(algorithm);
+		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
 
-        CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
+		Ciphertext ciphertext = asymmetricEncryptionFunction.encrypt(pubKey, data);
 
-        Ciphertext ciphertext =asymmetricEncryptionFunction.encrypt(pubKey,data);
+		byte[] decryptedPlaintext = asymmetricEncryptionFunction.decrypt(privKey, ciphertext);
 
-        byte[] decryptedPlaintext = asymmetricEncryptionFunction.decrypt(privKey,ciphertext);
+		assertArrayEquals(data, decryptedPlaintext);
+	}
 
-        assertArrayEquals(data,decryptedPlaintext);
-    }
+	@Test
+	public void supportPrivKeyTest() {
 
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-    @Test
-    public void supportPrivKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
+		byte[] privKeyBytes = privKey.toBytes();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
 
-        PrivKey privKey = keyPair.getPrivKey();
-        byte[] privKeyBytes = privKey.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] rawKeyBytes = privKey.getRawKeyBytes();
+		byte[] sm3PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
 
-        assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
+		assertFalse(signatureFunction.supportPrivKey(sm3PubKeyBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] rawKeyBytes = privKey.getRawKeyBytes();
-        byte[] sm3PubKeyBytes = BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void resolvePrivKeyTest() {
 
-        assertFalse(signatureFunction.supportPrivKey(sm3PubKeyBytes));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-    @Test
-    public void resolvePrivKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
+		byte[] privKeyBytes = privKey.toBytes();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
 
-        PrivKey privKey = keyPair.getPrivKey();
-        byte[] privKeyBytes = privKey.toBytes();
+		assertEquals(PRIVATE.CODE, resolvedPrivKey.getKeyType().CODE);
+		assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
+		assertEquals(SMAlgorithm.SM2, resolvedPrivKey.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				resolvedPrivKey.getAlgorithm());
+		assertArrayEquals(privKeyBytes, resolvedPrivKey.toBytes());
 
-        PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] rawKeyBytes = privKey.getRawKeyBytes();
+		byte[] sm3PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
 
-        assertEquals(PRIVATE.CODE,resolvedPrivKey.getKeyType().CODE);
-        assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
-        assertEquals("SM2",resolvedPrivKey.getAlgorithm().name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                resolvedPrivKey.getAlgorithm().code());
-        assertArrayEquals(privKeyBytes,resolvedPrivKey.toBytes());
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolvePrivKey(sm3PubKeyBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] rawKeyBytes = privKey.getRawKeyBytes();
-        byte[] sm3PubKeyBytes = BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void supportPubKeyTest() {
 
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolvePrivKey(sm3PubKeyBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-    @Test
-    public void supportPubKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
+		byte[] pubKeyBytes = pubKey.toBytes();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
 
-        PubKey pubKey = keyPair.getPubKey();
-        byte[] pubKeyBytes = pubKey.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
+		byte[] sm3PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
 
-        assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
+		assertFalse(signatureFunction.supportPubKey(sm3PrivKeyBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawKeyBytes = pubKey.getRawKeyBytes();
-        byte[] sm3PrivKeyBytes = BytesUtils.concat(algoBytes,privKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void resolvePubKeyTest() {
 
-        assertFalse(signatureFunction.supportPubKey(sm3PrivKeyBytes));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-    @Test
-    public void resolvePubKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
+		byte[] pubKeyBytes = pubKey.toBytes();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
 
-        PubKey pubKey = keyPair.getPubKey();
-        byte[] pubKeyBytes = pubKey.toBytes();
+		assertEquals(PUBLIC.CODE, resolvedPubKey.getKeyType().CODE);
+		assertEquals(65, resolvedPubKey.getRawKeyBytes().length);
+		assertEquals(SMAlgorithm.SM2, resolvedPubKey.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				resolvedPubKey.getAlgorithm());
+		assertArrayEquals(pubKeyBytes, resolvedPubKey.toBytes());
 
-        PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
+		byte[] sm3PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
 
-        assertEquals(PUBLIC.CODE,resolvedPubKey.getKeyType().CODE);
-        assertEquals(65, resolvedPubKey.getRawKeyBytes().length);
-        assertEquals("SM2",resolvedPubKey.getAlgorithm().name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                resolvedPubKey.getAlgorithm().code());
-        assertArrayEquals(pubKeyBytes,resolvedPubKey.toBytes());
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolvePrivKey(sm3PrivKeyBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawKeyBytes = pubKey.getRawKeyBytes();
-        byte[] sm3PrivKeyBytes = BytesUtils.concat(algoBytes,privKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void supportDigestTest() {
 
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolvePrivKey(sm3PrivKeyBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void supportDigestTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction =
-                CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PrivKey privKey = keyPair.getPrivKey();
+		byte[] signatureDigestBytes = signatureDigest.toBytes();
+		assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
 
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawDigestBytes = signatureDigest.toBytes();
+		byte[] sm3SignatureBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
-        byte[] signatureDigestBytes = signatureDigest.toBytes();
-        assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
+		assertFalse(signatureFunction.supportDigest(sm3SignatureBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawDigestBytes = signatureDigest.toBytes();
-        byte[] sm3SignatureBytes = BytesUtils.concat(algoBytes,rawDigestBytes);
+	@Test
+	public void resolveDigestTest() {
 
-        assertFalse(signatureFunction.supportDigest(sm3SignatureBytes));
-    }
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void resolveDigestTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
 
-        SignatureFunction signatureFunction =
-                CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PrivKey privKey = keyPair.getPrivKey();
+		byte[] signatureDigestBytes = signatureDigest.toBytes();
 
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
 
-        byte[] signatureDigestBytes = signatureDigest.toBytes();
+		assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
+		assertEquals(SMAlgorithm.SM2, resolvedSignatureDigest.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				resolvedSignatureDigest.getAlgorithm());
+		assertArrayEquals(signatureDigestBytes, resolvedSignatureDigest.toBytes());
 
-        SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawDigestBytes = signatureDigest.getRawDigest();
+		byte[] sm3SignatureDigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
-        assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
-        assertEquals("SM2",resolvedSignatureDigest.getAlgorithm().name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                resolvedSignatureDigest.getAlgorithm().code());
-        assertArrayEquals(signatureDigestBytes,resolvedSignatureDigest.toBytes());
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolveDigest(sm3SignatureDigestBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawDigestBytes =  signatureDigest.getRawDigest();
-        byte[] sm3SignatureDigestBytes = BytesUtils.concat(algoBytes,rawDigestBytes);
+	@Test
+	public void supportCiphertextTest() {
 
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolveDigest(sm3SignatureDigestBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void supportCiphertextTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+				.getAsymmetricEncryptionFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
 
-        AsymmetricEncryptionFunction asymmetricEncryptionFunction =
-                CryptoServiceProviders.getAsymmetricEncryptionFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
 
-        CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		Ciphertext ciphertext = asymmetricEncryptionFunction.encrypt(pubKey, data);
 
-        PubKey pubKey = keyPair.getPubKey();
+		byte[] ciphertextBytes = ciphertext.toBytes();
 
-        Ciphertext ciphertext =asymmetricEncryptionFunction.encrypt(pubKey,data);
+		assertTrue(asymmetricEncryptionFunction.supportCiphertext(ciphertextBytes));
 
-        byte[] ciphertextBytes = ciphertext.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawCiphertextBytes = ciphertext.toBytes();
+		byte[] sm3CiphertextBytes = BytesUtils.concat(algoBytes, rawCiphertextBytes);
 
-        assertTrue(asymmetricEncryptionFunction.supportCiphertext(ciphertextBytes));
+		assertFalse(asymmetricEncryptionFunction.supportCiphertext(sm3CiphertextBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawCiphertextBytes = ciphertext.toBytes();
-        byte[] sm3CiphertextBytes = BytesUtils.concat(algoBytes,rawCiphertextBytes);
+	@Test
+	public void resolveCiphertextTest() {
 
-        assertFalse(asymmetricEncryptionFunction.supportCiphertext(sm3CiphertextBytes));
-    }
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void resolveCiphertextTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		assertNotNull(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+				.getAsymmetricEncryptionFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
-        assertNotNull(algorithm);
+		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
 
-        AsymmetricEncryptionFunction asymmetricEncryptionFunction =
-                CryptoServiceProviders.getAsymmetricEncryptionFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
 
-        CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		Ciphertext ciphertext = asymmetricEncryptionFunction.encrypt(pubKey, data);
 
-        PubKey pubKey = keyPair.getPubKey();
+		byte[] ciphertextBytes = ciphertext.toBytes();
 
-        Ciphertext ciphertext =asymmetricEncryptionFunction.encrypt(pubKey,data);
+		Ciphertext resolvedCiphertext = asymmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
 
-        byte[] ciphertextBytes = ciphertext.toBytes();
+		assertEquals(65 + 256 / 8 + 1024, resolvedCiphertext.getRawCiphertext().length);
+		assertEquals(SMAlgorithm.SM2, resolvedCiphertext.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
+				resolvedCiphertext.getAlgorithm());
+		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());
 
-        Ciphertext resolvedCiphertext = asymmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
+		byte[] sm3CiphertextBytes = BytesUtils.concat(algoBytes, rawCiphertextBytes);
 
-        assertEquals(65 + 256 / 8 + 1024, resolvedCiphertext.getRawCiphertext().length);
-        assertEquals("SM2",resolvedCiphertext.getAlgorithm().name());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
-                resolvedCiphertext.getAlgorithm().code());
-        assertArrayEquals(ciphertextBytes,resolvedCiphertext.toBytes());
-
-        algorithm = CryptoServiceProviders.getAlgorithm("sm3");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawCiphertextBytes =  ciphertext.getRawCiphertext();
-        byte[] sm3CiphertextBytes = BytesUtils.concat(algoBytes,rawCiphertextBytes);
-
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            asymmetricEncryptionFunction.resolveCiphertext(sm3CiphertextBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			asymmetricEncryptionFunction.resolveCiphertext(sm3CiphertextBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
 }

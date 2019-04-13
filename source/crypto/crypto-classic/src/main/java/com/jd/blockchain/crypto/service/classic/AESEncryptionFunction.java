@@ -8,12 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.crypto.Ciphertext;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoException;
+import com.jd.blockchain.crypto.CryptoKey;
+import com.jd.blockchain.crypto.SymmetricCiphertext;
+import com.jd.blockchain.crypto.SymmetricEncryptionFunction;
+import com.jd.blockchain.crypto.SymmetricKey;
 import com.jd.blockchain.utils.security.AESUtils;
 
 public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 
-	public static final CryptoAlgorithm AES = ClassicCryptoService.AES_ALGORITHM;
+	public static final CryptoAlgorithm AES = ClassicAlgorithm.AES;
 
 	private static final int KEY_SIZE = 128 / 8;
 	private static final int BLOCK_SIZE = 128 / 8;
@@ -38,7 +44,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密钥数据的算法标识对应AES算法
-		if (key.getAlgorithm().code() != AES.code()) {
+		if (key.getAlgorithm() != AES.code()) {
 			throw new CryptoException("The is not AES symmetric key!");
 		}
 
@@ -103,7 +109,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密钥数据的算法标识对应AES算法
-		if (key.getAlgorithm().code() != AES.code()) {
+		if (key.getAlgorithm() != AES.code()) {
 			throw new CryptoException("The is not AES symmetric key!");
 		}
 
@@ -113,7 +119,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 		}
 
 		// 验证密文数据算法标识对应AES算法
-		if (ciphertext.getAlgorithm().code() != AES.code()) {
+		if (ciphertext.getAlgorithm() != AES.code()) {
 			throw new CryptoException("This is not AES ciphertext!");
 		}
 

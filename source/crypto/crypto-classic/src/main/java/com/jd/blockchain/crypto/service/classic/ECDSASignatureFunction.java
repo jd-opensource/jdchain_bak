@@ -59,7 +59,7 @@ public class ECDSASignatureFunction implements SignatureFunction {
 
 	@Override
 	public CryptoAlgorithm getAlgorithm() {
-		return ClassicCryptoService.ECDSA_ALGORITHM;
+		return ClassicAlgorithm.ECDSA;
 	}
 
 	@Override

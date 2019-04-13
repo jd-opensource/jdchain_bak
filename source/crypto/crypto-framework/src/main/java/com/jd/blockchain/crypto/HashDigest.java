@@ -19,7 +19,7 @@ public class HashDigest extends BaseCryptoBytes implements CryptoDigest,Serializ
 	}
 	
 	@Override
-	protected boolean support(CryptoAlgorithm algorithm) {
+	protected boolean support(short algorithm) {
 		return CryptoAlgorithm.isHashAlgorithm(algorithm);
 	}
 

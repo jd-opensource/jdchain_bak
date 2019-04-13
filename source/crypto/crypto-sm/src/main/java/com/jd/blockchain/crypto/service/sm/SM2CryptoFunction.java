@@ -5,16 +5,25 @@ import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 
-import com.jd.blockchain.crypto.*;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 
+import com.jd.blockchain.crypto.AsymmetricCiphertext;
+import com.jd.blockchain.crypto.AsymmetricEncryptionFunction;
+import com.jd.blockchain.crypto.Ciphertext;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoException;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
 
 public class SM2CryptoFunction implements AsymmetricEncryptionFunction, SignatureFunction {
 
-	private static final CryptoAlgorithm SM2 = SMCryptoService.SM2_ALGORITHM;
+	private static final CryptoAlgorithm SM2 = SMAlgorithm.SM2;
 
 	private static final int ECPOINT_SIZE = 65;
 	private static final int PRIVKEY_SIZE = 32;
@@ -39,7 +48,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		}
 
 		// 验证密钥数据的算法标识对应SM2算法
-		if (pubKey.getAlgorithm().code() != SM2.code()) {
+		if (pubKey.getAlgorithm() != SM2.code()) {
 			throw new CryptoException("The is not sm2 public key!");
 		}
 
@@ -59,12 +68,12 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		}
 
 		// 验证密钥数据的算法标识对应SM2算法
-		if (privKey.getAlgorithm().code() != SM2.code()) {
+		if (privKey.getAlgorithm() != SM2.code()) {
 			throw new CryptoException("This key is not SM2 private key!");
 		}
 
 		// 验证密文数据的算法标识对应SM2签名算法，并且原始摘要长度为64字节
-		if (ciphertext.getAlgorithm().code() != SM2.code()
+		if (ciphertext.getAlgorithm() != SM2.code()
 				|| rawCiphertextBytes.length < ECPOINT_SIZE + HASHDIGEST_SIZE) {
 			throw new CryptoException("This is not SM2 ciphertext!");
 		}
@@ -147,7 +156,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		}
 
 		// 验证密钥数据的算法标识对应SM2签名算法
-		if (privKey.getAlgorithm().code() != SM2.code()) {
+		if (privKey.getAlgorithm() != SM2.code()) {
 			throw new CryptoException("This key is not SM2 private key!");
 		}
 
@@ -167,12 +176,12 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		}
 
 		// 验证密钥数据的算法标识对应SM2签名算法
-		if (pubKey.getAlgorithm().code() != SM2.code()) {
+		if (pubKey.getAlgorithm() != SM2.code()) {
 			throw new CryptoException("This key is not SM2 public key!");
 		}
 
 		// 验证签名数据的算法标识对应SM2签名算法，并且原始签名长度为64字节
-		if (digest.getAlgorithm().code() != SM2.code() || rawDigestBytes.length != SIGNATUREDIGEST_SIZE) {
+		if (digest.getAlgorithm() != SM2.code() || rawDigestBytes.length != SIGNATUREDIGEST_SIZE) {
 			throw new CryptoException("This is not SM2 signature digest!");
 		}
 

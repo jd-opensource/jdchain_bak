@@ -1,5 +1,7 @@
 package com.jd.blockchain.crypto.serialize;
 
+import java.lang.reflect.Type;
+
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.jd.blockchain.crypto.HashDigest;
@@ -7,9 +9,6 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesSlice;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
 
 public class ByteArrayObjectSerializer implements ObjectSerializer {
 
@@ -51,11 +50,13 @@ public class ByteArrayObjectSerializer implements ObjectSerializer {
             this.value = value;
         }
 
-        public String getValue() {
+        @SuppressWarnings("unused")
+		public String getValue() {
             return value;
         }
 
-        public void setValue(String value) {
+        @SuppressWarnings("unused")
+		public void setValue(String value) {
             this.value = value;
         }
     }
