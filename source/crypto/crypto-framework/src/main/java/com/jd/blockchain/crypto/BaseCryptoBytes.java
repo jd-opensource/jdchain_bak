@@ -49,12 +49,10 @@ public abstract class BaseCryptoBytes extends Bytes implements CryptoBytes {
 
 	@Override
 	public CryptoAlgorithm getAlgorithm() {
-		// return resolveAlgorithm(encodedBytes);
 		return algorithm;
 	}
 
 	protected BytesSlice getRawCryptoBytes() {
-		// return resolveRawCryptoBytes(encodedBytes);
 		return new BytesSlice(getDirectBytes(), 2);
 	}
 }

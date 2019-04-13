@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
@@ -18,6 +17,8 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 
 public class TxRequestBuilder implements TransactionRequestBuilder {
+
+	private static final String DEFAULT_HASH_ALGORITHM = "SHA256";
 
 	private TransactionContent txContent;
 
@@ -70,11 +71,13 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 	}
 
 	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
-		return CryptoUtils.sign(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
+		return CryptoServiceProviders.getSignatureFunction(privKey.getAlgorithm()).sign(privKey,
+				txContent.getHash().toBytes());
 	}
 
 	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {
-		return CryptoUtils.sign(signDigest.getAlgorithm()).verify(signDigest, pubKey, txContent.getHash().toBytes());
+		return CryptoServiceProviders.getSignatureFunction(pubKey.getAlgorithm()).verify(signDigest, pubKey,
+				txContent.getHash().toBytes());
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 		txMessage.addNodeSignatures(nodeSignatures);
 
 		byte[] reqBytes = BinaryEncodingUtils.encode(txMessage, NodeRequest.class);
-		HashDigest reqHash = CryptoUtils.hash(CryptoAlgorithm.SHA256).hash(reqBytes);
+		HashDigest reqHash = CryptoServiceProviders.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(reqBytes);
 		txMessage.setHash(reqHash);
 
 		return txMessage;

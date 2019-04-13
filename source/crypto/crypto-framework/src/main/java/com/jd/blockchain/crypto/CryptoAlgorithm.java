@@ -181,4 +181,7 @@ public interface CryptoAlgorithm {
 		return isEncryptionAlgorithm(algorithm) && hasAsymmetricKey(algorithm);
 	}
 
+	static boolean equals(CryptoAlgorithm algorithm1, CryptoAlgorithm algorithm2) {
+		return algorithm1.code() == algorithm2.code();
+	}
 }

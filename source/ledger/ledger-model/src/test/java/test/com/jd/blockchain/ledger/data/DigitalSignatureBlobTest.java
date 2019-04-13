@@ -16,8 +16,11 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.DigitalSignatureBody;
 import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
@@ -37,8 +40,11 @@ public class DigitalSignatureBlobTest {
     public void initDigitalSignatureBlob() throws Exception {
         DataContractRegistry.register(DigitalSignature.class);
         DataContractRegistry.register(DigitalSignatureBody.class);
-        PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, "jd.com".getBytes());
-        SignatureDigest digest = new SignatureDigest(CryptoAlgorithm.ED25519, "zhangsan".getBytes());
+        SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+        CryptoKeyPair kp = signFunc.generateKeyPair();
+		PubKey pubKey = kp.getPubKey();
+		
+        SignatureDigest digest = signFunc.sign(kp.getPrivKey(), "zhangsan".getBytes());
         data = new DigitalSignatureBlob(pubKey, digest);
     }
 

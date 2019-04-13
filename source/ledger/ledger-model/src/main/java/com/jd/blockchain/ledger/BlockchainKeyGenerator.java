@@ -1,8 +1,9 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 
 /**
  * 区块链密钥生成器；
@@ -11,6 +12,8 @@ import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
  *
  */
 public class BlockchainKeyGenerator {
+	
+	public static final String DEFAULT_ALGORITHM = "ED25519";
 
 	private BlockchainKeyGenerator() {
 	}
@@ -20,11 +23,17 @@ public class BlockchainKeyGenerator {
 	}
 
 	public BlockchainKeyPair generate() {
-		return generate(CryptoAlgorithm.ED25519);
+		return generate(DEFAULT_ALGORITHM);
 	}
 
+	public BlockchainKeyPair generate(String algorithmName) {
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm(algorithmName);
+		return generate(algorithm);
+	}
+	
 	public BlockchainKeyPair generate(CryptoAlgorithm signatureAlgorithm) {
-		CryptoKeyPair cryptoKeyPair = CryptoUtils.sign(signatureAlgorithm).generateKeyPair();
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(signatureAlgorithm);
+		CryptoKeyPair cryptoKeyPair = signFunc.generateKeyPair();
 		return new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 	}
 

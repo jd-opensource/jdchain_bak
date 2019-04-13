@@ -1,8 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
@@ -16,9 +14,8 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class SDKDemo_DataAccount {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
+	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
-	public static AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
 	/**
 	 * 生成一个区块链用户，并注册到区块链；
@@ -54,7 +51,7 @@ public class SDKDemo_DataAccount {
 		// 在本地产生要注册的账户的秘钥；
 		BlockchainKeyGenerator generator = BlockchainKeyGenerator.getInstance();
 
-		BlockchainKeyPair dataAccount = generator.generate(CryptoAlgorithm.ED25519);
+		BlockchainKeyPair dataAccount = generator.generate("ED25519");
 
 		txTemp.dataAccounts().register(dataAccount.getIdentity());
 
@@ -77,7 +74,7 @@ public class SDKDemo_DataAccount {
 	}
 
 	private static CryptoKeyPair getSponsorKey() {
-		SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 		return signatureFunction.generateKeyPair();
 	}
 

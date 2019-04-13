@@ -14,14 +14,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.hash.HashFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.EndpointRequest;
@@ -64,8 +63,6 @@ public class SDK_GateWay_User_Test_ {
     private boolean SECURE;
 
     private BlockchainService service;
-
-    private AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
     @Before
     public void init() {
@@ -141,13 +138,14 @@ public class SDK_GateWay_User_Test_ {
 //    }
 
     private CryptoKeyPair getSponsorKey() {
-        SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
         return signatureFunction.generateKeyPair();
     }
 
     private TransactionResponse initResponse() {
-        HashDigest contentHash = new HashDigest(CryptoAlgorithm.SHA256, "contentHash".getBytes());
-        HashDigest blockHash = new HashDigest(CryptoAlgorithm.SHA256, "blockHash".getBytes());
+    	HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");;
+        HashDigest contentHash = hashFunc.hash("contentHash".getBytes());
+        HashDigest blockHash =  hashFunc.hash("blockHash".getBytes());
         long blockHeight = 9998L;
 
         TxResponseMessage resp = new TxResponseMessage(contentHash);

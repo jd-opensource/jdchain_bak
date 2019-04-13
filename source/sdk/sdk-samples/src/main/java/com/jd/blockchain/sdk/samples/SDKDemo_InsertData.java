@@ -1,8 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
@@ -23,9 +21,8 @@ import com.jd.blockchain.utils.net.NetworkAddress;
  */
 public class SDKDemo_InsertData {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
+	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
-	public static AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
 	/**
 	 * 演示数据写入的调用过程；
@@ -83,7 +80,7 @@ public class SDKDemo_InsertData {
 	}
 
 	private static CryptoKeyPair getSponsorKey() {
-		SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 		return signatureFunction.generateKeyPair();
 	}
 

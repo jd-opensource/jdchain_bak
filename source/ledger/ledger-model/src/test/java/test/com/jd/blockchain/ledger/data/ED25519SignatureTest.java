@@ -2,25 +2,28 @@ package test.com.jd.blockchain.ledger.data;
 
 import java.util.Random;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import org.junit.Test;
+
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.utils.security.Ed25519Utils;
 
 public class ED25519SignatureTest {
 
-	public static void main(String[] args) {
+	@Test
+	public void perfomanceTest() {
 		Random rand = new Random();
 		byte[] data = new byte[64];
 		rand.nextBytes(data);
 
-		BlockchainKeyPair key = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
-
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		CryptoKeyPair key = signFunc.generateKeyPair();
 		byte[] pubKey = key.getPubKey().getRawKeyBytes();
 		byte[] privKey = key.getPrivKey().getRawKeyBytes();
 
 		int count = 10000;
-		
+
 		System.out.println("=================== do sign test ===================");
 		byte[] sign = null;
 		for (int r = 0; r < 5; r++) {
@@ -33,7 +36,7 @@ public class ED25519SignatureTest {
 			System.out.println(String.format("Siging Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
 					(count * 1000.00D) / elapsedTS));
 		}
-		
+
 		System.out.println("=================== do verify test ===================");
 		for (int r = 0; r < 5; r++) {
 			System.out.println("------------- round[" + r + "] --------------");

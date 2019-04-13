@@ -8,20 +8,24 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.data.ContractCodeDeployOpTemplate;
-import com.jd.blockchain.utils.io.BytesUtils;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.ContractCodeDeployOperation;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.data.ContractCodeDeployOpTemplate;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
  *
@@ -38,8 +42,8 @@ public class ContractCodeDeployOpTemplateTest {
 	public void initContractCodeDeployOpTemplate() {
 		DataContractRegistry.register(ContractCodeDeployOperation.class);
 		DataContractRegistry.register(Operation.class);
-		String pubKeyVal = "jd.com";
-		PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, pubKeyVal.getBytes());
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		PubKey pubKey = signFunc.generateKeyPair().getPubKey();
 		BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
 		byte[] chainCode = "jd-test".getBytes();
 		data = new ContractCodeDeployOpTemplate(contractID, chainCode);

@@ -8,20 +8,21 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.data.ContractEventSendOpTemplate;
-import com.jd.blockchain.ledger.data.DataAccountRegisterOpTemplate;
-import com.jd.blockchain.ledger.data.UserRegisterOpTemplate;
-import com.jd.blockchain.utils.io.ByteArray;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.data.UserRegisterOpTemplate;
 
 /**
  *
@@ -38,8 +39,8 @@ public class UserRegisterOpTemplateTest {
     public void initUserRegisterOpTemplate() {
         DataContractRegistry.register(UserRegisterOperation.class);
         DataContractRegistry.register(Operation.class);
-        String pubKeyVal = "jd.com";
-        PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, pubKeyVal.getBytes());
+        CryptoKeyPair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
+        PubKey pubKey = key.getPubKey();
         BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
         data = new UserRegisterOpTemplate(contractID);
     }

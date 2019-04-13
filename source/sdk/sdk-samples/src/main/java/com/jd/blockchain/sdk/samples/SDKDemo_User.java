@@ -1,8 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
@@ -17,8 +15,6 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 public class SDKDemo_User {
 
 	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate();
-
-	public static AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
 
 	/**
 	 * 生成一个区块链用户，并注册到区块链；
@@ -67,7 +63,7 @@ public class SDKDemo_User {
 		//BlockchainKeyGenerator generator = BlockchainKeyGenerator.getInstance();
 		//BlockchainKeyPair user = generator.generate(CryptoKeyType.PUBLIC);
 
-        SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 		CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
 		BlockchainKeyPair user = new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 
@@ -92,7 +88,7 @@ public class SDKDemo_User {
 	}
 
 	private static CryptoKeyPair getSponsorKey() {
-		SignatureFunction signatureFunction = asymmetricCryptography.getSignatureFunction(CryptoAlgorithm.ED25519);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 		return signatureFunction.generateKeyPair();
 	}
 

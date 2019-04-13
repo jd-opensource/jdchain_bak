@@ -17,11 +17,12 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.hash.HashFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -58,25 +59,27 @@ public class TxRequestMessageTest {
 
 		data = new TxRequestMessage(initTransactionContent());
 
-		SignatureDigest digest1 = new SignatureDigest(CryptoAlgorithm.ED25519, "zhangsan".getBytes());
-		SignatureDigest digest2 = new SignatureDigest(CryptoAlgorithm.ED25519, "lisi".getBytes());
-		DigitalSignatureBlob endPoint1 = new DigitalSignatureBlob(
-				new PubKey(CryptoAlgorithm.ED25519, "jd1.com".getBytes()), digest1);
-		DigitalSignatureBlob endPoint2 = new DigitalSignatureBlob(
-				new PubKey(CryptoAlgorithm.ED25519, "jd2.com".getBytes()), digest2);
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		CryptoKeyPair key1 = signFunc.generateKeyPair();
+		CryptoKeyPair key2 = signFunc.generateKeyPair();
+		CryptoKeyPair key3 = signFunc.generateKeyPair();
+		CryptoKeyPair key4 = signFunc.generateKeyPair();
+
+		SignatureDigest digest1 = signFunc.sign(key1.getPrivKey(), "zhangsan".getBytes());
+		SignatureDigest digest2 = signFunc.sign(key2.getPrivKey(), "lisi".getBytes());
+		DigitalSignatureBlob endPoint1 = new DigitalSignatureBlob(key1.getPubKey(), digest1);
+		DigitalSignatureBlob endPoint2 = new DigitalSignatureBlob(key2.getPubKey(), digest2);
 		data.addEndpointSignatures(endPoint1);
 		data.addEndpointSignatures(endPoint2);
 
-		SignatureDigest digest3 = new SignatureDigest(CryptoAlgorithm.ED25519, "wangwu".getBytes());
-		SignatureDigest digest4 = new SignatureDigest(CryptoAlgorithm.ED25519, "zhaoliu".getBytes());
-		DigitalSignatureBlob node1 = new DigitalSignatureBlob(new PubKey(CryptoAlgorithm.ED25519, "jd3.com".getBytes()),
-				digest3);
-		DigitalSignatureBlob node2 = new DigitalSignatureBlob(new PubKey(CryptoAlgorithm.ED25519, "jd4.com".getBytes()),
-				digest4);
+		SignatureDigest digest3 = signFunc.sign(key3.getPrivKey(), "wangwu".getBytes());
+		SignatureDigest digest4 = signFunc.sign(key4.getPrivKey(), "zhaoliu".getBytes());
+		DigitalSignatureBlob node1 = new DigitalSignatureBlob(key3.getPubKey(), digest3);
+		DigitalSignatureBlob node2 = new DigitalSignatureBlob(key4.getPubKey(), digest4);
 		data.addNodeSignatures(node1);
 		data.addNodeSignatures(node2);
 
-		HashDigest hash = new HashDigest(CryptoAlgorithm.SHA256, "sunqi".getBytes());
+		HashDigest hash = CryptoServiceProviders.getHashFunction("SHA256").hash("DATA".getBytes());
 		data.setHash(hash);
 	}
 
@@ -192,12 +195,12 @@ public class TxRequestMessageTest {
 
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
-		BlockchainKeyPair id = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
-		HashDigest ledgerHash = CryptoUtils.hash(CryptoAlgorithm.SHA256)
-				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
+		BlockchainKeyPair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
+		HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");
+		HashDigest ledgerHash = hashFunc.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 		contentBlob = new TxContentBlob(ledgerHash);
-		contentBlob.setHash(new HashDigest(CryptoAlgorithm.SHA256, "jd.com".getBytes()));
+		contentBlob.setHash(hashFunc.hash("jd.com".getBytes()));
 		// contentBlob.setSubjectAccount(id.getAddress());
 		// contentBlob.setSequenceNumber(1);
 		DataAccountKVSetOperation kvsetOP = opFactory.dataAccount(id.getAddress())

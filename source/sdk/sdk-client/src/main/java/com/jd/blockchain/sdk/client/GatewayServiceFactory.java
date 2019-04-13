@@ -4,7 +4,7 @@ import java.io.Closeable;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
@@ -139,16 +139,8 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 				byte[] txContentBytes = BinaryEncodingUtils.encode(txRequest.getTransactionContent(),
 						TransactionContent.class);
 				PrivKey userPrivKey = userKey.getPrivKey();
-				CryptoAlgorithm userAlgorithm = userPrivKey.getAlgorithm();
-				SignatureFunction signatureFunction = null;
-				switch (userAlgorithm) {
-				case ED25519:
-					signatureFunction = CryptoUtils.asymmCrypto().getSignatureFunction(CryptoAlgorithm.ED25519);
-					break;
-				default:
-					signatureFunction = CryptoUtils.asymmCrypto().getSignatureFunction(CryptoAlgorithm.ED25519);
-					break;
-				}
+				CryptoAlgorithm userAlgorithm = userKey.getAlgorithm();
+				SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(userAlgorithm);
 				if (signatureFunction != null) {
 					SignatureDigest signatureDigest = signatureFunction.sign(userPrivKey, txContentBytes);
 					DigitalSignature signature = new DigitalSignatureBlob(userKey.getPubKey(), signatureDigest);

@@ -11,24 +11,7 @@
 	<artifactId>ledger-model</artifactId>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>binary-proto</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>crypto-framework</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>crypto-impl</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-common</artifactId>
@@ -39,18 +22,24 @@
 			<artifactId>utils-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-		
 
-		<!-- <dependency> <groupId>net.i2p.crypto</groupId> <artifactId>eddsa</artifactId> 
-			<version>0.1.0</version> </dependency> -->
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>binary-proto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-framework</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 
-
-		<!-- <dependency> <groupId>io.grpc</groupId> <artifactId>grpc-netty</artifactId> 
-			<version>1.9.0</version> </dependency> <dependency> <groupId>io.grpc</groupId> 
-			<artifactId>grpc-protobuf</artifactId> <version>1.9.0</version>$NO-MVN-MAN-VER$ 
-			</dependency> <dependency> <groupId>io.grpc</groupId> <artifactId>grpc-stub</artifactId> 
-			<version>1.9.0</version> </dependency> -->
 	</dependencies>
 
 </project>

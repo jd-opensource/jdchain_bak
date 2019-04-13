@@ -24,7 +24,7 @@ import com.jd.blockchain.ledger.MagicNumber;
  * @author huanghaiquan
  *
  */
-public class DigitalSignatureBlob implements DigitalSignature { //, Externalizable
+public class DigitalSignatureBlob implements DigitalSignature { 
 
 	private PubKey pubKey;
 

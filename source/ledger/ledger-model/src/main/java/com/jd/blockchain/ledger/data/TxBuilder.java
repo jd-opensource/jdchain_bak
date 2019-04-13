@@ -2,8 +2,7 @@ package com.jd.blockchain.ledger.data;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -19,8 +18,8 @@ public class TxBuilder implements TransactionBuilder {
 
 	private BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 
-	private CryptoAlgorithm defaultHashAlgorithm = CryptoAlgorithm.SHA256;
-
+	private static final String DEFAULT_HASH_ALGORITHM = "SHA256";
+	
 	private HashDigest ledgerHash;
 
 	public TxBuilder(HashDigest ledgerHash) {
@@ -44,7 +43,7 @@ public class TxBuilder implements TransactionBuilder {
 		txContent.addOperations(opFactory.getOperations());
 		
 		byte[] contentBodyBytes = BinaryEncodingUtils.encode(txContent, TransactionContentBody.class);
-		HashDigest contentHash = CryptoUtils.hash(defaultHashAlgorithm).hash(contentBodyBytes);
+		HashDigest contentHash = CryptoServiceProviders.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
 		txContent.setHash(contentHash);
 		
 		return txContent;

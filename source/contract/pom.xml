@@ -14,9 +14,6 @@
 		<module>contract-framework</module>
 		<module>contract-jvm</module>
 		<module>contract-maven-plugin</module>
-		<module>contract-compile</module>
 	</modules>
-
-
 
 </project>

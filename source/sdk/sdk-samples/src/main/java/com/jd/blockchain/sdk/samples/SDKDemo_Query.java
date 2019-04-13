@@ -1,7 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
@@ -21,9 +20,9 @@ import com.jd.blockchain.utils.net.NetworkAddress;
  */
 public class SDKDemo_Query {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate(CryptoAlgorithm.ED25519);
+	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
-	public static final HashDigest LEDGER_HASH = CryptoUtils.hash(CryptoAlgorithm.SHA256)
+	public static final HashDigest LEDGER_HASH = CryptoServiceProviders.getHashFunction("SHA256")
 			.hash("xkxjcioewfqwe".getBytes());
 
 	/**
