@@ -4,7 +4,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Component;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.gateway.PeerConnector;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.data.TransactionService;

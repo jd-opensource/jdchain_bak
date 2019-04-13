@@ -1,8 +1,4 @@
-package com.jd.blockchain.crypto.asymmetric;
-
-import com.jd.blockchain.crypto.BaseCryptoBytes;
-import com.jd.blockchain.crypto.Ciphertext;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
+package com.jd.blockchain.crypto;
 
 public class AsymmetricCiphertext extends BaseCryptoBytes implements Ciphertext {
 

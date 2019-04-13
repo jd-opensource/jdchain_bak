@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.TransactionContent;

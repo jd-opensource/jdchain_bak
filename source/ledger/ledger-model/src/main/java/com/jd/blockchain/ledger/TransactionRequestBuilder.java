@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.HashDigest;
 
 /**
  * 已就绪的交易；

@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.web.converters;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.utils.codec.Base58Utils;
 
 import org.springframework.core.convert.converter.Converter;

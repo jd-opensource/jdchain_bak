@@ -6,8 +6,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.hash.HashFunction;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
 public class HashDigestJSONSerializeTest {

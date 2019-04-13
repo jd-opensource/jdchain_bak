@@ -4,7 +4,7 @@ import java.util.Stack;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerBlock;

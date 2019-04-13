@@ -1,6 +1,6 @@
 package com.jd.blockchain.manage;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
 
 /**

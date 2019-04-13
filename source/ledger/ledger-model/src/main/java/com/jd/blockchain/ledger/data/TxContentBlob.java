@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.FieldSetter;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.utils.io.NumberMask;

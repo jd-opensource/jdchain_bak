@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 
 public class TransactionStagedSnapshot implements LedgerDataSnapshot {

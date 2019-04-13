@@ -1,10 +1,6 @@
 package test.com.jd.blockchain.crypto.service.sm;
 
 import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricEncryptionFunction;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.junit.Test;
 

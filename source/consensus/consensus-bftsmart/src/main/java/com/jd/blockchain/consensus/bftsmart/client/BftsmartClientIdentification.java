@@ -3,7 +3,7 @@ package com.jd.blockchain.consensus.bftsmart.client;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 
 public class BftsmartClientIdentification implements ClientIdentification {
 

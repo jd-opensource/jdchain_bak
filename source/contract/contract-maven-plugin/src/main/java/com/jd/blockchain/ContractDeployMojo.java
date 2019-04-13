@@ -1,9 +1,9 @@
 package com.jd.blockchain;
 
 import com.jd.blockchain.contract.model.ContractDeployExeUtil;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.codec.Base58Utils;

@@ -2,8 +2,8 @@ package test.com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.AccountHeader;

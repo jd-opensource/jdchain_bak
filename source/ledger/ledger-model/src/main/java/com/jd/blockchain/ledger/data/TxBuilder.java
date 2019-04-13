@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.data;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;

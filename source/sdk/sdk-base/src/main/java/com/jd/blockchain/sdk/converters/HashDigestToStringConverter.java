@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.sdk.converters;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.utils.http.StringConverter;
 
 /**

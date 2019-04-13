@@ -1,6 +1,4 @@
-package com.jd.blockchain.crypto.hash;
-
-import com.jd.blockchain.crypto.CryptoFunction;
+package com.jd.blockchain.crypto;
 
 public interface HashFunction extends CryptoFunction {
 

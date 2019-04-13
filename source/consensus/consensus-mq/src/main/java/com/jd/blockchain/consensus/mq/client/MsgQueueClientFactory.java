@@ -16,11 +16,11 @@ import com.jd.blockchain.consensus.mq.config.MsgQueueClientConfig;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientIncomingSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 
 /**
  *

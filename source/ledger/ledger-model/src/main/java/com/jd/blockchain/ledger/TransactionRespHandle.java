@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 
 /**
  *

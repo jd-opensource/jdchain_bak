@@ -8,10 +8,10 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.utils.ArgumentSet;
 import com.jd.blockchain.utils.ArgumentSet.ArgEntry;
 import com.jd.blockchain.utils.ArgumentSet.Setting;

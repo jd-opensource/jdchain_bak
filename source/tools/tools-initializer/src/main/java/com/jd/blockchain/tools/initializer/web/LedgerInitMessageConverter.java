@@ -15,7 +15,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitPermission;
 import com.jd.blockchain.ledger.core.LedgerInitPermissionData;

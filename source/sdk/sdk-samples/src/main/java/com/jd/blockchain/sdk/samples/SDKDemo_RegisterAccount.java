@@ -1,8 +1,8 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;

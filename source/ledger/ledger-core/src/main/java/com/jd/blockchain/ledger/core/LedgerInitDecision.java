@@ -3,8 +3,8 @@ package com.jd.blockchain.ledger.core;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.utils.ValueType;
 
 /**

@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.LedgerBlock;

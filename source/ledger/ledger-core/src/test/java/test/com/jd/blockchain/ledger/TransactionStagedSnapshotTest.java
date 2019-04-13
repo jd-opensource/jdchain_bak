@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;

@@ -1,7 +1,6 @@
 package test.com.jd.blockchain.crypto.service.classic;
 
 import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.symmetric.SymmetricEncryptionFunction;
 import com.jd.blockchain.utils.io.BytesUtils;
 import org.junit.Test;
 

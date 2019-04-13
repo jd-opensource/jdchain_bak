@@ -2,11 +2,11 @@ package test.com.jd.blockchain.ledger;
 
 import java.util.Random;
 
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;

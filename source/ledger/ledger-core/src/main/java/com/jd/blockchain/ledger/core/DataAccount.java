@@ -1,8 +1,8 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.KVDataEntry;

@@ -8,8 +8,8 @@
  */
 package com.jd.blockchain.capability.settings;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.HashDigest;
 
 /**
  *

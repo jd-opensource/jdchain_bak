@@ -10,9 +10,10 @@ import java.security.KeyFactory;
 import java.util.Random;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.HashDigest;
+
 import org.junit.Test;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;

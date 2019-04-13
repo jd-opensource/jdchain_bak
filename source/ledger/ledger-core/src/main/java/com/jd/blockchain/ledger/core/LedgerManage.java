@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.storage.service.KVStorageService;
 

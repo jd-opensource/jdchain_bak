@@ -1,6 +1,6 @@
 package com.jd.blockchain.gateway.service;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
 
 /**

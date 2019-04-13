@@ -18,7 +18,7 @@ import com.jd.blockchain.consensus.mq.settings.MsgQueueClientIncomingSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureFunction;
 
 /**
  *

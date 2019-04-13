@@ -1,6 +1,6 @@
 package com.jd.blockchain.tools.initializer.web;
 
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitPermission;
 import com.jd.blockchain.utils.http.HttpAction;

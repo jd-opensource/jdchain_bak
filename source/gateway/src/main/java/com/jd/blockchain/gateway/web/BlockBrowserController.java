@@ -1,8 +1,8 @@
 package com.jd.blockchain.gateway.web;
 
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.service.DataRetrievalService;
 import com.jd.blockchain.gateway.service.GatewayQueryService;

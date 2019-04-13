@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core.serialize;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.utils.codec.Base58Utils;
 
 import java.lang.reflect.Type;

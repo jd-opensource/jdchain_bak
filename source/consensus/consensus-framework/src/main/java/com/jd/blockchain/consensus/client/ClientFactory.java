@@ -3,7 +3,7 @@ package com.jd.blockchain.consensus.client;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ClientIncomingSettings;
 import com.jd.blockchain.consensus.ConsensusManageService;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 
 public interface ClientFactory {
 

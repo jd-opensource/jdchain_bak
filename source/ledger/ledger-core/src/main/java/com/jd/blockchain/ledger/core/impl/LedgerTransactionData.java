@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.TransactionContent;

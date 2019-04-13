@@ -1,8 +1,4 @@
-package com.jd.blockchain.crypto.asymmetric;
-
-import com.jd.blockchain.crypto.BaseCryptoBytes;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoDigest;
+package com.jd.blockchain.crypto;
 
 public class SignatureDigest extends BaseCryptoBytes implements CryptoDigest {
 	public SignatureDigest() {

@@ -9,9 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.SymmetricKey;
-import com.jd.blockchain.crypto.symmetric.SymmetricCiphertext;
-import com.jd.blockchain.crypto.symmetric.SymmetricEncryptionFunction;
 import com.jd.blockchain.utils.security.AESUtils;
 
 public class AESEncryptionFunction implements SymmetricEncryptionFunction {

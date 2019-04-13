@@ -1,6 +1,6 @@
 package com.jd.blockchain.gateway;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 import java.util.List;

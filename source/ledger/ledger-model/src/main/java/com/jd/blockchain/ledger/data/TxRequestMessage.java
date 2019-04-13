@@ -8,7 +8,7 @@ import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
 

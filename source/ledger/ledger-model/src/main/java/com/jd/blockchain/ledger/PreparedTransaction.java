@@ -1,8 +1,8 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 
 /**
  * 已就绪的交易；

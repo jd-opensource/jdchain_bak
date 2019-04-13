@@ -11,9 +11,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.serialize.ByteArrayObjectDeserializer;
 import com.jd.blockchain.crypto.serialize.ByteArrayObjectSerializer;
 import com.jd.blockchain.utils.Bytes;

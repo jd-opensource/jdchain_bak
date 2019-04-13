@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionResponse;
 
 /**

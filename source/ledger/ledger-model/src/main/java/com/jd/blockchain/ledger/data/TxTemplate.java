@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionTemplate;

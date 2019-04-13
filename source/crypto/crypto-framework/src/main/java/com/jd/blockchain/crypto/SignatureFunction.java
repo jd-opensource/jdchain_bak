@@ -1,9 +1,4 @@
-package com.jd.blockchain.crypto.asymmetric;
-
-import com.jd.blockchain.crypto.CryptoFunction;
-import com.jd.blockchain.crypto.CryptoKeyPairGenerator;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
+package com.jd.blockchain.crypto;
 
 public interface SignatureFunction extends CryptoKeyPairGenerator, CryptoFunction {
 

@@ -34,7 +34,7 @@ import com.jd.blockchain.consensus.service.MessageHandle;
 import com.jd.blockchain.consensus.service.NodeServer;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;

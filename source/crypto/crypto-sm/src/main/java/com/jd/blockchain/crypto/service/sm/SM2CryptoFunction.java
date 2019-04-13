@@ -10,11 +10,6 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCiphertext;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricEncryptionFunction;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
 
 public class SM2CryptoFunction implements AsymmetricEncryptionFunction, SignatureFunction {

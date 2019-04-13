@@ -8,10 +8,10 @@
  */
 package test.com.jd.blockchain.intgr.batch.bftsmart;
 
+import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.core.LedgerRepository;

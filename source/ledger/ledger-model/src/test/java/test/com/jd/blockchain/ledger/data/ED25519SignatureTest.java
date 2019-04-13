@@ -4,9 +4,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.security.Ed25519Utils;
 
 public class ED25519SignatureTest {

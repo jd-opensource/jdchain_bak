@@ -1,7 +1,7 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.KVDataEntry;

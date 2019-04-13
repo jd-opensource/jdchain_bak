@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;

@@ -1,12 +1,7 @@
-package com.jd.blockchain.crypto.symmetric;
+package com.jd.blockchain.crypto;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.jd.blockchain.crypto.Ciphertext;
-import com.jd.blockchain.crypto.CryptoFunction;
-import com.jd.blockchain.crypto.CryptoSymmetricKeyGenerator;
-import com.jd.blockchain.crypto.SymmetricKey;
 
 public interface SymmetricEncryptionFunction extends CryptoSymmetricKeyGenerator, CryptoFunction {
 

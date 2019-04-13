@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;

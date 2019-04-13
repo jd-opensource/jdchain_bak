@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.core.LedgerConsts;
 import com.jd.blockchain.ledger.core.LedgerEditor;

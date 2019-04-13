@@ -13,7 +13,7 @@ import java.util.zip.ZipOutputStream;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
 import com.jd.blockchain.utils.codec.Base58Utils;

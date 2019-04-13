@@ -2,9 +2,9 @@ package com.jd.blockchain.crypto.serialize;
 
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesSlice;
 

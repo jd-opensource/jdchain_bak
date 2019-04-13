@@ -7,11 +7,11 @@ import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.utils.classic.ED25519Utils;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;

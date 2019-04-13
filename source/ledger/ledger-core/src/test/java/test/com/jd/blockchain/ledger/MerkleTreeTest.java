@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.core.MerkleDataNode;

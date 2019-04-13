@@ -1,7 +1,5 @@
 package com.jd.blockchain.crypto;
 
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-
 public interface CryptoKeyPairGenerator {
 
     /**

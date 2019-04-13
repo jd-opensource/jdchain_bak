@@ -1,6 +1,6 @@
 package com.jd.blockchain.contract.model;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.TransactionRequest;
 

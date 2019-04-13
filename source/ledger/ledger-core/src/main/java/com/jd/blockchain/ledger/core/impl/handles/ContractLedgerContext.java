@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.contract.model.LedgerContext;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.ledger.data.DataAccountKVSetOperationBuilder;

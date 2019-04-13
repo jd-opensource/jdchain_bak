@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 
 public class LedgerInitPermissionData implements LedgerInitPermission {
 

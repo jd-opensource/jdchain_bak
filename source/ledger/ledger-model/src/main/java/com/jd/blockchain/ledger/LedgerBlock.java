@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.utils.ValueType;
 
 @DataContract(code = TypeCodes.BLOCK)

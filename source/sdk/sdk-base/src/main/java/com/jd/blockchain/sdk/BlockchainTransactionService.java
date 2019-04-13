@@ -1,6 +1,6 @@
 package com.jd.blockchain.sdk;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionTemplate;
 
 public interface BlockchainTransactionService {

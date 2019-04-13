@@ -9,7 +9,7 @@
 package com.jd.blockchain.peer.web;
 
 import com.jd.blockchain.consensus.service.NodeServer;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.peer.ConsensusManage;
 import com.jd.blockchain.peer.LedgerBindingConfigAware;

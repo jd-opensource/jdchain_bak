@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import java.io.Closeable;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 
 public interface LedgerRepository extends Closeable {

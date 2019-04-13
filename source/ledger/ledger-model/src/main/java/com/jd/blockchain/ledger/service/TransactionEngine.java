@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.service;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 
 public interface TransactionEngine {
 	

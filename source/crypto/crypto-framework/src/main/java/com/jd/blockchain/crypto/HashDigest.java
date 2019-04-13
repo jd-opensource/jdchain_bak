@@ -1,10 +1,6 @@
-package com.jd.blockchain.crypto.hash;
+package com.jd.blockchain.crypto;
 
 import java.io.Serializable;
-
-import com.jd.blockchain.crypto.BaseCryptoBytes;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoDigest;
 
 public class HashDigest extends BaseCryptoBytes implements CryptoDigest,Serializable {
 

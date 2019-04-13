@@ -3,10 +3,10 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;

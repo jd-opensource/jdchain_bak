@@ -10,12 +10,12 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
 import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class BftsmartConsensusClientFactory implements ClientFactory {

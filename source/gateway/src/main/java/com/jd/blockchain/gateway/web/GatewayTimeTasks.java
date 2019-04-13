@@ -9,7 +9,7 @@
 package com.jd.blockchain.gateway.web;
 
 import com.jd.blockchain.consensus.service.NodeServer;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.gateway.PeerConnector;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

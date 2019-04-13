@@ -4,7 +4,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.utils.ValueType;
 
 /**

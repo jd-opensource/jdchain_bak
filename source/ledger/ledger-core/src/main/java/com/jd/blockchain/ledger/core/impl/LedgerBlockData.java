@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core.impl;
 import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.binaryproto.FieldSetter;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 
 public class LedgerBlockData implements LedgerBlock {

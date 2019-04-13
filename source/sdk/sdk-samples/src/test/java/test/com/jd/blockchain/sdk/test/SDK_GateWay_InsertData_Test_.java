@@ -14,11 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.CryptoKeyPair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.hash.HashFunction;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeyPair;
 import com.jd.blockchain.ledger.EndpointRequest;

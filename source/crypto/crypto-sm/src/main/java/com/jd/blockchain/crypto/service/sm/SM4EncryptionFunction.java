@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.symmetric.SymmetricCiphertext;
-import com.jd.blockchain.crypto.symmetric.SymmetricEncryptionFunction;
 import com.jd.blockchain.crypto.utils.sm.SM4Utils;
 
 public class SM4EncryptionFunction implements SymmetricEncryptionFunction {

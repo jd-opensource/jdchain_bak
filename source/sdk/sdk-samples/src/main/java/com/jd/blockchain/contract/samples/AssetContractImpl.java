@@ -7,7 +7,7 @@ import java.util.Set;
 import com.jd.blockchain.contract.model.ContractException;
 import com.jd.blockchain.contract.model.ContractEventContext;
 import com.jd.blockchain.contract.model.EventProcessingAwire;
-import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;

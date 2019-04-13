@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.crypto.hash.HashFunction;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.utils.security.ShaUtils;
 
 public class SHA256HashFunction implements HashFunction {
