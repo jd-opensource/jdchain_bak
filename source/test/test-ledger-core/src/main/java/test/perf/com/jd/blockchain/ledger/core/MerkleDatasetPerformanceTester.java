@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
@@ -131,7 +132,7 @@ public class MerkleDatasetPerformanceTester {
 		Random rand = new Random();
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		cryptoConfig.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
 		cryptoConfig.setAutoVerifyHash(true);
 
 		// generate base data sample;

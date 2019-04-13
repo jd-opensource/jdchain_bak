@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -15,11 +14,11 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
@@ -33,6 +32,7 @@ import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.DbConnection;
+import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 //import com.jd.blockchain.storage.service.utils.MemoryBasedDb;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
@@ -73,7 +73,7 @@ public class LedgerInitializeWebTest {
 		LedgerInitProperties initSetting = loadInitSetting_1();
 		// 加载共识配置；
 		Properties props = loadConsensusSetting();
-//		ConsensusProperties csProps = new ConsensusProperties(props);
+		// ConsensusProperties csProps = new ConsensusProperties(props);
 		ConsensusProvider csProvider = getConsensusProvider();
 		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
 
@@ -223,10 +223,11 @@ public class LedgerInitializeWebTest {
 
 	public SignatureDigest signPermissionRequest(int requesterId, PrivKey privKey, LedgerInitProperties initSetting) {
 		byte[] reqAuthBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), initSetting.getLedgerSeed());
-		SignatureDigest reqAuthSign = CryptoUtils.sign(CryptoAlgorithm.ED25519).sign(privKey, reqAuthBytes);
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureDigest reqAuthSign = signFunc.sign(privKey, reqAuthBytes);
 		return reqAuthSign;
 	}
-	
+
 	private static ConsensusProvider getConsensusProvider() {
 		return ConsensusProviders.getProvider("com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider");
 	}
@@ -237,7 +238,7 @@ public class LedgerInitializeWebTest {
 		Prompter consolePrompter = new PresetAnswerPrompter("N"); // new ConsolePrompter();
 		LedgerInitProperties initSetting = loadInitSetting_2();
 		Properties props = loadConsensusSetting();
-//		ConsensusProperties csProps = new ConsensusProperties(props);
+		// ConsensusProperties csProps = new ConsensusProperties(props);
 		ConsensusProvider csProvider = getConsensusProvider();
 		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
 
@@ -263,23 +264,23 @@ public class LedgerInitializeWebTest {
 
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri("memory://local/0");
-		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, csProps, csProvider, testDb0, consolePrompter,
-				quitLatch);
+		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, csProps, csProvider, testDb0,
+				consolePrompter, quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri("memory://local/1");
-		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, csProps, csProvider, testDb1, consolePrompter,
-				quitLatch);
+		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, csProps, csProvider, testDb1,
+				consolePrompter, quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri("memory://local/2");
-		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, csProps,csProvider,  testDb2, consolePrompter,
-				quitLatch);
+		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, csProps, csProvider, testDb2,
+				consolePrompter, quitLatch);
 
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri("memory://local/3");
-		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, csProps, csProvider, testDb03, consolePrompter,
-				quitLatch);
+		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, csProps, csProvider, testDb03,
+				consolePrompter, quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -347,7 +348,7 @@ public class LedgerInitializeWebTest {
 
 		private DBConnectionConfig dbConnConfig;
 
-//		private MQConnectionConfig mqConnConfig;
+		// private MQConnectionConfig mqConnConfig;
 
 		private volatile ConfigurableApplicationContext ctx;
 

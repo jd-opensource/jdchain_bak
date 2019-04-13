@@ -1,8 +1,10 @@
 package com.jd.blockchain.ledger.core.impl;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.hash.HashFunction;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -230,7 +232,8 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 			} else {
 				blockBodyBytes = BinaryEncodingUtils.encode(block, BlockBody.class);
 			}
-			boolean pass = CryptoUtils.hashCrypto().verify(blockHash, blockBodyBytes);
+			HashFunction hashFunc = CryptoServiceProviders.getHashFunction(blockHash.getAlgorithm());
+			boolean pass = hashFunc.verify(blockHash, blockBodyBytes);
 			if (!pass) {
 				throw new LedgerException("Block hash verification fail!");
 			}

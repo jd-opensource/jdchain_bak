@@ -1,14 +1,37 @@
 package test.com.jd.blockchain.intgr.perf;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.DoubleStream;
+
+import org.springframework.core.io.ClassPathResource;
+
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionRequestBuilder;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
@@ -34,19 +57,9 @@ import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
-import org.springframework.core.io.ClassPathResource;
+
 import test.com.jd.blockchain.intgr.PresetAnswerPrompter;
 import test.com.jd.blockchain.intgr.perf.Utils.NodeContext;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.DoubleStream;
 
 //import com.jd.blockchain.storage.service.utils.MemoryBasedDb;
 
@@ -97,8 +110,8 @@ public class LedgerPerformanceTest {
 				dbType = DBType.ROCKSDB;
 			}
 
-			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? CryptoAlgorithm.RIPEMD160
-					: CryptoAlgorithm.SHA256;
+			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? CryptoServiceProviders.getAlgorithm("RIPEMD260")
+					: CryptoServiceProviders.getAlgorithm("SHA256");
 			System.out.println(
 					String.format("----- LedgerPerformanceTest [HashAlgorithm=%s][DBType=%s] ----", hashAlg, dbType));
 			// 初始化，并获取其中一个节点的账本，单独进行性能测试；

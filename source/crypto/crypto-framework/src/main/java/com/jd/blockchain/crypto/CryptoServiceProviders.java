@@ -125,16 +125,21 @@ public final class CryptoServiceProviders {
 		return algorithms.get(code);
 	}
 
+	/**
+	 * Return the CryptoAlogrithm object of the specified name ,or null if none;
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static CryptoAlgorithm getAlgorithm(String name) {
 		Short code = names.get(name.toUpperCase());
 		return code == null ? null : algorithms.get(code);
 	}
-	
+
 	public static RandomFunction getRandomFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getRandomFunction(algorithm);
 	}
@@ -152,12 +157,11 @@ public final class CryptoServiceProviders {
 
 		return (RandomFunction) func;
 	}
-	
+
 	public static HashFunction getHashFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getHashFunction(algorithm);
 	}
@@ -175,12 +179,11 @@ public final class CryptoServiceProviders {
 
 		return (HashFunction) func;
 	}
-	
+
 	public static AsymmetricEncryptionFunction getAsymmetricEncryptionFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getAsymmetricEncryptionFunction(algorithm);
 	}
@@ -198,13 +201,11 @@ public final class CryptoServiceProviders {
 
 		return (AsymmetricEncryptionFunction) func;
 	}
-	
 
 	public static SignatureFunction getSignatureFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getSignatureFunction(algorithm);
 	}
@@ -222,13 +223,11 @@ public final class CryptoServiceProviders {
 
 		return (SignatureFunction) func;
 	}
-	
 
 	public static SymmetricEncryptionFunction getSymmetricEncryptionFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getSymmetricEncryptionFunction(algorithm);
 	}
@@ -246,13 +245,11 @@ public final class CryptoServiceProviders {
 
 		return (SymmetricEncryptionFunction) func;
 	}
-	
 
 	public static CryptoFunction getCryptoFunction(String algorithmName) {
 		CryptoAlgorithm algorithm = getAlgorithm(algorithmName);
 		if (algorithm == null) {
-			throw new CryptoException(
-					"Algorithm " + algorithmName + " has no service provider!");
+			throw new CryptoException("Algorithm " + algorithmName + " has no service provider!");
 		}
 		return getCryptoFunction(algorithm);
 	}

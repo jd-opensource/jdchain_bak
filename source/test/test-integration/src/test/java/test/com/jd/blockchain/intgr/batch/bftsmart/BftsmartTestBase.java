@@ -8,15 +8,16 @@
  */
 package test.com.jd.blockchain.intgr.batch.bftsmart;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
-import com.jd.blockchain.utils.codec.Base58Utils;
-import com.jd.blockchain.utils.security.ShaUtils;
-import org.junit.Test;
-
 import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePrivKey;
 import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePubKey;
+
+import org.junit.Test;
+
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.utils.codec.Base58Utils;
+import com.jd.blockchain.utils.security.ShaUtils;
 
 /**
  *
@@ -35,8 +36,9 @@ public class BftsmartTestBase {
 
     @Test
     public void newUsers() {
+    	SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
         for (int i = 0; i < userSize; i++) {
-            CryptoKeyPair kp = CryptoUtils.sign(CryptoAlgorithm.ED25519).generateKeyPair();
+            CryptoKeyPair kp = signFunc.generateKeyPair();
 
             String base58PubKey = encodePubKey(kp.getPubKey());
 

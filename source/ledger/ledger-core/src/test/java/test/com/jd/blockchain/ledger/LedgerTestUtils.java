@@ -2,14 +2,17 @@ package test.com.jd.blockchain.ledger;
 
 import java.util.Random;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
 import com.jd.blockchain.ledger.data.TransactionService;
@@ -20,12 +23,12 @@ public class LedgerTestUtils {
 	// private static ThreadLocalRandom rand = ThreadLocalRandom.current();
 
 	private static Random rand = new Random();
-	
-	
+
 	public static TransactionRequest createTxRequest(HashDigest ledgerHash) {
-		return createTxRequest(ledgerHash, CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM));
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		return createTxRequest(ledgerHash, signFunc);
 	}
-	
+
 	public static TransactionRequest createTxRequest(HashDigest ledgerHash, SignatureFunction signatureFunction) {
 		TxHandle txHandle = new TxHandle();
 
@@ -65,21 +68,19 @@ public class LedgerTestUtils {
 		txDataSnapshot.setUserAccountSetHash(generateRandomHash());
 		return txDataSnapshot;
 	}
-	
+
 	public static HashDigest generateRandomHash() {
 		byte[] data = new byte[64];
 		rand.nextBytes(data);
-		return CryptoUtils.hash(ClassicCryptoService.SHA256_ALGORITHM).hash(data);
+		return CryptoServiceProviders.getHashFunction("SHA256").hash(data);
 	}
-	
-	
+
 	public static CryptoSetting createDefaultCryptoSetting() {
 		CryptoConfig cryptoSetting = new CryptoConfig();
 		cryptoSetting.setAutoVerifyHash(true);
 		cryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
 		return cryptoSetting;
 	}
-	
 
 	private static class TxHandle implements TransactionService {
 

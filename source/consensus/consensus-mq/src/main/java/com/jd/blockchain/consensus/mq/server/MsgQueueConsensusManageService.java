@@ -8,20 +8,17 @@
  */
 package com.jd.blockchain.consensus.mq.server;
 
+import java.util.Arrays;
+
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ConsensusManageService;
 import com.jd.blockchain.consensus.ConsensusSecurityException;
-import com.jd.blockchain.consensus.mq.client.MsgQueueClientIdentification;
 import com.jd.blockchain.consensus.mq.config.MsgQueueClientIncomingConfig;
-import com.jd.blockchain.consensus.mq.config.MsgQueueConsensusConfig;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientIncomingSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
-
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 /**
  *
@@ -65,7 +62,7 @@ public class MsgQueueConsensusManageService implements ConsensusManageService {
         byte[] identityInfo = authId.getIdentityInfo();
         byte[] address = pubKey.toBytes(); // 使用公钥地址作为认证信息
         if (Arrays.equals(address, identityInfo)) {
-            SignatureFunction signatureFunction = CryptoUtils.sign(pubKey.getAlgorithm());
+            SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(pubKey.getAlgorithm());
             isLegal = signatureFunction.verify(authId.getSignature(), pubKey, identityInfo);
         }
         return isLegal;

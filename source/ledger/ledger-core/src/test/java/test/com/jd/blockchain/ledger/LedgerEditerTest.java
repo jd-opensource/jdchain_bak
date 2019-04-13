@@ -9,9 +9,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.asymmetric.AsymmetricCryptography;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
@@ -44,9 +42,7 @@ public class LedgerEditerTest {
 	}
 
 	String ledgerKeyPrefix = "LDG://";
-	AsymmetricCryptography asymmetricCryptography = CryptoUtils.asymmCrypto();
-	SignatureFunction signatureFunction = asymmetricCryptography
-			.getSignatureFunction(ClassicCryptoService.ED25519_ALGORITHM);
+	SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 
 	// 存储；
 	MemoryKVStorage storage = new MemoryKVStorage();
@@ -111,6 +107,8 @@ public class LedgerEditerTest {
 	}
 
 	private LedgerInitSetting createLedgerInitSetting() {
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
 		defCryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
@@ -123,7 +121,7 @@ public class LedgerEditerTest {
 		parties[0] = new ConsensusParticipantData();
 		parties[0].setId(0);
 		parties[0].setName("John");
-		CryptoKeyPair kp0 = CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM).generateKeyPair();
+		CryptoKeyPair kp0 = signFunc.generateKeyPair();
 		parties[0].setPubKey(kp0.getPubKey());
 		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
 		parties[0].setHostAddress(new NetworkAddress("192.168.1.6", 9000));
@@ -131,7 +129,7 @@ public class LedgerEditerTest {
 		parties[1] = new ConsensusParticipantData();
 		parties[1].setId(1);
 		parties[1].setName("John");
-		CryptoKeyPair kp1 = CryptoUtils.sign(ClassicCryptoService.ED25519_ALGORITHM).generateKeyPair();
+		CryptoKeyPair kp1 = signFunc.generateKeyPair();
 		parties[1].setPubKey(kp1.getPubKey());
 		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
 		parties[1].setHostAddress(new NetworkAddress("192.168.1.7", 9000));

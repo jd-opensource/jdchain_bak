@@ -6,14 +6,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
@@ -27,6 +26,7 @@ import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 //import com.jd.blockchain.storage.service.utils.MemoryBasedDb;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
@@ -217,7 +217,7 @@ public class LedgerInitializeTest {
 
 			CryptoConfig cryptoSetting = new CryptoConfig();
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
-			cryptoSetting.setHashAlgorithm(CryptoAlgorithm.SHA256);
+			cryptoSetting.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
 
 			partiKey = new CryptoKeyPair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 

@@ -1,27 +1,18 @@
 package com.jd.blockchain.consensus.bftsmart.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import bftsmart.tom.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.consensus.ConsensusManageService;
 import com.jd.blockchain.consensus.NodeSettings;
-import com.jd.blockchain.consensus.bftsmart.BftsmartCommitBlockSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
@@ -31,28 +22,17 @@ import com.jd.blockchain.consensus.service.NodeServer;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.consensus.service.StateHandle;
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.hash.HashDigest;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRespHandle;
-import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.data.TxContentBlob;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
 import com.jd.blockchain.utils.PropertiesUtils;
-import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
-import com.jd.blockchain.utils.concurrent.CompletableAsyncFuture;
 import com.jd.blockchain.utils.io.BytesUtils;
-import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 import bftsmart.reconfiguration.util.HostsConfig;
 import bftsmart.reconfiguration.util.TOMConfiguration;
-import bftsmart.reconfiguration.views.MemoryBasedViewStorage;
+import bftsmart.tom.MessageContext;
+import bftsmart.tom.ReplyContext;
+import bftsmart.tom.ReplyContextMessage;
+import bftsmart.tom.ServiceReplica;
 import bftsmart.tom.core.messages.TOMMessage;
 import bftsmart.tom.server.defaultservices.DefaultRecoverable;
 

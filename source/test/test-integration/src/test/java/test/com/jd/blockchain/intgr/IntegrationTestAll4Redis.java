@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
@@ -52,7 +52,6 @@ import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsT
 
 public class IntegrationTestAll4Redis {
 
-
 	public static final String PASSWORD = "abc";
 
 	public static final String[] PUB_KEYS = { "endPsK36imXrY66pru6ttZ8dZ3TynWekmdqoM1K7ZRRoRBBiYVzM",
@@ -76,8 +75,8 @@ public class IntegrationTestAll4Redis {
 	private String contractZipName = "AssetContract1.contract";
 	private String eventName = "issue-asset";
 	HashDigest txContentHash;
-	String pubKeyVal = "jd.com"+System.currentTimeMillis();
-//	String userPubKeyVal = "this is user's pubKey";
+	String pubKeyVal = "jd.com" + System.currentTimeMillis();
+	// String userPubKeyVal = "this is user's pubKey";
 	// 保存资产总数的键；
 	private static final String KEY_TOTAL = "TOTAL";
 	// 第二个参数;
@@ -130,8 +129,10 @@ public class IntegrationTestAll4Redis {
 		gwStarting0.waitReturn();
 
 		// 执行测试用例之前，校验每个节点的一致性；
-		LedgerRepository[] ledgers = buildLedgers(new LedgerBindingConfig[]{bindingConfig0, bindingConfig1, bindingConfig2, bindingConfig3},
-				new DbConnectionFactory[]{dbConnectionFactory0,dbConnectionFactory1,dbConnectionFactory2,dbConnectionFactory3});
+		LedgerRepository[] ledgers = buildLedgers(
+				new LedgerBindingConfig[] { bindingConfig0, bindingConfig1, bindingConfig2, bindingConfig3 },
+				new DbConnectionFactory[] { dbConnectionFactory0, dbConnectionFactory1, dbConnectionFactory2,
+						dbConnectionFactory3 });
 		testConsistencyAmongNodes(ledgers);
 
 		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
@@ -144,10 +145,9 @@ public class IntegrationTestAll4Redis {
 		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
 		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
 
-		CryptoKeyPair adminKey = new CryptoKeyPair(pubKey0,privkey0);
+		CryptoKeyPair adminKey = new CryptoKeyPair(pubKey0, privkey0);
 
 		testWriteBatchTransactions(gateway0, adminKey, ledgers[0]);
-
 
 		testSDK(gateway0, adminKey, ledgers[0]);
 
@@ -155,23 +155,25 @@ public class IntegrationTestAll4Redis {
 		testConsistencyAmongNodes(ledgers);
 	}
 
-	private LedgerBindingConfig loadBindingConfig(int id){
+	private LedgerBindingConfig loadBindingConfig(int id) {
 		ClassPathResource res = new ClassPathResource("ledger-binding-redis-" + id + ".conf");
-		try(InputStream in = res.getInputStream()){
+		try (InputStream in = res.getInputStream()) {
 			return LedgerBindingConfig.resolve(in);
 		} catch (IOException e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
 
-	private LedgerRepository[] buildLedgers(LedgerBindingConfig[] bindingConfigs, DbConnectionFactory[] dbConnectionFactories){
-		int[] ids = {0, 1, 2, 3};
+	private LedgerRepository[] buildLedgers(LedgerBindingConfig[] bindingConfigs,
+			DbConnectionFactory[] dbConnectionFactories) {
+		int[] ids = { 0, 1, 2, 3 };
 		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
 		LedgerManager[] ledgerManagers = new LedgerManager[ids.length];
 		for (int i = 0; i < ids.length; i++) {
 			ledgerManagers[i] = new LedgerManager();
 			HashDigest ledgerHash = bindingConfigs[0].getLedgerHashs()[0];
-			DbConnection conn = dbConnectionFactories[i].connect(bindingConfigs[i].getLedger(ledgerHash).getDbConnection().getUri(),
+			DbConnection conn = dbConnectionFactories[i].connect(
+					bindingConfigs[i].getLedger(ledgerHash).getDbConnection().getUri(),
 					bindingConfigs[i].getLedger(ledgerHash).getDbConnection().getPassword());
 			ledgers[i] = ledgerManagers[i].register(ledgerHash, conn.getStorageService());
 		}
@@ -199,8 +201,9 @@ public class IntegrationTestAll4Redis {
 		}
 	}
 
-	//测试一个区块包含多个交易的写入情况，并验证写入结果；
-	private void testWriteBatchTransactions(GatewayTestRunner gateway, CryptoKeyPair adminKey,LedgerRepository ledgerRepository) {
+	// 测试一个区块包含多个交易的写入情况，并验证写入结果；
+	private void testWriteBatchTransactions(GatewayTestRunner gateway, CryptoKeyPair adminKey,
+			LedgerRepository ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService blockchainService = gwsrvFact.getBlockchainService();
@@ -209,18 +212,16 @@ public class IntegrationTestAll4Redis {
 
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHashs[0]);
 
-		//regist user account
+		// regist user account
 		txTpl.users().register(userKey.getIdentity());
 
-		//regist data account
+		// regist data account
 		txTpl.dataAccounts().register(dataKey.getIdentity());
 
-		//add kv ops for data account
+		// add kv ops for data account
 		DataAccountKVSetOperation dataKvsetOP = txTpl.dataAccount(dataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1)
-				.set("B", "Value_B_0".getBytes(), -1)
-				.set("C", "Value_C_0".getBytes(), -1)
-				.set("D", "Value_D_0".getBytes(), -1).getOperation();
+				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1)
+				.set("C", "Value_C_0".getBytes(), -1).set("D", "Value_D_0".getBytes(), -1).getOperation();
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -232,27 +233,39 @@ public class IntegrationTestAll4Redis {
 		assertTrue(txResp.isSuccess());
 		assertEquals(ledgerRepository.retrieveLatestBlockHeight(), txResp.getBlockHeight());
 
-		assertArrayEquals("Value_A_0".getBytes(), ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getBytes("A"));
-		assertArrayEquals("Value_B_0".getBytes(), ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getBytes("B"));
-		assertArrayEquals("Value_C_0".getBytes(), ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getBytes("C"));
-		assertArrayEquals("Value_D_0".getBytes(), ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getBytes("D"));
-		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getDataVersion("A"));
-		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getDataVersion("B"));
-		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getDataVersion("C"));
-		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock()).getDataAccount(dataKey.getAddress()).getDataVersion("D"));
+		assertArrayEquals("Value_A_0".getBytes(),
+				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+						.getDataAccount(dataKey.getAddress()).getBytes("A"));
+		assertArrayEquals("Value_B_0".getBytes(),
+				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+						.getDataAccount(dataKey.getAddress()).getBytes("B"));
+		assertArrayEquals("Value_C_0".getBytes(),
+				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+						.getDataAccount(dataKey.getAddress()).getBytes("C"));
+		assertArrayEquals("Value_D_0".getBytes(),
+				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+						.getDataAccount(dataKey.getAddress()).getBytes("D"));
+		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getDataVersion("A"));
+		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getDataVersion("B"));
+		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getDataVersion("C"));
+		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getDataVersion("D"));
 
 		return;
 	}
 
-
-	private void testSDK(GatewayTestRunner gateway, CryptoKeyPair adminKey,LedgerRepository ledgerRepository) {
+	private void testSDK(GatewayTestRunner gateway, CryptoKeyPair adminKey, LedgerRepository ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
 
 		HashDigest[] ledgerHashs = bcsrv.getLedgerHashs();
 		BlockchainKeyPair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
-		BlockchainKeyPair newDataAccount = testSDK_RegisterDataAccount(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
+		BlockchainKeyPair newDataAccount = testSDK_RegisterDataAccount(adminKey, ledgerHashs[0], bcsrv,
+				ledgerRepository);
 		testSDK_InsertData(adminKey, ledgerHashs[0], bcsrv, newDataAccount.getAddress(), ledgerRepository);
 		LedgerBlock latestBlock = testSDK_Contract(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
 
@@ -291,7 +304,8 @@ public class IntegrationTestAll4Redis {
 		assertEquals(txResp.getContentHash(), prepTx.getHash());
 		assertEquals(txResp.getBlockHash(), ledgerRepository.getLatestBlockHash());
 
-		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, dataAccountAddress.toString(), dataKey);
+		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, dataAccountAddress.toString(),
+				dataKey);
 		for (KVDataEntry kvDataEntry : kvDataEntries) {
 			assertEquals(dataKey, kvDataEntry.getKey());
 			String valHexText = (String) kvDataEntry.getValue();
@@ -302,7 +316,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private BlockchainKeyPair testSDK_RegisterDataAccount(CryptoKeyPair adminKey, HashDigest ledgerHash,
-														  BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册数据账户，并验证最终写入；
 		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
@@ -337,7 +351,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private BlockchainKeyPair testSDK_RegisterUser(CryptoKeyPair adminKey, HashDigest ledgerHash,
-												   BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册用户，并验证最终写入；
 		BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
 
@@ -366,7 +380,6 @@ public class IntegrationTestAll4Redis {
 		return user;
 	}
 
-
 	public static LedgerInitProperties loadInitSetting_integration() {
 		ClassPathResource ledgerInitSettingResource = new ClassPathResource("ledger_init_test_integration.init");
 		try (InputStream in = ledgerInitSettingResource.getInputStream()) {
@@ -378,12 +391,13 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private LedgerBlock testSDK_Contract(CryptoKeyPair adminKey, HashDigest ledgerHash,
-										 BlockchainService blockchainService,LedgerRepository ledgerRepository) {
-		System.out.println("adminKey="+AddressEncoding.generateAddress(adminKey.getPubKey()));
+			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+		System.out.println("adminKey=" + AddressEncoding.generateAddress(adminKey.getPubKey()));
 		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
-		System.out.println("userKey="+userKey.getAddress());
+		System.out.println("userKey=" + userKey.getAddress());
 		// valid the basic data in contract;
-//		prepareContractData(adminKey, ledgerHash, blockchainService,ledgerRepository);
+		// prepareContractData(adminKey, ledgerHash,
+		// blockchainService,ledgerRepository);
 
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		txTpl.users().register(userKey.getIdentity());
@@ -391,12 +405,12 @@ public class IntegrationTestAll4Redis {
 		// 定义交易；
 		// 注册数据账户，并验证最终写入；
 		txTpl.dataAccounts().register(contractDataKey.getIdentity());
-//		dataAccountSet.getDataAccount(dataAddress)
-		DataAccount dataAccount = ledgerRepository.getDataAccountSet(ledgerRepository.getLatestBlock()).getDataAccount(contractDataKey.getAddress());
+		// dataAccountSet.getDataAccount(dataAddress)
+		DataAccount dataAccount = ledgerRepository.getDataAccountSet(ledgerRepository.getLatestBlock())
+				.getDataAccount(contractDataKey.getAddress());
 
 		DataAccountKVSetOperation kvsetOP = txTpl.dataAccount(contractDataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1)
-				.set("B", "Value_B_0".getBytes(), -1)
+				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1)
 				.set(KEY_TOTAL, "total value,dataAccount".getBytes(), -1)
 				.set(KEY_ABC, "abc value,dataAccount".getBytes(), -1)
 				// 所有的模拟数据都在这个dataAccount中填充;
@@ -417,19 +431,19 @@ public class IntegrationTestAll4Redis {
 		txResp.getContentHash();
 
 		LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
-		byte[] contractCodeInDb = ledgerRepository.getContractAccountSet(block).getContract(contractDeployKey.getAddress())
-				.getChainCode();
+		byte[] contractCodeInDb = ledgerRepository.getContractAccountSet(block)
+				.getContract(contractDeployKey.getAddress()).getChainCode();
 		assertArrayEquals(contractCode, contractCodeInDb);
 		txContentHash = ptx.getHash();
 
 		// execute the contract;
-		testContractExe(adminKey, ledgerHash, userKey,  blockchainService, ledgerRepository);
+		testContractExe(adminKey, ledgerHash, userKey, blockchainService, ledgerRepository);
 
 		return block;
 	}
 
 	private void testContractExe(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
-								 BlockchainService blockchainService,LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
 
@@ -438,8 +452,8 @@ public class IntegrationTestAll4Redis {
 
 		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
 				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
-						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##"
-						+ txContentHash.toBase58()+"##"+pubKeyVal).getBytes());
+						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
+						+ "##" + pubKeyVal).getBytes());
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -460,24 +474,26 @@ public class IntegrationTestAll4Redis {
 
 		// 验证合约中的赋值，外部可以获得;
 		DataAccountSet dataAccountSet = ledgerRepository.getDataAccountSet(backgroundLedgerBlock);
-		PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, pubKeyVal.getBytes());
+		CryptoKeyPair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
+		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 		assertEquals(dataAddress, dataAccountSet.getDataAccount(dataAddress).getAddress());
 		assertEquals("hello", new String(dataAccountSet.getDataAccount(dataAddress).getBytes(KEY_TOTAL, -1)));
 
 		// 验证userAccount，从合约内部赋值，然后外部验证;内部定义动态key，外部不便于得到，临时屏蔽;
-//		UserAccountSet userAccountSet = ledgerRepository.getUserAccountSet(backgroundLedgerBlock);
-//		PubKey userPubKey = new PubKey(CryptoAlgorithm.ED25519, userPubKeyVal.getBytes());
-//		String userAddress = AddressEncoding.generateAddress(userPubKey);
-//		assertEquals(userAddress, userAccountSet.getUser(userAddress).getAddress());
+		// UserAccountSet userAccountSet =
+		// ledgerRepository.getUserAccountSet(backgroundLedgerBlock);
+		// PubKey userPubKey = new PubKey(CryptoAlgorithm.ED25519,
+		// userPubKeyVal.getBytes());
+		// String userAddress = AddressEncoding.generateAddress(userPubKey);
+		// assertEquals(userAddress, userAccountSet.getUser(userAddress).getAddress());
 	}
 
-	private void prepareContractData(CryptoKeyPair adminKey, HashDigest ledgerHash,
-									 BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+	private void prepareContractData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+			LedgerRepository ledgerRepository) {
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();

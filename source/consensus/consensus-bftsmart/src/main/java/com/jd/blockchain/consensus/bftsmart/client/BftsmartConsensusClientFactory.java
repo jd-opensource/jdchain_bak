@@ -1,28 +1,22 @@
 package com.jd.blockchain.consensus.bftsmart.client;
 
-import bftsmart.reconfiguration.util.TOMConfiguration;
-import com.jd.blockchain.consensus.ClientIdentification;
-import com.jd.blockchain.consensus.ClientIncomingSettings;
-import com.jd.blockchain.consensus.ConsensusManageService;
-import com.jd.blockchain.consensus.ConsensusSecurityException;
-import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
-import com.jd.blockchain.consensus.bftsmart.BftsmartTopology;
-import com.jd.blockchain.consensus.bftsmart.service.BftsmartConsensusManageService;
-import com.jd.blockchain.consensus.client.ClientFactory;
-import com.jd.blockchain.consensus.client.ClientSettings;
-import com.jd.blockchain.consensus.client.ConsensusClient;
-import com.jd.blockchain.crypto.CryptoUtils;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.asymmetric.*;
-import com.jd.blockchain.utils.http.agent.HttpServiceAgent;
-import com.jd.blockchain.utils.http.agent.ServiceEndpoint;
-import com.jd.blockchain.utils.net.NetworkAddress;
-import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.jd.blockchain.consensus.ClientIncomingSettings;
+import com.jd.blockchain.consensus.ConsensusManageService;
+import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
+import com.jd.blockchain.consensus.client.ClientFactory;
+import com.jd.blockchain.consensus.client.ClientSettings;
+import com.jd.blockchain.consensus.client.ConsensusClient;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
+import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
+import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class BftsmartConsensusClientFactory implements ClientFactory {
 
@@ -43,7 +37,7 @@ public class BftsmartConsensusClientFactory implements ClientFactory {
 		PubKey pubKey = clientKeyPair.getPubKey();
 		PrivKey privKey = clientKeyPair.getPrivKey();
 
-		SignatureFunction signatureFunction = CryptoUtils.sign(pubKey.getAlgorithm());
+		SignatureFunction signatureFunction =CryptoServiceProviders.getSignatureFunction(pubKey.getAlgorithm());
 		SignatureDigest signatureDigest = signatureFunction.sign(privKey, pubKey.toBytes());
 
 		BftsmartClientIdentification bftsmartClientIdentification = new BftsmartClientIdentification();

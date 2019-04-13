@@ -20,18 +20,19 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.SignatureDigest;
+import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
-import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -56,11 +57,11 @@ import com.jd.blockchain.tools.initializer.LedgerInitException;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
+import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.InvocationResult;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
-import com.jd.blockchain.tools.initializer.Prompter;
 
 /**
  * 账本初始化控制器；
@@ -75,7 +76,9 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		DataContractRegistry.register(TransactionRequest.class);
 	}
 
-	private static final CryptoAlgorithm SIGN_ALG = CryptoAlgorithm.ED25519;
+	private static final String DEFAULT_SIGN_ALGORITHM = "ED25519";
+	
+	private final SignatureFunction SIGN_FUNC;
 
 	private volatile LedgerInitPermission localPermission;
 
@@ -113,10 +116,13 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	private InitConsensusServiceFactory initCsServiceFactory;
 
 	public LedgerInitializeWebController() {
+		this.SIGN_FUNC = CryptoServiceProviders.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
 	}
 
 	public LedgerInitializeWebController(LedgerManage ledgerManager, DbConnectionFactory dbConnFactory,
 			InitConsensusServiceFactory initCsServiceFactory) {
+		this.SIGN_FUNC = CryptoServiceProviders.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
+		
 		this.ledgerManager = ledgerManager;
 		this.dbConnFactory = dbConnFactory;
 		this.initCsServiceFactory = initCsServiceFactory;
@@ -295,7 +301,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	public CryptoSetting createDefaultCryptoSetting() {
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(CryptoAlgorithm.SHA256);
+		defCryptoSetting.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
 
 		return defCryptoSetting;
 	}
@@ -335,9 +341,9 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 		// 校验当前的公钥、私钥是否匹配；
 		byte[] testBytes = BytesUtils.toBytes(currentId);
-		SignatureDigest testSign = CryptoUtils.sign(SIGN_ALG).sign(privKey, testBytes);
+		SignatureDigest testSign = SIGN_FUNC.sign(privKey, testBytes);
 		PubKey myPubKey = orderedParties[currentId].getPubKey();
-		if (!CryptoUtils.sign(SIGN_ALG).verify(testSign, myPubKey, testBytes)) {
+		if (!SIGN_FUNC.verify(testSign, myPubKey, testBytes)) {
 			throw new LedgerInitException("Your pub-key specified in the init-settings isn't match your priv-key!");
 		}
 		this.initializerAddresses = new NetworkAddress[orderedParties.length];
@@ -370,7 +376,8 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private LedgerInitDecision makeDecision(int participantId, HashDigest ledgerHash, PrivKey privKey) {
 		byte[] dataBytes = getDecisionBytes(participantId, ledgerHash);
-		SignatureDigest signature = CryptoUtils.sign(privKey.getAlgorithm()).sign(privKey, dataBytes);
+		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(privKey.getAlgorithm());
+		SignatureDigest signature = signFunc.sign(privKey, dataBytes);
 
 		LedgerInitDecisionData decision = new LedgerInitDecisionData();
 		decision.setParticipantId(participantId);
@@ -496,7 +503,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	public SignatureDigest signPermissionRequest(int requesterId, PrivKey privKey) {
 		byte[] reqAuthBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), ledgerInitSetting.getLedgerSeed());
-		SignatureDigest reqAuthSign = CryptoUtils.sign(SIGN_ALG).sign(privKey, reqAuthBytes);
+		SignatureDigest reqAuthSign = SIGN_FUNC.sign(privKey, reqAuthBytes);
 		return reqAuthSign;
 	}
 
@@ -561,7 +568,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		}
 		byte[] requestCodeBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), ledgerInitSetting.getLedgerSeed());
 		PubKey requesterPubKey = participants[requesterId].getPubKey();
-		if (!CryptoUtils.sign(SIGN_ALG).verify(signature, requesterPubKey, requestCodeBytes)) {
+		if (!SIGN_FUNC.verify(signature, requesterPubKey, requestCodeBytes)) {
 			throw new LedgerInitException("The requester signature is invalid!");
 		}
 		return localPermission;
@@ -700,7 +707,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		PubKey targetPubKey = ledgerInitSetting.getConsensusParticipants()[targetDecision.getParticipantId()]
 				.getPubKey();
 		byte[] deciBytes = getDecisionBytes(targetDecision.getParticipantId(), targetDecision.getLedgerHash());
-		if ((!CryptoUtils.sign(hashAlgorithm).verify(targetDecision.getSignature(), targetPubKey, deciBytes))
+		if ((!SIGN_FUNC.verify(targetDecision.getSignature(), targetPubKey, deciBytes))
 				&& resultHandle.getResult() == null) {
 			prompter.error("The signature of received decision is invalid! --[Id=%s]",
 					targetDecision.getParticipantId());

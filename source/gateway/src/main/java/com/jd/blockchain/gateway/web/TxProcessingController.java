@@ -1,6 +1,5 @@
 package com.jd.blockchain.gateway.web;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.asymmetric.SignatureFunction;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.gateway.PeerService;
@@ -56,7 +55,8 @@ public class TxProcessingController implements TransactionService {
 			// 验证签名；
 			byte[] content = BinaryEncodingUtils.encode(txRequest.getTransactionContent(), TransactionContent.class);
 			for (DigitalSignature sign : partiSigns) {
-				SignatureFunction signFunc = CryptoUtils.sign(sign.getPubKey().getAlgorithm());
+				SignatureFunction signFunc = CryptoServiceProviders
+						.getSignatureFunction(sign.getPubKey().getAlgorithm());
 				if (!signFunc.verify(sign.getDigest(), sign.getPubKey(), content)) {
 					throw new BusinessException("The validation of participant signatures fail!");
 				}
@@ -67,4 +67,3 @@ public class TxProcessingController implements TransactionService {
 		return peerService.getTransactionService().process(txRequest);
 	}
 }
-

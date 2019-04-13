@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.Stack;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -189,7 +189,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 		// compute block hash;
 		byte[] blockBodyBytes = BinaryEncodingUtils.encode(newlyBlock, BlockBody.class);
-		HashDigest blockHash = CryptoUtils.hashCrypto().getFunction(cryptoSetting.getHashAlgorithm())
+		HashDigest blockHash = CryptoServiceProviders.getHashFunction(cryptoSetting.getHashAlgorithm())
 				.hash(blockBodyBytes);
 		newlyBlock.setHash(blockHash);
 		if (newlyBlock.getLedgerHash() == null) {

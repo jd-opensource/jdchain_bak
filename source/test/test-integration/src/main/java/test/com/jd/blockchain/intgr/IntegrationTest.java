@@ -8,14 +8,13 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
-import com.jd.blockchain.storage.service.KVStorageService;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
@@ -39,6 +38,7 @@ import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
@@ -59,7 +59,6 @@ public class IntegrationTest {
 	private String contractZipName = "AssetContract1.contract";
 	private String eventName = "issue-asset";
 	HashDigest txContentHash;
-	String pubKeyVal = "jd.com" + System.currentTimeMillis();;
 	// String userPubKeyVal = "this is user's pubKey";
 	// 保存资产总数的键；
 	private static final String KEY_TOTAL = "TOTAL";
@@ -597,7 +596,7 @@ public class IntegrationTest {
 		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
 				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
 						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
-						+ "##" + pubKeyVal).getBytes());
+						+ "##SOME-VALUE").getBytes());
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -617,7 +616,8 @@ public class IntegrationTest {
 
 		// 验证合约中的赋值，外部可以获得;
 		DataAccountSet dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
-		PubKey pubKey = new PubKey(CryptoAlgorithm.ED25519, pubKeyVal.getBytes());
+		CryptoKeyPair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
+		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 
 		// 验证userAccount，从合约内部赋值，然后外部验证;由于目前不允许输入重复的key，所以在内部合约中构建的key，不便于在外展示，屏蔽之;

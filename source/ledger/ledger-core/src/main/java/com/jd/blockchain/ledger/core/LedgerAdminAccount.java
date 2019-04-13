@@ -5,15 +5,16 @@ import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.hash.HashDigest;
+import com.jd.blockchain.crypto.hash.HashFunction;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
+import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
-import com.jd.blockchain.storage.service.VersioningKVStorage;
 
 public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 
@@ -94,9 +95,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		// 检查参与者列表是否已经按照 id 升序排列，并且 id 不冲突；
 		// 注：参与者的 id 要求从 0 开始编号，顺序依次递增，不允许跳空；
 		for (int i = 0; i < parties.length; i++) {
-//			if (parties[i].getAddress() != i) {
-//				throw new LedgerException("The id of participant isn't match the order of the participant list!");
-//			}
+			// if (parties[i].getAddress() != i) {
+			// throw new LedgerException("The id of participant isn't match the order of the
+			// participant list!");
+			// }
 		}
 
 		// 初始化元数据；
@@ -155,7 +157,8 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		// String key = encodeMetadataKey(base58Hash);
 		Bytes key = encodeMetadataKey(adminAccountHash);
 		byte[] bytes = settingsStorage.get(key);
-		if (!CryptoUtils.hashCrypto().verify(adminAccountHash, bytes)) {
+		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(adminAccountHash.getAlgorithm());
+		if (!hashFunc.verify(adminAccountHash, bytes)) {
 			LOGGER.error("The hash verification of ledger settings fail! --[HASH=" + key + "]");
 			throw new LedgerException("The hash verification of ledger settings fail!");
 		}
@@ -216,18 +219,19 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		return participants.getParticipantCount();
 	}
 
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see
-//	 * com.jd.blockchain.ledger.core.LedgerAdministration#getParticipant(java.lang.
-//	 * String)
-//	 */
-//	@Override
-//	public ParticipantNode getParticipant(int id) {
-//		return participants.getParticipant(id);
-//	}
-	
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see
+	// *
+	// com.jd.blockchain.ledger.core.LedgerAdministration#getParticipant(java.lang.
+	// * String)
+	// */
+	// @Override
+	// public ParticipantNode getParticipant(int id) {
+	// return participants.getParticipant(id);
+	// }
+
 	@Override
 	public ParticipantNode[] getParticipants() {
 		return participants.getParticipants();
@@ -258,8 +262,9 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 
 		// 基于之前的密码配置来计算元数据的哈希；
 		byte[] metadataBytes = serializeMetadata(metadata);
-		HashDigest metadataHash = CryptoUtils.hashCrypto()
-				.getFunction(previousSetting.getCryptoSetting().getHashAlgorithm()).hash(metadataBytes);
+		HashFunction hashFunc = CryptoServiceProviders
+				.getHashFunction(previousSetting.getCryptoSetting().getHashAlgorithm());
+		HashDigest metadataHash = hashFunc.hash(metadataBytes);
 		if (adminAccountHash == null || !adminAccountHash.equals(metadataHash)) {
 			// update modify;
 			// String base58MetadataHash = metadataHash.toBase58();

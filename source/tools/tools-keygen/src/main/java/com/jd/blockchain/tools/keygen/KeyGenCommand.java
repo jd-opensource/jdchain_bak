@@ -8,15 +8,14 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.asymmetric.CryptoKeyPair;
 import com.jd.blockchain.utils.ArgumentSet;
-import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.ArgumentSet.ArgEntry;
 import com.jd.blockchain.utils.ArgumentSet.Setting;
+import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -105,7 +104,7 @@ public class KeyGenCommand {
 	 * @param outputDir
 	 */
 	private static void generateKeyPair(String name, String outputDir, String localConfPath) {
-		CryptoKeyPair kp = CryptoUtils.sign(CryptoAlgorithm.ED25519).generateKeyPair();
+		CryptoKeyPair kp = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
 
 		String base58PubKey = encodePubKey(kp.getPubKey());
 
