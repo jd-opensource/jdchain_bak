@@ -188,9 +188,8 @@ public class SM4EncryptionFunctionTest {
 
 		assertEquals(SYMMETRIC.CODE, resolvedKey.getKeyType().CODE);
 		assertEquals(128 / 8, resolvedKey.getRawKeyBytes().length);
-		assertEquals(SMAlgorithm.SM4, resolvedKey.getAlgorithm());
-		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 4 & 0x00FF)),
-				resolvedKey.getAlgorithm());
+		assertEquals(SMAlgorithm.SM4.code(), resolvedKey.getAlgorithm());
+		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 4 & 0x00FF)), resolvedKey.getAlgorithm());
 		assertArrayEquals(symmetricKeyBytes, resolvedKey.toBytes());
 
 		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
@@ -262,7 +261,7 @@ public class SM4EncryptionFunctionTest {
 		Ciphertext resolvedCiphertext = symmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
 
 		assertEquals(1024 + 16 + 16, resolvedCiphertext.getRawCiphertext().length);
-		assertEquals(SMAlgorithm.SM4, resolvedCiphertext.getAlgorithm());
+		assertEquals(SMAlgorithm.SM4.code(), resolvedCiphertext.getAlgorithm());
 		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 4 & 0x00FF)),
 				resolvedCiphertext.getAlgorithm());
 		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());

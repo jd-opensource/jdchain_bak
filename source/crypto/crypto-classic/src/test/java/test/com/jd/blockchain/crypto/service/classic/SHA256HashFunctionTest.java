@@ -134,7 +134,7 @@ public class SHA256HashFunctionTest {
 		HashDigest resolvedDigest = hashFunction.resolveHashDigest(digestBytes);
 
 		assertEquals(256 / 8, resolvedDigest.getRawDigest().length);
-		assertEquals(ClassicAlgorithm.SHA256, resolvedDigest.getAlgorithm());
+		assertEquals(ClassicAlgorithm.SHA256.code(), resolvedDigest.getAlgorithm());
 		assertEquals((short) (HASH_ALGORITHM | ((byte) 24 & 0x00FF)), resolvedDigest.getAlgorithm());
 		assertArrayEquals(digestBytes, resolvedDigest.toBytes());
 

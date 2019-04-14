@@ -34,337 +34,332 @@ import com.jd.blockchain.utils.io.BytesUtils;
  */
 public class ED25519SignatureFunctionTest {
 
-    @Test
-    public void getAlgorithmTest(){
+	@Test
+	public void getAlgorithmTest() {
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
+		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
+		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-        assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
-        assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
+		algorithm = CryptoServiceProviders.getAlgorithm("Ed25519");
+		assertNotNull(algorithm);
 
-        algorithm = CryptoServiceProviders.getAlgorithm("Ed25519");
-        assertNotNull(algorithm);
+		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
+		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-        assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
-        assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
+		algorithm = CryptoServiceProviders.getAlgorithm("eddsa");
+		assertNull(algorithm);
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("eddsa");
-        assertNull(algorithm);
-    }
+	@Test
+	public void generateKeyPairTest() {
 
-    @Test
-    public void generateKeyPairTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
+		assertEquals(PUBLIC.CODE, pubKey.getKeyType().CODE);
+		assertEquals(32, pubKey.getRawKeyBytes().length);
+		assertEquals(PRIVATE.CODE, privKey.getKeyType().CODE);
+		assertEquals(32, privKey.getRawKeyBytes().length);
 
-        assertEquals(PUBLIC.CODE,pubKey.getKeyType().CODE);
-        assertEquals(32, pubKey.getRawKeyBytes().length);
-        assertEquals(PRIVATE.CODE,privKey.getKeyType().CODE);
-        assertEquals(32, privKey.getRawKeyBytes().length);
+		assertEquals(algorithm.code(), pubKey.getAlgorithm());
+		assertEquals(algorithm.code(), privKey.getAlgorithm());
 
-        assertEquals(algorithm.code(),pubKey.getAlgorithm());
-        assertEquals(algorithm.code(),privKey.getAlgorithm());
+		assertEquals(2 + 1 + 32, pubKey.toBytes().length);
+		assertEquals(2 + 1 + 32, privKey.toBytes().length);
 
-        assertEquals(2 + 1 + 32, pubKey.toBytes().length);
-        assertEquals(2 + 1 + 32, privKey.toBytes().length);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawPubKeyBytes = pubKey.getRawKeyBytes();
+		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
+		assertArrayEquals(BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawPubKeyBytes), pubKey.toBytes());
+		assertArrayEquals(BytesUtils.concat(algoBytes, privKeyTypeBytes, rawPrivKeyBytes), privKey.toBytes());
+	}
 
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawPubKeyBytes = pubKey.getRawKeyBytes();
-        byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
-        assertArrayEquals(BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawPubKeyBytes),pubKey.toBytes());
-        assertArrayEquals(BytesUtils.concat(algoBytes,privKeyTypeBytes,rawPrivKeyBytes),privKey.toBytes());
-    }
+	@Test
+	public void retrievePubKeyTest() {
 
-    @Test
-    public void retrievePubKeyTest(){
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
+		PubKey retrievedPubKey = signatureFunction.retrievePubKey(privKey);
 
-        PubKey retrievedPubKey = signatureFunction.retrievePubKey(privKey);
+		assertEquals(pubKey.getKeyType(), retrievedPubKey.getKeyType());
+		assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
+		assertEquals(pubKey.getAlgorithm(), retrievedPubKey.getAlgorithm());
+		assertArrayEquals(pubKey.toBytes(), retrievedPubKey.toBytes());
+	}
 
-        assertEquals(pubKey.getKeyType(),retrievedPubKey.getKeyType());
-        assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
-        assertEquals(pubKey.getAlgorithm(),retrievedPubKey.getAlgorithm());
-        assertArrayEquals(pubKey.toBytes(),retrievedPubKey.toBytes());
-    }
+	@Test
+	public void signTest() {
 
-    @Test
-    public void signTest(){
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PrivKey privKey = keyPair.getPrivKey();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PrivKey privKey = keyPair.getPrivKey();
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		byte[] signatureBytes = signatureDigest.toBytes();
 
-        byte[] signatureBytes = signatureDigest.toBytes();
+		assertEquals(2 + 64, signatureBytes.length);
+		assertEquals(ClassicAlgorithm.ED25519.code(), signatureDigest.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
+				signatureDigest.getAlgorithm());
 
-        assertEquals(2 + 64, signatureBytes.length);
-        assertEquals(ClassicAlgorithm.ED25519.code(),signatureDigest.getAlgorithm());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-        		signatureDigest.getAlgorithm());
+		byte[] algoBytes = BytesUtils.toBytes(signatureDigest.getAlgorithm());
+		byte[] rawSinatureBytes = signatureDigest.getRawDigest();
+		assertArrayEquals(BytesUtils.concat(algoBytes, rawSinatureBytes), signatureBytes);
+	}
 
-        byte[] algoBytes = BytesUtils.toBytes(signatureDigest.getAlgorithm());
-        byte[] rawSinatureBytes = signatureDigest.getRawDigest();
-        assertArrayEquals(BytesUtils.concat(algoBytes,rawSinatureBytes),signatureBytes);
-    }
+	@Test
+	public void verifyTest() {
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-    @Test
-    public void verifyTest(){
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PubKey pubKey = keyPair.getPubKey();
+		PrivKey privKey = keyPair.getPrivKey();
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		assertTrue(signatureFunction.verify(signatureDigest, pubKey, data));
+	}
 
-        assertTrue(signatureFunction.verify(signatureDigest,pubKey,data));
-    }
+	@Test
+	public void supportPrivKeyTest() {
 
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void supportPrivKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
+		byte[] privKeyBytes = privKey.toBytes();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
 
-        PrivKey privKey = keyPair.getPrivKey();
-        byte[] privKeyBytes = privKey.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] rawKeyBytes = privKey.getRawKeyBytes();
+		byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
 
-        assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
+		assertFalse(signatureFunction.supportPrivKey(ripemd160PubKeyBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] rawKeyBytes = privKey.getRawKeyBytes();
-        byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void resolvePrivKeyTest() {
 
-        assertFalse(signatureFunction.supportPrivKey(ripemd160PubKeyBytes));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void resolvePrivKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
+		byte[] privKeyBytes = privKey.toBytes();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
 
-        PrivKey privKey = keyPair.getPrivKey();
-        byte[] privKeyBytes = privKey.toBytes();
+		assertEquals(PRIVATE.CODE, resolvedPrivKey.getKeyType().CODE);
+		assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
+		assertEquals(ClassicAlgorithm.ED25519.code(), resolvedPrivKey.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
+				resolvedPrivKey.getAlgorithm());
+		assertArrayEquals(privKeyBytes, resolvedPrivKey.toBytes());
 
-        PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
+		byte[] rawKeyBytes = privKey.getRawKeyBytes();
+		byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
 
-        assertEquals(PRIVATE.CODE,resolvedPrivKey.getKeyType().CODE);
-        assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
-        assertEquals(ClassicAlgorithm.ED25519.code(),resolvedPrivKey.getAlgorithm());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedPrivKey.getAlgorithm());
-        assertArrayEquals(privKeyBytes,resolvedPrivKey.toBytes());
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolvePrivKey(ripemd160PubKeyBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] pubKeyTypeBytes = new byte[] {PUBLIC.CODE};
-        byte[] rawKeyBytes = privKey.getRawKeyBytes();
-        byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes,pubKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void supportPubKeyTest() {
 
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolvePrivKey(ripemd160PubKeyBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void supportPubKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
+		byte[] pubKeyBytes = pubKey.toBytes();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
 
-        PubKey pubKey = keyPair.getPubKey();
-        byte[] pubKeyBytes = pubKey.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
+		byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
 
-        assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
+		assertFalse(signatureFunction.supportPubKey(ripemd160PrivKeyBytes));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawKeyBytes = pubKey.getRawKeyBytes();
-        byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes,privKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void resolvePubKeyTest() {
 
-        assertFalse(signatureFunction.supportPubKey(ripemd160PrivKeyBytes));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void resolvePubKeyTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		PubKey pubKey = keyPair.getPubKey();
+		byte[] pubKeyBytes = pubKey.toBytes();
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
 
-        PubKey pubKey = keyPair.getPubKey();
-        byte[] pubKeyBytes = pubKey.toBytes();
+		assertEquals(PUBLIC.CODE, resolvedPubKey.getKeyType().CODE);
+		assertEquals(32, resolvedPubKey.getRawKeyBytes().length);
+		assertEquals(ClassicAlgorithm.ED25519.code(), resolvedPubKey.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
+				resolvedPubKey.getAlgorithm());
+		assertArrayEquals(pubKeyBytes, resolvedPubKey.toBytes());
 
-        PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
+		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
+		byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
 
-        assertEquals(PUBLIC.CODE,resolvedPubKey.getKeyType().CODE);
-        assertEquals(32, resolvedPubKey.getRawKeyBytes().length);
-        assertEquals(ClassicAlgorithm.ED25519.code(),resolvedPubKey.getAlgorithm());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedPubKey.getAlgorithm());
-        assertArrayEquals(pubKeyBytes,resolvedPubKey.toBytes());
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolvePrivKey(ripemd160PrivKeyBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] privKeyTypeBytes = new byte[] {PRIVATE.CODE};
-        byte[] rawKeyBytes = pubKey.getRawKeyBytes();
-        byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes,privKeyTypeBytes,rawKeyBytes);
+	@Test
+	public void supportDigestTest() {
 
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolvePrivKey(ripemd160PrivKeyBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void supportDigestTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
 
-        SignatureFunction signatureFunction =
-                CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		byte[] signatureDigestBytes = signatureDigest.toBytes();
+		assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
 
-        PrivKey privKey = keyPair.getPrivKey();
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawDigestBytes = signatureDigest.toBytes();
+		byte[] ripemd160SignatureBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		assertFalse(signatureFunction.supportDigest(ripemd160SignatureBytes));
+	}
 
-        byte[] signatureDigestBytes = signatureDigest.toBytes();
-        assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
+	@Test
+	public void resolveDigestTest() {
 
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawDigestBytes = signatureDigest.toBytes();
-        byte[] ripemd160SignatureBytes = BytesUtils.concat(algoBytes,rawDigestBytes);
+		byte[] data = new byte[1024];
+		Random random = new Random();
+		random.nextBytes(data);
 
-        assertFalse(signatureFunction.supportDigest(ripemd160SignatureBytes));
-    }
+		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
+		assertNotNull(algorithm);
 
-    @Test
-    public void resolveDigestTest(){
+		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
-        CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("ed25519");
-        assertNotNull(algorithm);
+		PrivKey privKey = keyPair.getPrivKey();
 
-        SignatureFunction signatureFunction =
-                CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
 
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
+		byte[] signatureDigestBytes = signatureDigest.toBytes();
 
-        PrivKey privKey = keyPair.getPrivKey();
+		SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
 
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
+		assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
+		assertEquals(ClassicAlgorithm.ED25519.code(), resolvedSignatureDigest.getAlgorithm());
+		assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
+				resolvedSignatureDigest.getAlgorithm());
+		assertArrayEquals(signatureDigestBytes, resolvedSignatureDigest.toBytes());
 
-        byte[] signatureDigestBytes = signatureDigest.toBytes();
+		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		assertNotNull(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] rawDigestBytes = signatureDigest.getRawDigest();
+		byte[] ripemd160SignatureDigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
-        SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
-
-        assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
-        assertEquals(ClassicAlgorithm.ED25519,resolvedSignatureDigest.getAlgorithm());
-        assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 21 & 0x00FF)),
-                resolvedSignatureDigest.getAlgorithm());
-        assertArrayEquals(signatureDigestBytes,resolvedSignatureDigest.toBytes());
-
-        algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
-        assertNotNull(algorithm);
-        byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
-        byte[] rawDigestBytes =  signatureDigest.getRawDigest();
-        byte[] ripemd160SignatureDigestBytes = BytesUtils.concat(algoBytes,rawDigestBytes);
-
-        Class<?> expectedException = CryptoException.class;
-        Exception actualEx = null;
-        try {
-            signatureFunction.resolveDigest(ripemd160SignatureDigestBytes);
-        } catch (Exception e) {
-            actualEx = e;
-        }
-        assertNotNull(actualEx);
-        assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
-    }
+		Class<?> expectedException = CryptoException.class;
+		Exception actualEx = null;
+		try {
+			signatureFunction.resolveDigest(ripemd160SignatureDigestBytes);
+		} catch (Exception e) {
+			actualEx = e;
+		}
+		assertNotNull(actualEx);
+		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
+	}
 }

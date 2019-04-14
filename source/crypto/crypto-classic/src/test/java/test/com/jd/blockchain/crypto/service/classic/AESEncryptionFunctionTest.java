@@ -191,7 +191,7 @@ public class AESEncryptionFunctionTest {
 
 		assertEquals(SYMMETRIC.CODE, resolvedKey.getKeyType().CODE);
 		assertEquals(128 / 8, resolvedKey.getRawKeyBytes().length);
-		assertEquals(ClassicAlgorithm.AES, resolvedKey.getAlgorithm());
+		assertEquals(ClassicAlgorithm.AES.code(), resolvedKey.getAlgorithm());
 		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 26 & 0x00FF)), resolvedKey.getAlgorithm());
 		assertArrayEquals(symmetricKeyBytes, resolvedKey.toBytes());
 
@@ -264,7 +264,7 @@ public class AESEncryptionFunctionTest {
 		Ciphertext resolvedCiphertext = symmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
 
 		assertEquals(1024 + 16, resolvedCiphertext.getRawCiphertext().length);
-		assertEquals(ClassicAlgorithm.AES, resolvedCiphertext.getAlgorithm());
+		assertEquals(ClassicAlgorithm.AES.code(), resolvedCiphertext.getAlgorithm());
 		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 26 & 0x00FF)),
 				resolvedCiphertext.getAlgorithm());
 		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());

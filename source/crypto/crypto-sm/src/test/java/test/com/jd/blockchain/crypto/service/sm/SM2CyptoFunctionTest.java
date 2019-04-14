@@ -117,7 +117,7 @@ public class SM2CyptoFunctionTest {
 		assertEquals(2 + 64, signatureBytes.length);
 		assertEquals(algorithm.code(), signatureDigest.getAlgorithm());
 
-		assertEquals(SMAlgorithm.SM2, signatureDigest.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), signatureDigest.getAlgorithm());
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				signatureDigest.getAlgorithm());
 
@@ -167,7 +167,7 @@ public class SM2CyptoFunctionTest {
 
 		byte[] ciphertextBytes = ciphertext.toBytes();
 		assertEquals(2 + 65 + 256 / 8 + 1024, ciphertextBytes.length);
-		assertEquals(SMAlgorithm.SM2, ciphertext.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), ciphertext.getAlgorithm());
 
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				ciphertext.getAlgorithm());
@@ -244,7 +244,7 @@ public class SM2CyptoFunctionTest {
 
 		assertEquals(PRIVATE.CODE, resolvedPrivKey.getKeyType().CODE);
 		assertEquals(32, resolvedPrivKey.getRawKeyBytes().length);
-		assertEquals(SMAlgorithm.SM2, resolvedPrivKey.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), resolvedPrivKey.getAlgorithm());
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				resolvedPrivKey.getAlgorithm());
 		assertArrayEquals(privKeyBytes, resolvedPrivKey.toBytes());
@@ -309,7 +309,7 @@ public class SM2CyptoFunctionTest {
 
 		assertEquals(PUBLIC.CODE, resolvedPubKey.getKeyType().CODE);
 		assertEquals(65, resolvedPubKey.getRawKeyBytes().length);
-		assertEquals(SMAlgorithm.SM2, resolvedPubKey.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), resolvedPubKey.getAlgorithm());
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				resolvedPubKey.getAlgorithm());
 		assertArrayEquals(pubKeyBytes, resolvedPubKey.toBytes());
@@ -385,7 +385,7 @@ public class SM2CyptoFunctionTest {
 		SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
 
 		assertEquals(64, resolvedSignatureDigest.getRawDigest().length);
-		assertEquals(SMAlgorithm.SM2, resolvedSignatureDigest.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), resolvedSignatureDigest.getAlgorithm());
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				resolvedSignatureDigest.getAlgorithm());
 		assertArrayEquals(signatureDigestBytes, resolvedSignatureDigest.toBytes());
@@ -463,7 +463,7 @@ public class SM2CyptoFunctionTest {
 		Ciphertext resolvedCiphertext = asymmetricEncryptionFunction.resolveCiphertext(ciphertextBytes);
 
 		assertEquals(65 + 256 / 8 + 1024, resolvedCiphertext.getRawCiphertext().length);
-		assertEquals(SMAlgorithm.SM2, resolvedCiphertext.getAlgorithm());
+		assertEquals(SMAlgorithm.SM2.code(), resolvedCiphertext.getAlgorithm());
 		assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 2 & 0x00FF)),
 				resolvedCiphertext.getAlgorithm());
 		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());

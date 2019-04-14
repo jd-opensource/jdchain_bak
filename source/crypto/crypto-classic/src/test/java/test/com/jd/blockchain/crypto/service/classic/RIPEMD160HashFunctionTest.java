@@ -134,7 +134,7 @@ public class RIPEMD160HashFunctionTest {
 		HashDigest resolvedDigest = hashFunction.resolveHashDigest(digestBytes);
 
 		assertEquals(160 / 8, resolvedDigest.getRawDigest().length);
-		assertEquals(ClassicAlgorithm.RIPEMD160, resolvedDigest.getAlgorithm());
+		assertEquals(ClassicAlgorithm.RIPEMD160.code(), resolvedDigest.getAlgorithm());
 		assertEquals((short) (HASH_ALGORITHM | ((byte) 25 & 0x00FF)), resolvedDigest.getAlgorithm());
 		assertArrayEquals(digestBytes, resolvedDigest.toBytes());
 
