@@ -23,9 +23,9 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 
 	@Override
 	public String toString() {
-		return name + "[" + code + "]";
+		return name + "[" + (code & 0xFFFF) + "]";
 	}
-	
+
 	/**
 	 * 声明一项哈希算法；
 	 * 
@@ -100,7 +100,7 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 		short code = (short) (RANDOM_ALGORITHM | (uid & 0x00FF));
 		return new CryptoAlgorithmDefinition(name, code);
 	}
-	
+
 	/**
 	 * 声明一项扩展的密码算法；
 	 * 

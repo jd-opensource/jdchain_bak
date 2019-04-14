@@ -5,21 +5,20 @@ import com.jd.blockchain.ledger.CryptoSetting;
 
 public class CryptoConfig implements CryptoSetting {
 
-	private CryptoAlgorithm hashAlgorithm;
+	private short hashAlgorithm;
 
 	private boolean autoVerifyHash;
-	
+
 	public CryptoConfig() {
 	}
-	
+
 	public CryptoConfig(CryptoSetting setting) {
 		this.hashAlgorithm = setting.getHashAlgorithm();
 		this.autoVerifyHash = setting.getAutoVerifyHash();
 	}
-	
 
 	@Override
-	public CryptoAlgorithm getHashAlgorithm() {
+	public short getHashAlgorithm() {
 		return hashAlgorithm;
 	}
 
@@ -29,12 +28,15 @@ public class CryptoConfig implements CryptoSetting {
 	}
 
 	public void setHashAlgorithm(CryptoAlgorithm hashAlgorithm) {
+		this.hashAlgorithm = hashAlgorithm.code();
+	}
+
+	public void setHashAlgorithm(short hashAlgorithm) {
 		this.hashAlgorithm = hashAlgorithm;
 	}
 
 	public void setAutoVerifyHash(boolean autoVerifyHash) {
 		this.autoVerifyHash = autoVerifyHash;
 	}
-
 
 }

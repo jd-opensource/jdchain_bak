@@ -17,16 +17,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>consensus-mq</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>consensus-bftsmart</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
 			<artifactId>ledger-rpc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -51,6 +41,13 @@
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-web</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -84,8 +81,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
-			<optional>true</optional> </dependency> -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 

@@ -7,19 +7,33 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.crypto.RandomFunction;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 public class LedgerBindingConfigTest {
+
+	public static void main(String[] args) {
+		//生成测试
+		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(ClassicAlgorithm.SHA256);
+		HashDigest hash1 = hashFunc.hash(UUID.randomUUID().toString().getBytes());
+		HashDigest hash2 = hashFunc.hash(UUID.randomUUID().toString().getBytes());
+		System.out.println("Hash1=[" + hash1.toBase58() + "]");
+		System.out.println("Hash1=[" + hash2.toBase58() + "]");
+	}
 
 	@Test
 	public void testResolveAndStore() throws IOException {
@@ -32,10 +46,10 @@ public class LedgerBindingConfigTest {
 			conf.store(System.out);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			conf.store(out);
-			
+
 			ByteArrayInputStream newIn = new ByteArrayInputStream(out.toByteArray());
 			LedgerBindingConfig newConf = LedgerBindingConfig.resolve(newIn);
-			
+
 			assertLedgerBindingConfig(newConf);
 		} finally {
 			in.close();
@@ -49,8 +63,8 @@ public class LedgerBindingConfigTest {
 	 * @param conf
 	 */
 	private void assertLedgerBindingConfig(LedgerBindingConfig conf) {
-		String[] expectedHashs = { "6HaDnSu4kY6vNAdSXsf5QJpyYxrtxxoH1tn8dDRvbRD8K",
-				"64hnH4a8n48LeEP5HU2bMWmNxUPcaZ1JRCehRwvuNS8Ty" };
+		String[] expectedHashs = { "j5ptBmn67B2p3yki3ji1j2ZMjnJhrUvP4kFpGmcXgvrhmk",
+				"j5kLUENMvcUooZjKfz2bEYU6zoK9DAqbdDDU8aZEZFR4qf" };
 		HashDigest[] hashs = conf.getLedgerHashs();
 		for (int i = 0; i < hashs.length; i++) {
 			assertEquals(expectedHashs[i], hashs[i].toBase58());

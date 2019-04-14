@@ -593,6 +593,7 @@ public class MerkleTree implements Transactional {
 	 *            用于记录已更新节点的列表；
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private int rehash(PathNode pathNode, List<AbstractMerkleNode> updatedNodes) {
 		// int newDataCount = 0;
 		boolean updated = false;
@@ -1248,7 +1249,12 @@ public class MerkleTree implements Transactional {
 			return (int) ((offset - offset % s) / s);
 		}
 
+		@SuppressWarnings("unused")
 		private PathNode newEmptyChild(CryptoAlgorithm hashAlgorithm, int index) {
+			return newEmptyChild(hashAlgorithm.code(), index);
+		}
+
+		private PathNode newEmptyChild(short hashAlgorithm, int index) {
 			long newStartingSN = startingSN + subinterval * index;
 			PathNode child = new PathNode(hashAlgorithm, newStartingSN, (byte) (level - 1), 0);
 			attachChildNode(child, index);
@@ -1437,8 +1443,13 @@ public class MerkleTree implements Transactional {
 			this.dataNodeBytes = dataBytes;
 		}
 
+		@SuppressWarnings("unused")
 		private static DataNode newDataNode(CryptoAlgorithm hashAlgorithm, long sn, Bytes key, long version,
 				byte[] hashedData) {
+			return newDataNode(hashAlgorithm.code(), sn, key, version, hashedData);
+		}
+
+		private static DataNode newDataNode(short hashAlgorithm, long sn, Bytes key, long version, byte[] hashedData) {
 			// byte[] keyStrBytes = BytesUtils.toBytes(key);
 			// int maskSize = NumberMask.SHORT.getMaskLength(keyStrBytes.length);
 			int keySize = key.size();

@@ -3,7 +3,6 @@ package com.jd.blockchain.ledger;
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.utils.ValueType;
 
 /**
@@ -12,7 +11,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.METADATA_CRYPTO_SETTING)
+@DataContract(code = TypeCodes.METADATA_CRYPTO_SETTING)
 public interface CryptoSetting {
 
 	/**
@@ -24,9 +23,9 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, refEnum=true)
-	public CryptoAlgorithm getHashAlgorithm();
-	
+	@DataField(order = 1, primitiveType = ValueType.INT16)
+	public short getHashAlgorithm();
+
 	/**
 	 * 当有完整性证明的数据被从持久化介质中加载时，是否对其进行完整性校验（重新计算 hash 比对是否一致）； <br>
 	 * 
@@ -36,7 +35,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order=2, primitiveType= ValueType.BOOLEAN)
+	@DataField(order = 2, primitiveType = ValueType.BOOLEAN)
 	public boolean getAutoVerifyHash();
 
 }
