@@ -25,7 +25,7 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.data.TxBuilder;
@@ -319,7 +319,7 @@ public class RemoteTransactionService {
 
     private TransactionRequest userRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
-        BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
         txbuilder.users().register(userKey.getIdentity());
         TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
         reqBuilder.signAsEndpoint(adminKey);
@@ -328,7 +328,7 @@ public class RemoteTransactionService {
 
     private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey, boolean isSave) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
-        BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
         BlockchainIdentity identity = dataAccountKey.getIdentity();
         txbuilder.dataAccounts().register(identity);
         TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
@@ -341,7 +341,7 @@ public class RemoteTransactionService {
 
     private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
-        BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
         BlockchainIdentity identity = dataAccountKey.getIdentity();
         txbuilder.dataAccounts().register(identity);
         TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();

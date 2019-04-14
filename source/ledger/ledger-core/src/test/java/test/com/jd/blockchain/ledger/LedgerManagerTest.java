@@ -18,7 +18,7 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -81,7 +81,7 @@ public class LedgerManagerTest {
 		// 记录交易，注册用户；
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = txCtx.getDataSet();
-		BlockchainKeyPair userKP = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKP = BlockchainKeyGenerator.getInstance().generate();
 		;
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
@@ -122,7 +122,7 @@ public class LedgerManagerTest {
 		LedgerEditor editor1 = reloadLedgerRepo.createNextBlock();
 
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
-		BlockchainKeyPair dataKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair dataKey = BlockchainKeyGenerator.getInstance().generate();
 		txBuilder.dataAccounts().register(dataKey.getIdentity());
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 		DigitalSignature dgtsign = txReqBuilder.signAsEndpoint(userKP);

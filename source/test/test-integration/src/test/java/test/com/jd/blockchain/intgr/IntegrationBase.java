@@ -75,7 +75,7 @@ public class IntegrationBase {
 
     public static KeyPairResponse testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
         // 注册用户，并验证最终写入；
-        BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -100,7 +100,7 @@ public class IntegrationBase {
 
     public static KeyPairResponse testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
         // 注册数据账户，并验证最终写入；
-        BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -163,7 +163,7 @@ public class IntegrationBase {
     public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerRepository ledgerRepository, KeyPairType keyPairType) {
         TransactionResponse txResp = keyPairResponse.txResp;
         HashDigest transactionHash = keyPairResponse.txHash;
-        BlockchainKeyPair keyPair = keyPairResponse.keyPair;
+        BlockchainKeypair keyPair = keyPairResponse.keyPair;
         long index = validLong.incrementAndGet();
         System.out.printf("validKeyPair start %s \r\n", index);
         ledgerRepository.retrieveLatestBlock();
@@ -187,7 +187,7 @@ public class IntegrationBase {
 
         TransactionResponse txResp = keyPairResponse.txResp;
         HashDigest transactionHash = keyPairResponse.txHash;
-        BlockchainKeyPair keyPair = keyPairResponse.keyPair;
+        BlockchainKeypair keyPair = keyPairResponse.keyPair;
         ledgerRepository.retrieveLatestBlock();
 
         assertEquals(txResp.getExecutionState(), TransactionState.SUCCESS);
@@ -368,11 +368,11 @@ public class IntegrationBase {
     public static class KeyPairResponse {
         HashDigest txHash;
 
-        BlockchainKeyPair keyPair;
+        BlockchainKeypair keyPair;
 
         TransactionResponse txResp;
 
-        public BlockchainKeyPair getKeyPair() {
+        public BlockchainKeypair getKeyPair() {
             return keyPair;
         }
 
@@ -430,8 +430,8 @@ public class IntegrationBase {
     }
 
     // 合约测试使用的初始化数据;
-    BlockchainKeyPair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
-    BlockchainKeyPair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+    BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
+    BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
     // 保存资产总数的键；
     private static final String KEY_TOTAL = "TOTAL";
     // 第二个参数;
@@ -443,7 +443,7 @@ public class IntegrationBase {
     public LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
                                         BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         System.out.println("adminKey="+ AddressEncoding.generateAddress(adminKey.getPubKey()));
-        BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
         System.out.println("userKey="+userKey.getAddress());
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         txTpl.users().register(userKey.getIdentity());
@@ -475,7 +475,7 @@ public class IntegrationBase {
         return block;
     }
 
-    private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+    private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
                                  BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
         LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);

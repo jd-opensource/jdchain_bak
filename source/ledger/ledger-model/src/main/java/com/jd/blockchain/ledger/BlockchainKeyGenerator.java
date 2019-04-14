@@ -22,19 +22,19 @@ public class BlockchainKeyGenerator {
 		return new BlockchainKeyGenerator();
 	}
 
-	public BlockchainKeyPair generate() {
+	public BlockchainKeypair generate() {
 		return generate(DEFAULT_ALGORITHM);
 	}
 
-	public BlockchainKeyPair generate(String algorithmName) {
+	public BlockchainKeypair generate(String algorithmName) {
 		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm(algorithmName);
 		return generate(algorithm);
 	}
 	
-	public BlockchainKeyPair generate(CryptoAlgorithm signatureAlgorithm) {
+	public BlockchainKeypair generate(CryptoAlgorithm signatureAlgorithm) {
 		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(signatureAlgorithm);
 		AsymmetricKeypair cryptoKeyPair = signFunc.generateKeypair();
-		return new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
+		return new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 	}
 
 }

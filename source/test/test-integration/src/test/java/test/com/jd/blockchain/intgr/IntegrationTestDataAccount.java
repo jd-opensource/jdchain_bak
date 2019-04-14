@@ -22,7 +22,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -147,7 +147,7 @@ public class IntegrationTestDataAccount {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHashs[0]);
 
 		// BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
-		BlockchainKeyPair data = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair data = BlockchainKeyGenerator.getInstance().generate();
 
 		// regist user account
 		// txTpl.users().register(user.getIdentity());

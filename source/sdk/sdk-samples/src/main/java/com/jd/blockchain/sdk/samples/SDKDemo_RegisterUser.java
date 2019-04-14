@@ -46,7 +46,7 @@ public class SDKDemo_RegisterUser {
         PrivKey privKey = SDKDemo_Params.privkey1;
         PubKey pubKey = SDKDemo_Params.pubKey1;
 
-        BlockchainKeyPair CLIENT_CERT = new BlockchainKeyPair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
+        BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
 
         boolean SECURE = false;
         GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
@@ -58,9 +58,9 @@ public class SDKDemo_RegisterUser {
         TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
 
         //existed signer
-        AsymmetricKeypair keyPair = new BlockchainKeyPair(pubKey, privKey);
+        AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
 
-        BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
         // 注册
         txTemp.users().register(user.getIdentity());

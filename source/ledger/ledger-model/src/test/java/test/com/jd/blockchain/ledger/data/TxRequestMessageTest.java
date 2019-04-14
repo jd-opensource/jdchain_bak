@@ -24,7 +24,7 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.EndpointRequest;
@@ -195,7 +195,7 @@ public class TxRequestMessageTest {
 
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
-		BlockchainKeyPair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
+		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
 		HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");
 		HashDigest ledgerHash = hashFunc.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();

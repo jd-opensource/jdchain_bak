@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.BaseAccount;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.impl.OpeningAccessPolicy;
@@ -35,7 +35,7 @@ public class BaseAccountTest {
 
 		OpeningAccessPolicy accPlc = new OpeningAccessPolicy();
 
-		BlockchainKeyPair bck = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair bck = BlockchainKeyGenerator.getInstance().generate();
 
 		// 新建账户；
 		BaseAccount baseAccount = new BaseAccount(bck.getIdentity(), cryptoConf, keyPrefix, testStorage, testStorage,

@@ -5,7 +5,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainTransactionService;
@@ -14,7 +14,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class SDKDemo_DataAccount {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
+	public static BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
 
 	/**
@@ -51,7 +51,7 @@ public class SDKDemo_DataAccount {
 		// 在本地产生要注册的账户的秘钥；
 		BlockchainKeyGenerator generator = BlockchainKeyGenerator.getInstance();
 
-		BlockchainKeyPair dataAccount = generator.generate("ED25519");
+		BlockchainKeypair dataAccount = generator.generate("ED25519");
 
 		txTemp.dataAccounts().register(dataAccount.getIdentity());
 

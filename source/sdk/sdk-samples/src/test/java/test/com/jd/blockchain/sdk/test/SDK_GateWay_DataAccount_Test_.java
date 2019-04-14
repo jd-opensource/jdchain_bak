@@ -18,7 +18,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -41,7 +41,7 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 
 public class SDK_GateWay_DataAccount_Test_ {
 
-    private BlockchainKeyPair CLIENT_CERT = null;
+    private BlockchainKeypair CLIENT_CERT = null;
 
     private String GATEWAY_IPADDR = null;
 
@@ -53,7 +53,7 @@ public class SDK_GateWay_DataAccount_Test_ {
 
     @Before
     public void init() {
-        CLIENT_CERT = new BlockchainKeyPair(SDK_GateWay_KeyPair_Para.pubKey0, SDK_GateWay_KeyPair_Para.privkey0);
+        CLIENT_CERT = new BlockchainKeypair(SDK_GateWay_KeyPair_Para.pubKey0, SDK_GateWay_KeyPair_Para.privkey0);
         GATEWAY_IPADDR = "127.0.0.1";
         GATEWAY_PORT = 8081;
         SECURE = false;
@@ -81,9 +81,9 @@ public class SDK_GateWay_DataAccount_Test_ {
 //        CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
 
         //existed signer
-        AsymmetricKeypair keyPair = new BlockchainKeyPair(SDK_GateWay_KeyPair_Para.pubKey1, SDK_GateWay_KeyPair_Para.privkey1);
+        AsymmetricKeypair keyPair = new BlockchainKeypair(SDK_GateWay_KeyPair_Para.pubKey1, SDK_GateWay_KeyPair_Para.privkey1);
 
-        BlockchainKeyPair dataAcount = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair dataAcount = BlockchainKeyGenerator.getInstance().generate();
 
         // 注册
         txTemp.dataAccounts().register(dataAcount.getIdentity());

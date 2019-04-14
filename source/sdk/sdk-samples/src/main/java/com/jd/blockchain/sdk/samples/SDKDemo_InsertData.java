@@ -5,7 +5,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -21,7 +21,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
  */
 public class SDKDemo_InsertData {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
+	public static BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
 
 	/**

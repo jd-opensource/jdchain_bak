@@ -15,7 +15,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import org.junit.Test;
 
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -64,10 +64,10 @@ public class TransactionSetTest {
 		HashDigest ledgerHash = LedgerTestUtils.generateRandomHash();
 		TransactionBuilder txBuilder = new TxBuilder(ledgerHash);
 
-		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		UserRegisterOperation userRegOp = txBuilder.users().register(userKey.getIdentity());
 
-		BlockchainKeyPair dataKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair dataKey = BlockchainKeyGenerator.getInstance().generate();
 		DataAccountRegisterOperation dataAccRegOp = txBuilder.dataAccounts().register(dataKey.getIdentity());
 
 		DataAccountKVSetOperation kvsetOP = txBuilder.dataAccount(dataKey.getAddress())
@@ -75,7 +75,7 @@ public class TransactionSetTest {
 
 		byte[] chainCode = new byte[128];
 		rand.nextBytes(chainCode);
-		BlockchainKeyPair contractKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair contractKey = BlockchainKeyGenerator.getInstance().generate();
 		ContractCodeDeployOperation contractDplOP = txBuilder.contracts().deploy(contractKey.getIdentity(), chainCode);
 
 		ContractEventSendOperation contractEvtSendOP = txBuilder.contractEvents().send(contractKey.getAddress(), "test",
@@ -83,9 +83,9 @@ public class TransactionSetTest {
 
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 
-		BlockchainKeyPair sponsorKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair sponsorKey = BlockchainKeyGenerator.getInstance().generate();
 		txReqBuilder.signAsEndpoint(sponsorKey);
-		BlockchainKeyPair gatewayKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair gatewayKey = BlockchainKeyGenerator.getInstance().generate();
 		txReqBuilder.signAsNode(gatewayKey);
 
 		TransactionRequest txReq = txReqBuilder.buildRequest();

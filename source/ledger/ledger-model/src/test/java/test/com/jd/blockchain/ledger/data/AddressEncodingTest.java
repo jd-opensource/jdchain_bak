@@ -5,12 +5,12 @@ import java.util.Random;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 
 public class AddressEncodingTest {
 
 	public static void main(String[] args) {
-		BlockchainKeyPair bkp = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair bkp = BlockchainKeyGenerator.getInstance().generate();
 		PubKey pk = bkp.getPubKey();
 		byte[] data =new byte[64];
 		Random rand = new Random();

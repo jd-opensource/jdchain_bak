@@ -22,7 +22,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -66,12 +66,12 @@ public class IntegrationTestAll4Redis {
 			"177gk2VtYeGbK5TS2xWhbSZA4BsT9Xj5Fb8hqCzxzgbojVVcqaDSFFrFPsLbZBx7rszyCNy" };
 
 	// batch transactions keys
-	BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
-	BlockchainKeyPair dataKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair dataKey = BlockchainKeyGenerator.getInstance().generate();
 
 	// 合约测试使用的初始化数据;
-	BlockchainKeyPair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
-	BlockchainKeyPair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
 	private String contractZipName = "AssetContract1.contract";
 	private String eventName = "issue-asset";
 	HashDigest txContentHash;
@@ -263,8 +263,8 @@ public class IntegrationTestAll4Redis {
 		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
 
 		HashDigest[] ledgerHashs = bcsrv.getLedgerHashs();
-		BlockchainKeyPair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
-		BlockchainKeyPair newDataAccount = testSDK_RegisterDataAccount(adminKey, ledgerHashs[0], bcsrv,
+		BlockchainKeypair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
+		BlockchainKeypair newDataAccount = testSDK_RegisterDataAccount(adminKey, ledgerHashs[0], bcsrv,
 				ledgerRepository);
 		testSDK_InsertData(adminKey, ledgerHashs[0], bcsrv, newDataAccount.getAddress(), ledgerRepository);
 		LedgerBlock latestBlock = testSDK_Contract(adminKey, ledgerHashs[0], bcsrv, ledgerRepository);
@@ -315,10 +315,10 @@ public class IntegrationTestAll4Redis {
 		}
 	}
 
-	private BlockchainKeyPair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+	private BlockchainKeypair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册数据账户，并验证最终写入；
-		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -350,10 +350,10 @@ public class IntegrationTestAll4Redis {
 		return dataAccount;
 	}
 
-	private BlockchainKeyPair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+	private BlockchainKeypair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册用户，并验证最终写入；
-		BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -393,7 +393,7 @@ public class IntegrationTestAll4Redis {
 	private LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		System.out.println("adminKey=" + AddressEncoding.generateAddress(adminKey.getPubKey()));
-		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		System.out.println("userKey=" + userKey.getAddress());
 		// valid the basic data in contract;
 		// prepareContractData(adminKey, ledgerHash,
@@ -442,7 +442,7 @@ public class IntegrationTestAll4Redis {
 		return block;
 	}
 
-	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);

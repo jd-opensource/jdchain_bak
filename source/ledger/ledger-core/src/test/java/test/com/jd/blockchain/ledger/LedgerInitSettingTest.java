@@ -6,7 +6,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.core.CryptoConfig;
@@ -61,7 +61,7 @@ public class LedgerInitSettingTest {
     public void test_ledgerinitsetting_ConsensusParticipantData() {
 
         ConsensusParticipantData[] parties = new ConsensusParticipantData[4];
-        BlockchainKeyPair[] keys = new BlockchainKeyPair[parties.length];
+        BlockchainKeypair[] keys = new BlockchainKeypair[parties.length];
         for (int i = 0; i < parties.length; i++) {
             keys[i] = BlockchainKeyGenerator.getInstance().generate();
             parties[i] = new ConsensusParticipantData();
@@ -103,7 +103,7 @@ public class LedgerInitSettingTest {
     public void test_ledgerinitsetting_ParticipantCertData() {
 
         ParticipantCertData[] parties = new ParticipantCertData[4];
-        BlockchainKeyPair[] keys = new BlockchainKeyPair[parties.length];
+        BlockchainKeypair[] keys = new BlockchainKeypair[parties.length];
 
         for (int i = 0; i < parties.length; i++) {
             keys[i] = BlockchainKeyGenerator.getInstance().generate();

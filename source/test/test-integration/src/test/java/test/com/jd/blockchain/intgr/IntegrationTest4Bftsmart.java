@@ -5,7 +5,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -132,7 +132,7 @@ public class IntegrationTest4Bftsmart {
             validKeyPair(dataAccountResponse, ledgerRepository, IntegrationBase.KeyPairType.DATAACCOUNT);
 
             if (isWriteKv) {
-                BlockchainKeyPair da = dataAccountResponse.keyPair;
+                BlockchainKeypair da = dataAccountResponse.keyPair;
                 IntegrationBase.KvResponse kvResponse = IntegrationBase.testSDK_InsertData(adminKey, ledgerHash, blockchainService, da.getAddress());
                 validKvWrite(kvResponse, ledgerRepository, blockchainService);
             }

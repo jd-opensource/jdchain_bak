@@ -10,7 +10,7 @@ import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.AccountSet;
 import com.jd.blockchain.ledger.core.BaseAccount;
 import com.jd.blockchain.ledger.core.CryptoConfig;
@@ -32,7 +32,7 @@ public class AccountSetTest {
 		String keyPrefix = "";
 		AccountSet accset = new AccountSet(cryptoConf,keyPrefix, storage, storage, accessPolicy);
 		
-		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		accset.register(userKey.getAddress(), userKey.getPubKey());
 		
 		BaseAccount userAcc = accset.getAccount(userKey.getAddress());

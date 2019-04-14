@@ -7,7 +7,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -29,11 +29,11 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 
 	private ServiceConnectionManager httpConnectionManager;
 
-	private BlockchainKeyPair userKey;
+	private BlockchainKeypair userKey;
 
 	private BlockchainService blockchainService;
 
-	protected GatewayServiceFactory(ServiceEndpoint gatewayEndpoint, BlockchainKeyPair userKey) {
+	protected GatewayServiceFactory(ServiceEndpoint gatewayEndpoint, BlockchainKeypair userKey) {
 		httpConnectionManager = new ServiceConnectionManager();
 		this.userKey = userKey;
 
@@ -73,7 +73,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		return connect(gatewayAddress.getHost(), gatewayAddress.getPort(), gatewayAddress.isSecure(), null);
 	}
 
-	public static GatewayServiceFactory connect(NetworkAddress gatewayAddress, BlockchainKeyPair userKey) {
+	public static GatewayServiceFactory connect(NetworkAddress gatewayAddress, BlockchainKeypair userKey) {
 		return connect(gatewayAddress.getHost(), gatewayAddress.getPort(), gatewayAddress.isSecure(), userKey);
 	}
 	
@@ -82,7 +82,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 	}
 
 	public static GatewayServiceFactory connect(String gatewayHost, int gatewayPort, boolean secure,
-			BlockchainKeyPair userKey) {
+			BlockchainKeypair userKey) {
 //		if (userKey == null) {
 //			throw new IllegalArgumentException("User key is null!");
 //		}
@@ -122,9 +122,9 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 
 		private TransactionService innerService;
 
-		private BlockchainKeyPair userKey;
+		private BlockchainKeypair userKey;
 
-		public EndpointAutoSigner(TransactionService innerService, BlockchainKeyPair userKey) {
+		public EndpointAutoSigner(TransactionService innerService, BlockchainKeypair userKey) {
 			this.innerService = innerService;
 			this.userKey = userKey;
 		}

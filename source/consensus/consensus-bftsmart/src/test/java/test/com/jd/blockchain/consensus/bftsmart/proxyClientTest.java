@@ -10,7 +10,7 @@ import com.jd.blockchain.consensus.bftsmart.service.BftsmartServerSettingConfig;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -62,7 +62,7 @@ public class proxyClientTest {
         BftsmartNodeSettings[] nodesSettings = new BftsmartNodeSettings[nodeNum];
 
         for (int i = 0; i < nodeNum; i++) {
-            BlockchainKeyPair keyPair = BlockchainKeyGenerator.getInstance().generate();
+            BlockchainKeypair keyPair = BlockchainKeyGenerator.getInstance().generate();
             PubKey pubKey = keyPair.getPubKey();
             NetworkAddress peerNodeServ = new NetworkAddress("127.0.0.1", peerStartPort + i * 10);
             NodeSettings node = new BftsmartNodeConfig(pubKey, i, peerNodeServ);
@@ -87,7 +87,7 @@ public class proxyClientTest {
 
     public void proxyClientSend(BftsmartNodeServer nodeServer) {
         BftsmartClientIncomingConfig clientIncomingConfig = new BftsmartClientIncomingConfig();
-        BlockchainKeyPair keyPair = BlockchainKeyGenerator.getInstance().generate();
+        BlockchainKeypair keyPair = BlockchainKeyGenerator.getInstance().generate();
         clientIncomingConfig.setPubKey(keyPair.getPubKey());
         clientIncomingConfig.setClientId(0);
         clientIncomingConfig.setConsensusSettings(nodeServer.getConsensusSetting());

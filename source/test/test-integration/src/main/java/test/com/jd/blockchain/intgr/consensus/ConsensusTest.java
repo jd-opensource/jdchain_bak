@@ -20,7 +20,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -115,7 +115,7 @@ public class ConsensusTest {
 		BlockchainService blockchainService = gwsrvFact.getBlockchainService();
 
 		int batchSize = CONCURRENT_USER_COUNT * USER_TX_COUNT;
-		BlockchainKeyPair[] keys = generateKeys(batchSize);
+		BlockchainKeypair[] keys = generateKeys(batchSize);
 
 		HashDigest ledgerHash = node0.getLedgerManager().getLedgerHashs()[0];
 		LedgerRepository ledger = node0.getLedgerManager().getLedger(ledgerHash);
@@ -153,15 +153,15 @@ public class ConsensusTest {
 				elapsedTs, (batchSize * 1000.00D / elapsedTs));
 	}
 
-	private static BlockchainKeyPair[] generateKeys(int count) {
-		BlockchainKeyPair[] keys = new BlockchainKeyPair[count];
+	private static BlockchainKeypair[] generateKeys(int count) {
+		BlockchainKeypair[] keys = new BlockchainKeypair[count];
 		for (int i = 0; i < count; i++) {
 			keys[i] = BlockchainKeyGenerator.getInstance().generate();
 		}
 		return keys;
 	}
 
-	private static PreparedTransaction[] prepareTransactions_RegisterDataAcount(BlockchainKeyPair[] userKeys,
+	private static PreparedTransaction[] prepareTransactions_RegisterDataAcount(BlockchainKeypair[] userKeys,
 			AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
 		PreparedTransaction[] ptxs = new PreparedTransaction[userKeys.length];
 		for (int i = 0; i < ptxs.length; i++) {

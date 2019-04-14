@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -361,7 +361,7 @@ public class LedgerPerformanceTest {
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			TxBuilder txbuilder = new TxBuilder(ledgerHash);
-			BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+			BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 			txbuilder.users().register(userKey.getIdentity());
 			TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
 			reqBuilder.signAsEndpoint(adminKey);
@@ -382,7 +382,7 @@ public class LedgerPerformanceTest {
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			TxBuilder txbuilder = new TxBuilder(ledgerHash);
-			BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
+			BlockchainKeypair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
 			dataAccounts[i] = dataAccountKey.getIdentity();
 			txbuilder.dataAccounts().register(dataAccounts[i]);
 			TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
@@ -442,12 +442,12 @@ public class LedgerPerformanceTest {
 			return null;
 		}
 		TxBuilder txbuilder = new TxBuilder(ledgerHash);
-		BlockchainKeyPair contractAccountKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair contractAccountKey = BlockchainKeyGenerator.getInstance().generate();
 		BlockchainIdentity contractIdentity = contractAccountKey.getIdentity();
 		txbuilder.contracts().deploy(contractIdentity, chainCode);
 
 		// create data account
-		BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
 		BlockchainIdentity dataIdentity = dataAccountKey.getIdentity();
 
 		txbuilder.dataAccounts().register(dataIdentity);

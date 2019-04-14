@@ -12,7 +12,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -43,7 +43,7 @@ public enum ContractDeployExeUtil {
     private BlockchainService bcsrv;
     private Bytes contractAddress;
 
-    public BlockchainKeyPair getKeyPair(String pubPath, String prvPath, String rawPassword){
+    public BlockchainKeypair getKeyPair(String pubPath, String prvPath, String rawPassword){
         PubKey pub = null;
         PrivKey prv = null;
         try {
@@ -54,14 +54,14 @@ public enum ContractDeployExeUtil {
             e.printStackTrace();
         }
 
-        return new BlockchainKeyPair(pub, prv);
+        return new BlockchainKeypair(pub, prv);
     }
 
     public PubKey getPubKey(String pubPath){
         PubKey pub = null;
         try {
             if(pubPath == null){
-                BlockchainKeyPair contractKeyPair = BlockchainKeyGenerator.getInstance().generate();
+                BlockchainKeypair contractKeyPair = BlockchainKeyGenerator.getInstance().generate();
                 pub = contractKeyPair.getPubKey();
             }else {
                 pub = KeyGenCommand.readPubKey(pubPath);
@@ -123,7 +123,7 @@ public enum ContractDeployExeUtil {
         return bcsrv;
     }
 
-    public boolean deploy(HashDigest ledgerHash, BlockchainIdentity contractIdentity, BlockchainKeyPair ownerKey, byte[] chainCode){
+    public boolean deploy(HashDigest ledgerHash, BlockchainIdentity contractIdentity, BlockchainKeypair ownerKey, byte[] chainCode){
         register();
 
         TransactionTemplate txTpl = bcsrv.newTransaction(ledgerHash);
@@ -139,7 +139,7 @@ public enum ContractDeployExeUtil {
         System.out.println("contract's address="+contractAddress);
         return txResp.isSuccess();
     }
-    public boolean deploy(String host, int port, HashDigest ledgerHash, BlockchainKeyPair ownerKey, byte[] chainCode){
+    public boolean deploy(String host, int port, HashDigest ledgerHash, BlockchainKeypair ownerKey, byte[] chainCode){
         register();
 
         BlockchainIdentity contractIdentity = BlockchainKeyGenerator.getInstance().generate().getIdentity();
@@ -154,7 +154,7 @@ public enum ContractDeployExeUtil {
         BlockchainIdentity contractIdentity = new BlockchainIdentityData(pubKey);
         byte[] chainCode = getChainCode(chainCodePath);
 
-        BlockchainKeyPair ownerKey = getKeyPair(ownerPubPath, ownerPrvPath, ownerPassword);
+        BlockchainKeypair ownerKey = getKeyPair(ownerPubPath, ownerPrvPath, ownerPassword);
         HashDigest ledgerHash = new HashDigest(Base58Utils.decode(ledger));
         initBcsrv(host,port);
         return deploy(ledgerHash, contractIdentity, ownerKey, chainCode);
@@ -162,7 +162,7 @@ public enum ContractDeployExeUtil {
 
     public boolean exeContract(String ledger,String ownerPubPath, String ownerPrvPath,
                                 String ownerPassword,String event,String contractArgs){
-        BlockchainKeyPair ownerKey = getKeyPair(ownerPubPath, ownerPrvPath, ownerPassword);
+        BlockchainKeypair ownerKey = getKeyPair(ownerPubPath, ownerPrvPath, ownerPassword);
         HashDigest ledgerHash = new HashDigest(Base58Utils.decode(ledger));
 
         // 定义交易,传输最简单的数字、字符串、提取合约中的地址;

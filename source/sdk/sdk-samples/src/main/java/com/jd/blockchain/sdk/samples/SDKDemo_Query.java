@@ -3,7 +3,7 @@ package com.jd.blockchain.sdk.samples;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -20,7 +20,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
  */
 public class SDKDemo_Query {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
+	public static BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
 	public static final HashDigest LEDGER_HASH = CryptoServiceProviders.getHashFunction("SHA256")
 			.hash("xkxjcioewfqwe".getBytes());

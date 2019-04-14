@@ -20,7 +20,7 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
@@ -110,7 +110,7 @@ public class LedgerBlockGeneratingTest {
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			TxBuilder txbuilder = new TxBuilder(ledgerHash);
-			BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+			BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 			txbuilder.users().register(userKey.getIdentity());
 			TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
 			reqBuilder.signAsEndpoint(adminKey);

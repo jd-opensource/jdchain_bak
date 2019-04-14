@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.serialize.ByteArrayObjectDeserializer;
 import com.jd.blockchain.crypto.serialize.ByteArrayObjectSerializer;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.KVDataEntry;
@@ -64,7 +64,7 @@ public class SDK_GateWay_Query_Test_ {
 		}
 	}
 
-	private BlockchainKeyPair CLIENT_CERT = null;
+	private BlockchainKeypair CLIENT_CERT = null;
 
 	private String GATEWAY_IPADDR = null;
 
@@ -184,10 +184,10 @@ public class SDK_GateWay_Query_Test_ {
 		return CryptoServiceProviders.getSignatureFunction("ED25519");
 	}
 
-	private BlockchainKeyPair getSponsorKey() {
+	private BlockchainKeypair getSponsorKey() {
 		SignatureFunction signatureFunction = getSignatureFunction();
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
-		BlockchainKeyPair blockchainKeyPair = new BlockchainKeyPair(cryptoKeyPair.getPubKey(),
+		BlockchainKeypair blockchainKeyPair = new BlockchainKeypair(cryptoKeyPair.getPubKey(),
 				cryptoKeyPair.getPrivKey());
 		return blockchainKeyPair;
 	}

@@ -22,7 +22,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -54,8 +54,8 @@ import test.com.jd.blockchain.intgr.perf.LedgerInitializeWebTest;
 
 public class IntegrationTest {
 	// 合约测试使用的初始化数据;
-	BlockchainKeyPair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
-	BlockchainKeyPair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
 	private String contractZipName = "AssetContract1.contract";
 	private String eventName = "issue-asset";
 	HashDigest txContentHash;
@@ -171,7 +171,7 @@ public class IntegrationTest {
 
 		AsymmetricKeypair adminKey = context.getNode(0).getPartiKeyPair();
 
-		BlockchainKeyPair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, context);
+		BlockchainKeypair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, context);
 
 		// BlockchainKeyPair newDataAccount = testSDK_RegisterDataAccount(adminKey,
 		// ledgerHashs[0], bcsrv, context);
@@ -223,10 +223,10 @@ public class IntegrationTest {
 		}
 	}
 
-	private static BlockchainKeyPair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+	private static BlockchainKeypair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, IntegratedContext context) {
 		// 注册用户，并验证最终写入；
-		BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -253,10 +253,10 @@ public class IntegrationTest {
 		return user;
 	}
 
-	private BlockchainKeyPair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+	private BlockchainKeypair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, IntegratedContext context) {
 		// 注册数据账户，并验证最终写入；
-		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -287,7 +287,7 @@ public class IntegrationTest {
 	}
 
 	private void testSDK_Query(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
-			IntegratedContext context, BlockchainKeyPair newUserAcount, BlockchainKeyPair newDataAcount) {
+			IntegratedContext context, BlockchainKeypair newUserAcount, BlockchainKeypair newDataAcount) {
 
 		Bytes userAddress = newUserAcount.getAddress();
 		Bytes dataAddress = newDataAcount.getAddress();
@@ -552,7 +552,7 @@ public class IntegrationTest {
 		// valid the basic data in contract;
 		prepareContractData(adminKey, ledgerHash, blockchainService, context);
 
-		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -585,7 +585,7 @@ public class IntegrationTest {
 		return block;
 	}
 
-	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
 			BlockchainService blockchainService, IntegratedContext context) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);

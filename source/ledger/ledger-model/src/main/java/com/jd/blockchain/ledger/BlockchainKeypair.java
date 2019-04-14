@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.Bytes;
  * @author huanghaiquan
  *
  */
-public class BlockchainKeyPair extends AsymmetricKeypair {
+public class BlockchainKeypair extends AsymmetricKeypair {
 
 	private BlockchainIdentity id;
 
@@ -20,7 +20,7 @@ public class BlockchainKeyPair extends AsymmetricKeypair {
 //		privKey = new PrivKey(algorithm, privKeyBytes.bytes());
 //	}
 
-	public BlockchainKeyPair(String address, PubKey pubKey, PrivKey privKey) {
+	public BlockchainKeypair(String address, PubKey pubKey, PrivKey privKey) {
 		super(pubKey, privKey);
 		if (pubKey.getAlgorithm() != privKey.getAlgorithm()) {
 			throw new IllegalArgumentException("The PublicKey's algorithm is different from the PrivateKey's!");
@@ -28,7 +28,7 @@ public class BlockchainKeyPair extends AsymmetricKeypair {
 		this.id = new BlockchainIdentityData(Bytes.fromBase58(address), pubKey);
 	}
 
-	public BlockchainKeyPair(PubKey pubKey, PrivKey privKey) {
+	public BlockchainKeypair(PubKey pubKey, PrivKey privKey) {
 		super(pubKey, privKey);
 		if (pubKey.getAlgorithm() != privKey.getAlgorithm()) {
 			throw new IllegalArgumentException("The PublicKey's algorithm is different from the PrivateKey's!");

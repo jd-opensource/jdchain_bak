@@ -4,7 +4,7 @@ import com.jd.blockchain.contract.model.ContractDeployExeUtil;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -104,7 +104,7 @@ public class ContractDeployMojo extends AbstractMojo {
 
         PrivKey prv = KeyGenCommand.decodePrivKeyWithRawPassword(prvKey, password);
         PubKey pub = KeyGenCommand.decodePubKey(pubKey);
-        BlockchainKeyPair blockchainKeyPair = new BlockchainKeyPair(pub, prv);
+        BlockchainKeypair blockchainKeyPair = new BlockchainKeypair(pub, prv);
         HashDigest ledgerHash = new HashDigest(Base58Utils.decode(ledger));
 
         StringBuffer sb = new StringBuffer();

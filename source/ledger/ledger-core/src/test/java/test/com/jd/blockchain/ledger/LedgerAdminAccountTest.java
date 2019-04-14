@@ -16,7 +16,7 @@ import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
@@ -38,7 +38,7 @@ public class LedgerAdminAccountTest {
 		String keyPrefix = "";
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
 		ConsensusParticipantData[] parties = new ConsensusParticipantData[5];
-		BlockchainKeyPair[] bckeys = new BlockchainKeyPair[parties.length];
+		BlockchainKeypair[] bckeys = new BlockchainKeypair[parties.length];
 		for (int i = 0; i < parties.length; i++) {
 			bckeys[i] = BlockchainKeyGenerator.getInstance().generate();
 			parties[i] = new ConsensusParticipantData();
@@ -184,7 +184,7 @@ public class LedgerAdminAccountTest {
 				new NetworkAddress("192.168.10." + (10 + newParti.getAddress()), 10010 + 10 * newParti.getId()));
 		newParti.setName("Participant[" + newParti.getAddress() + "]");
 
-		BlockchainKeyPair newKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair newKey = BlockchainKeyGenerator.getInstance().generate();
 		newParti.setPubKey(newKey.getPubKey());
 
 		Throwable ex = null;

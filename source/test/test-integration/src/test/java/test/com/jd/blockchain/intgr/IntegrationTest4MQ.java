@@ -127,7 +127,7 @@ public class IntegrationTest4MQ {
 			validKeyPair(dataAccountResponse, ledgerRepository, IntegrationBase.KeyPairType.DATAACCOUNT);
 
 			if (isWriteKv) {
-				BlockchainKeyPair da = dataAccountResponse.keyPair;
+				BlockchainKeypair da = dataAccountResponse.keyPair;
 				IntegrationBase.KvResponse kvResponse = IntegrationBase.testSDK_InsertData(adminKey, ledgerHash, blockchainService, da.getAddress());
 				validKvWrite(kvResponse, ledgerRepository, blockchainService);
 			}

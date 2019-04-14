@@ -13,7 +13,7 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -62,7 +62,7 @@ public class LedgerEditerTest {
 	@Test
 	public void testWriteDataAccoutKvOp() {
 
-		BlockchainKeyPair dataKP = new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
+		BlockchainKeypair dataKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 
 		DataAccount dataAccount = ldgDS.getDataAccountSet().register(dataKP.getAddress(), dataKP.getPubKey(), null);
 
@@ -83,7 +83,7 @@ public class LedgerEditerTest {
 	@Test
 	public void testLedgerEditorCreation() {
 
-		BlockchainKeyPair userKP = new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
+		BlockchainKeypair userKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);

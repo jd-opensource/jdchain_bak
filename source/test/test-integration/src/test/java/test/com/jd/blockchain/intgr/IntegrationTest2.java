@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -49,7 +49,7 @@ import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsT
  */
 public class IntegrationTest2 {
 	// 合约测试使用的初始化数据;
-	BlockchainKeyPair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+	BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
 	private String contractZipName = "AssetContract3.contract";
 	private String eventName = "issue-asset";
 
@@ -287,7 +287,7 @@ public class IntegrationTest2 {
 
 	private void testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 										 BlockchainService blockchainService, IntegratedContext context) {
-		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -307,7 +307,7 @@ public class IntegrationTest2 {
 		testContractExe(adminKey, ledgerHash, userKey,  blockchainService, context);
 	}
 
-	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
 								 BlockchainService blockchainService, IntegratedContext context) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight()-1);

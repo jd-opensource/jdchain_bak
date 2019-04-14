@@ -5,7 +5,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainTransactionService;
@@ -14,7 +14,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class SDKDemo_User {
 
-	public static BlockchainKeyPair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate();
+	public static BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate();
 
 	/**
 	 * 生成一个区块链用户，并注册到区块链；
@@ -65,7 +65,7 @@ public class SDKDemo_User {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
-		BlockchainKeyPair user = new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
+		BlockchainKeypair user = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 
 		txTemp.users().register(user.getIdentity());
 

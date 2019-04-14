@@ -20,7 +20,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -43,7 +43,7 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 
 public class SDK_GateWay_InsertData_Test_ {
 
-    private BlockchainKeyPair CLIENT_CERT = null;
+    private BlockchainKeypair CLIENT_CERT = null;
 
     private String GATEWAY_IPADDR = null;
 

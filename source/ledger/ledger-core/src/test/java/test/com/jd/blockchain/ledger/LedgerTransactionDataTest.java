@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.EndpointRequest;
@@ -252,7 +252,7 @@ public class LedgerTransactionDataTest {
 
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
-		BlockchainKeyPair id = BlockchainKeyGenerator.getInstance().generate(ClassicCryptoService.ED25519_ALGORITHM);
+		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate(ClassicCryptoService.ED25519_ALGORITHM);
 		HashDigest ledgerHash = CryptoServiceProviders.getHashFunction("SHA256")
 				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();

@@ -14,7 +14,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeyPair;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.HashObject;
 import com.jd.blockchain.ledger.Operation;
@@ -34,7 +34,7 @@ public class TxContentBlobTest {
 		DataContractRegistry.register(TransactionContent.class);
 		DataContractRegistry.register(HashObject.class);
 
-		BlockchainKeyPair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
+		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
 		HashDigest ledgerHash = CryptoServiceProviders.getHashFunction("SHA256")
 				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
