@@ -1,8 +1,6 @@
 package com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.utils.Bytes;
 
@@ -18,15 +16,12 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 	public ContractEventSendOpTemplate() {
 	}
 
-	@DConstructor(name="ContractEventSendOpTemplate")
-	public ContractEventSendOpTemplate(@FieldSetter(name="getContractAddress", type="Bytes") Bytes contractAddress,
-                                       @FieldSetter(name="getEvent", type="String") String event,
-                                       @FieldSetter(name="getArgs", type="byte[]") byte[] args) {
+	public ContractEventSendOpTemplate(Bytes contractAddress, String event, byte[] args) {
 		this.contractAddress = contractAddress;
 		this.event = event;
 		this.args = args;
 	}
-	
+
 	@Override
 	public Bytes getContractAddress() {
 		return contractAddress;
@@ -42,5 +37,4 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 		return args;
 	}
 
-	
 }

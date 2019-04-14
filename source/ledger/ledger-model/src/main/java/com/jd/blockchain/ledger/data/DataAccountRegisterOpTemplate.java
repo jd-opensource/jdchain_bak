@@ -1,8 +1,6 @@
 package com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
@@ -18,8 +16,7 @@ public class DataAccountRegisterOpTemplate implements DataAccountRegisterOperati
 	public DataAccountRegisterOpTemplate() {
 	}
 
-	@DConstructor(name="DataAccountRegisterOpTemplate")
-	public DataAccountRegisterOpTemplate(@FieldSetter(name="getAccountID", type="BlockchainIdentity") BlockchainIdentity accountID) {
+	public DataAccountRegisterOpTemplate(BlockchainIdentity accountID) {
 		this.accountID = accountID;
 	}
 
@@ -33,6 +30,5 @@ public class DataAccountRegisterOpTemplate implements DataAccountRegisterOperati
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

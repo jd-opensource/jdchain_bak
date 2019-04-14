@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.jd.blockchain.binaryproto.DConstructor;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -33,8 +31,7 @@ public class TxContentBlob implements TransactionContent {
 
 	private HashDigest ledgerHash;
 
-	@DConstructor(name ="TxContentBlob")
-	public TxContentBlob(@FieldSetter(name="getLedgerHash", type="HashDigest") HashDigest ledgerHash) {
+	public TxContentBlob(HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
 	}
 
@@ -45,11 +42,12 @@ public class TxContentBlob implements TransactionContent {
 	public HashDigest getHash() {
 		return this.hash;
 	}
-	
+
 	/**
 	 * 更新交易内容的哈希值；
 	 * <p>
 	 * 注：当前对象只充当值对象，不校验指定哈希值的完整性，调用者应该在外部实施完整性校验；
+	 * 
 	 * @param hash
 	 */
 	public void setHash(HashDigest hash) {
@@ -65,6 +63,7 @@ public class TxContentBlob implements TransactionContent {
 	public HashDigest getLedgerHash() {
 		return ledgerHash;
 	}
+
 	public void setLedgerHash(HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
 	}
@@ -74,10 +73,10 @@ public class TxContentBlob implements TransactionContent {
 		return operationList.toArray(new Operation[operationList.size()]);
 	}
 
-    public void setOperations(Object[] operations) {
-		//in array's case ,cast will failed!
+	public void setOperations(Object[] operations) {
+		// in array's case ,cast will failed!
 		for (Object operation : operations) {
-			Operation op = (Operation)operation;
+			Operation op = (Operation) operation;
 			addOperation(op);
 		}
 	}
@@ -85,7 +84,7 @@ public class TxContentBlob implements TransactionContent {
 	public void addOperation(Operation operation) {
 		operationList.add(operation);
 	}
-	
+
 	public void addOperations(Collection<Operation> operations) {
 		operationList.addAll(operations);
 	}

@@ -3,9 +3,7 @@ package com.jd.blockchain.ledger.data;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.utils.Bytes;
@@ -14,16 +12,15 @@ public class DataAccountKVSetOpTemplate implements DataAccountKVSetOperation {
 	static {
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 	}
-	
+
 	private Bytes accountAddress;
-	
+
 	private Map<String, KVWriteEntry> kvset = new LinkedHashMap<>();
-	
+
 	public DataAccountKVSetOpTemplate() {
 	}
 
-	@DConstructor(name="DataAccountKVSetOpTemplate")
-	public DataAccountKVSetOpTemplate(@FieldSetter(name="getAccountAddress", type="String") Bytes accountAddress) {
+	public DataAccountKVSetOpTemplate(Bytes accountAddress) {
 		this.accountAddress = accountAddress;
 	}
 
@@ -44,7 +41,7 @@ public class DataAccountKVSetOpTemplate implements DataAccountKVSetOperation {
 
 	public void setWriteSet(Object[] kvEntries) {
 		for (Object object : kvEntries) {
-			KVWriteEntry kvEntry = (KVWriteEntry)object;
+			KVWriteEntry kvEntry = (KVWriteEntry) object;
 			set(kvEntry.getKey(), kvEntry.getValue(), kvEntry.getExpectedVersion());
 		}
 		return;
@@ -65,5 +62,4 @@ public class DataAccountKVSetOpTemplate implements DataAccountKVSetOperation {
 		kvset.put(kvData.getKey(), kvData);
 	}
 
-	
 }

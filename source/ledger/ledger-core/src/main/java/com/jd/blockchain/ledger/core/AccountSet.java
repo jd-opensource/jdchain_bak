@@ -4,15 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -90,17 +87,19 @@ public class AccountSet implements Transactional, MerkleProvable {
 		return accounts;
 	}
 
-//	private VersioningAccount deserialize(byte[] txBytes) {
-////		return BinaryEncodingUtils.decode(txBytes, null, Account.class);
-//		AccountHeaderData accInfo = BinaryEncodingUtils.decode(txBytes);
-////		return new BaseAccount(accInfo.getAddress(), accInfo.getPubKey(), null, cryptoSetting,
-////				baseExStorage, baseVerStorage, true, accessPolicy);
-//		return new VersioningAccount(accInfo.getAddress(), accInfo.getPubKey(), accInfo.getRootHash(), cryptoSetting,
-//				keyPrefix, baseExStorage, baseVerStorage, true, accessPolicy, accInfo.);
-//	}
+	// private VersioningAccount deserialize(byte[] txBytes) {
+	//// return BinaryEncodingUtils.decode(txBytes, null, Account.class);
+	// AccountHeaderData accInfo = BinaryEncodingUtils.decode(txBytes);
+	//// return new BaseAccount(accInfo.getAddress(), accInfo.getPubKey(), null,
+	// cryptoSetting,
+	//// baseExStorage, baseVerStorage, true, accessPolicy);
+	// return new VersioningAccount(accInfo.getAddress(), accInfo.getPubKey(),
+	// accInfo.getRootHash(), cryptoSetting,
+	// keyPrefix, baseExStorage, baseVerStorage, true, accessPolicy, accInfo.);
+	// }
 
 	private AccountHeader deserialize(byte[] txBytes) {
-        return BinaryEncodingUtils.decode(txBytes);
+		return BinaryEncodingUtils.decode(txBytes);
 	}
 
 	/**
@@ -267,7 +266,8 @@ public class AccountSet implements Transactional, MerkleProvable {
 		// accExStorage, accVerStorage);
 
 		String prefix = keyPrefix + address;
-		VersioningAccount acc = createInstance(address, pubKey, cryptoSetting, prefix, baseExStorage, baseVerStorage, -1);
+		VersioningAccount acc = createInstance(address, pubKey, cryptoSetting, prefix, baseExStorage, baseVerStorage,
+				-1);
 		latestAccountsCache.put(address, acc);
 		updated = true;
 
@@ -281,9 +281,10 @@ public class AccountSet implements Transactional, MerkleProvable {
 		}
 	}
 
-	private VersioningAccount createInstance(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
-			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
-		return new VersioningAccount(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, accessPolicy, version);
+	private VersioningAccount createInstance(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting,
+			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
+		return new VersioningAccount(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, accessPolicy,
+				version);
 	}
 
 	private VersioningAccount deserialize(byte[] bytes, CryptoSetting cryptoSetting, String keyPrefix,
@@ -351,10 +352,7 @@ public class AccountSet implements Transactional, MerkleProvable {
 		private PubKey pubKey;
 		private HashDigest rootHash;
 
-		@DConstructor(name = "AccountHeaderData")
-		public AccountHeaderData(@FieldSetter(name = "getAddress", type = "String") Bytes address,
-				@FieldSetter(name = "getPubKey", type = "PubKey") PubKey pubKey,
-				@FieldSetter(name = "getRootHash", type = "HashDigest") HashDigest rootHash) {
+		public AccountHeaderData(Bytes address, PubKey pubKey, HashDigest rootHash) {
 			this.address = address;
 			this.pubKey = pubKey;
 			this.rootHash = rootHash;

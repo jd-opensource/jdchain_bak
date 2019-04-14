@@ -11,8 +11,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jd.blockchain.binaryproto.DConstructor;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.PubKey;
@@ -49,8 +47,7 @@ public class BlockchainIdentityData implements BytesWriter, BytesReader, Externa
 		this.address = AddressEncoding.generateAddress(pubKey);
 	}
 
-	@DConstructor(name = "BlockchainIdentityData")
-	public BlockchainIdentityData(@FieldSetter(name = "getAddress", type = "String") Bytes address, @FieldSetter(name = "getPubKey", type = "PubKey") PubKey pubKey) {
+	public BlockchainIdentityData(Bytes address, PubKey pubKey) {
 		if (!verifyAddress(address, pubKey)) {
 			throw new IllegalArgumentException("Blockchain address is mismatch with the pub-key!");
 		}
@@ -78,7 +75,9 @@ public class BlockchainIdentityData implements BytesWriter, BytesReader, Externa
 		BytesEncoding.writeInShort(pubKey.toBytes(), out);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jd.blockchain.ledger.BlockchainIdentity#getAddress()
 	 */
 	@Override
@@ -86,7 +85,9 @@ public class BlockchainIdentityData implements BytesWriter, BytesReader, Externa
 		return address;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.jd.blockchain.ledger.BlockchainIdentity#getPubKey()
 	 */
 	@Override

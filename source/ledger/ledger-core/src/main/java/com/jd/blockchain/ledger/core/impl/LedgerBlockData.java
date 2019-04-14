@@ -1,8 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 
@@ -83,10 +81,7 @@ public class LedgerBlockData implements LedgerBlock {
 		this.transactionSetHash = transactionSetHash;
 	}
 
-	@DConstructor(name = "LedgerBlockData")
-	public LedgerBlockData(@FieldSetter(name = "getHeight", type = "long") long height,
-			@FieldSetter(name = "getLedgerHash", type = "HashDigest") HashDigest ledgerHash,
-			@FieldSetter(name = "getPreviousHash", type = "HashDigest") HashDigest previousHash) {
+	public LedgerBlockData(long height, HashDigest ledgerHash, HashDigest previousHash) {
 		this.height = height;
 		this.ledgerHash = ledgerHash;
 		this.previousHash = previousHash;
