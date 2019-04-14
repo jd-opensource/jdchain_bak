@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.jd.blockchain.binaryproto.impl2.DataContractContext;
-import com.jd.blockchain.binaryproto.impl2.HeaderEncoder;
+import com.jd.blockchain.binaryproto.impl.DataContractContext;
+import com.jd.blockchain.binaryproto.impl.HeaderEncoder;
 import com.jd.blockchain.utils.io.BytesOutputBuffer;
 import com.jd.blockchain.utils.io.BytesSlice;
 import com.jd.blockchain.utils.io.BytesUtils;

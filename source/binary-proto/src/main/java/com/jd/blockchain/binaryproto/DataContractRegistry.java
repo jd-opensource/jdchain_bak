@@ -1,6 +1,6 @@
 package com.jd.blockchain.binaryproto;
 
-import com.jd.blockchain.binaryproto.impl2.DataContractContext;
+import com.jd.blockchain.binaryproto.impl.DataContractContext;
 
 /**
  * 数据实体注册表；
