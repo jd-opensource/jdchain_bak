@@ -4,6 +4,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -96,6 +97,7 @@ public final class ProviderManager {
 
 		private Class<S> serviceClazz;
 
+		private Map<String, String> shortNames = new HashMap<>();
 		private Map<String, Provider<S>> namedProviders = new LinkedHashMap<>();
 
 		private AccessControlContext acc;
@@ -148,12 +150,12 @@ public final class ProviderManager {
 					shortName = n;
 				}
 			}
-			if (shortName != null && namedProviders.containsKey(shortName)) {
+			if (shortName != null && shortNames.containsKey(shortName)) {
 				return false;
 			}
 			ProviderInfo<S> provider = new ProviderInfo<>(shortName, fullName, service);
 			if (shortName != null) {
-				namedProviders.put(shortName, provider);
+				shortNames.put(shortName, fullName);
 			}
 			namedProviders.put(fullName, provider);
 			return true;
@@ -189,7 +191,11 @@ public final class ProviderManager {
 		}
 
 		public S getService(String name) {
-			Provider<S> pd = namedProviders.get(name);
+			String fullName = shortNames.get(name);
+			if (fullName == null) {
+				fullName = name;
+			}
+			Provider<S> pd = namedProviders.get(fullName);
 			return pd == null ? null : pd.getService();
 		}
 
