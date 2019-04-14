@@ -43,7 +43,7 @@ public class ContractCodeDeployOpTemplateTest {
 		DataContractRegistry.register(ContractCodeDeployOperation.class);
 		DataContractRegistry.register(Operation.class);
 		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
-		PubKey pubKey = signFunc.generateKeyPair().getPubKey();
+		PubKey pubKey = signFunc.generateKeypair().getPubKey();
 		BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
 		byte[] chainCode = "jd-test".getBytes();
 		data = new ContractCodeDeployOpTemplate(contractID, chainCode);

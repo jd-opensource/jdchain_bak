@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -64,7 +64,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PubKey pubKey = keyPair.getPubKey();
         PrivKey privKey = keyPair.getPrivKey();
@@ -97,7 +97,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PubKey pubKey = keyPair.getPubKey();
         PrivKey privKey = keyPair.getPrivKey();
@@ -122,7 +122,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PrivKey privKey = keyPair.getPrivKey();
         SignatureDigest signatureDigest = signatureFunction.sign(privKey,data);
@@ -150,7 +150,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PubKey pubKey = keyPair.getPubKey();
         PrivKey privKey = keyPair.getPrivKey();
@@ -168,7 +168,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PrivKey privKey = keyPair.getPrivKey();
         byte[] privKeyBytes = privKey.toBytes();
@@ -193,7 +193,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PrivKey privKey = keyPair.getPrivKey();
         byte[] privKeyBytes = privKey.toBytes();
@@ -233,7 +233,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PubKey pubKey = keyPair.getPubKey();
         byte[] pubKeyBytes = pubKey.toBytes();
@@ -258,7 +258,7 @@ public class ED25519SignatureFunctionTest {
 
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PubKey pubKey = keyPair.getPubKey();
         byte[] pubKeyBytes = pubKey.toBytes();
@@ -304,7 +304,7 @@ public class ED25519SignatureFunctionTest {
         SignatureFunction signatureFunction =
                 CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PrivKey privKey = keyPair.getPrivKey();
 
@@ -335,7 +335,7 @@ public class ED25519SignatureFunctionTest {
         SignatureFunction signatureFunction =
                 CryptoServiceProviders.getSignatureFunction(algorithm);
 
-        CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
         PrivKey privKey = keyPair.getPrivKey();
 

@@ -3,7 +3,7 @@ package test.com.jd.blockchain.intgr;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
@@ -197,7 +197,7 @@ public class IntegrationBaseTest {
 		node0.setConsensusSettings(csProps);
 		node0.setLedgerManager(nodeCtx0.getLedgerManager());
 		node0.setStorageDB(nodeCtx0.getStorageDB());
-		node0.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
+		node0.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
 		node0.setBindingConfig(bindingConfig0);
 		context.addNode(node0);
 
@@ -205,7 +205,7 @@ public class IntegrationBaseTest {
 		node1.setConsensusSettings(csProps);
 		node1.setLedgerManager(nodeCtx1.getLedgerManager());
 		node1.setStorageDB(nodeCtx1.getStorageDB());
-		node1.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
+		node1.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
 		node1.setBindingConfig(bindingConfig1);
 		context.addNode(node1);
 
@@ -213,7 +213,7 @@ public class IntegrationBaseTest {
 		node2.setConsensusSettings(csProps);
 		node2.setLedgerManager(nodeCtx2.getLedgerManager());
 		node2.setStorageDB(nodeCtx2.getStorageDB());
-		node2.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
+		node2.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
 		node2.setBindingConfig(bindingConfig2);
 		context.addNode(node2);
 
@@ -221,7 +221,7 @@ public class IntegrationBaseTest {
 		node3.setConsensusSettings(csProps);
 		node3.setLedgerManager(nodeCtx3.getLedgerManager());
 		node3.setStorageDB(nodeCtx3.getStorageDB());
-		node3.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
+		node3.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
 		node3.setBindingConfig(bindingConfig3);
 		context.addNode(node3);
 

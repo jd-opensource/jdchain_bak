@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
@@ -57,7 +57,7 @@ public class LedgerEditerTest {
 	LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 	LedgerDataSet ldgDS = txCtx.getDataSet();
 
-	CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
+	AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 
 	@Test
 	public void testWriteDataAccoutKvOp() {
@@ -121,7 +121,7 @@ public class LedgerEditerTest {
 		parties[0] = new ConsensusParticipantData();
 		parties[0].setId(0);
 		parties[0].setName("John");
-		CryptoKeyPair kp0 = signFunc.generateKeyPair();
+		AsymmetricKeypair kp0 = signFunc.generateKeypair();
 		parties[0].setPubKey(kp0.getPubKey());
 		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
 		parties[0].setHostAddress(new NetworkAddress("192.168.1.6", 9000));
@@ -129,7 +129,7 @@ public class LedgerEditerTest {
 		parties[1] = new ConsensusParticipantData();
 		parties[1].setId(1);
 		parties[1].setName("John");
-		CryptoKeyPair kp1 = signFunc.generateKeyPair();
+		AsymmetricKeypair kp1 = signFunc.generateKeypair();
 		parties[1].setPubKey(kp1.getPubKey());
 		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
 		parties[1].setHostAddress(new NetworkAddress("192.168.1.7", 9000));

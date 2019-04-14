@@ -40,7 +40,7 @@ public class DataAccountRegisterOpTemplateTest {
         DataContractRegistry.register(DataAccountRegisterOperation.class);
         DataContractRegistry.register(Operation.class);
         SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
-		PubKey pubKey = signFunc.generateKeyPair().getPubKey();
+		PubKey pubKey = signFunc.generateKeypair().getPubKey();
         BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
         data = new DataAccountRegisterOpTemplate(contractID);
 

@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.Bytes;
@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.Bytes;
  * @author huanghaiquan
  *
  */
-public class BlockchainKeyPair extends CryptoKeyPair {
+public class BlockchainKeyPair extends AsymmetricKeypair {
 
 	private BlockchainIdentity id;
 

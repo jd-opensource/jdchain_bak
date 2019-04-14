@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 
@@ -39,7 +39,7 @@ public interface PreparedTransaction extends HashObject  {
 	 *            签名账户的私钥；
 	 * @return
 	 */
-	DigitalSignature sign(CryptoKeyPair keyPair);
+	DigitalSignature sign(AsymmetricKeypair keyPair);
 
 	/**
 	 * 加入签名；

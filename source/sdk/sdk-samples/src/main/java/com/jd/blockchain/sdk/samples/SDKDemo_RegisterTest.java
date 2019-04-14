@@ -9,7 +9,7 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;

@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -145,7 +145,7 @@ public class IntegrationTestAll4Redis {
 		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
 		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
 
-		CryptoKeyPair adminKey = new CryptoKeyPair(pubKey0, privkey0);
+		AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
 		testWriteBatchTransactions(gateway0, adminKey, ledgers[0]);
 
@@ -202,7 +202,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	// 测试一个区块包含多个交易的写入情况，并验证写入结果；
-	private void testWriteBatchTransactions(GatewayTestRunner gateway, CryptoKeyPair adminKey,
+	private void testWriteBatchTransactions(GatewayTestRunner gateway, AsymmetricKeypair adminKey,
 			LedgerRepository ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
@@ -257,7 +257,7 @@ public class IntegrationTestAll4Redis {
 		return;
 	}
 
-	private void testSDK(GatewayTestRunner gateway, CryptoKeyPair adminKey, LedgerRepository ledgerRepository) {
+	private void testSDK(GatewayTestRunner gateway, AsymmetricKeypair adminKey, LedgerRepository ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
@@ -271,7 +271,7 @@ public class IntegrationTestAll4Redis {
 
 	}
 
-	private void testSDK_InsertData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+	private void testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
 			Bytes dataAccountAddress, LedgerRepository ledgerRepository) {
 
 		// 在本地定义注册账号的 TX；
@@ -315,7 +315,7 @@ public class IntegrationTestAll4Redis {
 		}
 	}
 
-	private BlockchainKeyPair testSDK_RegisterDataAccount(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private BlockchainKeyPair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册数据账户，并验证最终写入；
 		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
@@ -350,7 +350,7 @@ public class IntegrationTestAll4Redis {
 		return dataAccount;
 	}
 
-	private BlockchainKeyPair testSDK_RegisterUser(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private BlockchainKeyPair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		// 注册用户，并验证最终写入；
 		BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
@@ -390,7 +390,7 @@ public class IntegrationTestAll4Redis {
 		}
 	}
 
-	private LedgerBlock testSDK_Contract(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		System.out.println("adminKey=" + AddressEncoding.generateAddress(adminKey.getPubKey()));
 		BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
@@ -442,7 +442,7 @@ public class IntegrationTestAll4Redis {
 		return block;
 	}
 
-	private void testContractExe(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
 			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
@@ -474,7 +474,7 @@ public class IntegrationTestAll4Redis {
 
 		// 验证合约中的赋值，外部可以获得;
 		DataAccountSet dataAccountSet = ledgerRepository.getDataAccountSet(backgroundLedgerBlock);
-		CryptoKeyPair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
+		AsymmetricKeypair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 		assertEquals(dataAddress, dataAccountSet.getDataAccount(dataAddress).getAddress());
@@ -489,7 +489,7 @@ public class IntegrationTestAll4Redis {
 		// assertEquals(userAddress, userAccountSet.getUser(userAddress).getAddress());
 	}
 
-	private void prepareContractData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+	private void prepareContractData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
 			LedgerRepository ledgerRepository) {
 
 		// 定义交易；

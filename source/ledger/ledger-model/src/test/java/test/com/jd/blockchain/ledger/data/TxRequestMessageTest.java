@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -60,10 +60,10 @@ public class TxRequestMessageTest {
 		data = new TxRequestMessage(initTransactionContent());
 
 		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
-		CryptoKeyPair key1 = signFunc.generateKeyPair();
-		CryptoKeyPair key2 = signFunc.generateKeyPair();
-		CryptoKeyPair key3 = signFunc.generateKeyPair();
-		CryptoKeyPair key4 = signFunc.generateKeyPair();
+		AsymmetricKeypair key1 = signFunc.generateKeypair();
+		AsymmetricKeypair key2 = signFunc.generateKeypair();
+		AsymmetricKeypair key3 = signFunc.generateKeypair();
+		AsymmetricKeypair key4 = signFunc.generateKeypair();
 
 		SignatureDigest digest1 = signFunc.sign(key1.getPrivKey(), "zhangsan".getBytes());
 		SignatureDigest digest2 = signFunc.sign(key2.getPrivKey(), "lisi".getBytes());

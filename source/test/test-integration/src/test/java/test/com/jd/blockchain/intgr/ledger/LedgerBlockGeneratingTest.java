@@ -16,7 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -63,7 +63,7 @@ public class LedgerBlockGeneratingTest {
 		test(ledgerHash, node.getPartiKey(), ledgerManager, opHandler, 1000, 5);
 	}
 
-	private static void test(HashDigest ledgerHash, CryptoKeyPair adminKey, LedgerManager ledgerManager,
+	private static void test(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
 			DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		long height = ledger.getLatestBlockHeight();
@@ -106,7 +106,7 @@ public class LedgerBlockGeneratingTest {
 	}
 
 	private static List<TransactionRequest> prepareUserRegisterRequests(HashDigest ledgerHash, int count,
-			CryptoKeyPair adminKey) {
+			AsymmetricKeypair adminKey) {
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			TxBuilder txbuilder = new TxBuilder(ledgerHash);

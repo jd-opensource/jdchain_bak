@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger.data;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -36,7 +36,7 @@ public class PreparedTx implements PreparedTransaction {
 	}
 
 	@Override
-	public DigitalSignature sign(CryptoKeyPair keyPair) {
+	public DigitalSignature sign(AsymmetricKeypair keyPair) {
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(keyPair.getAlgorithm());
 		PrivKey privKey = keyPair.getPrivKey();
 		byte[] content = BinaryEncodingUtils.encode(getTransactionContent(), TransactionContent.class);

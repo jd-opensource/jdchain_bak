@@ -14,7 +14,7 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -169,7 +169,7 @@ public class IntegrationTest {
 
 		HashDigest[] ledgerHashs = bcsrv.getLedgerHashs();
 
-		CryptoKeyPair adminKey = context.getNode(0).getPartiKeyPair();
+		AsymmetricKeypair adminKey = context.getNode(0).getPartiKeyPair();
 
 		BlockchainKeyPair newUserAcount = testSDK_RegisterUser(adminKey, ledgerHashs[0], bcsrv, context);
 
@@ -184,7 +184,7 @@ public class IntegrationTest {
 
 	}
 
-	private void testSDK_InsertData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+	private void testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
 			String dataAccountAddress, IntegratedContext context) {
 
 		// 在本地定义注册账号的 TX；
@@ -223,7 +223,7 @@ public class IntegrationTest {
 		}
 	}
 
-	private static BlockchainKeyPair testSDK_RegisterUser(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private static BlockchainKeyPair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, IntegratedContext context) {
 		// 注册用户，并验证最终写入；
 		BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
@@ -253,7 +253,7 @@ public class IntegrationTest {
 		return user;
 	}
 
-	private BlockchainKeyPair testSDK_RegisterDataAccount(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private BlockchainKeyPair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, IntegratedContext context) {
 		// 注册数据账户，并验证最终写入；
 		BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
@@ -286,7 +286,7 @@ public class IntegrationTest {
 		return dataAccount;
 	}
 
-	private void testSDK_Query(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+	private void testSDK_Query(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
 			IntegratedContext context, BlockchainKeyPair newUserAcount, BlockchainKeyPair newDataAcount) {
 
 		Bytes userAddress = newUserAcount.getAddress();
@@ -501,7 +501,7 @@ public class IntegrationTest {
 		node0.setConsensusSettings(csProps);
 		node0.setLedgerManager(nodeCtx0.getLedgerManager());
 		node0.setStorageDB(nodeCtx0.getStorageDB());
-		node0.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
+		node0.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
 		node0.setBindingConfig(bindingConfig0);
 		context.addNode(node0);
 
@@ -509,7 +509,7 @@ public class IntegrationTest {
 		node1.setConsensusSettings(csProps);
 		node1.setLedgerManager(nodeCtx1.getLedgerManager());
 		node1.setStorageDB(nodeCtx1.getStorageDB());
-		node1.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
+		node1.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
 		node1.setBindingConfig(bindingConfig1);
 		context.addNode(node1);
 
@@ -517,7 +517,7 @@ public class IntegrationTest {
 		node2.setConsensusSettings(csProps);
 		node2.setLedgerManager(nodeCtx2.getLedgerManager());
 		node2.setStorageDB(nodeCtx2.getStorageDB());
-		node2.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
+		node2.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
 		node2.setBindingConfig(bindingConfig2);
 		context.addNode(node2);
 
@@ -525,7 +525,7 @@ public class IntegrationTest {
 		node3.setConsensusSettings(csProps);
 		node3.setLedgerManager(nodeCtx3.getLedgerManager());
 		node3.setStorageDB(nodeCtx3.getStorageDB());
-		node3.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
+		node3.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
 		node3.setBindingConfig(bindingConfig3);
 		context.addNode(node3);
 
@@ -547,7 +547,7 @@ public class IntegrationTest {
 		}
 	}
 
-	private LedgerBlock testSDK_Contract(CryptoKeyPair adminKey, HashDigest ledgerHash,
+	private LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService, IntegratedContext context) {
 		// valid the basic data in contract;
 		prepareContractData(adminKey, ledgerHash, blockchainService, context);
@@ -585,7 +585,7 @@ public class IntegrationTest {
 		return block;
 	}
 
-	private void testContractExe(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
 			BlockchainService blockchainService, IntegratedContext context) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
@@ -616,7 +616,7 @@ public class IntegrationTest {
 
 		// 验证合约中的赋值，外部可以获得;
 		DataAccountSet dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
-		CryptoKeyPair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeyPair();
+		AsymmetricKeypair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 
@@ -629,7 +629,7 @@ public class IntegrationTest {
 		// assertEquals(userAddress, userAccountSet.getUser(userAddress).getAddress());
 	}
 
-	private void prepareContractData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+	private void prepareContractData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
 			IntegratedContext context) {
 
 		// 定义交易；

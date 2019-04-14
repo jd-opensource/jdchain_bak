@@ -16,7 +16,7 @@ import com.jd.blockchain.consensus.mq.config.MsgQueueClientConfig;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientIncomingSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -32,7 +32,7 @@ import com.jd.blockchain.crypto.SignatureFunction;
 public class MsgQueueClientFactory implements ClientFactory {
 
     @Override
-    public MsgQueueClientIdentification buildAuthId(CryptoKeyPair clientKeyPair) {
+    public MsgQueueClientIdentification buildAuthId(AsymmetricKeypair clientKeyPair) {
         PubKey pubKey = clientKeyPair.getPubKey();
         byte[] address = pubKey.toBytes(); // 使用公钥地址作为认证信息
 

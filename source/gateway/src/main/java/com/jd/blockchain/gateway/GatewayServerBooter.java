@@ -11,7 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
@@ -80,7 +80,7 @@ public class GatewayServerBooter {
 
 	private volatile ConfigurableApplicationContext appCtx;
 	private GatewayConfigProperties config;
-	private CryptoKeyPair defaultKeyPair;
+	private AsymmetricKeypair defaultKeyPair;
 	private String springConfigLocation;
 	public GatewayServerBooter(GatewayConfigProperties config, String springConfigLocation) {
 		this.config = config;
@@ -102,7 +102,7 @@ public class GatewayServerBooter {
 		} else {
 			privKey = KeyGenCommand.decodePrivKey(base58PrivKey, base58Pwd);
 		}
-		defaultKeyPair = new CryptoKeyPair(pubKey, privKey);
+		defaultKeyPair = new AsymmetricKeypair(pubKey, privKey);
 	}
 
 	public synchronized void start() {

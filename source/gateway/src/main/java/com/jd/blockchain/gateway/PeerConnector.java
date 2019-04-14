@@ -1,6 +1,6 @@
 package com.jd.blockchain.gateway;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public interface PeerConnector {
 	
 	boolean isConnected();
 	
-	void connect(NetworkAddress peerAddress, CryptoKeyPair defaultKeyPair, List<String> peerProviders);
+	void connect(NetworkAddress peerAddress, AsymmetricKeypair defaultKeyPair, List<String> peerProviders);
 
 	void reconnect();
 	

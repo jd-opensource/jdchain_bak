@@ -10,7 +10,7 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
 import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -32,7 +32,7 @@ public class BftsmartConsensusClientFactory implements ClientFactory {
 
 
     @Override
-	public BftsmartClientIdentification buildAuthId(CryptoKeyPair clientKeyPair) {
+	public BftsmartClientIdentification buildAuthId(AsymmetricKeypair clientKeyPair) {
 
 		PubKey pubKey = clientKeyPair.getPubKey();
 		PrivKey privKey = clientKeyPair.getPrivKey();

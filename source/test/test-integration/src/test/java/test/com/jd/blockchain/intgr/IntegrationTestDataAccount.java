@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -126,7 +126,7 @@ public class IntegrationTestDataAccount {
 		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[0],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
 		PubKey pubKey0 = KeyGenCommand.decodePubKey(LedgerInitializeWeb4SingleStepsTest.PUB_KEYS[0]);
-		CryptoKeyPair adminKey = new CryptoKeyPair(pubKey0, privkey0);
+		AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
 		// regist data account
 		Bytes dataAddr = registDataAccount(gateway0, adminKey, context);
@@ -138,7 +138,7 @@ public class IntegrationTestDataAccount {
 		testConsistencyAmongNodes(context);
 	}
 
-	private Bytes registDataAccount(GatewayTestRunner gateway, CryptoKeyPair adminKey, IntegratedContext context) {
+	private Bytes registDataAccount(GatewayTestRunner gateway, AsymmetricKeypair adminKey, IntegratedContext context) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService blockchainService = gwsrvFact.getBlockchainService();
@@ -173,7 +173,7 @@ public class IntegrationTestDataAccount {
 	}
 
 	// 通过调用SDK->GATEWAY,测试一个区块包含多个交易时的写入情况，并验证写入结果；
-	private void testAddKvOpToDataAccount(GatewayTestRunner gateway, CryptoKeyPair adminKey, IntegratedContext context,
+	private void testAddKvOpToDataAccount(GatewayTestRunner gateway, AsymmetricKeypair adminKey, IntegratedContext context,
 			Bytes dataAddr) {
 
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
@@ -335,7 +335,7 @@ public class IntegrationTestDataAccount {
 		node0.setConsensusSettings(csProps);
 		node0.setLedgerManager(nodeCtx0.getLedgerManager());
 		node0.setStorageDB(nodeCtx0.getStorageDB());
-		node0.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
+		node0.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(0).getPubKey(), privkey0));
 		node0.setBindingConfig(bindingConfig0);
 		context.addNode(node0);
 
@@ -343,7 +343,7 @@ public class IntegrationTestDataAccount {
 		node1.setConsensusSettings(csProps);
 		node1.setLedgerManager(nodeCtx1.getLedgerManager());
 		node1.setStorageDB(nodeCtx1.getStorageDB());
-		node1.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
+		node1.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(1).getPubKey(), privkey1));
 		node1.setBindingConfig(bindingConfig1);
 		context.addNode(node1);
 
@@ -351,7 +351,7 @@ public class IntegrationTestDataAccount {
 		node2.setConsensusSettings(csProps);
 		node2.setLedgerManager(nodeCtx2.getLedgerManager());
 		node2.setStorageDB(nodeCtx2.getStorageDB());
-		node2.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
+		node2.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(2).getPubKey(), privkey2));
 		node2.setBindingConfig(bindingConfig2);
 		context.addNode(node2);
 
@@ -359,7 +359,7 @@ public class IntegrationTestDataAccount {
 		node3.setConsensusSettings(csProps);
 		node3.setLedgerManager(nodeCtx3.getLedgerManager());
 		node3.setStorageDB(nodeCtx3.getStorageDB());
-		node3.setPartiKeyPair(new CryptoKeyPair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
+		node3.setPartiKeyPair(new AsymmetricKeypair(initSetting.getConsensusParticipant(3).getPubKey(), privkey3));
 		node3.setBindingConfig(bindingConfig3);
 		context.addNode(node3);
 

@@ -49,7 +49,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		PrivKey privKey = keyPair.getPrivKey();
@@ -82,7 +82,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		PrivKey privKey = keyPair.getPrivKey();
@@ -107,7 +107,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PrivKey privKey = keyPair.getPrivKey();
 		SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
@@ -137,7 +137,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		PrivKey privKey = keyPair.getPrivKey();
@@ -159,7 +159,7 @@ public class SM2CyptoFunctionTest {
 		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
 				.getAsymmetricEncryptionFunction(algorithm);
 
-		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 
@@ -190,7 +190,7 @@ public class SM2CyptoFunctionTest {
 		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
 				.getAsymmetricEncryptionFunction(algorithm);
 
-		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		PrivKey privKey = keyPair.getPrivKey();
@@ -210,7 +210,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PrivKey privKey = keyPair.getPrivKey();
 		byte[] privKeyBytes = privKey.toBytes();
@@ -235,7 +235,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PrivKey privKey = keyPair.getPrivKey();
 		byte[] privKeyBytes = privKey.toBytes();
@@ -275,7 +275,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		byte[] pubKeyBytes = pubKey.toBytes();
@@ -300,7 +300,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 		byte[] pubKeyBytes = pubKey.toBytes();
@@ -344,7 +344,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PrivKey privKey = keyPair.getPrivKey();
 
@@ -374,7 +374,7 @@ public class SM2CyptoFunctionTest {
 
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
 
-		CryptoKeyPair keyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
 		PrivKey privKey = keyPair.getPrivKey();
 
@@ -420,7 +420,7 @@ public class SM2CyptoFunctionTest {
 		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
 				.getAsymmetricEncryptionFunction(algorithm);
 
-		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 
@@ -452,7 +452,7 @@ public class SM2CyptoFunctionTest {
 		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
 				.getAsymmetricEncryptionFunction(algorithm);
 
-		CryptoKeyPair keyPair = asymmetricEncryptionFunction.generateKeyPair();
+		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
 
 		PubKey pubKey = keyPair.getPubKey();
 

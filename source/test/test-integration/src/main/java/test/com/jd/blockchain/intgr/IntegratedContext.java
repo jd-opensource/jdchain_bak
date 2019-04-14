@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
@@ -37,7 +37,7 @@ public class IntegratedContext {
 
 		private int id;
 
-		private CryptoKeyPair partiKeyPair;
+		private AsymmetricKeypair partiKeyPair;
 
 		// private NetworkAddress consensusAddress;
 		private ConsensusSettings consensusSettings;
@@ -64,11 +64,11 @@ public class IntegratedContext {
 			return storageDB;
 		}
 
-		public CryptoKeyPair getPartiKeyPair() {
+		public AsymmetricKeypair getPartiKeyPair() {
 			return partiKeyPair;
 		}
 
-		public void setPartiKeyPair(CryptoKeyPair partiKeyPair) {
+		public void setPartiKeyPair(AsymmetricKeypair partiKeyPair) {
 			this.partiKeyPair = partiKeyPair;
 		}
 

@@ -17,7 +17,7 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -178,7 +178,7 @@ public class LedgerPerformanceTest {
 	 * @param batchCount
 	 * @param silent
 	 */
-	private static void testUserRegistering(HashDigest ledgerHash, CryptoKeyPair adminKey, LedgerManager ledgerManager,
+	private static void testUserRegistering(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
 			DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [注册用户] =================");
@@ -219,7 +219,7 @@ public class LedgerPerformanceTest {
 	 * @param batchCount
 	 * @param silent
 	 */
-	private static void testKVWrite(HashDigest ledgerHash, CryptoKeyPair adminKey, LedgerManager ledgerManager,
+	private static void testKVWrite(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
 			DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [写入数据] =================");
@@ -273,7 +273,7 @@ public class LedgerPerformanceTest {
 	 * @param batchCount
 	 * @param silent
 	 */
-	private static void testContract(HashDigest ledgerHash, CryptoKeyPair adminKey, LedgerManager ledgerManager,
+	private static void testContract(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
 									 DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [执行合约] =================");
@@ -356,7 +356,7 @@ public class LedgerPerformanceTest {
 	}
 
 	public static List<TransactionRequest> prepareUserRegisterRequests(HashDigest ledgerHash, int count,
-			CryptoKeyPair adminKey) {
+			AsymmetricKeypair adminKey) {
 		long startTs = System.currentTimeMillis();
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
@@ -376,7 +376,7 @@ public class LedgerPerformanceTest {
 	}
 
 	public static List<TransactionRequest> prepareDataAccountRegisterRequests(HashDigest ledgerHash,
-			BlockchainIdentity[] dataAccounts, CryptoKeyPair adminKey, boolean statistic) {
+			BlockchainIdentity[] dataAccounts, AsymmetricKeypair adminKey, boolean statistic) {
 		int count = dataAccounts.length;
 		long startTs = System.currentTimeMillis();
 		List<TransactionRequest> txList = new ArrayList<>();
@@ -400,7 +400,7 @@ public class LedgerPerformanceTest {
 	}
 
 	public static List<TransactionRequest> prepareDataWriteRequests(HashDigest ledgerHash,
-			BlockchainIdentity[] dataAccounts, int count, CryptoKeyPair adminKey, boolean statistic) {
+			BlockchainIdentity[] dataAccounts, int count, AsymmetricKeypair adminKey, boolean statistic) {
 		long startTs = System.currentTimeMillis();
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
@@ -428,7 +428,7 @@ public class LedgerPerformanceTest {
 		return ConsensusProviders.getProvider(provider);
 	}
 	public static List<TransactionRequest> prepareContractRequests(HashDigest ledgerHash,
-																   CryptoKeyPair adminKey, int count, boolean statistic, TransactionBatchProcessor txProc) {
+																   AsymmetricKeypair adminKey, int count, boolean statistic, TransactionBatchProcessor txProc) {
 
 		// deploy contract
 		byte[] chainCode;

@@ -21,7 +21,7 @@ import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.capability.settings.CapabilitySettings;
 import com.jd.blockchain.consensus.mq.factory.MsgQueueFactory;
 import com.jd.blockchain.consensus.mq.producer.MsgQueueProducer;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -317,7 +317,7 @@ public class RemoteTransactionService {
         return txSerializeBytes;
     }
 
-    private TransactionRequest userRegisterRequest(HashDigest ledgerHash, CryptoKeyPair adminKey) {
+    private TransactionRequest userRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
         BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
         txbuilder.users().register(userKey.getIdentity());
@@ -326,7 +326,7 @@ public class RemoteTransactionService {
         return reqBuilder.buildRequest();
     }
 
-    private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, CryptoKeyPair adminKey, boolean isSave) {
+    private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey, boolean isSave) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
         BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
         BlockchainIdentity identity = dataAccountKey.getIdentity();
@@ -339,7 +339,7 @@ public class RemoteTransactionService {
         return reqBuilder.buildRequest();
     }
 
-    private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, CryptoKeyPair adminKey) {
+    private TransactionRequest dataAccountRegisterRequest(HashDigest ledgerHash, AsymmetricKeypair adminKey) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
         BlockchainKeyPair dataAccountKey = BlockchainKeyGenerator.getInstance().generate();
         BlockchainIdentity identity = dataAccountKey.getIdentity();
@@ -350,7 +350,7 @@ public class RemoteTransactionService {
         return reqBuilder.buildRequest();
     }
 
-    private TransactionRequest kvStorageRequest(Bytes address, HashDigest ledgerHash, CryptoKeyPair adminKey) {
+    private TransactionRequest kvStorageRequest(Bytes address, HashDigest ledgerHash, AsymmetricKeypair adminKey) {
         TxBuilder txbuilder = new TxBuilder(ledgerHash);
         long currValue = keyPrefix.getAndIncrement();
         txbuilder.dataAccount(address).set("key-" + currValue + "-" + System.currentTimeMillis(),

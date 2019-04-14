@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -103,7 +103,7 @@ public class SDK_GateWay_User_Test_ {
         TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
 
         //existed signer
-        CryptoKeyPair keyPair = new BlockchainKeyPair(pubKey, privKey);
+        AsymmetricKeypair keyPair = new BlockchainKeyPair(pubKey, privKey);
 
         BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
 
@@ -137,9 +137,9 @@ public class SDK_GateWay_User_Test_ {
 //        return new HashDigest(hashBytes);
 //    }
 
-    private CryptoKeyPair getSponsorKey() {
+    private AsymmetricKeypair getSponsorKey() {
         SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
-        return signatureFunction.generateKeyPair();
+        return signatureFunction.generateKeypair();
     }
 
     private TransactionResponse initResponse() {

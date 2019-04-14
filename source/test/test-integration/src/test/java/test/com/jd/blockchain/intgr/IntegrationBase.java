@@ -10,7 +10,7 @@ package test.com.jd.blockchain.intgr;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.LedgerManage;
@@ -73,7 +73,7 @@ public class IntegrationBase {
 
     public static final AtomicLong validLong = new AtomicLong();
 
-    public static KeyPairResponse testSDK_RegisterUser(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
+    public static KeyPairResponse testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
         // 注册用户，并验证最终写入；
         BlockchainKeyPair user = BlockchainKeyGenerator.getInstance().generate();
 
@@ -98,7 +98,7 @@ public class IntegrationBase {
         return keyPairResponse;
     }
 
-    public static KeyPairResponse testSDK_RegisterDataAccount(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
+    public static KeyPairResponse testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
         // 注册数据账户，并验证最终写入；
         BlockchainKeyPair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
@@ -123,7 +123,7 @@ public class IntegrationBase {
         return keyPairResponse;
     }
 
-    public static KvResponse testSDK_InsertData(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
+    public static KvResponse testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
                                     Bytes dataAccount) {
 
         // 在本地定义注册账号的 TX；
@@ -440,7 +440,7 @@ public class IntegrationBase {
     HashDigest txContentHash;
     String pubKeyVal = "jd.com"+System.currentTimeMillis();
     private String eventName = "issue-asset";
-    public LedgerBlock testSDK_Contract(CryptoKeyPair adminKey, HashDigest ledgerHash,
+    public LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
                                         BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         System.out.println("adminKey="+ AddressEncoding.generateAddress(adminKey.getPubKey()));
         BlockchainKeyPair userKey = BlockchainKeyGenerator.getInstance().generate();
@@ -475,7 +475,7 @@ public class IntegrationBase {
         return block;
     }
 
-    private void testContractExe(CryptoKeyPair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
+    private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeyPair userKey,
                                  BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
         LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);

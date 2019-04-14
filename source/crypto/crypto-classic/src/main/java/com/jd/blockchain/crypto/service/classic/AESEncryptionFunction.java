@@ -221,7 +221,7 @@ public class AESEncryptionFunction implements SymmetricEncryptionFunction {
 	}
 
 	@Override
-	public CryptoKey generateSymmetricKey() {
+	public SymmetricKey generateSymmetricKey() {
 		// 根据对应的标识和原始密钥生成相应的密钥数据
 		return new SymmetricKey(AES, AESUtils.generateKey128_Bytes());
 	}

@@ -4,7 +4,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Component;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.gateway.PeerConnector;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.data.TransactionService;
@@ -21,7 +21,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 
 	private volatile NetworkAddress peerAddress;
 
-	private volatile CryptoKeyPair gateWayKeyPair;
+	private volatile AsymmetricKeypair gateWayKeyPair;
 
 	private volatile List<String> peerProviders;
 
@@ -36,7 +36,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 	}
 
 	@Override
-	public synchronized void connect(NetworkAddress peerAddress, CryptoKeyPair defaultKeyPair, List<String> peerProviders) {
+	public synchronized void connect(NetworkAddress peerAddress, AsymmetricKeypair defaultKeyPair, List<String> peerProviders) {
 		if (isConnected()) {
 			if (this.peerAddress.equals(peerAddress)) {
 				return;
@@ -98,7 +98,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 		this.peerAddress = peerAddress;
 	}
 
-	public void setGateWayKeyPair(CryptoKeyPair gateWayKeyPair) {
+	public void setGateWayKeyPair(AsymmetricKeypair gateWayKeyPair) {
 		this.gateWayKeyPair = gateWayKeyPair;
 	}
 

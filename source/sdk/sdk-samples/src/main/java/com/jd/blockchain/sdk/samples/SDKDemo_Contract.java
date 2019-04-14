@@ -1,6 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -88,7 +88,7 @@ public class SDKDemo_Contract {
 		String txHash = ByteArray.toBase64(prepTx.getHash().toBytes());
 
 		// 使用私钥进行签名；
-		CryptoKeyPair keyPair = getSponsorKey();
+		AsymmetricKeypair keyPair = getSponsorKey();
 		prepTx.sign(keyPair);
 
 		// 提交交易；
@@ -107,9 +107,9 @@ public class SDKDemo_Contract {
 	 *
 	 * @return
 	 */
-	private static CryptoKeyPair getSponsorKey() {
+	private static AsymmetricKeypair getSponsorKey() {
 		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
-		return signatureFunction.generateKeyPair();
+		return signatureFunction.generateKeypair();
 	}
 
 	/**

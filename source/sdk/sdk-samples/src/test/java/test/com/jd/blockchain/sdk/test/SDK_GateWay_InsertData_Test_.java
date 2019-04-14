@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -92,7 +92,7 @@ public class SDK_GateWay_InsertData_Test_ {
         PreparedTransaction prepTx = txTemp.prepare();
 
         // 使用私钥进行签名；
-        CryptoKeyPair keyPair = getSponsorKey();
+        AsymmetricKeypair keyPair = getSponsorKey();
         prepTx.sign(keyPair);
 
         // 提交交易；
@@ -117,9 +117,9 @@ public class SDK_GateWay_InsertData_Test_ {
     }
 
 
-    private CryptoKeyPair getSponsorKey() {
+    private AsymmetricKeypair getSponsorKey() {
     	SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
-        return signatureFunction.generateKeyPair();
+        return signatureFunction.generateKeypair();
 	}
 	
     private TransactionResponse initResponse() {

@@ -19,7 +19,7 @@ import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -211,9 +211,9 @@ public class LedgerInitializeTest {
 
 		private LedgerInitProcess initProcess;
 
-		private CryptoKeyPair partiKey;
+		private AsymmetricKeypair partiKey;
 
-		public CryptoKeyPair getPartiKey() {
+		public AsymmetricKeypair getPartiKey() {
 			return partiKey;
 		}
 
@@ -237,7 +237,7 @@ public class LedgerInitializeTest {
 				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
 				Prompter prompter) {
 
-			partiKey = new CryptoKeyPair(setting.getConsensusParticipant(0).getPubKey(), privKey);
+			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -258,7 +258,7 @@ public class LedgerInitializeTest {
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
 			cryptoSetting.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
 
-			partiKey = new CryptoKeyPair(setting.getConsensusParticipant(0).getPubKey(), privKey);
+			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override

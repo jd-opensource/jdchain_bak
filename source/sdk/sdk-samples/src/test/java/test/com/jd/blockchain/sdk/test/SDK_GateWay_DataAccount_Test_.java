@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -81,7 +81,7 @@ public class SDK_GateWay_DataAccount_Test_ {
 //        CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
 
         //existed signer
-        CryptoKeyPair keyPair = new BlockchainKeyPair(SDK_GateWay_KeyPair_Para.pubKey1, SDK_GateWay_KeyPair_Para.privkey1);
+        AsymmetricKeypair keyPair = new BlockchainKeyPair(SDK_GateWay_KeyPair_Para.pubKey1, SDK_GateWay_KeyPair_Para.privkey1);
 
         BlockchainKeyPair dataAcount = BlockchainKeyGenerator.getInstance().generate();
 
@@ -118,8 +118,8 @@ public class SDK_GateWay_DataAccount_Test_ {
         return CryptoServiceProviders.getSignatureFunction("ED25519");
     }
 
-    private CryptoKeyPair getSponsorKey() {
-		return getSignatureFunction().generateKeyPair();
+    private AsymmetricKeypair getSponsorKey() {
+		return getSignatureFunction().generateKeypair();
 	}
 
     private TransactionResponse initResponse() {

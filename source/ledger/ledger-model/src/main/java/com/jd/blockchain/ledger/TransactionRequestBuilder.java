@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 
 /**
@@ -38,7 +38,7 @@ public interface TransactionRequestBuilder extends HashObject  {
 	 *            签名账户的私钥；
 	 * @return
 	 */
-	DigitalSignature signAsEndpoint(CryptoKeyPair keyPair);
+	DigitalSignature signAsEndpoint(AsymmetricKeypair keyPair);
 	
 	/**
 	 * 对交易进行签名；
@@ -49,7 +49,7 @@ public interface TransactionRequestBuilder extends HashObject  {
 	 *            签名账户的私钥；
 	 * @return
 	 */
-	DigitalSignature signAsNode(CryptoKeyPair keyPair);
+	DigitalSignature signAsNode(AsymmetricKeypair keyPair);
 
 	/**
 	 * 加入签名；

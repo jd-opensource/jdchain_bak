@@ -14,7 +14,7 @@ import com.jd.blockchain.crypto.AsymmetricEncryptionFunction;
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -210,7 +210,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 	}
 
 	@Override
-	public CryptoKeyPair generateKeyPair() {
+	public AsymmetricKeypair generateKeypair() {
 
 		// 调用SM2算法的密钥生成算法生成公私钥对priKey和pubKey，返回密钥对
 		AsymmetricCipherKeyPair keyPair = SM2Utils.generateKeyPair();
@@ -230,6 +230,6 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 
 		byte[] pubKeyBytes = ecPub.getQ().getEncoded(false);
 
-		return new CryptoKeyPair(new PubKey(SM2, pubKeyBytes), new PrivKey(SM2, privKeyBytes));
+		return new AsymmetricKeypair(new PubKey(SM2, pubKeyBytes), new PrivKey(SM2, privKeyBytes));
 	}
 }

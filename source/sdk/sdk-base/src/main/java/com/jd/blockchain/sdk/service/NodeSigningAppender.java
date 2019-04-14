@@ -5,7 +5,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.MessageService;
 import com.jd.blockchain.consensus.client.ConsensusClient;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -37,11 +37,11 @@ public class NodeSigningAppender implements TransactionService {
 
 	private ConsensusClient consensusClient;
 
-	private CryptoKeyPair nodeKeyPair;
+	private AsymmetricKeypair nodeKeyPair;
 	
 	private CryptoAlgorithm hashAlgorithm;
 
-	public NodeSigningAppender(CryptoAlgorithm hashAlgorithm, CryptoKeyPair nodeKeyPair, ConsensusClient consensusClient) {
+	public NodeSigningAppender(CryptoAlgorithm hashAlgorithm, AsymmetricKeypair nodeKeyPair, ConsensusClient consensusClient) {
 		this.hashAlgorithm = hashAlgorithm;
 		this.nodeKeyPair = nodeKeyPair;
 		this.consensusClient = consensusClient;

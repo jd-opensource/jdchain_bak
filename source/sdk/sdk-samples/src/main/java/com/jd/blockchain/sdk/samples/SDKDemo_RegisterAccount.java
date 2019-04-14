@@ -1,7 +1,7 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -37,7 +37,7 @@ public class SDKDemo_RegisterAccount {
         TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
 
         //existed signer
-        CryptoKeyPair keyPair = new BlockchainKeyPair(SDKDemo_Params.pubKey1, SDKDemo_Params.privkey1);
+        AsymmetricKeypair keyPair = new BlockchainKeyPair(SDKDemo_Params.pubKey1, SDKDemo_Params.privkey1);
 
         BlockchainKeyPair dataAcount = BlockchainKeyGenerator.getInstance().generate();
 

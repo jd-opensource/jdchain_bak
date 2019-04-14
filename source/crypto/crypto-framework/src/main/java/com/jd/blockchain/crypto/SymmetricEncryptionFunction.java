@@ -3,7 +3,7 @@ package com.jd.blockchain.crypto;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface SymmetricEncryptionFunction extends CryptoSymmetricKeyGenerator, CryptoFunction {
+public interface SymmetricEncryptionFunction extends SymmetricKeyGenerator, CryptoFunction {
 
 	/**
 	 * 加密；

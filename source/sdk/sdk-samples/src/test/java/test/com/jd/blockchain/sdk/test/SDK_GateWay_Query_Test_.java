@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -186,7 +186,7 @@ public class SDK_GateWay_Query_Test_ {
 
 	private BlockchainKeyPair getSponsorKey() {
 		SignatureFunction signatureFunction = getSignatureFunction();
-		CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeyPair blockchainKeyPair = new BlockchainKeyPair(cryptoKeyPair.getPubKey(),
 				cryptoKeyPair.getPrivKey());
 		return blockchainKeyPair;

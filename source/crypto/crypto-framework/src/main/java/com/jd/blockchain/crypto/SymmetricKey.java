@@ -3,7 +3,7 @@ package com.jd.blockchain.crypto;
 import static com.jd.blockchain.crypto.CryptoKeyType.SYMMETRIC;
 
 /**
- * 单密钥；
+ * 对称密钥；
  * 
  * @author huanghaiquan
  *

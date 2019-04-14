@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.SignatureFunction;
 
@@ -33,7 +33,7 @@ public class BlockchainKeyGenerator {
 	
 	public BlockchainKeyPair generate(CryptoAlgorithm signatureAlgorithm) {
 		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(signatureAlgorithm);
-		CryptoKeyPair cryptoKeyPair = signFunc.generateKeyPair();
+		AsymmetricKeypair cryptoKeyPair = signFunc.generateKeypair();
 		return new BlockchainKeyPair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 	}
 

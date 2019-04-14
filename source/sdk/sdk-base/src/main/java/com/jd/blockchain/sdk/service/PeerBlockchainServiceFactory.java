@@ -4,7 +4,7 @@ import com.jd.blockchain.consensus.*;
 import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.data.TransactionService;
@@ -88,7 +88,7 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 	 * 
 	 * @return 区块链服务工厂实例；
 	 */
-	public static PeerBlockchainServiceFactory connect(CryptoKeyPair gatewayKey, NetworkAddress peerAddr, List<String> peerProviders) {
+	public static PeerBlockchainServiceFactory connect(AsymmetricKeypair gatewayKey, NetworkAddress peerAddr, List<String> peerProviders) {
 
 		if (peerProviders == null || peerProviders.isEmpty()) {
 			throw new AuthenticationException("No peer Provider was set!");
@@ -245,7 +245,7 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 	 * @param cryptoSetting
 	 * @return
 	 */
-	private static TransactionService enableGatewayAutoSigning(CryptoKeyPair nodeKeyPair, CryptoSetting cryptoSetting,
+	private static TransactionService enableGatewayAutoSigning(AsymmetricKeypair nodeKeyPair, CryptoSetting cryptoSetting,
 			ConsensusClient consensusClient) {
 		NodeSigningAppender signingAppender = new NodeSigningAppender(cryptoSetting.getHashAlgorithm(),
 				nodeKeyPair, consensusClient);
@@ -265,7 +265,7 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 		}
 	}
 
-	private static ClientIdentificationsProvider authIdProvider(CryptoKeyPair gatewayKey, List<String> peerProviders) {
+	private static ClientIdentificationsProvider authIdProvider(AsymmetricKeypair gatewayKey, List<String> peerProviders) {
 		ClientIdentificationsProvider authIdProvider = new ClientIdentificationsProvider();
 		for (String peerProvider : peerProviders) {
 			ConsensusProvider provider = ConsensusProviders.getProvider(peerProvider);

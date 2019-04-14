@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
@@ -41,14 +41,14 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 	}
 
 	@Override
-	public DigitalSignature signAsEndpoint(CryptoKeyPair keyPair) {
+	public DigitalSignature signAsEndpoint(AsymmetricKeypair keyPair) {
 		DigitalSignature signature = sign(txContent, keyPair);
 		addEndpointSignature(signature);
 		return signature;
 	}
 
 	@Override
-	public DigitalSignature signAsNode(CryptoKeyPair keyPair) {
+	public DigitalSignature signAsNode(AsymmetricKeypair keyPair) {
 		DigitalSignature signature = sign(txContent, keyPair);
 		addNodeSignature(signature);
 		return signature;
@@ -64,7 +64,7 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 		endpointSignatures.add(signature);
 	}
 
-	public static DigitalSignature sign(TransactionContent txContent, CryptoKeyPair keyPair) {
+	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {
 		SignatureDigest signatureDigest = sign(txContent, keyPair.getPrivKey());
 		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
 		return signature;

@@ -7,7 +7,7 @@ import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -154,7 +154,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 	}
 
 	@Override
-	public CryptoKeyPair generateKeyPair() {
+	public AsymmetricKeypair generateKeypair() {
 		// 调用ED25519算法的密钥生成算法生成公私钥对priKey和pubKey，返回密钥对
 		AsymmetricCipherKeyPair keyPair = ED25519Utils.generateKeyPair();
 		Ed25519PrivateKeyParameters privKeyParams = (Ed25519PrivateKeyParameters) keyPair.getPrivate();
@@ -167,7 +167,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 //		EdDSAPrivateKey privKey = (EdDSAPrivateKey) keyPair.getPrivate();
 //		EdDSAPublicKey pubKey = (EdDSAPublicKey) keyPair.getPublic();
 //		return new CryptoKeyPair(new PubKey(ED25519, pubKey.getAbyte()), new PrivKey(ED25519, privKey.getSeed()));
-		return new CryptoKeyPair(new PubKey(ED25519, pubKeyBytes), new PrivKey(ED25519, privKeyBytes));
+		return new AsymmetricKeypair(new PubKey(ED25519, pubKeyBytes), new PrivKey(ED25519, privKeyBytes));
 
 	}
 }

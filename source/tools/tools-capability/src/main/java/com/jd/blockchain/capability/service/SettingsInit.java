@@ -13,7 +13,7 @@ import com.jd.blockchain.capability.settings.CapabilitySettings;
 import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -118,7 +118,7 @@ public class SettingsInit {
         // 处理用户
         PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(settings.getPrivKey(), settings.getPwd());
         PubKey pubKey = KeyGenCommand.decodePubKey(settings.getPubKey());
-        CapabilitySettings.adminKey = new CryptoKeyPair(pubKey, privKey);
+        CapabilitySettings.adminKey = new AsymmetricKeypair(pubKey, privKey);
     }
 
     private static class Settings {

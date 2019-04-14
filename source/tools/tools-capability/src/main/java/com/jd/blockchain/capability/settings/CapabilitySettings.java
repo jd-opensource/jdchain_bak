@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.capability.settings;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 
 /**
@@ -41,7 +41,7 @@ public class CapabilitySettings {
 
     public static HashDigest ledgerHash;
 
-    public static CryptoKeyPair adminKey;
+    public static AsymmetricKeypair adminKey;
 
     public static final String settingsConf = "settings.conf";
 }

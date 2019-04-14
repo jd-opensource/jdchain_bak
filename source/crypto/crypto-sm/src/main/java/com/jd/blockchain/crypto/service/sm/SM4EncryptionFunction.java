@@ -205,7 +205,7 @@ public class SM4EncryptionFunction implements SymmetricEncryptionFunction {
 	}
 
 	@Override
-	public CryptoKey generateSymmetricKey() {
+	public SymmetricKey generateSymmetricKey() {
 		// 根据对应的标识和原始密钥生成相应的密钥数据
 		return new SymmetricKey(SM4, SM4Utils.generateKey());
 	}

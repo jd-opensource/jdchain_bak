@@ -1,6 +1,6 @@
 package com.jd.blockchain.crypto;
 
-public interface AsymmetricEncryptionFunction extends CryptoKeyPairGenerator, CryptoFunction {
+public interface AsymmetricEncryptionFunction extends AsymmetricKeypairGenerator, CryptoFunction {
 
 	/**
 	 * 加密；

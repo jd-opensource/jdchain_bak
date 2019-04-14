@@ -1,6 +1,12 @@
 package com.jd.blockchain.crypto;
 
-public class CryptoKeyPair {
+/**
+ * 非对称密钥对；
+ * 
+ * @author huanghaiquan
+ *
+ */
+public class AsymmetricKeypair {
 
 	private PubKey pubKey;
 
@@ -18,7 +24,7 @@ public class CryptoKeyPair {
 		return privKey;
 	}
 
-	public CryptoKeyPair(PubKey pubKey, PrivKey privKey) {
+	public AsymmetricKeypair(PubKey pubKey, PrivKey privKey) {
 		if (pubKey.getAlgorithm() != privKey.getAlgorithm()) {
 			throw new IllegalArgumentException("The algorithms of PubKey and PrivKey don't match!");
 		}

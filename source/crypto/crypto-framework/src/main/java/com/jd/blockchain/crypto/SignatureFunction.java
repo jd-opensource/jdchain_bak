@@ -1,6 +1,6 @@
 package com.jd.blockchain.crypto;
 
-public interface SignatureFunction extends CryptoKeyPairGenerator, CryptoFunction {
+public interface SignatureFunction extends AsymmetricKeypairGenerator, CryptoFunction {
 
 	/**
 	 * 计算指定数据的 hash；

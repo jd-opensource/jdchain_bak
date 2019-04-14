@@ -2,7 +2,7 @@ package test.com.jd.blockchain.ledger;
 
 import java.util.Random;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
@@ -34,7 +34,7 @@ public class LedgerTestUtils {
 
 		TxTemplate txTemp = new TxTemplate(ledgerHash, txHandle);
 
-		CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		PubKey pubKey = cryptoKeyPair.getPubKey();
 		txTemp.users().register(new BlockchainIdentityData(pubKey));
 		PreparedTransaction ptx = txTemp.prepare();
@@ -51,7 +51,7 @@ public class LedgerTestUtils {
 
 		txTemp.contractEvents().send(contractAddress, event, args);
 
-		CryptoKeyPair cryptoKeyPair = signatureFunction.generateKeyPair();
+		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		PubKey pubKey = cryptoKeyPair.getPubKey();
 		txTemp.users().register(new BlockchainIdentityData(pubKey));
 		PreparedTransaction ptx = txTemp.prepare();

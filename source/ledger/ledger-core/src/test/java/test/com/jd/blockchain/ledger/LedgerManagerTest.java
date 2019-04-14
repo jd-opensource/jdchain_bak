@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -182,7 +182,7 @@ public class LedgerManagerTest {
 		parties[0] = new ConsensusParticipantData();
 		parties[0].setId(0);
 		parties[0].setName("John");
-		CryptoKeyPair kp0 = signatureFunction.generateKeyPair();
+		AsymmetricKeypair kp0 = signatureFunction.generateKeypair();
 		parties[0].setPubKey(kp0.getPubKey());
 		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
 		parties[0].setHostAddress(new NetworkAddress("127.0.0.1", 9000));
@@ -190,7 +190,7 @@ public class LedgerManagerTest {
 		parties[1] = new ConsensusParticipantData();
 		parties[1].setId(1);
 		parties[1].setName("Mary");
-		CryptoKeyPair kp1 = signatureFunction.generateKeyPair();
+		AsymmetricKeypair kp1 = signatureFunction.generateKeypair();
 		parties[1].setPubKey(kp1.getPubKey());
 		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
 		parties[1].setHostAddress(new NetworkAddress("127.0.0.1", 9010));
@@ -198,7 +198,7 @@ public class LedgerManagerTest {
 		parties[2] = new ConsensusParticipantData();
 		parties[2].setId(2);
 		parties[2].setName("Jerry");
-		CryptoKeyPair kp2 = signatureFunction.generateKeyPair();
+		AsymmetricKeypair kp2 = signatureFunction.generateKeypair();
 		parties[2].setPubKey(kp2.getPubKey());
 		parties[2].setAddress(AddressEncoding.generateAddress(kp2.getPubKey()).toBase58());
 		parties[2].setHostAddress(new NetworkAddress("127.0.0.1", 9020));
@@ -206,7 +206,7 @@ public class LedgerManagerTest {
 		parties[3] = new ConsensusParticipantData();
 		parties[3].setId(3);
 		parties[3].setName("Tom");
-		CryptoKeyPair kp3 = signatureFunction.generateKeyPair();
+		AsymmetricKeypair kp3 = signatureFunction.generateKeypair();
 		parties[3].setPubKey(kp3.getPubKey());
 		parties[3].setAddress(AddressEncoding.generateAddress(kp3.getPubKey()).toBase58());
 		parties[3].setHostAddress(new NetworkAddress("127.0.0.1", 9030));

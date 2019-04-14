@@ -8,7 +8,7 @@
  */
 package test.com.jd.blockchain.intgr.batch.bftsmart;
 
-import com.jd.blockchain.crypto.CryptoKeyPair;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -181,7 +181,7 @@ public class BftsmartLedgerInit {
 
         PubKey pubKey0 = KeyGenCommand.decodePubKey(BftsmartConfig.PUB_KEY[0]);
 
-        CryptoKeyPair adminKey = new CryptoKeyPair(pubKey0, privkey0);
+        AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
         BlockchainService blockchainService = gwsrvFact.getBlockchainService();
 
