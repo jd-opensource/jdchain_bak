@@ -7,33 +7,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.HashFunction;
-import com.jd.blockchain.crypto.RandomFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
-import com.jd.blockchain.utils.codec.Base58Utils;
-import com.jd.blockchain.utils.io.BytesUtils;
 
 public class LedgerBindingConfigTest {
-
-	public static void main(String[] args) {
-		//生成测试
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(ClassicAlgorithm.SHA256);
-		HashDigest hash1 = hashFunc.hash(UUID.randomUUID().toString().getBytes());
-		HashDigest hash2 = hashFunc.hash(UUID.randomUUID().toString().getBytes());
-		System.out.println("Hash1=[" + hash1.toBase58() + "]");
-		System.out.println("Hash1=[" + hash2.toBase58() + "]");
-	}
 
 	@Test
 	public void testResolveAndStore() throws IOException {

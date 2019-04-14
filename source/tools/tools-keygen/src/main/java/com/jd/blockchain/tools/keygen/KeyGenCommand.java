@@ -53,15 +53,15 @@ public class KeyGenCommand {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Setting setting = ArgumentSet.setting().prefix(READ_ARG, NAME_ARG, OUT_DIR_ARG, LOCAL_CONF_ARG).option(OPT_DECRYPTING,
-				OPT_DEBUG);
+		Setting setting = ArgumentSet.setting().prefix(READ_ARG, NAME_ARG, OUT_DIR_ARG, LOCAL_CONF_ARG)
+				.option(OPT_DECRYPTING, OPT_DEBUG);
 		ArgumentSet argSet = ArgumentSet.resolve(args, setting);
 		try {
 			ArgEntry[] argEntries = argSet.getArgs();
 			if (argEntries.length == 0) {
 				ConsoleUtils.info("Miss argument!\r\n"
-						+ "-r : in reading mode if set this option, or in generating mode if not set.\r\n"
-						+ "-d : decrypt priv key in reading mode. This is optional.\r\n" + "-n : name of key.\r\n"
+						+ "-r : Run in reading mode if set this option, or in generating mode if not set.\r\n"
+						+ "-d : Decrypt priv key in reading mode, optional.\r\n" + "-n : name of key.\r\n"
 						+ "-o : output dir of key under generating mode.\r\n");
 				return;
 			}
@@ -74,18 +74,28 @@ public class KeyGenCommand {
 					ConsoleUtils.info("Miss name of key!");
 					return;
 				}
+				String outputDir = null;
 				ArgEntry dirArg = argSet.getArg(OUT_DIR_ARG);
 				if (dirArg == null || dirArg.getValue() == null) {
-					ConsoleUtils.info("Miss storage dir of keys!");
-					return;
+					// 在当前目录生成；
+					outputDir = "." + File.separatorChar;
+
+					// ConsoleUtils.info("Miss storage dir of keys!");
+					// return;
+				} else {
+					outputDir = dirArg.getValue();
 				}
-				if (!FileUtils.existDirectory(dirArg.getValue())) {
-					ConsoleUtils.info("The storage dir doesn't exist!");
-					return;
+				if (!FileUtils.existDirectory(outputDir)) {
+					// 创建目录；
+					ConsoleUtils.info(
+							"The storage dir[" + outputDir + "] doesn't exist,  it will be created automatically!");
+					FileUtils.makeDirectory(outputDir);
+//					return;
 				}
 				ArgEntry localConfArg = argSet.getArg(LOCAL_CONF_ARG);
 				String localConfPath = localConfArg == null ? null : localConfArg.getValue();
-				generateKeyPair(name.getValue(), dirArg.getValue(), localConfPath);
+
+				generateKeyPair(name.getValue(), outputDir, localConfPath);
 			}
 
 		} catch (Exception e) {
@@ -117,7 +127,8 @@ public class KeyGenCommand {
 		FileUtils.writeText(base58PrivKey, privKeyFile);
 
 		String base58PwdKey = null;
-		String savePwdStr = ConsoleUtils.confirm("Do you want to save encode password to file? Please input y or n ...");
+		String savePwdStr = ConsoleUtils
+				.confirm("Do you want to save encode password to file? Please input y or n ...");
 		if (savePwdStr.equalsIgnoreCase("y") || savePwdStr.equalsIgnoreCase("yes")) {
 			base58PwdKey = Base58Utils.encode(pwdBytes);
 			File pwdFile = new File(outputDir, String.format("%s.pwd", name));
@@ -135,9 +146,9 @@ public class KeyGenCommand {
 			}
 		}
 		if (localConfPath != null) {
-		    File localConf = new File(localConfPath);
-		    if (localConf.exists()) {
-		    	try {
+			File localConf = new File(localConfPath);
+			if (localConf.exists()) {
+				try {
 					List<String> configs = org.apache.commons.io.FileUtils.readLines(localConf);
 					List<String> modifyConfigs = new ArrayList<>();
 					if (configs != null && !configs.isEmpty()) {
@@ -157,8 +168,8 @@ public class KeyGenCommand {
 				} catch (Exception e) {
 					System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
 				}
-            }
-        }
+			}
+		}
 	}
 
 	public static String encodePubKey(PubKey pubKey) {
@@ -203,15 +214,12 @@ public class KeyGenCommand {
 				// Try reading pubKey;
 				PubKey pubKey = doDecodePubKeyBytes(keyBytes);
 				ConsoleUtils.info(
-						"======================== pub key ========================\r\n" 
-								+ "[%s]\r\n"
+						"======================== pub key ========================\r\n" + "[%s]\r\n"
 								+ "Raw:[%s][%s]\r\n",
-								base58KeyString, pubKey.getAlgorithm(), Base58Utils.encode(pubKey.toBytes()));
-			}else {
-				ConsoleUtils.info(
-						"======================== pub key ========================\r\n" 
-								+ "[%s]\r\n",
-								base58KeyString);
+						base58KeyString, pubKey.getAlgorithm(), Base58Utils.encode(pubKey.toBytes()));
+			} else {
+				ConsoleUtils.info("======================== pub key ========================\r\n" + "[%s]\r\n",
+						base58KeyString);
 			}
 			return;
 		} else if (BytesUtils.startsWith(keyBytes, PRIV_KEY_FILE_MAGICNUM)) {
@@ -220,9 +228,9 @@ public class KeyGenCommand {
 				if (decrypting) {
 					byte[] pwdBytes = readPassword();
 					PrivKey privKey = decryptedPrivKeyBytes(keyBytes, pwdBytes);
-					ConsoleUtils.info("======================== priv key ========================\r\n"
-							+ "[%s]\r\n"
-							+ "Raw:[%s][%s]\r\n",
+					ConsoleUtils.info(
+							"======================== priv key ========================\r\n" + "[%s]\r\n"
+									+ "Raw:[%s][%s]\r\n",
 							base58KeyString, privKey.getAlgorithm(), Base58Utils.encode(privKey.toBytes()));
 				} else {
 					ConsoleUtils.info("======================== priv key ========================\r\n[%s]\r\n",
@@ -268,7 +276,7 @@ public class KeyGenCommand {
 			return doDecodePubKeyBytes(encodedPubKeyBytes);
 		}
 
-		throw new IllegalArgumentException("The specified file is not a pub key file!");
+		throw new IllegalArgumentException("The specified bytes is not valid PubKey generated by the KeyGen tool!");
 	}
 
 	/**
@@ -314,7 +322,7 @@ public class KeyGenCommand {
 	public static PrivKey readPrivKey(String keyFile, String base58Pwd) {
 		return readPrivKey(keyFile, Base58Utils.decode(base58Pwd));
 	}
-	
+
 	/**
 	 * 从文件读取私钥；
 	 * 
@@ -330,12 +338,12 @@ public class KeyGenCommand {
 		}
 		return decryptedPrivKeyBytes(keyBytes, pwdBytes);
 	}
-	
+
 	public static PrivKey decodePrivKey(String base58Key, String base58Pwd) {
 		byte[] decryptedKey = Base58Utils.decode(base58Pwd);
 		return decodePrivKey(base58Key, decryptedKey);
 	}
-	
+
 	public static PrivKey decodePrivKey(String base58Key, byte[] pwdBytes) {
 		byte[] keyBytes = Base58Utils.decode(base58Key);
 		if (!BytesUtils.startsWith(keyBytes, PRIV_KEY_FILE_MAGICNUM)) {
@@ -343,7 +351,7 @@ public class KeyGenCommand {
 		}
 		return decryptedPrivKeyBytes(keyBytes, pwdBytes);
 	}
-	
+
 	public static PrivKey decodePrivKeyWithRawPassword(String base58Key, String rawPassword) {
 		byte[] pwdBytes = encodePassword(rawPassword);
 		byte[] keyBytes = Base58Utils.decode(base58Key);

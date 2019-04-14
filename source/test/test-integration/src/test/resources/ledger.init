@@ -13,7 +13,7 @@ cons_parti.0.name=jd.com
 #第0个参与方的公钥文件路径；
 cons_parti.0.pubkey-path=keys/jd-com.pub
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.0.pubkey=endPsK36koyFr1D245Sa9j83vt6pZUdFBJoJRB3xAsWM6cwhRbna
+cons_parti.0.pubkey=3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu
 #第0个参与方的共识服务的主机地址；
 cons_parti.0.consensus.host=127.0.0.1
 #第0个参与方的共识服务的端口；
@@ -32,7 +32,7 @@ cons_parti.1.name=at.com
 #第1个参与方的公钥文件路径；
 cons_parti.1.pubkey-path=keys/at-com.pub
 #第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.1.pubkey=endPsK36sC5JdPCDPDAXUwZtS3sxEmqEhFcC4whayAsTTh8Z6eoZ
+cons_parti.1.pubkey=3snPdw7i7Ph1SYLQt9uqVEqiuvNXjxCdGvEdN6otJsg5rbr7Aze7kf
 #第1个参与方的共识服务的主机地址；
 cons_parti.1.consensus.host=127.0.0.1
 #第1个参与方的共识服务的端口；
@@ -70,7 +70,7 @@ cons_parti.3.name=xt.com
 #第3个参与方的公钥文件路径；
 cons_parti.3.pubkey-path=keys/xt-com.pub
 #第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.3.pubkey=endPsK36nse1dck4uF19zPvAMijCV336Y3zWdgb4rQG8QoRj5ktR
+cons_parti.3.pubkey=3snPdw7i7PerZYfRzEB61SAN9tFK4yHm9wUSRtkLSSGXHkQRbB5PkS
 #第3个参与方的共识服务的主机地址；
 cons_parti.3.consensus.host=127.0.0.1
 #第3个参与方的共识服务的端口；
