@@ -5,6 +5,7 @@ import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
 import java.util.Arrays;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoBytes;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -57,4 +58,5 @@ public class RIPEMD160HashFunction implements HashFunction {
 			throw new CryptoException("digestBytes is invalid!");
 		}
 	}
+	
 }

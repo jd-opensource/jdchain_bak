@@ -21,7 +21,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -70,11 +70,11 @@ public class LedgerTransactionDataTest {
 		data = new LedgerTransactionData(blockHeight, txRequestMessage, TransactionState.SUCCESS,
 				initTransactionStagedSnapshot());
 
-		HashDigest hash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhangsan".getBytes());
-		HashDigest adminAccountHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "lisi".getBytes());
-		HashDigest userAccountSetHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "wangwu".getBytes());
-		HashDigest dataAccountSetHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhaoliu".getBytes());
-		HashDigest contractAccountSetHash = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "sunqi".getBytes());
+		HashDigest hash = new HashDigest(ClassicAlgorithm.SHA256, "zhangsan".getBytes());
+		HashDigest adminAccountHash = new HashDigest(ClassicAlgorithm.SHA256, "lisi".getBytes());
+		HashDigest userAccountSetHash = new HashDigest(ClassicAlgorithm.SHA256, "wangwu".getBytes());
+		HashDigest dataAccountSetHash = new HashDigest(ClassicAlgorithm.SHA256, "zhaoliu".getBytes());
+		HashDigest contractAccountSetHash = new HashDigest(ClassicAlgorithm.SHA256, "sunqi".getBytes());
 
 		data.setHash(hash);
 		// data.setBlockHeight(blockHeight);
@@ -215,35 +215,31 @@ public class LedgerTransactionDataTest {
 
 	private TransactionStagedSnapshot initTransactionStagedSnapshot() {
 		TransactionStagedSnapshot transactionStagedSnapshot = new TransactionStagedSnapshot();
-		transactionStagedSnapshot
-				.setAdminAccountHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhangsan".getBytes()));
-		transactionStagedSnapshot
-				.setContractAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "lisi".getBytes()));
-		transactionStagedSnapshot
-				.setDataAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "wangwu".getBytes()));
-		transactionStagedSnapshot
-				.setUserAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhaoliu".getBytes()));
+		transactionStagedSnapshot.setAdminAccountHash(new HashDigest(ClassicAlgorithm.SHA256, "zhangsan".getBytes()));
+		transactionStagedSnapshot.setContractAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "lisi".getBytes()));
+		transactionStagedSnapshot.setDataAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "wangwu".getBytes()));
+		transactionStagedSnapshot.setUserAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "zhaoliu".getBytes()));
 		return transactionStagedSnapshot;
 	}
 
 	private TxRequestMessage initTxRequestMessage() throws Exception {
 		TxRequestMessage txRequestMessage = new TxRequestMessage(initTransactionContent());
 
-		SignatureDigest digest1 = new SignatureDigest(ClassicCryptoService.ED25519_ALGORITHM, "zhangsan".getBytes());
-		SignatureDigest digest2 = new SignatureDigest(ClassicCryptoService.ED25519_ALGORITHM, "lisi".getBytes());
+		SignatureDigest digest1 = new SignatureDigest(ClassicAlgorithm.ED25519, "zhangsan".getBytes());
+		SignatureDigest digest2 = new SignatureDigest(ClassicAlgorithm.ED25519, "lisi".getBytes());
 		DigitalSignatureBlob endPoint1 = new DigitalSignatureBlob(
-				new PubKey(ClassicCryptoService.ED25519_ALGORITHM, "jd1.com".getBytes()), digest1);
+				new PubKey(ClassicAlgorithm.ED25519, "jd1.com".getBytes()), digest1);
 		DigitalSignatureBlob endPoint2 = new DigitalSignatureBlob(
-				new PubKey(ClassicCryptoService.ED25519_ALGORITHM, "jd2.com".getBytes()), digest2);
+				new PubKey(ClassicAlgorithm.ED25519, "jd2.com".getBytes()), digest2);
 		txRequestMessage.addEndpointSignatures(endPoint1);
 		txRequestMessage.addEndpointSignatures(endPoint2);
 
-		SignatureDigest digest3 = new SignatureDigest(ClassicCryptoService.ED25519_ALGORITHM, "wangwu".getBytes());
-		SignatureDigest digest4 = new SignatureDigest(ClassicCryptoService.ED25519_ALGORITHM, "zhaoliu".getBytes());
+		SignatureDigest digest3 = new SignatureDigest(ClassicAlgorithm.ED25519, "wangwu".getBytes());
+		SignatureDigest digest4 = new SignatureDigest(ClassicAlgorithm.ED25519, "zhaoliu".getBytes());
 		DigitalSignatureBlob node1 = new DigitalSignatureBlob(
-				new PubKey(ClassicCryptoService.ED25519_ALGORITHM, "jd3.com".getBytes()), digest3);
+				new PubKey(ClassicAlgorithm.ED25519, "jd3.com".getBytes()), digest3);
 		DigitalSignatureBlob node2 = new DigitalSignatureBlob(
-				new PubKey(ClassicCryptoService.ED25519_ALGORITHM, "jd4.com".getBytes()), digest4);
+				new PubKey(ClassicAlgorithm.ED25519, "jd4.com".getBytes()), digest4);
 		txRequestMessage.addNodeSignatures(node1);
 		txRequestMessage.addNodeSignatures(node2);
 
@@ -252,12 +248,12 @@ public class LedgerTransactionDataTest {
 
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
-		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate(ClassicCryptoService.ED25519_ALGORITHM);
+		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate(ClassicAlgorithm.ED25519);
 		HashDigest ledgerHash = CryptoServiceProviders.getHashFunction("SHA256")
 				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 		contentBlob = new TxContentBlob(ledgerHash);
-		contentBlob.setHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "jd.com".getBytes()));
+		contentBlob.setHash(new HashDigest(ClassicAlgorithm.SHA256, "jd.com".getBytes()));
 		// contentBlob.setSubjectAccount(id.getAddress());
 		// contentBlob.setSequenceNumber(1);
 		DataAccountKVSetOperation kvsetOP = opFactory.dataAccount(id.getAddress())

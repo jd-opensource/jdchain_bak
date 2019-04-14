@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesSlice;
-import com.jd.blockchain.utils.io.BytesUtils;
 
 public abstract class BaseCryptoBytes extends Bytes implements CryptoBytes {
 
@@ -15,44 +14,23 @@ public abstract class BaseCryptoBytes extends Bytes implements CryptoBytes {
 	}
 	
 	public BaseCryptoBytes(short algorithm, byte[] rawCryptoBytes) {
-		super(encodeBytes(algorithm, rawCryptoBytes));
+		super(CryptoBytesEncoding.encodeBytes(algorithm, rawCryptoBytes));
 		this.algorithm = algorithm;
 	}
 
 	public BaseCryptoBytes(CryptoAlgorithm algorithm, byte[] rawCryptoBytes) {
-		super(encodeBytes(algorithm, rawCryptoBytes));
+		super(CryptoBytesEncoding.encodeBytes(algorithm, rawCryptoBytes));
 		this.algorithm = algorithm.code();
 	}
 
 	public BaseCryptoBytes(byte[] cryptoBytes) {
 		super(cryptoBytes);
-		short algorithm = decodeAlgorithm(cryptoBytes);
+		short algorithm = CryptoBytesEncoding.decodeAlgorithm(cryptoBytes);
 		if (!support(algorithm)) {
 			throw new CryptoException("Not supported algorithm [code:" + algorithm + "]!");
 		}
 		this.algorithm = algorithm;
 	}
-	
-	static byte[] encodeBytes(short algorithm, byte[] rawCryptoBytes) {
-		return BytesUtils.concat(BytesUtils.toBytes(algorithm), rawCryptoBytes);
-	}
-
-	static byte[] encodeBytes(CryptoAlgorithm algorithm, byte[] rawCryptoBytes) {
-		return BytesUtils.concat(CryptoAlgorithm.toBytes(algorithm), rawCryptoBytes);
-	}
-	
-	static short decodeAlgorithm(byte[] cryptoBytes) {
-		return CryptoAlgorithm.resolveCode(cryptoBytes);
-	}
-
-//	static CryptoAlgorithm decodeAlgorithm(byte[] cryptoBytes) {
-//		short algorithmCode = BytesUtils.toShort(cryptoBytes, 0);
-//		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm(algorithmCode);
-//		if (algorithm == null) {
-//			throw new CryptoException("The algorithm with code[" + algorithmCode + "] is not supported!");
-//		}
-//		return algorithm;
-//	}
 
 	protected abstract boolean support(short algorithm);
 
@@ -66,6 +44,6 @@ public abstract class BaseCryptoBytes extends Bytes implements CryptoBytes {
 	}
 
 	protected BytesSlice getRawCryptoBytes() {
-		return new BytesSlice(getDirectBytes(), 2);
+		return new BytesSlice(getDirectBytes(), CryptoAlgorithm.CODE_SIZE);
 	}
 }

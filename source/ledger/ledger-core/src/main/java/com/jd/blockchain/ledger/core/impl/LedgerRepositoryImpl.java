@@ -2,7 +2,6 @@ package com.jd.blockchain.ledger.core.impl;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
-import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.BlockBody;
@@ -72,7 +71,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	private volatile LedgerState latestState;
 
 	private volatile LedgerEditor nextBlockEditor;
-	
+
 	private volatile boolean closed = false;
 
 	public LedgerRepositoryImpl(HashDigest ledgerHash, String keyPrefix, ExPolicyKVStorage exPolicyStorage,
@@ -178,7 +177,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		if (hashBytes == null || hashBytes.length == 0) {
 			return null;
 		}
-		return CryptoUtils.hashCrypto().resolveHashDigest(hashBytes);
+		return new HashDigest(hashBytes);
 	}
 
 	@Override
@@ -402,8 +401,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public synchronized LedgerEditor createNextBlock() {
 		if (closed) {
-			throw new LedgerException(
-					"Ledger repository has been closed!");
+			throw new LedgerException("Ledger repository has been closed!");
 		}
 		if (this.nextBlockEditor != null) {
 			throw new LedgerException(
@@ -422,15 +420,14 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	public LedgerEditor getNextBlockEditor() {
 		return nextBlockEditor;
 	}
-	
+
 	@Override
 	public synchronized void close() {
 		if (closed) {
 			return;
 		}
 		if (this.nextBlockEditor != null) {
-			throw new LedgerException(
-					"A new block is in process, cann't close the ledger repository!");
+			throw new LedgerException("A new block is in process, cann't close the ledger repository!");
 		}
 		closed = true;
 	}

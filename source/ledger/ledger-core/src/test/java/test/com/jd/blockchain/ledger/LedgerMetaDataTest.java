@@ -15,7 +15,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
@@ -58,7 +58,7 @@ public class LedgerMetaDataTest {
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
 		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider,
 				new Bytes(consensusSettingBytes), cryptoConfig);
@@ -67,7 +67,7 @@ public class LedgerMetaDataTest {
 		ledgerMetadata.setSeed(seed);
 		ledgerMetadata.setSetting(ledgerConfiguration);
 
-		HashDigest hashDigest = new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, rawDigestBytes);
+		HashDigest hashDigest = new HashDigest(ClassicAlgorithm.SHA256, rawDigestBytes);
 		ledgerMetadata.setParticipantsHash(hashDigest);
 
 		// encode and decode
@@ -95,9 +95,10 @@ public class LedgerMetaDataTest {
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
-		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider, new Bytes(csSettingsBytes), cryptoConfig);
+		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider, new Bytes(csSettingsBytes),
+				cryptoConfig);
 		byte[] encodeBytes = BinaryEncodingUtils.encode(ledgerConfiguration, LedgerSetting.class);
 		LedgerSetting deLedgerConfiguration = BinaryEncodingUtils.decode(encodeBytes);
 		// verify start
@@ -134,7 +135,7 @@ public class LedgerMetaDataTest {
 		// LedgerCodes.METADATA_LEDGER_SETTING_CRYPTO
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		byte[] encodeBytes = BinaryEncodingUtils.encode(cryptoConfig, CryptoSetting.class);
 		CryptoSetting deCryptoConfig = BinaryEncodingUtils.decode(encodeBytes);
 
@@ -150,7 +151,7 @@ public class LedgerMetaDataTest {
 		// prepare work
 		int id = 1;
 		// String address = "xxxxxxxxxxxxxx";
-		PubKey pubKey = new PubKey(ClassicCryptoService.ED25519_ALGORITHM, rawDigestBytes);
+		PubKey pubKey = new PubKey(ClassicAlgorithm.ED25519, rawDigestBytes);
 		// ParticipantInfo info = new ParticipantCertData.ParticipantInfoData(1, "yyy");
 		// SignatureDigest signature = new SignatureDigest(CryptoAlgorithm.SM2,
 		// rawDigestBytes);

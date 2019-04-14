@@ -51,15 +51,15 @@ public class MagicNumber {
 	 */
 	public static final byte SIGNATURE = 0x20;
 	
-	/**
-	 * 公钥标识；
-	 */
-	public static final byte PUB_KEY = 0x21;
-	
-	/**
-	 * 私钥标识；
-	 */
-	public static final byte PRIV_KEY = 0x22;
+//	/**
+//	 * 公钥标识；
+//	 */
+//	public static final byte PUB_KEY = 0x21;
+//	
+//	/**
+//	 * 私钥标识；
+//	 */
+//	public static final byte PRIV_KEY = 0x22;
 	
 	
 	

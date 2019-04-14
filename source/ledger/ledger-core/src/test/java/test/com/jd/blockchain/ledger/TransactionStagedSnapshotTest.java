@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
 
@@ -29,27 +29,27 @@ import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
 
 public class TransactionStagedSnapshotTest {
 
-    private TransactionStagedSnapshot data;
+	private TransactionStagedSnapshot data;
 
-    @Before
-    public void initTransactionStagedSnapshot() {
-        DataContractRegistry.register(LedgerDataSnapshot.class);
-        data = new TransactionStagedSnapshot();
-        data.setAdminAccountHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhangsan".getBytes()));
-        data.setContractAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "lisi".getBytes()));
-        data.setDataAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "wangwu".getBytes()));
-        data.setUserAccountSetHash(new HashDigest(ClassicCryptoService.SHA256_ALGORITHM, "zhaoliu".getBytes()));
-    }
+	@Before
+	public void initTransactionStagedSnapshot() {
+		DataContractRegistry.register(LedgerDataSnapshot.class);
+		data = new TransactionStagedSnapshot();
+		data.setAdminAccountHash(new HashDigest(ClassicAlgorithm.SHA256, "zhangsan".getBytes()));
+		data.setContractAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "lisi".getBytes()));
+		data.setDataAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "wangwu".getBytes()));
+		data.setUserAccountSetHash(new HashDigest(ClassicAlgorithm.SHA256, "zhaoliu".getBytes()));
+	}
 
-    @Test
-    public void testSerialize_LedgerDataSnapshot() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerDataSnapshot.class);
-        LedgerDataSnapshot resolvedData = BinaryEncodingUtils.decode(serialBytes);
-        System.out.println("------Assert start ------");
-        assertEquals(resolvedData.getAdminAccountHash(), data.getAdminAccountHash());
-        assertEquals(resolvedData.getContractAccountSetHash(), data.getContractAccountSetHash());
-        assertEquals(resolvedData.getDataAccountSetHash(), data.getDataAccountSetHash());
-        assertEquals(resolvedData.getUserAccountSetHash(), data.getUserAccountSetHash());
-        System.out.println("------Assert OK ------");
-    }
+	@Test
+	public void testSerialize_LedgerDataSnapshot() throws Exception {
+		byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerDataSnapshot.class);
+		LedgerDataSnapshot resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		System.out.println("------Assert start ------");
+		assertEquals(resolvedData.getAdminAccountHash(), data.getAdminAccountHash());
+		assertEquals(resolvedData.getContractAccountSetHash(), data.getContractAccountSetHash());
+		assertEquals(resolvedData.getDataAccountSetHash(), data.getDataAccountSetHash());
+		assertEquals(resolvedData.getUserAccountSetHash(), data.getUserAccountSetHash());
+		System.out.println("------Assert OK ------");
+	}
 }

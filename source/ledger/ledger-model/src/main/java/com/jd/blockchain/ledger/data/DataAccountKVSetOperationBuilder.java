@@ -1,11 +1,7 @@
 package com.jd.blockchain.ledger.data;
 
-import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.utils.Bytes;
-
-import java.util.Date;
 
 public interface DataAccountKVSetOperationBuilder {
 

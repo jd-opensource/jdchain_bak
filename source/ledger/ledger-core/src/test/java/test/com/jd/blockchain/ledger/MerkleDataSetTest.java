@@ -15,7 +15,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
 import com.jd.blockchain.ledger.core.MerkleProof;
@@ -33,7 +33,7 @@ public class MerkleDataSetTest {
 	public void testStorageIncreasement() {
 		String keyPrefix = "";
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();
@@ -64,7 +64,7 @@ public class MerkleDataSetTest {
 		mds.commit();
 
 		// New key added, include 1 versioning kv, 1 sn key, 2 merkle nodes;
-//		String[] keys = StringUtils.toStringArray(storage.keySet());
+		// String[] keys = StringUtils.toStringArray(storage.keySet());
 		Bytes[] keys = storage.keySet().toArray(new Bytes[0]);
 		expStorageCount = expStorageCount + 1 + 1 + 2;
 		assertEquals(expStorageCount, storage.getStorageCount());
@@ -117,7 +117,7 @@ public class MerkleDataSetTest {
 		Random rand = new Random();
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();
@@ -282,7 +282,7 @@ public class MerkleDataSetTest {
 		Random rand = new Random();
 
 		CryptoConfig cryptoConfig = new CryptoConfig();
-		cryptoConfig.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 
 		MemoryKVStorage storage = new MemoryKVStorage();

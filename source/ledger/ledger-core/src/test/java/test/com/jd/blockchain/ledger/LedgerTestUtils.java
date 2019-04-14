@@ -7,7 +7,7 @@ import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -78,7 +78,7 @@ public class LedgerTestUtils {
 	public static CryptoSetting createDefaultCryptoSetting() {
 		CryptoConfig cryptoSetting = new CryptoConfig();
 		cryptoSetting.setAutoVerifyHash(true);
-		cryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		return cryptoSetting;
 	}
 

@@ -15,7 +15,7 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -172,7 +172,7 @@ public class LedgerManagerTest {
 	private LedgerInitSetting createLedgerInitSetting() {
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
 

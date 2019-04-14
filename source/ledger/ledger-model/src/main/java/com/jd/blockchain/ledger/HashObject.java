@@ -1,12 +1,11 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
-import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.TypeCodes;
 import com.jd.blockchain.crypto.HashDigest;
 
 /**
- * HashObject 由一个哈希摘要唯一地标识对象；
+ * HashObject 表示以“哈希值”作为唯一标识的对象；
  * 
  * @author huanghaiquan
  *

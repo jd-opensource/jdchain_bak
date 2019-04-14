@@ -1,7 +1,6 @@
 package com.jd.blockchain.ledger;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Date;

@@ -12,7 +12,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -59,6 +59,7 @@ public class LedgerEditerTest {
 
 	AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 
+	@SuppressWarnings("unused")
 	@Test
 	public void testWriteDataAccoutKvOp() {
 
@@ -108,10 +109,10 @@ public class LedgerEditerTest {
 
 	private LedgerInitSetting createLedgerInitSetting() {
 		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
-		
+
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
 

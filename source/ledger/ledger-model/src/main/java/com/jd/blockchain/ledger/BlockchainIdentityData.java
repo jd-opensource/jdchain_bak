@@ -15,11 +15,10 @@ import com.jd.blockchain.binaryproto.DConstructor;
 import com.jd.blockchain.binaryproto.FieldSetter;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.data.CryptoKeyEncoding;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.ByteArray;
+import com.jd.blockchain.utils.io.BytesEncoding;
 import com.jd.blockchain.utils.io.BytesReader;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.BytesWriter;
@@ -67,19 +66,16 @@ public class BlockchainIdentityData implements BytesWriter, BytesReader, Externa
 	@Override
 	public void resolvFrom(InputStream in) throws IOException {
 		Bytes addr = AddressEncoding.readAddress(in);
-		CryptoKey pubKey = CryptoKeyEncoding.readKey(in);
-		if (!(pubKey instanceof PubKey)) {
-			throw new IllegalArgumentException(
-					"Expected public key but private key was resolved from the InputStream!");
-		}
+		byte[] value = BytesEncoding.readInShort(in);
+		PubKey pk = new PubKey(value);
 		this.address = addr;
-		this.pubKey = (PubKey) pubKey;
+		this.pubKey = pk;
 	}
 
 	@Override
 	public void writeTo(OutputStream out) throws IOException {
 		AddressEncoding.writeAddress(address, out);
-		CryptoKeyEncoding.writeKey(pubKey, out);
+		BytesEncoding.writeInShort(pubKey.toBytes(), out);
 	}
 
 	/* (non-Javadoc)

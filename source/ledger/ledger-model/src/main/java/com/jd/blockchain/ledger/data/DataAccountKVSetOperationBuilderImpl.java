@@ -1,13 +1,12 @@
 package com.jd.blockchain.ledger.data;
 
-import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.BytesValueImpl;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-
 import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
+import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
 public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOperationBuilder{
 	
@@ -22,17 +21,6 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 		return operation;
 	}
 
-	public static boolean isJson(String str) {
-		boolean result = false;
-		try {
-			Object obj=JSON.parse(str);
-			result = true;
-		} catch (Exception e) {
-			result=false;
-		}
-		return result;
-	}
-
 	@Override
 	public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
 		BytesValue bytesValue = new BytesValueImpl(DataType.BYTES, value);
@@ -43,7 +31,7 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 	@Override
 	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
 		BytesValue bytesValue;
-		if (isJson(value)) {
+		if (JSONSerializeUtils.isJSON(value)) {
 			bytesValue = new BytesValueImpl(DataType.JSON, value.getBytes());
 		}
 		else {

@@ -15,8 +15,9 @@ import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoUtils;
+import com.jd.blockchain.crypto.CryptoServiceProviders;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
@@ -487,6 +488,8 @@ public class MerkleTree implements Transactional {
 	 *
 	 */
 	private static class RehashTask extends RecursiveTask<List<PathNode>> {
+
+		private static final long serialVersionUID = -9165021733321713070L;
 
 		private MerkleTree tree;
 
@@ -1082,7 +1085,7 @@ public class MerkleTree implements Transactional {
 		/**
 		 * 当前节点采用的 hash 算法；
 		 */
-		private CryptoAlgorithm hashAlgorithm;
+		private short hashAlgorithm;
 
 		/**
 		 * 节点的起始序列号；
@@ -1132,6 +1135,8 @@ public class MerkleTree implements Transactional {
 		/**
 		 * 创建一个路径节点；
 		 * 
+		 * @param hashAlgorithm
+		 *            生成节点采用的哈希算法；
 		 * @param startingSN
 		 *            路径节点表示的子树的起始序列号；
 		 * @param level
@@ -1143,12 +1148,21 @@ public class MerkleTree implements Transactional {
 			this(hashAlgorithm, startingSN, level, dataCount, new HashDigest[TREE_DEGREE], null);
 		}
 
+		private PathNode(short hashAlgorithm, long startingSN, int level, long dataCount) {
+			this(hashAlgorithm, startingSN, level, dataCount, new HashDigest[TREE_DEGREE], null);
+		}
+
 		private PathNode(long startingSN, int level, long dataCount, HashDigest[] childrenHashes, HashDigest nodeHash) {
 			this(nodeHash.getAlgorithm(), startingSN, level, dataCount, childrenHashes, nodeHash);
 		}
 
 		private PathNode(CryptoAlgorithm defaultHashAlgorithm, long startingSN, int level, long dataCount,
 				HashDigest[] childrenHashes, HashDigest nodeHash) {
+			this(defaultHashAlgorithm.code(), startingSN, level, dataCount, childrenHashes, nodeHash);
+		}
+
+		private PathNode(short hashAlgorithm, long startingSN, int level, long dataCount, HashDigest[] childrenHashes,
+				HashDigest nodeHash) {
 			if (startingSN < 0) {
 				throw new IllegalArgumentException("The specified starting sn of PathNode is negative!");
 			}
@@ -1158,7 +1172,7 @@ public class MerkleTree implements Transactional {
 			if (dataCount < 0) {
 				throw new IllegalArgumentException("The specified data count of PathNode is negative!");
 			}
-			this.hashAlgorithm = defaultHashAlgorithm;
+			this.hashAlgorithm = hashAlgorithm;
 			this.startingSN = startingSN;
 			this.level = level;
 
@@ -1344,7 +1358,7 @@ public class MerkleTree implements Transactional {
 				h = new byte[hashSize];
 				System.arraycopy(bytes, offset, h, 0, hashSize);
 				offset += hashSize;
-				childrenHashes[i] = CryptoUtils.hashCrypto().resolveHashDigest(h);
+				childrenHashes[i] = new HashDigest(h);
 			}
 
 			int hashSize = NumberMask.TINY.resolveMaskedNumber(bytes, offset);
@@ -1354,7 +1368,7 @@ public class MerkleTree implements Transactional {
 			System.arraycopy(bytes, offset, nodeHashBytes, 0, hashSize);
 			offset += hashSize;
 
-			HashDigest nodeHash = CryptoUtils.hashCrypto().resolveHashDigest(nodeHashBytes);
+			HashDigest nodeHash = new HashDigest(nodeHashBytes);
 
 			PathNode node = new PathNode(startingSN, level, dataCount, childrenHashes, nodeHash);
 			if (checkHash) {
@@ -1393,7 +1407,8 @@ public class MerkleTree implements Transactional {
 			int totalSize = getBodySize();
 			byte[] bodyBytes = new byte[totalSize];
 			generateBodyBytes(bodyBytes);
-			return CryptoUtils.hash(hashAlgorithm).hash(bodyBytes);
+			HashFunction hashFunc = CryptoServiceProviders.getHashFunction(hashAlgorithm);
+			return hashFunc.hash(bodyBytes);
 		}
 
 	}
@@ -1450,7 +1465,8 @@ public class MerkleTree implements Transactional {
 
 			byte[] dataBytes = BytesUtils.concat(bodyBytes, hashedData);
 
-			HashDigest dataHash = CryptoUtils.hash(hashAlgorithm).hash(dataBytes);
+			HashFunction hashFunc = CryptoServiceProviders.getHashFunction(hashAlgorithm);
+			HashDigest dataHash = hashFunc.hash(dataBytes);
 
 			int hashMaskSize = NumberMask.TINY.getMaskLength(dataHash.size());
 			int dataNodeSize = bodySize + hashMaskSize + dataHash.size();
@@ -1573,7 +1589,7 @@ public class MerkleTree implements Transactional {
 			byte[] dataHashBytes = new byte[hashSize];
 			System.arraycopy(bytes, offset, dataHashBytes, 0, hashSize);
 			offset += hashSize;
-			HashDigest dataHash = CryptoUtils.hashCrypto().resolveHashDigest(dataHashBytes);
+			HashDigest dataHash = new HashDigest(dataHashBytes);
 			return new DataNode(sn, key, version, dataHash, bytes);
 		}
 

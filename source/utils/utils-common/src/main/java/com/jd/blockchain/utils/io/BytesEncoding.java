@@ -156,16 +156,16 @@ public class BytesEncoding {
 		}
 	}
 
-	/**
-	 * 读取头部和内容；
-	 * @param headerMask headerMask
-	 * @param in in
-	 * @return byteArray
-	 * @throws IOException exception
-	 */
-	public static ByteArray readAsByteArray(NumberMask headerMask, InputStream in) throws IOException {
-		byte[] data = read(headerMask, in);
-		return ByteArray.wrap(data);
-	}
+//	/**
+//	 * 读取头部和内容；
+//	 * @param headerMask headerMask
+//	 * @param in in
+//	 * @return byteArray
+//	 * @throws IOException exception
+//	 */
+//	public static ByteArray readAsByteArray(NumberMask headerMask, InputStream in) throws IOException {
+//		byte[] data = read(headerMask, in);
+//		return ByteArray.wrap(data);
+//	}
 
 }

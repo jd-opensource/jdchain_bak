@@ -12,9 +12,8 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -58,7 +57,7 @@ public class LedgerAdminAccountTest {
 
 		CryptoConfig cryptoSetting = new CryptoConfig();
 		cryptoSetting.setAutoVerifyHash(true);
-		cryptoSetting.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		initSetting.setCryptoSetting(cryptoSetting);
 
 		byte[] ledgerSeed = new byte[16];
@@ -157,7 +156,7 @@ public class LedgerAdminAccountTest {
 		assertNotNull(rlmeta.getSetting());
 		assertTrue(expMeta.getSetting().getConsensusSetting().equals(rlmeta.getSetting().getConsensusSetting()));
 		assertEquals(expMeta.getSetting().getConsensusProvider(), rlmeta.getSetting().getConsensusProvider());
-		
+
 		assertEquals(expMeta.getSetting().getCryptoSetting().getAutoVerifyHash(),
 				rlmeta.getSetting().getCryptoSetting().getAutoVerifyHash());
 		assertEquals(expMeta.getSetting().getCryptoSetting().getHashAlgorithm(),
@@ -172,7 +171,8 @@ public class LedgerAdminAccountTest {
 			ParticipantNode rlParti = actualPaticipants[i];
 			assertEquals(expParties[i].getAddress(), rlParti.getAddress());
 			assertEquals(expParties[i].getName(), rlParti.getName());
-//			assertEquals(expParties[i].getConsensusAddress(), rlParti.getConsensusAddress());
+			// assertEquals(expParties[i].getConsensusAddress(),
+			// rlParti.getConsensusAddress());
 			assertEquals(expParties[i].getPubKey(), rlParti.getPubKey());
 		}
 	}

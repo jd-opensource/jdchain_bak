@@ -4,10 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.springframework.util.StringUtils;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.BaseAccount;
@@ -31,7 +29,7 @@ public class BaseAccountTest {
 
 		CryptoConfig cryptoConf = new CryptoConfig();
 		cryptoConf.setAutoVerifyHash(true);
-		cryptoConf.setHashAlgorithm(ClassicCryptoService.SHA256_ALGORITHM);
+		cryptoConf.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
 		OpeningAccessPolicy accPlc = new OpeningAccessPolicy();
 

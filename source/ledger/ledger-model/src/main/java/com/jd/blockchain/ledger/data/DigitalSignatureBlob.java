@@ -1,7 +1,6 @@
 package com.jd.blockchain.ledger.data;
 
 
-import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.DigitalSignature;

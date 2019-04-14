@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.core.MerkleDataNode;
 import com.jd.blockchain.ledger.core.MerkleNode;
@@ -34,7 +34,7 @@ public class MerkleTreeTest {
 		Random rand = new Random();
 
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 测试从空的树开始，顺序增加数据节点；
@@ -85,7 +85,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testSequenceInsert_OneCommit() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 测试从空的树开始，顺序增加数据节点；
@@ -139,7 +139,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testSequenceInsert_MultiCommit() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 测试从空的树开始，顺序增加数据节点；
@@ -319,7 +319,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testRandomInsert_MultiCommit() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 保存所有写入的数据节点的 SN-Hash 映射表；
@@ -409,7 +409,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testDataModify() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 保存所有写入的数据节点的 SN-Hash 映射表；
@@ -492,7 +492,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testDataVersionModify() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 保存所有写入的数据节点的 SN-Hash 映射表；
@@ -559,7 +559,7 @@ public class MerkleTreeTest {
 	@Test
 	public void testMerkleReload() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
-		when(setting.getHashAlgorithm()).thenReturn(ClassicCryptoService.SHA256_ALGORITHM);
+		when(setting.getHashAlgorithm()).thenReturn(ClassicAlgorithm.SHA256);
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 保存所有写入的数据节点的 SN-Hash 映射表；
@@ -737,6 +737,7 @@ public class MerkleTreeTest {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static int getLevel(long dataCount) {
 		if (dataCount < 0) {
 			throw new IllegalArgumentException("The specified data count is negative!");

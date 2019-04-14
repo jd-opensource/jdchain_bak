@@ -1,6 +1,5 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.CryptoUtils;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.UserInfo;
@@ -45,7 +44,7 @@ public class UserAccount implements UserInfo {
 		if (pkBytes == null) {
 			return null;
 		}
-		return CryptoUtils.crypto().asymmetricCryptography().resolvePubKey(pkBytes);
+		return new PubKey(pkBytes);
 	}
 
 	public long setDataPubKey(PubKey pubKey) {
@@ -75,8 +74,8 @@ public class UserAccount implements UserInfo {
 	}
 
 	private Bytes encodePropertyKey(Bytes key) {
-//		return key.concatTo(USER_INFO_PREFIX);
-		 return USER_INFO_PREFIX.concat(key);
+		// return key.concatTo(USER_INFO_PREFIX);
+		return USER_INFO_PREFIX.concat(key);
 	}
 
 }
