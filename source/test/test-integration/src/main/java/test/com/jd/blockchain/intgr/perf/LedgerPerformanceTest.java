@@ -18,7 +18,7 @@ import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
@@ -110,8 +110,8 @@ public class LedgerPerformanceTest {
 				dbType = DBType.ROCKSDB;
 			}
 
-			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? CryptoServiceProviders.getAlgorithm("RIPEMD260")
-					: CryptoServiceProviders.getAlgorithm("SHA256");
+			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? Crypto.getAlgorithm("RIPEMD260")
+					: Crypto.getAlgorithm("SHA256");
 			System.out.println(
 					String.format("----- LedgerPerformanceTest [HashAlgorithm=%s][DBType=%s] ----", hashAlg, dbType));
 			// 初始化，并获取其中一个节点的账本，单独进行性能测试；

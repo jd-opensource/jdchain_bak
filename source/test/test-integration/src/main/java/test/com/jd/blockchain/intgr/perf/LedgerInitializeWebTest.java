@@ -14,7 +14,7 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -223,7 +223,7 @@ public class LedgerInitializeWebTest {
 
 	public SignatureDigest signPermissionRequest(int requesterId, PrivKey privKey, LedgerInitProperties initSetting) {
 		byte[] reqAuthBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), initSetting.getLedgerSeed());
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 		SignatureDigest reqAuthSign = signFunc.sign(privKey, reqAuthBytes);
 		return reqAuthSign;
 	}

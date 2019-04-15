@@ -17,7 +17,7 @@ import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -40,7 +40,7 @@ public class DigitalSignatureBlobTest {
     public void initDigitalSignatureBlob() throws Exception {
         DataContractRegistry.register(DigitalSignature.class);
         DataContractRegistry.register(DigitalSignatureBody.class);
-        SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+        SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
         AsymmetricKeypair kp = signFunc.generateKeypair();
 		PubKey pubKey = kp.getPubKey();
 		

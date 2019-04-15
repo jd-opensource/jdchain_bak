@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -124,12 +124,12 @@ public class SDK_GateWay_BatchInsertData_Test_ {
 
 
     private AsymmetricKeypair getSponsorKey() {
-    	SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
+    	SignatureFunction signatureFunction = Crypto.getSignatureFunction("ED25519");
         return signatureFunction.generateKeypair();
 	}
 	
     private TransactionResponse initResponse() {
-    	HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");;
+    	HashFunction hashFunc = Crypto.getHashFunction("SHA256");;
         HashDigest contentHash = hashFunc.hash("contentHash".getBytes());
         HashDigest blockHash =  hashFunc.hash("blockHash".getBytes());
         long blockHeight = 9998L;

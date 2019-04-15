@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
@@ -41,7 +41,7 @@ public class HashDigestJSONSerializeTest {
 		JSONSerializeUtils.configSerialization(HashDigest.class, HashDigestSerializer.INSTANCE,
 				HashDigestDeserializer.INSTANCE);
 
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");
+		HashFunction hashFunc = Crypto.getHashFunction("SHA256");
 		HashDigest hash = hashFunc.hash("jd-test".getBytes());
 
 		String hashJson = JSONSerializeUtils.serializeToJSON(hash, true);

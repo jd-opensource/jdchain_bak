@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -249,7 +249,7 @@ public class LedgerTransactionDataTest {
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
 		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate(ClassicAlgorithm.ED25519);
-		HashDigest ledgerHash = CryptoServiceProviders.getHashFunction("SHA256")
+		HashDigest ledgerHash = Crypto.getHashFunction("SHA256")
 				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 		contentBlob = new TxContentBlob(ledgerHash);

@@ -3,7 +3,7 @@ package test.com.jd.blockchain.ledger;
 import java.util.Random;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -25,7 +25,7 @@ public class LedgerTestUtils {
 	private static Random rand = new Random();
 
 	public static TransactionRequest createTxRequest(HashDigest ledgerHash) {
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 		return createTxRequest(ledgerHash, signFunc);
 	}
 
@@ -72,7 +72,7 @@ public class LedgerTestUtils {
 	public static HashDigest generateRandomHash() {
 		byte[] data = new byte[64];
 		rand.nextBytes(data);
-		return CryptoServiceProviders.getHashFunction("SHA256").hash(data);
+		return Crypto.getHashFunction("SHA256").hash(data);
 	}
 
 	public static CryptoSetting createDefaultCryptoSetting() {

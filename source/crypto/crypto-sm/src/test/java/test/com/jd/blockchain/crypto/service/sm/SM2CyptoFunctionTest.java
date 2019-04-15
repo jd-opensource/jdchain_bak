@@ -23,31 +23,31 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void getAlgorithmTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sM2");
+		algorithm = Crypto.getAlgorithm("sM2");
 		assertNotNull(algorithm);
 
 		assertEquals(signatureFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(signatureFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm22");
+		algorithm = Crypto.getAlgorithm("sm22");
 		assertNull(algorithm);
 	}
 
 	@Test
 	public void generateKeyPairTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -77,10 +77,10 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void retrievePubKeyTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -102,10 +102,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -132,10 +132,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -153,10 +153,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = Crypto
 				.getAsymmetricEncryptionFunction(algorithm);
 
 		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
@@ -184,10 +184,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = Crypto
 				.getAsymmetricEncryptionFunction(algorithm);
 
 		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
@@ -205,10 +205,10 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void supportPrivKeyTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -217,7 +217,7 @@ public class SM2CyptoFunctionTest {
 
 		assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
@@ -230,10 +230,10 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void resolvePrivKeyTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -249,7 +249,7 @@ public class SM2CyptoFunctionTest {
 				resolvedPrivKey.getAlgorithm());
 		assertArrayEquals(privKeyBytes, resolvedPrivKey.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
@@ -270,10 +270,10 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void supportPubKeyTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -282,7 +282,7 @@ public class SM2CyptoFunctionTest {
 
 		assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
@@ -295,10 +295,10 @@ public class SM2CyptoFunctionTest {
 	@Test
 	public void resolvePubKeyTest() {
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -314,7 +314,7 @@ public class SM2CyptoFunctionTest {
 				resolvedPubKey.getAlgorithm());
 		assertArrayEquals(pubKeyBytes, resolvedPubKey.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
@@ -339,10 +339,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -353,7 +353,7 @@ public class SM2CyptoFunctionTest {
 		byte[] signatureDigestBytes = signatureDigest.toBytes();
 		assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawDigestBytes = signatureDigest.toBytes();
@@ -369,10 +369,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(algorithm);
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
 
 		AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
 
@@ -390,7 +390,7 @@ public class SM2CyptoFunctionTest {
 				resolvedSignatureDigest.getAlgorithm());
 		assertArrayEquals(signatureDigestBytes, resolvedSignatureDigest.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawDigestBytes = signatureDigest.getRawDigest();
@@ -414,10 +414,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = Crypto
 				.getAsymmetricEncryptionFunction(algorithm);
 
 		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
@@ -430,7 +430,7 @@ public class SM2CyptoFunctionTest {
 
 		assertTrue(asymmetricEncryptionFunction.supportCiphertext(ciphertextBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.toBytes();
@@ -446,10 +446,10 @@ public class SM2CyptoFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm2");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm2");
 		assertNotNull(algorithm);
 
-		AsymmetricEncryptionFunction asymmetricEncryptionFunction = CryptoServiceProviders
+		AsymmetricEncryptionFunction asymmetricEncryptionFunction = Crypto
 				.getAsymmetricEncryptionFunction(algorithm);
 
 		AsymmetricKeypair keyPair = asymmetricEncryptionFunction.generateKeypair();
@@ -468,7 +468,7 @@ public class SM2CyptoFunctionTest {
 				resolvedCiphertext.getAlgorithm());
 		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();

@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -60,7 +60,7 @@ public class LedgerManagerTest {
 
 	@Before
 	public void intialize() {
-		signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
+		signatureFunction = Crypto.getSignatureFunction("ED25519");
 	}
 
 	@Test

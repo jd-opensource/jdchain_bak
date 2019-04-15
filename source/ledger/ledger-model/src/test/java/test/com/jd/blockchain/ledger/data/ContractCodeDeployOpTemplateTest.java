@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainIdentity;
@@ -42,7 +42,7 @@ public class ContractCodeDeployOpTemplateTest {
 	public void initContractCodeDeployOpTemplate() {
 		DataContractRegistry.register(ContractCodeDeployOperation.class);
 		DataContractRegistry.register(Operation.class);
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 		PubKey pubKey = signFunc.generateKeypair().getPubKey();
 		BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
 		byte[] chainCode = "jd-test".getBytes();

@@ -20,7 +20,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -116,12 +116,12 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	private InitConsensusServiceFactory initCsServiceFactory;
 
 	public LedgerInitializeWebController() {
-		this.SIGN_FUNC = CryptoServiceProviders.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
+		this.SIGN_FUNC = Crypto.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
 	}
 
 	public LedgerInitializeWebController(LedgerManage ledgerManager, DbConnectionFactory dbConnFactory,
 			InitConsensusServiceFactory initCsServiceFactory) {
-		this.SIGN_FUNC = CryptoServiceProviders.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
+		this.SIGN_FUNC = Crypto.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
 		
 		this.ledgerManager = ledgerManager;
 		this.dbConnFactory = dbConnFactory;
@@ -301,7 +301,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	public CryptoSetting createDefaultCryptoSetting() {
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
+		defCryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
 
 		return defCryptoSetting;
 	}
@@ -376,7 +376,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private LedgerInitDecision makeDecision(int participantId, HashDigest ledgerHash, PrivKey privKey) {
 		byte[] dataBytes = getDecisionBytes(participantId, ledgerHash);
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(privKey.getAlgorithm());
+		SignatureFunction signFunc = Crypto.getSignatureFunction(privKey.getAlgorithm());
 		SignatureDigest signature = signFunc.sign(privKey, dataBytes);
 
 		LedgerInitDecisionData decision = new LedgerInitDecisionData();

@@ -1,7 +1,7 @@
 package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -108,7 +108,7 @@ public class SDKDemo_Contract {
 	 * @return
 	 */
 	private static AsymmetricKeypair getSponsorKey() {
-		SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signatureFunction = Crypto.getSignatureFunction("ED25519");
 		return signatureFunction.generateKeypair();
 	}
 

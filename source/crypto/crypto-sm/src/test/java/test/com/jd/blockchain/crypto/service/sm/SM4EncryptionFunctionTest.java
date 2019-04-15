@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.jd.blockchain.crypto.Ciphertext;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SymmetricEncryptionFunction;
 import com.jd.blockchain.crypto.SymmetricKey;
 import com.jd.blockchain.crypto.service.sm.SMAlgorithm;
@@ -33,31 +33,31 @@ import com.jd.blockchain.utils.io.BytesUtils;
 public class SM4EncryptionFunctionTest {
 	@Test
 	public void getAlgorithmTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		assertEquals(symmetricEncryptionFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(symmetricEncryptionFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sM4");
+		algorithm = Crypto.getAlgorithm("sM4");
 		assertNotNull(algorithm);
 
 		assertEquals(symmetricEncryptionFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(symmetricEncryptionFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("smm4");
+		algorithm = Crypto.getAlgorithm("smm4");
 		assertNull(algorithm);
 	}
 
 	@Test
 	public void generateSymmetricKeyTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -81,10 +81,10 @@ public class SM4EncryptionFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -108,10 +108,10 @@ public class SM4EncryptionFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -152,10 +152,10 @@ public class SM4EncryptionFunctionTest {
 
 	@Test
 	public void supportSymmetricKeyTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -163,7 +163,7 @@ public class SM4EncryptionFunctionTest {
 
 		assertTrue(symmetricEncryptionFunction.supportSymmetricKey(symmetricKeyBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
@@ -175,10 +175,10 @@ public class SM4EncryptionFunctionTest {
 
 	@Test
 	public void resolveSymmetricKeyTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -192,7 +192,7 @@ public class SM4EncryptionFunctionTest {
 		assertEquals((short) (ENCRYPTION_ALGORITHM | SYMMETRIC_KEY | ((byte) 4 & 0x00FF)), resolvedKey.getAlgorithm());
 		assertArrayEquals(symmetricKeyBytes, resolvedKey.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
@@ -217,10 +217,10 @@ public class SM4EncryptionFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -230,7 +230,7 @@ public class SM4EncryptionFunctionTest {
 		byte[] ciphertextBytes = ciphertext.toBytes();
 		assertTrue(symmetricEncryptionFunction.supportCiphertext(ciphertextBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.toBytes();
@@ -246,10 +246,10 @@ public class SM4EncryptionFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 
-		SymmetricEncryptionFunction symmetricEncryptionFunction = CryptoServiceProviders
+		SymmetricEncryptionFunction symmetricEncryptionFunction = Crypto
 				.getSymmetricEncryptionFunction(algorithm);
 
 		SymmetricKey symmetricKey = (SymmetricKey) symmetricEncryptionFunction.generateSymmetricKey();
@@ -266,7 +266,7 @@ public class SM4EncryptionFunctionTest {
 				resolvedCiphertext.getAlgorithm());
 		assertArrayEquals(ciphertextBytes, resolvedCiphertext.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();

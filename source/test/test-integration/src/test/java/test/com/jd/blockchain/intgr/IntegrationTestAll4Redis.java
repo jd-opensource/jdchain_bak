@@ -16,7 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -474,7 +474,7 @@ public class IntegrationTestAll4Redis {
 
 		// 验证合约中的赋值，外部可以获得;
 		DataAccountSet dataAccountSet = ledgerRepository.getDataAccountSet(backgroundLedgerBlock);
-		AsymmetricKeypair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeypair();
+		AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 		assertEquals(dataAddress, dataAccountSet.getDataAccount(dataAddress).getAddress());

@@ -16,9 +16,9 @@ import com.jd.blockchain.provider.ProviderManager;
  * @author huanghaiquan
  *
  */
-public final class CryptoServiceProviders {
+public final class Crypto {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(CryptoServiceProviders.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(Crypto.class);
 
 	private static Map<Short, CryptoFunction> functions = new ConcurrentHashMap<>();
 
@@ -33,7 +33,7 @@ public final class CryptoServiceProviders {
 	}
 
 	private static void loadDefaultProviders() {
-		ClassLoader cl = CryptoServiceProviders.class.getClassLoader();
+		ClassLoader cl = Crypto.class.getClassLoader();
 		pm.installAllProviders(CryptoService.class, cl);
 
 		Iterable<Provider<CryptoService>> providers = pm.getAllProviders(CryptoService.class);
@@ -103,7 +103,7 @@ public final class CryptoServiceProviders {
 		}
 	}
 
-	private CryptoServiceProviders() {
+	private Crypto() {
 	}
 
 	public static Collection<CryptoAlgorithm> getAllAlgorithms() {

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -36,14 +36,14 @@ public class TxContentBlobTest {
 
 		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
-		HashDigest ledgerHash = CryptoServiceProviders.getHashFunction("SHA256")
+		HashDigest ledgerHash = Crypto.getHashFunction("SHA256")
 				.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 
 		contentBlob = new TxContentBlob(ledgerHash);
 
-		HashDigest contentHash = CryptoServiceProviders.getHashFunction("SHA256")
+		HashDigest contentHash = Crypto.getHashFunction("SHA256")
 				.hash("jd.com".getBytes());
 		contentBlob.setHash(contentHash);
 

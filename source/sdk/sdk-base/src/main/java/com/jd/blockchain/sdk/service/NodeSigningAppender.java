@@ -5,7 +5,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.MessageService;
 import com.jd.blockchain.consensus.client.ConsensusClient;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -66,13 +66,13 @@ public class NodeSigningAppender implements TransactionService {
 		byte[] endpointRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
 
 		short signAlgorithm = nodeKeyPair.getAlgorithm();
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction(signAlgorithm);
+		SignatureFunction signFunc = Crypto.getSignatureFunction(signAlgorithm);
 		SignatureDigest signDigest = signFunc.sign(nodeKeyPair.getPrivKey(), endpointRequestBytes);
 		txMessage.addNodeSignatures(new DigitalSignatureBlob(nodeKeyPair.getPubKey(), signDigest));
 
 		// 计算交易哈希；
 		byte[] nodeRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(signAlgorithm);
+		HashFunction hashFunc = Crypto.getHashFunction(signAlgorithm);
 		HashDigest txHash = hashFunc.hash(nodeRequestBytes);
 		txMessage.setHash(txHash);
 

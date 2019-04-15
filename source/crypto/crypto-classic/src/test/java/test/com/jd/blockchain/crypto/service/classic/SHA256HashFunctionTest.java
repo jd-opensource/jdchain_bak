@@ -2,7 +2,7 @@ package test.com.jd.blockchain.crypto.service.classic;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -25,21 +25,21 @@ public class SHA256HashFunctionTest {
 
 	@Test
 	public void getAlgorithmTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sha256");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		assertEquals(hashFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(hashFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("SHa256");
+		algorithm = Crypto.getAlgorithm("SHa256");
 		assertNotNull(algorithm);
 
 		assertEquals(hashFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(hashFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sha-256");
+		algorithm = Crypto.getAlgorithm("sha-256");
 		assertNull(algorithm);
 	}
 
@@ -50,10 +50,10 @@ public class SHA256HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sha256");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 		byte[] rawDigestBytes = digest.getRawDigest();
@@ -83,10 +83,10 @@ public class SHA256HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sha256");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
@@ -99,17 +99,17 @@ public class SHA256HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sha256");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
 		byte[] digestBytes = digest.toBytes();
 		assertTrue(hashFunction.supportHashDigest(digestBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("aes");
+		algorithm = Crypto.getAlgorithm("aes");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		System.arraycopy(algoBytes, 0, digestBytes, 0, algoBytes.length);
@@ -122,10 +122,10 @@ public class SHA256HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sha256");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
@@ -138,7 +138,7 @@ public class SHA256HashFunctionTest {
 		assertEquals((short) (HASH_ALGORITHM | ((byte) 24 & 0x00FF)), resolvedDigest.getAlgorithm());
 		assertArrayEquals(digestBytes, resolvedDigest.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("aes");
+		algorithm = Crypto.getAlgorithm("aes");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawDigestBytes = digest.getRawDigest();
@@ -154,7 +154,7 @@ public class SHA256HashFunctionTest {
 		assertNotNull(actualEx);
 		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("ripemd160");
+		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
 		algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		rawDigestBytes = digest.getRawDigest();

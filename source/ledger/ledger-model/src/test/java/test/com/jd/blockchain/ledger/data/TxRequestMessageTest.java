@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -59,7 +59,7 @@ public class TxRequestMessageTest {
 
 		data = new TxRequestMessage(initTransactionContent());
 
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 		AsymmetricKeypair key1 = signFunc.generateKeypair();
 		AsymmetricKeypair key2 = signFunc.generateKeypair();
 		AsymmetricKeypair key3 = signFunc.generateKeypair();
@@ -79,7 +79,7 @@ public class TxRequestMessageTest {
 		data.addNodeSignatures(node1);
 		data.addNodeSignatures(node2);
 
-		HashDigest hash = CryptoServiceProviders.getHashFunction("SHA256").hash("DATA".getBytes());
+		HashDigest hash = Crypto.getHashFunction("SHA256").hash("DATA".getBytes());
 		data.setHash(hash);
 	}
 
@@ -196,7 +196,7 @@ public class TxRequestMessageTest {
 	private TransactionContent initTransactionContent() throws Exception {
 		TxContentBlob contentBlob = null;
 		BlockchainKeypair id = BlockchainKeyGenerator.getInstance().generate("ED25519");
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");
+		HashFunction hashFunc = Crypto.getHashFunction("SHA256");
 		HashDigest ledgerHash = hashFunc.hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 		BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 		contentBlob = new TxContentBlob(ledgerHash);

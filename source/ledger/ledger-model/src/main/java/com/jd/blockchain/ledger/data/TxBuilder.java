@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.data;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -43,7 +43,7 @@ public class TxBuilder implements TransactionBuilder {
 		txContent.addOperations(opFactory.getOperations());
 		
 		byte[] contentBodyBytes = BinaryEncodingUtils.encode(txContent, TransactionContentBody.class);
-		HashDigest contentHash = CryptoServiceProviders.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
+		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
 		txContent.setHash(contentHash);
 		
 		return txContent;

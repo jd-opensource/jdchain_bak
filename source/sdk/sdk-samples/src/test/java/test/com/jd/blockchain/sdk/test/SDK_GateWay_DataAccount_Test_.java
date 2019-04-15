@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -109,13 +109,13 @@ public class SDK_GateWay_DataAccount_Test_ {
     }
 
     private HashDigest getLedgerHash() {
-    	HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");;
+    	HashFunction hashFunc = Crypto.getHashFunction("SHA256");;
         HashDigest ledgerHash =hashFunc.hash("jd-gateway".getBytes());
         return ledgerHash;
     }
 
     private SignatureFunction getSignatureFunction() {
-        return CryptoServiceProviders.getSignatureFunction("ED25519");
+        return Crypto.getSignatureFunction("ED25519");
     }
 
     private AsymmetricKeypair getSponsorKey() {
@@ -123,7 +123,7 @@ public class SDK_GateWay_DataAccount_Test_ {
 	}
 
     private TransactionResponse initResponse() {
-    	HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");;
+    	HashFunction hashFunc = Crypto.getHashFunction("SHA256");;
         HashDigest contentHash = hashFunc.hash("contentHash".getBytes());
         HashDigest blockHash =  hashFunc.hash("blockHash".getBytes());
         long blockHeight = 9998L;

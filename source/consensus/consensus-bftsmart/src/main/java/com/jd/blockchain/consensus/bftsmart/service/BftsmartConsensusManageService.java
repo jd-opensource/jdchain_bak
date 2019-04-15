@@ -7,7 +7,7 @@ import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ConsensusManageService;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingConfig;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
@@ -54,7 +54,7 @@ public class BftsmartConsensusManageService implements ConsensusManageService {
 
 	public boolean verify(ClientIdentification authId) {
 
-		SignatureFunction signatureFunction = CryptoServiceProviders
+		SignatureFunction signatureFunction = Crypto
 				.getSignatureFunction(authId.getPubKey().getAlgorithm());
 
 		return signatureFunction.verify(authId.getSignature(), authId.getPubKey(), authId.getIdentityInfo());

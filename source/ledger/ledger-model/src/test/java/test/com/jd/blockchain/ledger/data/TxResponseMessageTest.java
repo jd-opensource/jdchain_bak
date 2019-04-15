@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.TransactionResponse;
@@ -36,7 +36,7 @@ public class TxResponseMessageTest {
 	@Before
 	public void initTxRequestMessage() throws Exception {
 		DataContractRegistry.register(TransactionResponse.class);
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction("SHA256");
+		HashFunction hashFunc = Crypto.getHashFunction("SHA256");
 		HashDigest contentHash = hashFunc.hash("jd-content".getBytes());
 
 		HashDigest blockHash = hashFunc.hash("jd-block".getBytes());

@@ -2,7 +2,7 @@ package test.com.jd.blockchain.crypto.service.sm;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoException;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.service.sm.SMAlgorithm;
@@ -23,21 +23,21 @@ import static org.junit.Assert.*;
 public class SM3HashFunctionTest {
 	@Test
 	public void getAlgorithmTest() {
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		assertEquals(hashFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(hashFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("Sm3");
+		algorithm = Crypto.getAlgorithm("Sm3");
 		assertNotNull(algorithm);
 
 		assertEquals(hashFunction.getAlgorithm().name(), algorithm.name());
 		assertEquals(hashFunction.getAlgorithm().code(), algorithm.code());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm3333");
+		algorithm = Crypto.getAlgorithm("sm3333");
 		assertNull(algorithm);
 	}
 
@@ -48,10 +48,10 @@ public class SM3HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 		byte[] rawDigestBytes = digest.getRawDigest();
@@ -81,10 +81,10 @@ public class SM3HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
@@ -97,17 +97,17 @@ public class SM3HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
 		byte[] digestBytes = digest.toBytes();
 		assertTrue(hashFunction.supportHashDigest(digestBytes));
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		System.arraycopy(algoBytes, 0, digestBytes, 0, algoBytes.length);
@@ -120,10 +120,10 @@ public class SM3HashFunctionTest {
 		Random random = new Random();
 		random.nextBytes(data);
 
-		CryptoAlgorithm algorithm = CryptoServiceProviders.getAlgorithm("sm3");
+		CryptoAlgorithm algorithm = Crypto.getAlgorithm("sm3");
 		assertNotNull(algorithm);
 
-		HashFunction hashFunction = CryptoServiceProviders.getHashFunction(algorithm);
+		HashFunction hashFunction = Crypto.getHashFunction(algorithm);
 
 		HashDigest digest = hashFunction.hash(data);
 
@@ -136,7 +136,7 @@ public class SM3HashFunctionTest {
 		assertEquals((short) (HASH_ALGORITHM | ((byte) 3 & 0x00FF)), resolvedDigest.getAlgorithm());
 		assertArrayEquals(digestBytes, resolvedDigest.toBytes());
 
-		algorithm = CryptoServiceProviders.getAlgorithm("sm4");
+		algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
 		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
 		byte[] rawDigestBytes = digest.getRawDigest();

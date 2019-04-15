@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -42,7 +42,7 @@ public class LedgerEditerTest {
 	}
 
 	String ledgerKeyPrefix = "LDG://";
-	SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction("ED25519");
+	SignatureFunction signatureFunction = Crypto.getSignatureFunction("ED25519");
 
 	// 存储；
 	MemoryKVStorage storage = new MemoryKVStorage();
@@ -108,7 +108,7 @@ public class LedgerEditerTest {
 	}
 
 	private LedgerInitSetting createLedgerInitSetting() {
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setAutoVerifyHash(true);

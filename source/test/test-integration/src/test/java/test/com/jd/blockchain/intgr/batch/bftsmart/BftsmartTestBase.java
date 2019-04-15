@@ -14,7 +14,7 @@ import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePubKey;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.security.ShaUtils;
@@ -36,7 +36,7 @@ public class BftsmartTestBase {
 
     @Test
     public void newUsers() {
-    	SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+    	SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
         for (int i = 0; i < userSize; i++) {
             AsymmetricKeypair kp = signFunc.generateKeypair();
 

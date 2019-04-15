@@ -9,7 +9,7 @@ import java.util.List;
 import javax.crypto.SecretKey;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.ArgumentSet;
@@ -114,7 +114,7 @@ public class KeyGenCommand {
 	 * @param outputDir
 	 */
 	private static void generateKeyPair(String name, String outputDir, String localConfPath) {
-		AsymmetricKeypair kp = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeypair();
+		AsymmetricKeypair kp = Crypto.getSignatureFunction("ED25519").generateKeypair();
 
 		String base58PubKey = encodePubKey(kp.getPubKey());
 

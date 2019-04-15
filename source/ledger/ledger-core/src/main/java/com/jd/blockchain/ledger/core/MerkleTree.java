@@ -15,7 +15,7 @@ import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -1413,7 +1413,7 @@ public class MerkleTree implements Transactional {
 			int totalSize = getBodySize();
 			byte[] bodyBytes = new byte[totalSize];
 			generateBodyBytes(bodyBytes);
-			HashFunction hashFunc = CryptoServiceProviders.getHashFunction(hashAlgorithm);
+			HashFunction hashFunc = Crypto.getHashFunction(hashAlgorithm);
 			return hashFunc.hash(bodyBytes);
 		}
 
@@ -1476,7 +1476,7 @@ public class MerkleTree implements Transactional {
 
 			byte[] dataBytes = BytesUtils.concat(bodyBytes, hashedData);
 
-			HashFunction hashFunc = CryptoServiceProviders.getHashFunction(hashAlgorithm);
+			HashFunction hashFunc = Crypto.getHashFunction(hashAlgorithm);
 			HashDigest dataHash = hashFunc.hash(dataBytes);
 
 			int hashMaskSize = NumberMask.TINY.getMaskLength(dataHash.size());

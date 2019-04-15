@@ -16,7 +16,7 @@ import com.jd.blockchain.consensus.ConsensusSecurityException;
 import com.jd.blockchain.consensus.mq.config.MsgQueueClientIncomingConfig;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueClientIncomingSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureFunction;
 
@@ -62,7 +62,7 @@ public class MsgQueueConsensusManageService implements ConsensusManageService {
         byte[] identityInfo = authId.getIdentityInfo();
         byte[] address = pubKey.toBytes(); // 使用公钥地址作为认证信息
         if (Arrays.equals(address, identityInfo)) {
-            SignatureFunction signatureFunction = CryptoServiceProviders.getSignatureFunction(pubKey.getAlgorithm());
+            SignatureFunction signatureFunction = Crypto.getSignatureFunction(pubKey.getAlgorithm());
             isLegal = signatureFunction.verify(authId.getSignature(), pubKey, identityInfo);
         }
         return isLegal;

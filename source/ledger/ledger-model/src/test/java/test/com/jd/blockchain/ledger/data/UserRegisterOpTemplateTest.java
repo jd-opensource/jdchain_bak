@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
@@ -39,7 +39,7 @@ public class UserRegisterOpTemplateTest {
     public void initUserRegisterOpTemplate() {
         DataContractRegistry.register(UserRegisterOperation.class);
         DataContractRegistry.register(Operation.class);
-        AsymmetricKeypair key = CryptoServiceProviders.getSignatureFunction("ED25519").generateKeypair();
+        AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
         PubKey pubKey = key.getPubKey();
         BlockchainIdentity contractID = new BlockchainIdentityData(pubKey);
         data = new UserRegisterOpTemplate(contractID);

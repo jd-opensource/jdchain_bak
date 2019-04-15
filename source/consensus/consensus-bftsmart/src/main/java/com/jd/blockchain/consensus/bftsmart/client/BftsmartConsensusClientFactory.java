@@ -11,7 +11,7 @@ import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -37,7 +37,7 @@ public class BftsmartConsensusClientFactory implements ClientFactory {
 		PubKey pubKey = clientKeyPair.getPubKey();
 		PrivKey privKey = clientKeyPair.getPrivKey();
 
-		SignatureFunction signatureFunction =CryptoServiceProviders.getSignatureFunction(pubKey.getAlgorithm());
+		SignatureFunction signatureFunction =Crypto.getSignatureFunction(pubKey.getAlgorithm());
 		SignatureDigest signatureDigest = signatureFunction.sign(privKey, pubKey.toBytes());
 
 		BftsmartClientIdentification bftsmartClientIdentification = new BftsmartClientIdentification();

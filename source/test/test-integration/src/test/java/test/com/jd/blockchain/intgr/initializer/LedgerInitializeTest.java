@@ -20,7 +20,7 @@ import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
@@ -256,7 +256,7 @@ public class LedgerInitializeTest {
 
 			CryptoConfig cryptoSetting = new CryptoConfig();
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
-			cryptoSetting.setHashAlgorithm(CryptoServiceProviders.getAlgorithm("SHA256"));
+			cryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
 
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 

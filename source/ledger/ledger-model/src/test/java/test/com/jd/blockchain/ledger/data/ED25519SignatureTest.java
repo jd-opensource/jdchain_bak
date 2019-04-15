@@ -5,7 +5,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.security.Ed25519Utils;
 
@@ -17,7 +17,7 @@ public class ED25519SignatureTest {
 		byte[] data = new byte[64];
 		rand.nextBytes(data);
 
-		SignatureFunction signFunc = CryptoServiceProviders.getSignatureFunction("ED25519");
+		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
 		AsymmetricKeypair key = signFunc.generateKeypair();
 		byte[] pubKey = key.getPubKey().getRawKeyBytes();
 		byte[] privKey = key.getPrivKey().getRawKeyBytes();

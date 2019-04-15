@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.CryptoServiceProviders;
+import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -157,7 +157,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		// String key = encodeMetadataKey(base58Hash);
 		Bytes key = encodeMetadataKey(adminAccountHash);
 		byte[] bytes = settingsStorage.get(key);
-		HashFunction hashFunc = CryptoServiceProviders.getHashFunction(adminAccountHash.getAlgorithm());
+		HashFunction hashFunc = Crypto.getHashFunction(adminAccountHash.getAlgorithm());
 		if (!hashFunc.verify(adminAccountHash, bytes)) {
 			LOGGER.error("The hash verification of ledger settings fail! --[HASH=" + key + "]");
 			throw new LedgerException("The hash verification of ledger settings fail!");
@@ -262,7 +262,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 
 		// 基于之前的密码配置来计算元数据的哈希；
 		byte[] metadataBytes = serializeMetadata(metadata);
-		HashFunction hashFunc = CryptoServiceProviders
+		HashFunction hashFunc = Crypto
 				.getHashFunction(previousSetting.getCryptoSetting().getHashAlgorithm());
 		HashDigest metadataHash = hashFunc.hash(metadataBytes);
 		if (adminAccountHash == null || !adminAccountHash.equals(metadataHash)) {
