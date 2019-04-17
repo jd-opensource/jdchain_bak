@@ -468,8 +468,8 @@
 		</profile>
 	</profiles>
 
-  <repositories>
-    <repository>
+    <repositories>
+        <repository>
 			<id>central</id>
 			<name>Central Repository</name>
 			<url>http://central.maven.org/maven2/</url>
