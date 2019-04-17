@@ -6,7 +6,7 @@
  * Date: 2019/4/11 下午3:40
  * Description:
  */
-package com.jd.blockchain.stp.communication;
+package com.jd.blockchain.stp.communication.node;
 
 /**
  *
@@ -40,5 +40,29 @@ public class RemoteNode {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    @Override
+    public int hashCode() {
+        return (hostName + ":" + port).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof RemoteNode) {
+            RemoteNode other = (RemoteNode) obj;
+            if (this.hashCode() == other.hashCode()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return this.hostName + ":" + this.port;
     }
 }

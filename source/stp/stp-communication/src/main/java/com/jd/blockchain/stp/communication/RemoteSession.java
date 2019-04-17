@@ -8,14 +8,11 @@
  */
 package com.jd.blockchain.stp.communication;
 
-import com.jd.blockchain.stp.communication.inner.Receiver;
-import com.jd.blockchain.stp.communication.inner.Sender;
+import com.jd.blockchain.stp.communication.callback.CallBackBarrier;
+import com.jd.blockchain.stp.communication.callback.CallBackDataListener;
+import com.jd.blockchain.stp.communication.connection.Connection;
 import com.jd.blockchain.stp.communication.message.LoadMessage;
 
-import java.net.InetAddress;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 
 /**
  *
@@ -28,67 +25,57 @@ public class RemoteSession {
 
     private String id;
 
-    private RemoteNode remoteNode;
+    private Connection connection;
 
-    private Sender sender;
+    private MessageExecute messageExecute;
 
-    private Receiver receiver;
-
-    private MessageHandler messageHandler;
-
-    public void initHandler(MessageHandler messageHandler) {
-
+    public RemoteSession(String id, Connection connection, MessageExecute messageExecute) {
+        this.id = id;
+        this.connection = connection;
+        this.messageExecute = messageExecute;
     }
 
-    public void connect() {
-
+    public void init() {
+        connection.initSession(this);
     }
 
-    public byte[] send(LoadMessage loadMessage) {
-
-        return null;
+    public void initExecute(MessageExecute messageExecute) {
+        this.messageExecute = messageExecute;
     }
 
-    public Future<byte[]> asyncSend(LoadMessage loadMessage) {
-        return null;
+    public byte[] request(LoadMessage loadMessage) throws Exception {
+        return this.connection.request(this.id, loadMessage, null).getCallBackData();
     }
 
-    public Future<byte[]> asyncSend(LoadMessage loadMessage, CountDownLatch countDownLatch) {
-        return null;
+    public CallBackDataListener asyncRequest(LoadMessage loadMessage) {
+        return asyncRequest(loadMessage, null);
     }
 
-    public byte[] send(byte[] loadMessage) {
-
-        return null;
+    public CallBackDataListener asyncRequest(LoadMessage loadMessage, CallBackBarrier callBackBarrier) {
+        return this.connection.request(this.id, loadMessage, callBackBarrier);
     }
 
-    public Future<byte[]> asyncSend(byte[] loadMessage) {
-
-        return null;
+    public void reply(String key, LoadMessage loadMessage) {
+        this.connection.reply(this.id, key, loadMessage);
     }
 
-    public Future<byte[]> asyncSend(byte[] loadMessage, CountDownLatch countDownLatch) {
-
-        return null;
+    public void closeAll() {
+        this.connection.closeAll();
     }
 
-    public void reply(byte[] key, LoadMessage loadMessage) {
-
+    public void closeReceiver() {
+        this.connection.closeReceiver();
     }
 
-    public void asyncReply(byte[] key, LoadMessage loadMessage) {
-
+    public void closeSender() {
+        this.connection.closeSender();
     }
 
-    public void reply(byte[] key, byte[] loadMessage) {
-
+    public String sessionId() {
+        return id;
     }
 
-    public void asyncReply(byte[] key, byte[] loadMessage) {
-
-    }
-
-    public void close() {
-
+    public MessageExecute messageExecute() {
+        return this.messageExecute;
     }
 }

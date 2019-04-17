@@ -1,7 +1,7 @@
 package com.jd.blockchain.statetransfer;
 
 import com.jd.blockchain.stp.communication.RemoteSession;
-import com.jd.blockchain.stp.communication.RemoteSessionManager;
+import com.jd.blockchain.stp.communication.manager.RemoteSessionManager;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -20,7 +20,8 @@ public class DSProcessManager {
 
     DSTransferProcess startDSProcess(DataSequenceInfo dsInfo, InetSocketAddress listener, InetSocketAddress[] targets, DataSequenceWriter dsWriter, DataSequenceReader dsReader) {
 
-        RemoteSessionManager remoteSessionManager = new RemoteSessionManager(listener.getPort());
+//        RemoteSessionManager remoteSessionManager = new RemoteSessionManager(listener.getPort());
+        RemoteSessionManager remoteSessionManager = null;
         DSTransferProcess dsTransferProcess =  new DSTransferProcess(dsInfo, remoteSessionManager, targets, dsWriter, dsReader);
 
         dsTransferProcess.start();

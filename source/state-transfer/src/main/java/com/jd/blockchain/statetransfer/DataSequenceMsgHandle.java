@@ -1,6 +1,6 @@
 package com.jd.blockchain.statetransfer;
 
-import com.jd.blockchain.stp.communication.MessageHandler;
+import com.jd.blockchain.stp.communication.MessageExecute;
 import com.jd.blockchain.stp.communication.RemoteSession;
 
 /**
@@ -9,7 +9,7 @@ import com.jd.blockchain.stp.communication.RemoteSession;
  * @create 2019/4/11
  * @since 1.0.0
  */
-public class DataSequenceMsgHandle implements MessageHandler {
+public class DataSequenceMsgHandle implements MessageExecute {
 
     DataSequenceReader dsReader;
     DataSequenceWriter dsWriter;
@@ -20,8 +20,13 @@ public class DataSequenceMsgHandle implements MessageHandler {
     }
 
     @Override
-    public void receive(byte[] key, byte[] data, RemoteSession session) {
+    public byte[] receive(String key, byte[] data, RemoteSession session) {
+        return new byte[0];
+    }
 
+    @Override
+    public REPLY replyType() {
+        return REPLY.AUTO;
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.jd.blockchain.statetransfer;
 
-import com.jd.blockchain.stp.communication.RemoteNode;
 import com.jd.blockchain.stp.communication.RemoteSession;
-import com.jd.blockchain.stp.communication.RemoteSessionManager;
+import com.jd.blockchain.stp.communication.manager.RemoteSessionManager;
+import com.jd.blockchain.stp.communication.node.RemoteNode;
 
 import java.net.InetSocketAddress;
 
@@ -69,8 +69,8 @@ public class DSTransferProcess {
 
         for (int i = 0; i < remoteSessions.length; i++) {
             DataSequenceMsgHandle msgHandle = new DataSequenceMsgHandle(dsReader, dsWriter);
-            remoteSessions[i].initHandler(msgHandle);
-            remoteSessions[i].connect();
+            remoteSessions[i].initExecute(msgHandle);
+            remoteSessions[i].init();
         }
     }
 
