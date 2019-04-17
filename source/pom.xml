@@ -41,7 +41,7 @@
 	<properties>
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
 		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
-		<browser.version>0.6.6.RELEASE</browser.version>
+		<browser.version>0.6.5.RELEASE</browser.version>
 		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
 		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
 			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
@@ -468,5 +468,28 @@
 		</profile>
 	</profiles>
 
+  <repositories>
+    <repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://central.maven.org/maven2/</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>kompics</id>
+			<name>kompics</name>
+			<url>http://kompics.sics.se/maven/repository/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
 
 </project>
