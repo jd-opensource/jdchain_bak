@@ -14,7 +14,6 @@ import com.jd.blockchain.stp.communication.connection.handler.HeartBeatReceiverT
 import com.jd.blockchain.stp.communication.connection.handler.ReceiverHandler;
 import com.jd.blockchain.stp.communication.connection.listener.ReplyListener;
 import com.jd.blockchain.stp.communication.manager.ConnectionManager;
-import com.jd.blockchain.stp.communication.manager.RemoteSessionManager;
 import com.jd.blockchain.stp.communication.node.LocalNode;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,19 +25,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Map;
 import java.util.concurrent.*;
 
 /**
- *
+ * 接收器
  * @author shaozhuguang
  * @create 2019/4/11
  * @since 1.0.0
@@ -46,18 +40,33 @@ import java.util.concurrent.*;
 
 public class Receiver extends AbstractAsyncExecutor implements Closeable {
 
+    /**
+     * Netty中的BOSS线程
+     */
     private final EventLoopGroup bossGroup = new NioEventLoopGroup();
 
+    /**
+     * Netty中的Worker线程
+     */
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
+    /**
+     * 本地节点
+     */
     private LocalNode localNode;
 
+    /**
+     * 消息接收Handler
+     */
     private ReceiverHandler receiverHandler;
 
     public Receiver(LocalNode localNode) {
         this.localNode = localNode;
     }
 
+    /**
+     * 启动监听
+     */
     public void startListen() {
         ServerBootstrap bootstrap = new ServerBootstrap();
 
@@ -80,14 +89,14 @@ public class Receiver extends AbstractAsyncExecutor implements Closeable {
                     }
                 });
 
-        // 由单独的线程启动
+        // 由单独的线程启动，防止外部调用线程阻塞
         ThreadPoolExecutor runThread = initRunThread();
         runThread.execute(() -> {
             try {
                 ChannelFuture f = bootstrap.bind().sync();
-                super.isStartSuccess = f.isSuccess();
-                super.isStarted.release();
-                if (super.isStartSuccess) {
+                boolean isStartSuccess = f.isSuccess();
+                if (isStartSuccess) {
+                    super.callBackLauncher.bootSuccess();
                     // 启动成功
                     f.channel().closeFuture().sync();
                 } else {
@@ -95,7 +104,7 @@ public class Receiver extends AbstractAsyncExecutor implements Closeable {
                     throw new Exception("Receiver start fail :" + f.cause().getMessage() + " !!!");
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                super.callBackLauncher.bootFail(e);
             } finally {
                 close();
             }
@@ -107,14 +116,34 @@ public class Receiver extends AbstractAsyncExecutor implements Closeable {
         return "receiver-pool-%d";
     }
 
-    public void initReceiverHandler(ConnectionManager connectionManager, String messageExecuteClass) {
-        receiverHandler = new ReceiverHandler(connectionManager, messageExecuteClass);
+    /**
+     * 初始化ReceiverHandler
+     *
+     * @param connectionManager
+     *     连接管理器
+     * @param messageExecutorClass
+     *     当前节点的消息处理Class
+     */
+    public void initReceiverHandler(ConnectionManager connectionManager, String messageExecutorClass) {
+        receiverHandler = new ReceiverHandler(connectionManager, messageExecutorClass, this.localNode.defaultMessageExecutor());
     }
 
+    /**
+     * 初始化远端Session
+     *
+     * @param sessionId
+     *
+     * @param remoteSession
+     */
     public void initRemoteSession(String sessionId, RemoteSession remoteSession) {
         receiverHandler.putRemoteSession(sessionId, remoteSession);
     }
 
+    /**
+     * 添加监听器
+     *
+     * @param replyListener
+     */
     public void addListener(ReplyListener replyListener) {
         receiverHandler.addListener(replyListener);
     }

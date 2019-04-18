@@ -14,7 +14,7 @@ import com.jd.blockchain.stp.communication.node.RemoteNode;
 
 
 /**
- *
+ * 应答监听器
  * @author shaozhuguang
  * @create 2019/4/12
  * @since 1.0.0
@@ -22,17 +22,30 @@ import com.jd.blockchain.stp.communication.node.RemoteNode;
 
 public class ReplyListener {
 
+    /**
+     * 监听的Key，通常用于描述唯一的请求
+     */
     private String listenKey;
 
+    /**
+     * 消息处理类型
+     * REMOVE：表示处理完该对象之后从缓存中清除
+     * HOLD：表示处理完该对象之后仍在缓存中保存
+     */
     private MANAGE_TYPE manageType = MANAGE_TYPE.REMOVE;
 
+    /**
+     * 数据回调监听器
+     */
     private CallBackDataListener callBackDataListener;
 
+    /**
+     * 回调栅栏
+     */
     private CallBackBarrier callBackBarrier;
 
     public ReplyListener(String listenKey, RemoteNode remoteNode) {
-        this.listenKey = listenKey;
-        this.callBackDataListener = new CallBackDataListener(remoteNode);
+        this(listenKey, remoteNode, null);
     }
 
     public ReplyListener(String listenKey, RemoteNode remoteNode, CallBackBarrier callBackBarrier) {

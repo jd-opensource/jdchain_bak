@@ -8,13 +8,11 @@
  */
 package com.jd.blockchain.stp.communication.message;
 
-import com.alibaba.fastjson.JSON;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.commons.codec.binary.Hex;
 
 /**
- *
+ * Session消息
+ * 该消息用于发送至远端节点，告诉远端节点本地的信息
  * @author shaozhuguang
  * @create 2019/4/16
  * @since 1.0.0
@@ -22,19 +20,28 @@ import org.apache.commons.codec.binary.Hex;
 
 public class SessionMessage extends AbstractMessage implements IMessage {
 
+    /**
+     * 本地节点HOST
+     */
     private String localHost;
 
+    /**
+     * 本地节点监听端口
+     */
     private int listenPort;
 
-    private String messageExecute;
+    /**
+     * 远端接收到本地节点信息时处理的Class
+     */
+    private String messageExecutor;
 
     public SessionMessage() {
     }
 
-    public SessionMessage(String localHost, int listenPort, String messageExecute) {
+    public SessionMessage(String localHost, int listenPort, String messageExecutor) {
         this.localHost = localHost;
         this.listenPort = listenPort;
-        this.messageExecute = messageExecute;
+        this.messageExecutor = messageExecutor;
     }
 
     public String getLocalHost() {
@@ -54,30 +61,37 @@ public class SessionMessage extends AbstractMessage implements IMessage {
         return listenPort;
     }
 
-    public String getMessageExecute() {
-        return messageExecute;
+    public String getMessageExecutor() {
+        return messageExecutor;
     }
 
-    public void setMessageExecute(String messageExecute) {
-        this.messageExecute = messageExecute;
+    public void setMessageExecutor(String messageExecutor) {
+        this.messageExecutor = messageExecutor;
     }
 
     public String sessionId() {
         return Hex.encodeHexString((this.localHost + ":" + this.listenPort).getBytes());
     }
 
-    public static SessionMessage toNodeSessionMessage(Object msg) {
+    /**
+     * 将对象（或者说接收到的消息）转换为SessionMessage
+     * @param msg
+     *     接收到的消息对象
+     * @return
+     *     可正确解析则返回，否则返回NULL
+     */
+    public static SessionMessage toSessionMessage(Object msg) {
         String msgString = msg.toString();
         try {
             String[] msgArray = msgString.split("\\|");
             if (msgArray.length == 2 || msgArray.length == 3) {
                 String host = msgArray[0];
                 int port = Integer.parseInt(msgArray[1]);
-                String msgExecuteClass = null;
+                String msgExecutorClass = null;
                 if (msgArray.length == 3) {
-                    msgExecuteClass = msgArray[2];
+                    msgExecutorClass = msgArray[2];
                 }
-                return new SessionMessage(host, port, msgExecuteClass);
+                return new SessionMessage(host, port, msgExecutorClass);
             }
             return null;
         } catch (Exception e) {
@@ -89,7 +103,10 @@ public class SessionMessage extends AbstractMessage implements IMessage {
     public String toTransfer() {
         // 为区别于TransferMessage的JSON格式，该处使用字符串连接处理
         // 格式：localHost|port|class
-        String transferMsg = this.localHost + "|" + this.listenPort + "|" + this.messageExecute;
-        return transferMsg;
+        if (this.messageExecutor == null) {
+            return this.localHost + "|" + this.listenPort;
+        } else {
+            return this.localHost + "|" + this.listenPort + "|" + this.messageExecutor;
+        }
     }
 }

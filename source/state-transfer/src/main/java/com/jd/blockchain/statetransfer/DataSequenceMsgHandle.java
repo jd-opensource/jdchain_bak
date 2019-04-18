@@ -1,6 +1,6 @@
 package com.jd.blockchain.statetransfer;
 
-import com.jd.blockchain.stp.communication.MessageExecute;
+import com.jd.blockchain.stp.communication.MessageExecutor;
 import com.jd.blockchain.stp.communication.RemoteSession;
 
 /**
@@ -9,7 +9,7 @@ import com.jd.blockchain.stp.communication.RemoteSession;
  * @create 2019/4/11
  * @since 1.0.0
  */
-public class DataSequenceMsgHandle implements MessageExecute {
+public class DataSequenceMsgHandle implements MessageExecutor {
 
     DataSequenceReader dsReader;
     DataSequenceWriter dsWriter;

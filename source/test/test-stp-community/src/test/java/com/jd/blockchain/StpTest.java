@@ -9,7 +9,6 @@
 package com.jd.blockchain;
 
 import com.jd.blockchain.stp.commucation.MyMessageExecutor;
-import com.jd.blockchain.stp.communication.MessageExecute;
 import com.jd.blockchain.stp.communication.RemoteSession;
 import com.jd.blockchain.stp.communication.callback.CallBackBarrier;
 import com.jd.blockchain.stp.communication.callback.CallBackDataListener;
@@ -26,6 +25,8 @@ import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -57,7 +58,7 @@ public class StpTest {
         listenStart();
         System.out.println("---------- listenComplete -----------");
         System.out.println("---------- ConnectionStart ----------");
-        connectAllOthers();
+        connectOneOther();
         System.out.println("---------- ConnectionComplete ----------");
     }
 
@@ -68,12 +69,17 @@ public class StpTest {
             final int port = listenPorts[i], index = i;
             threadPool.execute(() -> {
                 // 创建本地节点
-                final LocalNode localNode = new LocalNode(remoteHost, port, MyMessageExecutor.class);
-                // 启动当前节点
-                RemoteSessionManager sessionManager = new RemoteSessionManager(localNode);
-                sessionManagers[index] = sessionManager;
-                countDownLatch.countDown();
-                System.out.printf("Current Node {%s} start success !!! \r\n", localNode.toString());
+                final LocalNode localNode = new LocalNode(remoteHost, port, new MyMessageExecutor());
+                try {
+                    // 启动当前节点
+                    RemoteSessionManager sessionManager = new RemoteSessionManager(localNode);
+                    sessionManagers[index] = sessionManager;
+                    System.out.printf("Current Node {%s} start success !!! \r\n", localNode.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    countDownLatch.countDown();
+                }
             });
         }
 
@@ -99,7 +105,7 @@ public class StpTest {
             }
         }
 
-        remoteSessions = starter.newSessions(remoteNodes, new MyMessageExecutor());
+        remoteSessions = starter.newSessions(remoteNodes);
     }
 
     private void connectOneOther() {
@@ -116,7 +122,22 @@ public class StpTest {
             }
         }
 
-        remoteSessions = starter.newSessions(remoteNodes, new MyMessageExecutor());
+        remoteSessions = starter.newSessions(remoteNodes);
+    }
+
+    private void connectOneErrorNode() {
+        // 所有节点完成之后，需要启动
+        // 启动一个节点
+        RemoteSessionManager starter = sessionManagers[0];
+
+        // 当前节点需要连接到其他3个节点
+        RemoteNode[] remoteNodes = new RemoteNode[1];
+
+        remoteNodes[0] = new RemoteNode(remoteHost, 10001);
+
+        remoteSessions = starter.newSessions(remoteNodes);
+
+        assertNull(remoteSessions);
     }
 
 

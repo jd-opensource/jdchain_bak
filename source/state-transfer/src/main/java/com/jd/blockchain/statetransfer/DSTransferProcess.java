@@ -69,7 +69,7 @@ public class DSTransferProcess {
 
         for (int i = 0; i < remoteSessions.length; i++) {
             DataSequenceMsgHandle msgHandle = new DataSequenceMsgHandle(dsReader, dsWriter);
-            remoteSessions[i].initExecute(msgHandle);
+            remoteSessions[i].initExecutor(msgHandle);
             remoteSessions[i].init();
         }
     }

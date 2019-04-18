@@ -22,22 +22,41 @@ import io.netty.util.CharsetUtil;
 
 public class HeartBeatMessage implements IMessage {
 
+    /**
+     * 统一的心跳信息字符串
+     */
     private static final String HEARTBEAT_STRING = "JDChainHeartBeat";
 
+    /**
+     * 统一的心跳消息字符串对一个的ByteBuf
+     */
     private static final ByteBuf HEARTBEAT_MESSAGE = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(HEARTBEAT_STRING + "\r\n",
             CharsetUtil.UTF_8));
 
+    /**
+     * 将心跳消息写入Ctx
+     * @param ctx
+     */
     public static final void write(ChannelHandlerContext ctx) {
         ctx.writeAndFlush(HEARTBEAT_MESSAGE.duplicate());
     }
 
+    /**
+     * 判断接收的消息是否为心跳消息
+     *
+     * @param msg
+     * @return
+     */
     public static final boolean isHeartBeat(Object msg) {
-        if (msg instanceof String) {
-            return isHeartBeat((String) msg);
-        }
-        return false;
+        return isHeartBeat(msg.toString());
     }
 
+    /**
+     * 判断接收的消息是否为心跳消息
+     *
+     * @param msg
+     * @return
+     */
     public static final boolean isHeartBeat(String msg) {
         if (HEARTBEAT_STRING.equals(msg)) {
             return true;

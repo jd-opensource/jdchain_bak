@@ -9,16 +9,13 @@
 package com.jd.blockchain.stp.communication.connection.handler;
 
 import com.jd.blockchain.stp.communication.message.SessionMessage;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.util.concurrent.Executors;
 
 /**
- *
+ * Sender对应Handler
  * @author shaozhuguang
  * @create 2019/4/16
  * @since 1.0.0

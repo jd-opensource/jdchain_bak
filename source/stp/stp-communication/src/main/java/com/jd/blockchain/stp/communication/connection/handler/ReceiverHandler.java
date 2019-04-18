@@ -9,7 +9,7 @@
 package com.jd.blockchain.stp.communication.connection.handler;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.jd.blockchain.stp.communication.MessageExecute;
+import com.jd.blockchain.stp.communication.MessageExecutor;
 import com.jd.blockchain.stp.communication.RemoteSession;
 import com.jd.blockchain.stp.communication.connection.Connection;
 import com.jd.blockchain.stp.communication.connection.listener.ReplyListener;
@@ -28,7 +28,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * 接收者消息处理Handler
  * @author shaozhuguang
  * @create 2019/4/12
  * @since 1.0.0
@@ -36,25 +36,62 @@ import java.util.concurrent.locks.ReentrantLock;
 @ChannelHandler.Sharable
 public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Closeable {
 
-    // 队列的最大容量为256K（防止队列溢出）
+    /**
+     * 队列的最大容量设置，默认为256K（防止队列溢出）
+     */
     private static final int QUEUE_CAPACITY = 256 * 1024;
 
+    /**
+     * 远端RemoteSession信息集合
+     * Key为SessionId
+     * Sender发送的消息中会携带SessionId
+     * ReceiverHandler会根据不同的SessionId采用不同的MessageExecutor处理策略
+     */
     private final Map<String, RemoteSession> remoteSessions = new ConcurrentHashMap<>();
 
+    /**
+     * 监听器集合
+     * 对应Sender在发送请求之前会设置ReplyListener
+     * Key为每个请求消息的Hash，用于描述消息的唯一性
+     * 应答一方会在应答中加入对应的key，用于消息的映射
+     */
     private final Map<String, ReplyListener> allReplyListeners = new ConcurrentHashMap<>();
 
-    private final Lock lock = new ReentrantLock();
+    /**
+     * session控制锁
+     * 用于防止对统一RemoteSession对象进行重复设置
+     */
+    private final Lock sessionLock = new ReentrantLock();
 
-    private String messageExecuteClass;
+    /**
+     * 当前节点（本地节点）的消息处理器对应Class
+     * 该信息用于发送至其他节点，向其他节点通知遇到本节点请求时该如何处理
+     */
+    private String localMsgExecutorClass;
 
+    /**
+     * 连接控制器，用于与远端节点连接
+     */
     private ConnectionManager connectionManager;
 
-    private ExecutorService msgExecutePool;
+    /**
+     * 消息处理执行线程池
+     * 防止执行内容过长，导致阻塞
+     */
+    private ExecutorService msgExecutorPool;
 
-    public ReceiverHandler(ConnectionManager connectionManager, String messageExecuteClass) {
+    /**
+     * 默认消息处理器
+     * 当对应session获取到的RemoteSession中没有获取到指定MessageExecutor时，短时间内由其进行处理
+     */
+    private MessageExecutor defaultMessageExecutor;
+
+    public ReceiverHandler(ConnectionManager connectionManager, String localMsgExecutorClass,
+                           MessageExecutor defaultMessageExecutor) {
         this.connectionManager = connectionManager;
-        this.messageExecuteClass = messageExecuteClass;
-        init();
+        this.localMsgExecutorClass = localMsgExecutorClass;
+        this.defaultMessageExecutor = defaultMessageExecutor;
+        initMsgExecutorPool();
     }
 
     public void putRemoteSession(String sessionId, RemoteSession remoteSession) {
@@ -75,10 +112,10 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
         System.out.println("Receive Biz Message -> " + msg.toString());
         // 有数据接入
         // 首先判断数据是否TransferMessage，当前Handler不处理非TransferMessage
-        TransferMessage tm = TransferMessage.toTransferMessageObj(msg);
+        TransferMessage tm = TransferMessage.toTransferMessage(msg);
         if (tm == null) {
             // 判断是否是SessionMessage
-            SessionMessage sm = SessionMessage.toNodeSessionMessage(msg);
+            SessionMessage sm = SessionMessage.toSessionMessage(msg);
             if (sm != null) {
                 executeSessionMessage(sm);
             } else {
@@ -106,36 +143,48 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
         ctx.close();
     }
 
-    // 防止消息的处理过程阻塞主进程
+    /**
+     * 处理请求消息
+     *
+     * @param transferMessage
+     *     接收到的请求消息
+     */
     private void executeRequest(final TransferMessage transferMessage) {
-        msgExecutePool.execute(() -> {
+        msgExecutorPool.execute(() -> {
             RemoteSession remoteSession = remoteSessions.get(transferMessage.getSessionId());
             if (remoteSession != null) {
-                MessageExecute messageExecute = remoteSession.messageExecute();
-                if (messageExecute != null) {
-                    MessageExecute.REPLY replyType = messageExecute.replyType();
-                    if (replyType != null) {
-                        switch (messageExecute.replyType()) {
-                            case MANUAL:
-                                messageExecute.receive(transferMessage.loadKey(), transferMessage.load(), remoteSession);
-                                break;
-                            case AUTO:
-                                String requestKey = transferMessage.loadKey();
-                                byte[] replyMsg = messageExecute.receive(requestKey, transferMessage.load(), remoteSession);
-                                // 应答
-                                remoteSession.reply(requestKey, () -> replyMsg);
-                                break;
-                            default:
-                                break;
-                        }
+                MessageExecutor messageExecutor = remoteSession.messageExecutor();
+                if (messageExecutor == null) {
+                    // 采用默认处理器进行处理
+                    messageExecutor = defaultMessageExecutor;
+                }
+                MessageExecutor.REPLY replyType = messageExecutor.replyType();
+                if (replyType != null) {
+                    switch (replyType) {
+                        case MANUAL:
+                            messageExecutor.receive(transferMessage.loadKey(), transferMessage.load(), remoteSession);
+                            break;
+                        case AUTO:
+                            String requestKey = transferMessage.loadKey();
+                            byte[] replyMsg = messageExecutor.receive(requestKey, transferMessage.load(), remoteSession);
+                            // 应答
+                            remoteSession.reply(requestKey, () -> replyMsg);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
         });
     }
 
+    /**
+     * 处理应答消息
+     * @param transferMessage
+     *     接收到的应答消息
+     */
     private void executeResponse(final TransferMessage transferMessage) {
-        msgExecutePool.execute(() -> {
+        msgExecutorPool.execute(() -> {
             // listenKey和msgKey是不一致的
             // msgKey是对消息本身设置key，listenKey是对整个消息（包括session信息）
             String listenKey = transferMessage.toListenKey();
@@ -165,52 +214,99 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
         });
     }
 
+    /**
+     * 处理SessionMessage
+     * @param sessionMessage
+     *     描述Session的消息对象
+     */
     private void executeSessionMessage(SessionMessage sessionMessage) {
         // 处理SessionMessage
         String sessionId = sessionMessage.sessionId();
-        if (sessionId != null && !remoteSessions.containsKey(sessionId)) {
+        if (sessionId != null) {
+            // 对于含有的RemoteSession的Map，需要判断其MessageExecutor是否为NULL
+            RemoteSession remoteSession = remoteSessions.get(sessionId);
+            if (remoteSession == null) {
+                try {
+                    sessionLock.lock();
+                    // 生成对应的MessageExecute对象
+                    String meClass = sessionMessage.getMessageExecutor();
+                    MessageExecutor messageExecutor = initMessageExecutor(meClass);
 
-            try {
-                lock.lock();
-                // 生成对应的MessageExecute对象
-                String messageExecuteClass = sessionMessage.getMessageExecute();
-                MessageExecute messageExecute = null;
-                if (messageExecuteClass != null && messageExecuteClass.length() > 0) {
-                    try {
-                        Class<?> clazz = Class.forName(messageExecuteClass);
-                        messageExecute = (MessageExecute) clazz.newInstance();
-                    } catch (Exception e) {
-                        // TODO 打印日志
-                        e.printStackTrace();
-                    }
-                }
-
-                // 必须保证该对象不为空
-                if (messageExecute != null) {
                     // 说明尚未和请求来的客户端建立连接，需要建立连接
                     Connection remoteConnection = this.connectionManager.connect(new RemoteNode(
                                     sessionMessage.getLocalHost(), sessionMessage.getListenPort()),
-                            this.messageExecuteClass);
-                    RemoteSession remoteSession = new RemoteSession(sessionId, remoteConnection, messageExecute);
+                            this.localMsgExecutorClass);
+                    // 假设连接失败的话，返回的Connection对象为null，此时不放入Map，等后续再处理
+                    if (remoteConnection != null) {
 
-                    // Double check ！！！
-                    if (!remoteSessions.containsKey(sessionId)) {
-                        remoteSessions.put(sessionId, remoteSession);
+                        remoteSession = new RemoteSession(sessionId, remoteConnection, messageExecutor);
+
+                        // Double check ！！！
+                        if (!remoteSessions.containsKey(sessionId)) {
+                            remoteSessions.put(sessionId, remoteSession);
+                        }
+                    }
+                } finally {
+                    sessionLock.unlock();
+                }
+            } else {
+                // 需要判断MessageExecutor
+                MessageExecutor me = remoteSession.messageExecutor();
+                if (me == null) {
+                    try {
+                        sessionLock.lock();
+                        // Double Check !!!
+                        if (remoteSession.messageExecutor() == null) {
+                            // 表明上次存储的MessageExecutor未创建成功，本次进行更新
+                            String meClass = sessionMessage.getMessageExecutor();
+                            MessageExecutor messageExecutor = initMessageExecutor(meClass);
+
+                            // 防止NULL将其他的进行覆盖
+                            if (messageExecutor != null) {
+                                remoteSession.initExecutor(messageExecutor);
+                            }
+                        }
+                    } finally {
+                        sessionLock.unlock();
                     }
                 }
-            } finally {
-                lock.unlock();
             }
         }
     }
 
-    private void init() {
+    /**
+     * 初始化消息执行器
+     * 根据消息执行器的Class字符串生成对应的消息处理对象
+     * @param messageExecutorClass
+     *     消息执行器的Class字符串
+     * @return
+     *     对应的消息处理对象，产生任何异常都返回NULL
+     */
+    private MessageExecutor initMessageExecutor(String messageExecutorClass) {
+        // 生成对应的MessageExecute对象
+        MessageExecutor messageExecutor = null;
+        if (messageExecutorClass != null && messageExecutorClass.length() > 0) {
+            try {
+                Class<?> clazz = Class.forName(messageExecutorClass);
+                messageExecutor = (MessageExecutor) clazz.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return messageExecutor;
+    }
+
+    /**
+     * 初始化消息处理线程池
+     */
+    private void initMsgExecutorPool() {
 
         ThreadFactory msgExecuteThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("msg-execute-pool-%d").build();
+                .setNameFormat("msg-executor-pool-%d").build();
 
         //Common Thread Pool
-        msgExecutePool = new ThreadPoolExecutor(5, 10,
+        msgExecutorPool = new ThreadPoolExecutor(5, 10,
                 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(QUEUE_CAPACITY),
                 msgExecuteThreadFactory, new ThreadPoolExecutor.AbortPolicy());
@@ -218,6 +314,6 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
 
     @Override
     public void close() {
-        msgExecutePool.shutdown();
+        msgExecutorPool.shutdown();
     }
 }

@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
+ * 连接监听器
  * @author shaozhuguang
  * @create 2019/4/12
  * @since 1.0.0
@@ -31,8 +31,15 @@ import java.util.concurrent.locks.ReentrantLock;
 @ChannelHandler.Sharable
 public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Runnable, Closeable {
 
+    /**
+     * 当前连接活跃状态
+     */
     private final AtomicBoolean currentActive = new AtomicBoolean(false);
 
+    /**
+     * 重连的控制锁
+     * 防止重连过程中重复多次调用
+     */
     private final Lock reconnectLock = new ReentrantLock();
 
     // 默认的最多重连次数
@@ -44,30 +51,70 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
     // 标识是否正常工作中，假设不再工作则不再重连
     private boolean isWorking = true;
 
+    /**
+     * 重连调度器
+     */
     private ScheduledExecutorService reconnectTimer;
 
+    /**
+     * 远端的IP（域名）信息
+     */
     private String hostName;
 
+    /**
+     * 远端的端口
+     */
     private int port;
 
     private Bootstrap bootstrap;
 
+    /**
+     * 第一组Handler数组
+     */
     private ChannelHandler[] frontHandlers;
 
+    /**
+     * 后一组Handler数组
+     */
     private ChannelHandler[] afterHandlers;
 
+    /**
+     * 用于重连时对象重置
+     */
     private ChannelFuture channelFuture;
 
+    /**
+     * 构造器
+     * @param hostName
+     *     远端Host
+     * @param port
+     *     远端端口
+     * @param bootstrap
+     *     Netty工作启动器
+     */
     public WatchDogHandler(String hostName, int port, Bootstrap bootstrap) {
         this.hostName = hostName;
         this.port = port;
         this.bootstrap = bootstrap;
     }
 
+    /**
+     * 构造器
+     * @param remoteNode
+     *     远端节点
+     * @param bootstrap
+     *     Netty工作启动器
+     */
     public WatchDogHandler(RemoteNode remoteNode, Bootstrap bootstrap) {
         this(remoteNode.getHostName(), remoteNode.getPort(), bootstrap);
     }
 
+    /**
+     * 配置重连需要的Handler
+     * 主要是为了对象的复用，同时有些Handler无法复用，对于每次连接请求必须要new新的对象
+     * @param frontHandlers
+     * @param afterHandlers
+     */
     public void init(ChannelHandler[] frontHandlers, ChannelHandler[] afterHandlers) {
         this.frontHandlers = frontHandlers;
         this.afterHandlers = afterHandlers;
@@ -87,6 +134,12 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
         }
     }
 
+    /**
+     * 连接成功调用
+     * 该连接成功表示完全连接成功，对于TCP而言就是三次握手成功
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // 调用该方法表示连接成功
@@ -98,6 +151,12 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
         ctx.fireChannelActive();
     }
 
+    /**
+     * 连接失败时调用
+     * 此处是触发重连的入口
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 
@@ -174,6 +233,9 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
         this.reconnectTimer.shutdown();
     }
 
+    /**
+     * 设置调度器
+     */
     private void initTimer() {
         ThreadFactory timerFactory = new ThreadFactoryBuilder()
                 .setNameFormat("reconnect-pool-%d").build();

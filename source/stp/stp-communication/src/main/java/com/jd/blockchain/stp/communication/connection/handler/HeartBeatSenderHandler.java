@@ -14,7 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 /**
- *
+ * 心跳发送Handler
  * @author shaozhuguang
  * @create 2019/4/15
  * @since 1.0.0

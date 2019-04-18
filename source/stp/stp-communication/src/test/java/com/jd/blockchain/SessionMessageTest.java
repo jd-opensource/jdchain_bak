@@ -30,7 +30,7 @@ public class SessionMessageTest {
         String transMsg = message.toTransfer();
         System.out.println(transMsg);
 
-        SessionMessage sm = SessionMessage.toNodeSessionMessage(transMsg);
+        SessionMessage sm = SessionMessage.toSessionMessage(transMsg);
 
         assertEquals(transMsg, sm.toTransfer());
     }

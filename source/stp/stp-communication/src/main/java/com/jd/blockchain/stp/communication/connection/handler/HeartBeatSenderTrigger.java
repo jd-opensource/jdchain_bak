@@ -16,7 +16,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 /**
- *
+ * 心跳发送触发器
  * @author shaozhuguang
  * @create 2019/4/15
  * @since 1.0.0
@@ -27,7 +27,7 @@ public class HeartBeatSenderTrigger extends ChannelInboundHandlerAdapter {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 
-        // 心跳事件
+        // 心跳事件（状态空闲事件）
         if (evt instanceof IdleStateEvent) {
             IdleState idleState = ((IdleStateEvent) evt).state();
             if (idleState.equals(IdleState.READER_IDLE)) {
@@ -40,7 +40,7 @@ public class HeartBeatSenderTrigger extends ChannelInboundHandlerAdapter {
                 System.out.println("Read TimeOut Trigger, Send HeartBeat Request !!!");
                 HeartBeatMessage.write(ctx);
             }
-            // 还有一种情况是读写超时，该情况暂不处理
+            // TODO 还有一种情况是读写超时，该情况暂不处理
         } else {
             super.userEventTriggered(ctx, evt);
         }

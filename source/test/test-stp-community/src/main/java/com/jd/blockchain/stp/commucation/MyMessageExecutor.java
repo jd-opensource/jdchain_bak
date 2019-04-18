@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.stp.commucation;
 
-import com.jd.blockchain.stp.communication.MessageExecute;
+import com.jd.blockchain.stp.communication.MessageExecutor;
 import com.jd.blockchain.stp.communication.RemoteSession;
 
 import java.nio.charset.Charset;
@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  * @since 1.0.0
  */
 
-public class MyMessageExecutor implements MessageExecute {
+public class MyMessageExecutor implements MessageExecutor {
 
     @Override
     public byte[] receive(String key, byte[] data, RemoteSession session) {

@@ -9,13 +9,15 @@
 package com.jd.blockchain.stp.communication;
 
 /**
- *
+ * 消息执行器
+ * 该执行器由其他应用实现
  * @author shaozhuguang
  * @create 2019/4/11
  * @since 1.0.0
+ * @date 2019-04-18 15:29
  */
 
-public interface MessageExecute {
+public interface MessageExecutor {
 
     byte[] receive(String key, byte[] data, RemoteSession session);
 

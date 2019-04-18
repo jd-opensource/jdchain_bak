@@ -9,7 +9,7 @@
 package com.jd.blockchain.stp.communication.node;
 
 /**
- *
+ * 节点信息
  * @author shaozhuguang
  * @create 2019/4/11
  * @since 1.0.0
@@ -17,8 +17,14 @@ package com.jd.blockchain.stp.communication.node;
 
 public class RemoteNode {
 
+    /**
+     * 监听端口
+     */
     private int port;
 
+    /**
+     * 当前节点域名
+     */
     private String hostName;
 
     public RemoteNode(String hostName, int port) {
@@ -42,6 +48,10 @@ public class RemoteNode {
         this.hostName = hostName;
     }
 
+    /**
+     * 通过hostName+port形式作为判断节点的唯一标识
+     * @return
+     */
     @Override
     public int hashCode() {
         return (hostName + ":" + port).hashCode();
