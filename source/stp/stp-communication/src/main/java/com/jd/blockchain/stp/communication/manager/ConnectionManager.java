@@ -8,7 +8,6 @@
  */
 package com.jd.blockchain.stp.communication.manager;
 
-import com.jd.blockchain.stp.communication.MessageExecutor;
 import com.jd.blockchain.stp.communication.callback.CallBackLauncher;
 import com.jd.blockchain.stp.communication.connection.Receiver;
 import com.jd.blockchain.stp.communication.connection.Connection;
@@ -143,6 +142,14 @@ public class ConnectionManager {
             }
         }
         return connectionMap.get(remoteNode);
+    }
+
+    /**
+     * 关闭Receiver
+     *
+     */
+    public void closeReceiver() {
+        this.receiver.close();
     }
 
     private Connection init(RemoteNode remoteNode, String messageExecutorClass) {

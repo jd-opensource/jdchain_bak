@@ -167,6 +167,15 @@ public class RemoteSessionManager {
         return remoteSessionList.toArray(remoteSessions);
     }
 
+    /**
+     * 返回底层通信管理器
+     *
+     * @return
+     */
+    public ConnectionManager connectionManager() {
+        return this.connectionManager;
+    }
+
     private void check() {
         // 要求端口范围：1~65535，messageExecuteClass不能为null
         int listenPort = this.localNode.getPort();
