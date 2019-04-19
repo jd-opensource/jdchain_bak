@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.inner.Sender
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/11 上午10:58
  * Description:
  */
@@ -101,6 +101,7 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
 
         ThreadPoolExecutor runThread = initRunThread();
 
+        // 单独线程进行连接，防止当前调用线程阻塞
         runThread.execute(() -> {
             try {
                 // 发起连接请求
@@ -126,10 +127,28 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
         });
     }
 
+    /**
+     * 初始化相关配置
+     *
+     * @param remoteNode
+     *     远端节点
+     * @param sessionMessage
+     *     本地节点连接到远端节点后发送的SessionMessage
+     */
     private void init(RemoteNode remoteNode, SessionMessage sessionMessage) {
         init(remoteNode.getHostName(), remoteNode.getPort(), sessionMessage);
     }
 
+    /**
+     * 初始化相关配置
+     *
+     * @param remoteHost
+     *     远端HOST
+     * @param remotePort
+     *     远端端口
+     * @param sessionMessage
+     *     本地节点连接到远端节点后发送的SessionMessage
+     */
     private void init(String remoteHost, int remotePort, SessionMessage sessionMessage) {
         this.remoteHost = remoteHost;
         this.remotePort = remotePort;
@@ -149,7 +168,9 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
 
     /**
      * 发送消息
+     *
      * @param message
+     *     消息统一接口
      */
     public void send(IMessage message) {
         watchDogHandler.channelFuture().channel().writeAndFlush(message.toTransferByteBuf());
@@ -161,15 +182,30 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
 //        loopGroup.shutdownGracefully();
     }
 
+    /**
+     * ChannelHandler集合管理类
+     */
     public static class ChannelHandlers {
 
         private List<ChannelHandler> channelHandlers = new ArrayList<>();
 
+        /**
+         * 添加指定的ChannelHandler
+         *
+         * @param channelHandler
+         *     需要加入的ChannelHandler
+         * @return
+         */
         public ChannelHandlers addHandler(ChannelHandler channelHandler) {
             channelHandlers.add(channelHandler);
             return this;
         }
 
+        /**
+         * List集合转换为数组
+         *
+         * @return
+         */
         public ChannelHandler[] toArray() {
             ChannelHandler[] channelHandlerArray = new ChannelHandler[channelHandlers.size()];
             return channelHandlers.toArray(channelHandlerArray);

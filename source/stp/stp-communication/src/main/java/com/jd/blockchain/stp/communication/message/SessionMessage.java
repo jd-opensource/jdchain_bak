@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.message.SessionMessage
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/16 上午10:40
  * Description:
  */

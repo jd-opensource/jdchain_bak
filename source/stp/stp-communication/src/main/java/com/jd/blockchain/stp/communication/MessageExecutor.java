@@ -1,8 +1,8 @@
 /**
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
- * FileName: com.jd.blockchain.stp.communication.MessageExecute
+ * FileName: com.jd.blockchain.stp.communication.MessageExecutor
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/11 上午10:59
  * Description:
  */
@@ -19,8 +19,26 @@ package com.jd.blockchain.stp.communication;
 
 public interface MessageExecutor {
 
+    /**
+     * 接收到receive消息如何处理
+     *
+     * @param key
+     *     请求消息的Key，调用者需要在应答时通过该Key应答远端
+     * @param data
+     *     请求消息的内容
+     * @param session
+     *     远端Session，描述该消息是从哪发送来的
+     * @return
+     *     应答结果
+     */
     byte[] receive(String key, byte[] data, RemoteSession session);
 
+    /**
+     * 应答方式
+     *
+     * @return
+     *     参考：{@link REPLY}
+     */
     REPLY replyType();
 
     // 应答方式

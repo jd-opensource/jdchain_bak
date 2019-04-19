@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.node.LocalNode
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/16 下午3:12
  * Description:
  */
@@ -15,6 +15,7 @@ import com.jd.blockchain.stp.communication.MessageExecutor;
  * @author shaozhuguang
  * @create 2019/4/16
  * @since 1.0.0
+ * @date 2019-04-19 09:28
  */
 
 public class LocalNode extends RemoteNode {

@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.callback.CallBackLauncher
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/17 下午6:27
  * Description:
  */
@@ -15,6 +15,7 @@ import java.util.concurrent.Semaphore;
  * @author shaozhuguang
  * @create 2019/4/17
  * @since 1.0.0
+ * @date 2019-04-19 09:53
  */
 
 public class CallBackLauncher {

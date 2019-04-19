@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.connection.SenderWatchDog
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/12 下午4:56
  * Description:
  */
@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author shaozhuguang
  * @create 2019/4/12
  * @since 1.0.0
+ * @date 2019-04-19 09:21
  */
 @ChannelHandler.Sharable
 public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Runnable, Closeable {
@@ -42,13 +43,19 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
      */
     private final Lock reconnectLock = new ReentrantLock();
 
-    // 默认的最多重连次数
+    /**
+     * 默认的最多重连次数
+     */
     private final int maxReconnectSize = 16;
 
-    // 默认重连的时间
+    /**
+     * 默认重连的时间，下次重连时间会变长
+     */
     private final int defaultReconnectSeconds = 2;
 
-    // 标识是否正常工作中，假设不再工作则不再重连
+    /**
+     * 标识是否正常工作中，假设不再工作则不再重连
+     */
     private boolean isWorking = true;
 
     /**
@@ -121,12 +128,27 @@ public class WatchDogHandler extends ChannelInboundHandlerAdapter implements Run
         initTimer();
     }
 
+    /**
+     * 初始化ChannelFuture
+     *
+     * @param channelFuture
+     */
     public void initChannelFuture(ChannelFuture channelFuture) {
         this.channelFuture = channelFuture;
     }
 
+    /**
+     * 返回ChannelFuture
+     *
+     * @return
+     *     该返回对象目前未处理是否连接成功的情况
+     *     调用者可直接使用，但假设发送不成功的话会存在异常抛出
+     *     调用者可手动处理异常
+     */
     public ChannelFuture channelFuture() {
         try {
+            // 使用锁防止在重连进行过程中互相竞争
+            // 一定是等待本次重连完成才返回
             reconnectLock.lock();
             return this.channelFuture;
         } finally {

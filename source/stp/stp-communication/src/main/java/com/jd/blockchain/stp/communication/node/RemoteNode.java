@@ -2,7 +2,7 @@
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
  * FileName: com.jd.blockchain.stp.communication.RemoteNode
  * Author: shaozhuguang
- * Department: Y事业部
+ * Department: Jingdong Digits Technology
  * Date: 2019/4/11 下午3:40
  * Description:
  */
@@ -13,6 +13,7 @@ package com.jd.blockchain.stp.communication.node;
  * @author shaozhuguang
  * @create 2019/4/11
  * @since 1.0.0
+ * @date 2019-04-19 09:28
  */
 
 public class RemoteNode {
