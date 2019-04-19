@@ -108,4 +108,76 @@ public class ED25519UtilsTest {
         assertTrue(Ed25519Utils.verify(data,pubKeyBytes,signatureDigest));
 
     }
+
+    @Test
+    public void performanceTest(){
+
+        int count = 10000;
+        byte[] data = new byte[1024];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        AsymmetricCipherKeyPair keyPair = ED25519Utils.generateKeyPair();
+        Ed25519PrivateKeyParameters privKeyParams = (Ed25519PrivateKeyParameters) keyPair.getPrivate();
+        Ed25519PublicKeyParameters pubKeyParams = (Ed25519PublicKeyParameters) keyPair.getPublic();
+
+        byte[] pubKeyBytes = pubKeyParams.getEncoded();
+        byte[] privKeyBytes = privKeyParams.getEncoded();
+
+        byte[] signatureDigest = ED25519Utils.sign(data,privKeyParams);
+
+        assertTrue(ED25519Utils.verify(data,pubKeyParams,signatureDigest));
+
+        System.out.println("=================== do ED25519 sign test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ED25519Utils.sign(data,privKeyParams);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ED25519 Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do ED25519 verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ED25519Utils.verify(data,pubKeyParams,signatureDigest);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ED25519 Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do ED25519 sign test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                Ed25519Utils.sign_512(data,privKeyBytes);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ED25519 Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do ED25519 verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                Ed25519Utils.verify(data,pubKeyBytes,signatureDigest);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ED25519 Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+    }
+
 }
