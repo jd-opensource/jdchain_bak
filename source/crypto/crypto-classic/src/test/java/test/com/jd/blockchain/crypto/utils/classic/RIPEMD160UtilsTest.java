@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author zhanglin33
  * @title: RIPEMD160UtilsTest
- * @description: Tests for the hash method in RIPEMD160
+ * @description: Tests for the hash method in RIPEMD160Utils
  * @date 2019-04-10, 16:54
  */
 public class RIPEMD160UtilsTest {

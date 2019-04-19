@@ -105,7 +105,7 @@ public class SM4Utils {
         }
 
         // To ensure that the ciphertext's length is integral multiples of 16 bytes
-        if ( cipherBytes.length % BLOCK_SIZE != 0 )
+        if (cipherBytes.length % BLOCK_SIZE != 0)
         {
             throw new CryptoException("ciphertext's length is wrong!");
         }

@@ -7,7 +7,10 @@ import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.crypto.*;
 import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.encodings.PKCS1Encoding;
+import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
@@ -28,7 +31,7 @@ import java.security.spec.X509EncodedKeySpec;
 /**
  * @author zhanglin33
  * @title: RSAUtils
- * @description: RSA2048 encryption and signature algorithms with SHA256,
+ * @description: RSA2048 encryption(ECB) and signature algorithms with SHA256,
  *               and keys are output in both PKCS1v2 format and PKCS8
  * @date 2019-03-25, 17:20
  */
@@ -47,7 +50,11 @@ public class  RSAUtils {
 
     private static final BigInteger VERSION_2PRIMES = BigInteger.valueOf(0);
 
-    private static final AlgorithmIdentifier RSA_ALGORITHM_IDENTIFIER = new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
+    private static final AlgorithmIdentifier RSA_ALGORITHM_IDENTIFIER =
+            new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
+
+    private static final int PLAINTEXT_BLOCKSIZE = 256 - 11;
+    private static final int CIPHERTEXT_BLOCKSIZE = 256;
 
 
     //-----------------Key Generation Algorithm-----------------
@@ -133,6 +140,96 @@ public class  RSAUtils {
         signer.init(false, params);
         signer.update(data, 0, data.length);
         return signer.verifySignature(signature);
+    }
+
+
+    //-----------------Public Key Encryption Algorithm-----------------
+
+    /**
+     * encryption
+     *
+     * @param plainBytes plaintext
+     * @param publicKey public key
+     * @return ciphertext
+     */
+    public static byte[] encrypt(byte[] plainBytes, byte[] publicKey){
+        RSAKeyParameters pubKey = bytes2PubKey_RawKey(publicKey);
+        return encrypt(plainBytes,pubKey);
+    }
+
+    public static byte[] encrypt(byte[] plainBytes, byte[] publicKey, SecureRandom random){
+
+        RSAKeyParameters pubKey = bytes2PubKey_RawKey(publicKey);
+        ParametersWithRandom params = new ParametersWithRandom(pubKey,random);
+
+        return encrypt(plainBytes,params);
+    }
+
+    public static byte[] encrypt(byte[] plainBytes, CipherParameters params){
+
+        int blockNum = (plainBytes.length % PLAINTEXT_BLOCKSIZE == 0) ? (plainBytes.length / PLAINTEXT_BLOCKSIZE)
+                : (plainBytes.length / PLAINTEXT_BLOCKSIZE + 1);
+        int inputLength;
+        byte[] result = new byte[blockNum * CIPHERTEXT_BLOCKSIZE];
+        byte[] buffer;
+
+        AsymmetricBlockCipher encryptor = new PKCS1Encoding(new RSAEngine());
+        encryptor.init(true, params);
+        try {
+            for (int i= 0; i < blockNum; i++) {
+                inputLength = ((plainBytes.length - i * PLAINTEXT_BLOCKSIZE) > i * PLAINTEXT_BLOCKSIZE)?
+                        PLAINTEXT_BLOCKSIZE : (plainBytes.length - i * PLAINTEXT_BLOCKSIZE);
+                buffer = encryptor.processBlock(plainBytes, i * PLAINTEXT_BLOCKSIZE, inputLength);
+                System.arraycopy(buffer,0,
+                        result, i * CIPHERTEXT_BLOCKSIZE, CIPHERTEXT_BLOCKSIZE);
+            }
+        } catch (InvalidCipherTextException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * decryption
+     *
+     * @param cipherBytes ciphertext
+     * @param privateKey private key
+     * @return plaintext
+     */
+    public static byte[] decrypt(byte[] cipherBytes, byte[] privateKey){
+        RSAPrivateCrtKeyParameters privKey = bytes2PrivKey_RawKey(privateKey);
+        return decrypt(cipherBytes,privKey);
+    }
+
+    public static byte[] decrypt(byte[] cipherBytes, CipherParameters params){
+
+        if (cipherBytes.length % CIPHERTEXT_BLOCKSIZE != 0)
+        {
+            throw new com.jd.blockchain.crypto.CryptoException("ciphertext's length is wrong!");
+        }
+
+        int blockNum = cipherBytes.length / CIPHERTEXT_BLOCKSIZE;
+        int count = 0;
+        byte[] buffer;
+        byte[] plaintextWithZeros = new byte[blockNum * PLAINTEXT_BLOCKSIZE];
+        byte[] result;
+
+        AsymmetricBlockCipher decryptor = new PKCS1Encoding(new RSAEngine());
+        decryptor.init(false,params);
+        try {
+            for (int i = 0; i < blockNum; i++){
+                buffer = decryptor.processBlock(cipherBytes,i * CIPHERTEXT_BLOCKSIZE, CIPHERTEXT_BLOCKSIZE);
+                count  += buffer.length;
+                System.arraycopy(buffer,0,plaintextWithZeros, i * PLAINTEXT_BLOCKSIZE, buffer.length);
+            }
+        } catch (InvalidCipherTextException e) {
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
+        }
+
+        result = new byte[count];
+        System.arraycopy(plaintextWithZeros,0,result,0,result.length);
+
+        return result;
     }
 
 
@@ -304,7 +401,8 @@ public class  RSAUtils {
         BigInteger dQ      = privKey.getDQ();
         BigInteger qInv    = privKey.getQInv();
 
-        return KeyUtil.getEncodedPrivateKeyInfo(RSA_ALGORITHM_IDENTIFIER, new RSAPrivateKey(modulus, pubExp, privExp, p, q, dP, dQ, qInv));
+        return KeyUtil.getEncodedPrivateKeyInfo(RSA_ALGORITHM_IDENTIFIER,
+                new RSAPrivateKey(modulus, pubExp, privExp, p, q, dP, dQ, qInv));
     }
 
     public static byte[] privKey2Bytes_RawKey(RSAPrivateCrtKeyParameters privKey){

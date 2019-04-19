@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * @author zhanglin33
  * @title: RSAUtilsTest
- * @description: TODO
+ * @description: Tests for methods in RSAUtils
  * @date 2019-04-11, 17:10
  */
 public class RSAUtilsTest {
@@ -108,6 +108,45 @@ public class RSAUtilsTest {
 
         assertTrue(isValidFromPubKey);
         assertTrue(isValidFromPubKeyBytes);
+    }
+
+    @Test
+    public void encryptTest(){
+
+        byte[] data = new byte[246];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
+        AsymmetricKeyParameter pubKey = keyPair.getPublic();
+        byte[] pubKeyBytes = RSAUtils.pubKey2Bytes_RawKey((RSAKeyParameters) pubKey);
+
+        byte[] ciphertextFromPubKey = RSAUtils.encrypt(data,pubKey);
+        byte[] ciphertextFromPubKeyBytes = RSAUtils.encrypt(data,pubKeyBytes);
+
+        assertEquals(512,ciphertextFromPubKey.length);
+        assertEquals(512,ciphertextFromPubKeyBytes.length);
+    }
+
+    @Test
+    public void decryptTest(){
+
+        byte[] data = new byte[512];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
+        AsymmetricKeyParameter pubKey  = keyPair.getPublic();
+        AsymmetricKeyParameter privKey = keyPair.getPrivate();
+        byte[] privKeyBytes = RSAUtils.privKey2Bytes_RawKey((RSAPrivateCrtKeyParameters) privKey);
+
+        byte[] ciphertext = RSAUtils.encrypt(data,pubKey);
+
+        byte[] plaintextFromPrivKey = RSAUtils.decrypt(ciphertext,privKey);
+        byte[] plaintextFromPrivKeyBytes = RSAUtils.decrypt(ciphertext,privKeyBytes);
+
+        assertArrayEquals(data,plaintextFromPrivKey);
+        assertArrayEquals(data,plaintextFromPrivKeyBytes);
     }
 
 
