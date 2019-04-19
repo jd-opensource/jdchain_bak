@@ -1,12 +1,16 @@
 package com.jd.blockchain.statetransfer;
 
+import java.io.Serializable;
+
 /**
  *数据序列复制的元素或单位
  * @author zhangshuang
  * @create 2019/4/11
  * @since 1.0.0
  */
-public class DataSequenceElement {
+public class DataSequenceElement implements Serializable {
+
+    private static final long serialVersionUID = -719578198150380571L;
 
     //数据序列的唯一标识符；
     private String id;
