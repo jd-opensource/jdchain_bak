@@ -127,7 +127,7 @@ public class DSProcessManager {
                 }
                 // step6: process data sequence diff response, update local data sequence state
                 DataSequenceElement[] dataSequenceElements = dsTransferProcess.computeDiffElement(receiveDiffResponses.toArray(new byte[receiveDiffResponses.size()][]));
-                returnCode = dsWriter.updateDSInfo(dsInfo.getId(), dataSequenceElements);
+                returnCode = dsWriter.updateDSInfo(dsInfo, dataSequenceElements);
 
                 // data sequence transfer complete, close all sessions, end process life cycle
 
