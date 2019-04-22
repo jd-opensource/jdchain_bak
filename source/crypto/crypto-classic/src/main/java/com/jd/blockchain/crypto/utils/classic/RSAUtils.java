@@ -114,9 +114,8 @@ public class  RSAUtils {
         try {
             return signer.generateSignature();
         } catch (CryptoException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
-        return null;
     }
 
     /**
@@ -177,14 +176,14 @@ public class  RSAUtils {
         encryptor.init(true, params);
         try {
             for (int i= 0; i < blockNum; i++) {
-                inputLength = ((plainBytes.length - i * PLAINTEXT_BLOCKSIZE) > i * PLAINTEXT_BLOCKSIZE)?
+                inputLength = ((plainBytes.length - i * PLAINTEXT_BLOCKSIZE) > PLAINTEXT_BLOCKSIZE)?
                         PLAINTEXT_BLOCKSIZE : (plainBytes.length - i * PLAINTEXT_BLOCKSIZE);
                 buffer = encryptor.processBlock(plainBytes, i * PLAINTEXT_BLOCKSIZE, inputLength);
                 System.arraycopy(buffer,0,
                         result, i * CIPHERTEXT_BLOCKSIZE, CIPHERTEXT_BLOCKSIZE);
             }
         } catch (InvalidCipherTextException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
         return result;
     }
@@ -274,19 +273,8 @@ public class  RSAUtils {
         BigInteger modulus  = pubKey.getModulus();
         BigInteger exponent = pubKey.getExponent();
 
-        byte[] modulusBytes  = new byte[MODULUS_LENGTH];
         byte[] exponentBytes = exponent.toByteArray();
-
-        byte[] encodedModulusBytes = modulus.toByteArray();
-        int encodedModulusLength = encodedModulusBytes.length;
-
-        if (encodedModulusLength > MODULUS_LENGTH) {
-            System.arraycopy(encodedModulusBytes,encodedModulusLength - MODULUS_LENGTH,
-                    modulusBytes,0, MODULUS_LENGTH);
-        } else {
-        System.arraycopy(encodedModulusBytes,0,
-                modulusBytes,MODULUS_LENGTH - encodedModulusLength, MODULUS_LENGTH);
-        }
+        byte[] modulusBytes = bigInteger2Bytes(modulus,MODULUS_LENGTH);
 
         return BytesUtils.concat(modulusBytes,exponentBytes);
     }
@@ -309,15 +297,14 @@ public class  RSAUtils {
         try {
             keyFactory = KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
         RSAPublicKey publicKey = null;
         try {
-            assert keyFactory != null;
             publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
         assert publicKey != null;
@@ -416,86 +403,15 @@ public class  RSAUtils {
         BigInteger dQ      = privKey.getDQ();
         BigInteger qInv    = privKey.getQInv();
 
-        byte[] modulusBytes  = new byte[MODULUS_LENGTH];
+        byte[] modulusBytes = bigInteger2Bytes(modulus,MODULUS_LENGTH);
         byte[] pubExpBytes = pubExp.toByteArray();
-        byte[] privExpBytes  = new byte[PRIVEXP_LENGTH];
-        byte[] pBytes        = new byte[P_LENGTH];
-        byte[] qBytes        = new byte[Q_LENGTH];
-        byte[] dPBytes       = new byte[DP_LENGTH];
-        byte[] dQBytes       = new byte[DQ_LENGTH];
-        byte[] qInvBytes     = new byte[QINV_LENGTH];
+        byte[] privExpBytes = bigInteger2Bytes(privExp,PRIVEXP_LENGTH);
+        byte[] pBytes       = bigInteger2Bytes(p,P_LENGTH);
+        byte[] qBytes       = bigInteger2Bytes(q,Q_LENGTH);
+        byte[] dPBytes      = bigInteger2Bytes(dP,DP_LENGTH);
+        byte[] dQBytes      = bigInteger2Bytes(dQ,DQ_LENGTH);
+        byte[] qInvBytes    = bigInteger2Bytes(qInv,QINV_LENGTH);
 
-        byte[] encodedModulusBytes = modulus.toByteArray();
-        byte[] encodedPrivExpBytes = privExp.toByteArray();
-        byte[] encodedPBytes       = p.toByteArray();
-        byte[] encodedQBytes       = q.toByteArray();
-        byte[] encodedDPBytes      = dP.toByteArray();
-        byte[] encodedDQBytes      = dQ.toByteArray();
-        byte[] encodedQInvBytes    = qInv.toByteArray();
-
-        int encodedModulusLength      = encodedModulusBytes.length;
-        int encodedPrivExpBytesLength = encodedPrivExpBytes.length;
-        int encodedPBytesLength       = encodedPBytes.length;
-        int encodedQBytesLength       = encodedQBytes.length;
-        int encodedDPBytesLength      = encodedDPBytes.length;
-        int encodedDQBytesLength      = encodedDQBytes.length;
-        int encodedQInvBytesLength    = encodedQInvBytes.length;
-
-        if (encodedModulusLength > MODULUS_LENGTH) {
-            System.arraycopy(encodedModulusBytes,encodedModulusLength - MODULUS_LENGTH,
-                    modulusBytes,0, MODULUS_LENGTH);
-        } else {
-            System.arraycopy(encodedModulusBytes,0,
-                    modulusBytes,MODULUS_LENGTH - encodedModulusLength, MODULUS_LENGTH);
-        }
-
-        if (encodedPrivExpBytesLength > PRIVEXP_LENGTH) {
-            System.arraycopy(encodedPrivExpBytes,encodedPrivExpBytesLength - PRIVEXP_LENGTH,
-                    privExpBytes,0, PRIVEXP_LENGTH);
-        } else {
-            System.arraycopy(encodedPrivExpBytes,0,
-                    privExpBytes,PRIVEXP_LENGTH - encodedPrivExpBytesLength, PRIVEXP_LENGTH);
-        }
-
-        if (encodedPBytesLength > P_LENGTH) {
-            System.arraycopy(encodedPBytes,encodedPBytesLength - P_LENGTH,
-                    pBytes,0, P_LENGTH);
-        } else {
-            System.arraycopy(encodedPBytes,0,
-                    pBytes,P_LENGTH - encodedPBytesLength, P_LENGTH);
-        }
-
-        if (encodedQBytesLength > Q_LENGTH) {
-            System.arraycopy(encodedQBytes,encodedQBytesLength - Q_LENGTH,
-                    qBytes,0, Q_LENGTH);
-        } else {
-            System.arraycopy(encodedQBytes,0,
-                    qBytes,Q_LENGTH - encodedQBytesLength, Q_LENGTH);
-        }
-
-        if (encodedDPBytesLength > DP_LENGTH) {
-            System.arraycopy(encodedDPBytes,encodedDPBytesLength - DP_LENGTH,
-                    dPBytes,0, DP_LENGTH);
-        } else {
-            System.arraycopy(encodedDPBytes,0,
-                    dPBytes,DP_LENGTH - encodedDPBytesLength, DP_LENGTH);
-        }
-
-        if (encodedDQBytesLength > DQ_LENGTH) {
-            System.arraycopy(encodedDQBytes,encodedDQBytesLength - DQ_LENGTH,
-                    dQBytes,0, DQ_LENGTH);
-        } else {
-            System.arraycopy(encodedDQBytes,0,
-                    dQBytes,DQ_LENGTH - encodedDQBytesLength, DQ_LENGTH);
-        }
-
-        if (encodedQInvBytesLength > QINV_LENGTH) {
-            System.arraycopy(encodedQInvBytes,encodedQInvBytesLength - QINV_LENGTH,
-                    qInvBytes,0, QINV_LENGTH);
-        } else {
-            System.arraycopy(encodedQInvBytes,0,
-                    qInvBytes,QINV_LENGTH - encodedQInvBytesLength, QINV_LENGTH);
-        }
 
         return BytesUtils.concat(modulusBytes,pubExpBytes,privExpBytes,pBytes,qBytes,dPBytes,dQBytes,qInvBytes);
     }
@@ -524,15 +440,14 @@ public class  RSAUtils {
         try {
             keyFactory = KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
-        RSAPrivateCrtKeyImpl privateKey = null;
+        RSAPrivateCrtKeyImpl privateKey;
         try {
-            assert keyFactory != null;
             privateKey = (RSAPrivateCrtKeyImpl) keyFactory.generatePrivate(keySpec);
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
         assert privateKey != null;
@@ -586,5 +501,22 @@ public class  RSAUtils {
         BigInteger qInv    = new BigInteger(1, qInvBytes);
 
         return new RSAPrivateCrtKeyParameters(modulus, pubExp, privExp, p, q, dP, dQ, qInv);
+    }
+
+    private static byte[] bigInteger2Bytes(BigInteger src, int length){
+
+        byte[] result = new byte[length];
+        byte[] srcBytes = src.toByteArray();
+        int srcLength = srcBytes.length;
+
+        if (srcLength > length) {
+            System.arraycopy(srcBytes,srcLength - length,
+                    result,0, length);
+        } else {
+            System.arraycopy(srcBytes,0,
+                    result,length - srcLength, length);
+        }
+
+        return result;
     }
 }

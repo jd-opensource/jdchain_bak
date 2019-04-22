@@ -49,7 +49,6 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 调用ED25519签名算法计算签名结果
-//		return new SignatureDigest(ED25519, Ed25519Utils.sign_512(data, rawPrivKeyBytes));
 		return new SignatureDigest(ED25519, ED25519Utils.sign(data, rawPrivKeyBytes));
 
 	}
@@ -76,7 +75,6 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		}
 
 		// 调用ED25519验签算法验证签名结果
-//		return Ed25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
 		return ED25519Utils.verify(data, rawPubKeyBytes, rawDigestBytes);
 	}
 
@@ -84,21 +82,8 @@ public class ED25519SignatureFunction implements SignatureFunction {
 	public PubKey retrievePubKey(PrivKey privKey) {
 		byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
 		byte[] rawPubKeyBytes = ED25519Utils.retrievePublicKey(rawPrivKeyBytes);
-//		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
-//		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
-//		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
 		return new PubKey(ED25519, rawPubKeyBytes);
 	}
-//
-//	@Override
-//	public byte[] retrievePubKey(byte[] privKeyBytes) {
-//
-//		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
-//		EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.CURVE_ED25519_SHA512);
-//		EdDSAPrivateKeySpec privateKeySpec = new EdDSAPrivateKeySpec(rawPrivKeyBytes, spec);
-//		byte[] rawPubKeyBytes = privateKeySpec.getA().toByteArray();
-//		return new PubKey(ED25519, rawPubKeyBytes).toBytes();
-//	}
 
 	@Override
 	public boolean supportPrivKey(byte[] privKeyBytes) {
@@ -112,7 +97,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		if (supportPrivKey(privKeyBytes)) {
 			return new PrivKey(privKeyBytes);
 		} else {
-			throw new CryptoException("privKeyBytes is invalid!");
+			throw new CryptoException("privKeyBytes are invalid!");
 		}
 	}
 
@@ -129,7 +114,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		if (supportPubKey(pubKeyBytes)) {
 			return new PubKey(pubKeyBytes);
 		} else {
-			throw new CryptoException("pubKeyBytes is invalid!");
+			throw new CryptoException("pubKeyBytes are invalid!");
 		}
 	}
 
@@ -144,7 +129,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		if (supportDigest(digestBytes)) {
 			return new SignatureDigest(digestBytes);
 		} else {
-			throw new CryptoException("digestBytes is invalid!");
+			throw new CryptoException("digestBytes are invalid!");
 		}
 	}
 
@@ -162,11 +147,6 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 		byte[] privKeyBytes = privKeyParams.getEncoded();
 		byte[] pubKeyBytes = pubKeyParams.getEncoded();
-//		KeyPairGenerator keyPairGenerator = new KeyPairGenerator();
-//		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-//		EdDSAPrivateKey privKey = (EdDSAPrivateKey) keyPair.getPrivate();
-//		EdDSAPublicKey pubKey = (EdDSAPublicKey) keyPair.getPublic();
-//		return new CryptoKeyPair(new PubKey(ED25519, pubKey.getAbyte()), new PrivKey(ED25519, privKey.getSeed()));
 		return new AsymmetricKeypair(new PubKey(ED25519, pubKeyBytes), new PrivKey(ED25519, privKeyBytes));
 
 	}

@@ -7,6 +7,13 @@ import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.junit.Test;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -131,22 +138,24 @@ public class RSAUtilsTest {
     @Test
     public void decryptTest(){
 
-        byte[] data = new byte[512];
-        Random random = new Random();
-        random.nextBytes(data);
-
         AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
         AsymmetricKeyParameter pubKey  = keyPair.getPublic();
         AsymmetricKeyParameter privKey = keyPair.getPrivate();
         byte[] privKeyBytes = RSAUtils.privKey2Bytes_RawKey((RSAPrivateCrtKeyParameters) privKey);
 
-        byte[] ciphertext = RSAUtils.encrypt(data,pubKey);
+        byte[] data;
+        for (int i = 1; i < 1024; i++) {
+            data = new byte[i];
+            Random random = new Random();
+            random.nextBytes(data);
+            byte[] ciphertext = RSAUtils.encrypt(data, pubKey);
 
-        byte[] plaintextFromPrivKey = RSAUtils.decrypt(ciphertext,privKey);
-        byte[] plaintextFromPrivKeyBytes = RSAUtils.decrypt(ciphertext,privKeyBytes);
+            byte[] plaintextFromPrivKey = RSAUtils.decrypt(ciphertext, privKey);
+            byte[] plaintextFromPrivKeyBytes = RSAUtils.decrypt(ciphertext, privKeyBytes);
 
-        assertArrayEquals(data,plaintextFromPrivKey);
-        assertArrayEquals(data,plaintextFromPrivKeyBytes);
+            assertArrayEquals(data, plaintextFromPrivKey);
+            assertArrayEquals(data, plaintextFromPrivKeyBytes);
+        }
     }
 
 
@@ -188,5 +197,59 @@ public class RSAUtilsTest {
             System.out.println(String.format("RSA Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
                     (count * 1000.00D) / elapsedTS));
         }
+    }
+
+    @Test
+    public void consistencyTest(){
+
+        byte[] data = new byte[222];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        KeyPairGenerator keyPairGen = null;
+        try {
+            keyPairGen = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        assert keyPairGen != null;
+        keyPairGen.initialize(2048, new SecureRandom());
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+
+        byte[] publicKeyBytes  = publicKey.getEncoded();
+        byte[] privateKeyBytes = privateKey.getEncoded();
+
+        RSAKeyParameters pubKey            = RSAUtils.bytes2PubKey_PKCS8(publicKeyBytes);
+        RSAPrivateCrtKeyParameters privKey = RSAUtils.bytes2PrivKey_PKCS8(privateKeyBytes);
+
+        Cipher cipher;
+        byte[] ciphertext = null;
+        try {
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            ciphertext = cipher.doFinal(data);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        assert ciphertext != null;
+        byte[] plaintext = RSAUtils.decrypt(ciphertext,privKey);
+        assertArrayEquals(data,plaintext);
+
+        ciphertext = RSAUtils.encrypt(data,pubKey);
+
+        try {
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            plaintext = cipher.doFinal(ciphertext);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        assertArrayEquals(data,plaintext);
     }
 }
