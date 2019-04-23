@@ -64,7 +64,7 @@ public class Connection {
      * @param remoteSession
      */
     public void initSession(RemoteSession remoteSession) {
-        this.receiver.initRemoteSession(remoteSession.sessionId(), remoteSession);
+        this.receiver.initRemoteSession(remoteSession.remoteSessionId(), remoteSession);
     }
 
     /**
@@ -80,7 +80,7 @@ public class Connection {
      */
     public CallBackLauncher connect(RemoteNode remoteNode, String messageExecutorClass) throws InterruptedException {
         this.remoteNode = remoteNode;
-        this.sender = new Sender(this.remoteNode, sessionMessage(messageExecutorClass));
+        this.sender = new Sender(this.receiver.localNode(), this.remoteNode, sessionMessage(messageExecutorClass));
         this.sender.connect();
         return this.sender.waitBooted();
     }
@@ -204,6 +204,10 @@ public class Connection {
     public void closeAll() {
         closeReceiver();
         closeSender();
+    }
+
+    public RemoteNode remoteNode() {
+        return remoteNode;
     }
 
     public void closeReceiver() {

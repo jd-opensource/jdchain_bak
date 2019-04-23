@@ -125,7 +125,7 @@ public class Receiver extends AbstractAsyncExecutor implements Closeable {
      *     当前节点的消息处理Class
      */
     public void initReceiverHandler(ConnectionManager connectionManager, String messageExecutorClass) {
-        receiverHandler = new ReceiverHandler(connectionManager, messageExecutorClass, this.localNode.defaultMessageExecutor());
+        receiverHandler = new ReceiverHandler(connectionManager, messageExecutorClass, this.localNode);
     }
 
     /**

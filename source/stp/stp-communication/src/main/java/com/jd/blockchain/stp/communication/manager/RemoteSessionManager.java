@@ -61,12 +61,18 @@ public class RemoteSessionManager {
     private LocalNode localNode;
 
     /**
+     * 本地节点ID
+     */
+    private String localId;
+
+    /**
      * 构造器
      * @param localNode
      *     本地节点信息
      */
     public RemoteSessionManager(LocalNode localNode) {
         this.localNode = localNode;
+        this.localId = localId();
         // 校验本地节点的配置，防止异常
         check();
         this.connectionManager = ConnectionManager.newConnectionManager(this.localNode);
@@ -84,23 +90,12 @@ public class RemoteSessionManager {
     }
 
     /**
-     * 生成新的Session
-     * @param remoteNode
-     * @return
-     */
-    public RemoteSession newSession(RemoteNode remoteNode) {
-        return newSession(null, remoteNode);
-    }
-
-    /**
      * RemoteSession对象生成器
-     * @param sessionId
-     *     RemoteSession的Key
      * @param remoteNode
      *     远端节点信息
      * @return
      */
-    public RemoteSession newSession(String sessionId, RemoteNode remoteNode) {
+    public RemoteSession newSession(RemoteNode remoteNode) {
 
         RemoteSession remoteSession = nodeRemoteSessionMap.get(remoteNode);
 
@@ -112,16 +107,13 @@ public class RemoteSessionManager {
 
                 // Double Check !!!
                 if (!nodeRemoteSessionMap.containsKey(remoteNode)) {
-                    if (sessionId == null) {
-                        sessionId = sessionId(localNode);
-                    }
                     Connection remoteConnection = this.connectionManager.connect(remoteNode, localNode.messageExecutorClass());
 
                     if (remoteConnection == null) {
                         return null;
                     }
 
-                    remoteSession = new RemoteSession(sessionId, remoteConnection);
+                    remoteSession = new RemoteSession(localId, remoteConnection);
 
                     remoteSession.init();
 
@@ -133,26 +125,14 @@ public class RemoteSessionManager {
                 lock.unlock();
             }
         }
-        return remoteSession;
+        return null;
     }
 
     public RemoteSession[] newSessions(RemoteNode[] remoteNodes) {
-
-        return newSessions(null, remoteNodes);
-    }
-
-    public RemoteSession[] newSessions(String[] sessionIds, RemoteNode[] remoteNodes) {
-        checkSessions(sessionIds, remoteNodes);
-
         List<RemoteSession> remoteSessionList = new ArrayList<>();
 
         for (int i = 0; i < remoteNodes.length; i++) {
-            RemoteSession remoteSession;
-            if (sessionIds == null) {
-                remoteSession = newSession(remoteNodes[i]);
-            } else {
-                remoteSession = newSession(sessionIds[i], remoteNodes[i]);
-            }
+            RemoteSession remoteSession = newSession(remoteNodes[i]);
             if (remoteSession != null) {
                 remoteSessionList.add(remoteSession);
             }
@@ -194,19 +174,7 @@ public class RemoteSessionManager {
         return this.connectionManager.start(this.localNode.messageExecutorClass());
     }
 
-    private void checkSessions(String[] sessionIds, RemoteNode[] remoteNodes) {
-        if (remoteNodes == null || remoteNodes.length <= 0) {
-            throw new IllegalArgumentException("RemoteNodes is empty !!!");
-        }
-
-        if (sessionIds != null) {
-            if (sessionIds.length != remoteNodes.length) {
-                throw new IllegalArgumentException("RemoteNodes and sessionIds are different in length !!!");
-            }
-        }
-    }
-
-    private String sessionId(RemoteNode remoteNode) {
-        return Hex.encodeHexString(remoteNode.toString().getBytes());
+    private String localId() {
+        return Hex.encodeHexString(localNode.toString().getBytes());
     }
 }

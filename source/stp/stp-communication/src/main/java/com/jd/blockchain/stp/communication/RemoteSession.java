@@ -12,11 +12,14 @@ import com.jd.blockchain.stp.communication.callback.CallBackBarrier;
 import com.jd.blockchain.stp.communication.callback.CallBackDataListener;
 import com.jd.blockchain.stp.communication.connection.Connection;
 import com.jd.blockchain.stp.communication.message.LoadMessage;
+import com.jd.blockchain.stp.communication.node.RemoteNode;
+import org.apache.commons.codec.binary.Hex;
 
 import java.util.concurrent.TimeUnit;
 
 
 /**
+ * 远端Session
  *
  * @author shaozhuguang
  * @create 2019/4/11
@@ -26,9 +29,14 @@ import java.util.concurrent.TimeUnit;
 public class RemoteSession {
 
     /**
-     * 远端节点ID
+     * 本地节点ID
      */
-    private String id;
+    private String localId;
+
+    /**
+     * 远端节点
+     */
+    private RemoteNode remoteNode;
 
     /**
      * 远端连接
@@ -41,31 +49,31 @@ public class RemoteSession {
      */
     private MessageExecutor messageExecutor;
 
-
     /**
      * 构造器
-     * @param id
-     *     远端节点ID
+     * @param localId
+     *     本地节点ID
      * @param connection
      *     对应连接
      */
-    public RemoteSession(String id, Connection connection) {
-        this(id, connection, null);
+    public RemoteSession(String localId, Connection connection) {
+        this(localId, connection, null);
     }
 
     /**
      * 构造器
-     * @param id
-     *     远端ID
+     * @param localId
+     *     本地节点ID
      * @param connection
      *     对应连接
      * @param messageExecutor
      *     对应远端消息处理器
      */
-    public RemoteSession(String id, Connection connection, MessageExecutor messageExecutor) {
-        this.id = id;
+    public RemoteSession(String localId, Connection connection, MessageExecutor messageExecutor) {
+        this.localId = localId;
         this.connection = connection;
         this.messageExecutor = messageExecutor;
+        this.remoteNode = connection.remoteNode();
     }
 
     public void init() {
@@ -87,7 +95,7 @@ public class RemoteSession {
      * @throws Exception
      */
     public byte[] request(LoadMessage loadMessage) throws Exception {
-        return this.connection.request(this.id, loadMessage, null).getCallBackData();
+        return this.connection.request(this.localId, loadMessage, null).getCallBackData();
     }
 
     /**
@@ -105,7 +113,7 @@ public class RemoteSession {
      * @throws Exception
      */
     public byte[] request(LoadMessage loadMessage, long time, TimeUnit timeUnit) throws Exception {
-        return this.connection.request(this.id, loadMessage, null).getCallBackData(time, timeUnit);
+        return this.connection.request(this.localId, loadMessage, null).getCallBackData(time, timeUnit);
     }
 
     /**
@@ -133,7 +141,7 @@ public class RemoteSession {
      *     应答，需要调用者从Listener中获取结果
      */
     public CallBackDataListener asyncRequest(LoadMessage loadMessage, CallBackBarrier callBackBarrier) {
-        return this.connection.request(this.id, loadMessage, callBackBarrier);
+        return this.connection.request(this.localId, loadMessage, callBackBarrier);
     }
 
     /**
@@ -145,7 +153,7 @@ public class RemoteSession {
      *     需要应答的负载消息
      */
     public void reply(String key, LoadMessage loadMessage) {
-        this.connection.reply(this.id, key, loadMessage);
+        this.connection.reply(this.localId, key, loadMessage);
     }
 
     public void closeAll() {
@@ -160,11 +168,39 @@ public class RemoteSession {
         this.connection.closeSender();
     }
 
-    public String sessionId() {
-        return id;
+    /**
+     * 返回本地节点ID
+     *
+     * @return
+     */
+    public String localId() {
+        return localId;
     }
 
+    /**
+     * 返回远端对应的SessionID
+     *
+     * @return
+     */
+    public String remoteSessionId() {
+        return Hex.encodeHexString(remoteNode.toString().getBytes());
+    }
+
+    /**
+     * 返回远端对应执行器
+     *
+     * @return
+     */
     public MessageExecutor messageExecutor() {
         return this.messageExecutor;
+    }
+
+    /**
+     * 返回对应远端节点
+     *
+     * @return
+     */
+    public RemoteNode remoteNode() {
+        return remoteNode;
     }
 }

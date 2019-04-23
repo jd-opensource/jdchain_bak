@@ -11,6 +11,7 @@ package com.jd.blockchain.stp.communication.connection;
 import com.jd.blockchain.stp.communication.connection.handler.*;
 import com.jd.blockchain.stp.communication.message.IMessage;
 import com.jd.blockchain.stp.communication.message.SessionMessage;
+import com.jd.blockchain.stp.communication.node.LocalNode;
 import com.jd.blockchain.stp.communication.node.RemoteNode;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -47,34 +48,38 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
      */
     private SessionMessage sessionMessage;
 
-    /**
-     * 远端HOST
-     */
-    private String remoteHost;
+    private LocalNode localNode;
 
-    /**
-     * 远端端口
-     */
-    private int remotePort;
+    private RemoteNode remoteNode;
+
+//    /**
+//     * 远端HOST
+//     */
+//    private String remoteHost;
+//
+//    /**
+//     * 远端端口
+//     */
+//    private int remotePort;
 
     /**
      * 监听Handler（重连Handler）
      */
     private WatchDogHandler watchDogHandler;
 
-    public Sender(RemoteNode remoteNode, SessionMessage sessionMessage) {
-        init(remoteNode, sessionMessage);
+    public Sender(LocalNode localNode, RemoteNode remoteNode, SessionMessage sessionMessage) {
+        init(localNode, remoteNode, sessionMessage);
     }
 
-    public Sender(String remoteHost, int remotePort, SessionMessage sessionMessage) {
-        init(remoteHost, remotePort, sessionMessage);
-    }
+//    public Sender(String remoteHost, int remotePort, SessionMessage sessionMessage) {
+//        init(remoteHost, remotePort, sessionMessage);
+//    }
 
     /**
      * 连接
      */
     public void connect() {
-        watchDogHandler = new WatchDogHandler(this.remoteHost, this.remotePort, bootstrap);
+        watchDogHandler = new WatchDogHandler(this.remoteNode.getHostName(), this.remoteNode.getPort(), bootstrap);
 
         ChannelHandlers frontChannelHandlers = new ChannelHandlers()
                 .addHandler(watchDogHandler);
@@ -83,7 +88,7 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
                 .addHandler(new StringDecoder())
                 .addHandler(new HeartBeatSenderTrigger())
                 .addHandler(new HeartBeatSenderHandler())
-                .addHandler(new SenderHandler(this.sessionMessage));
+                .addHandler(new SenderHandler(this.localNode, this.remoteNode, this.sessionMessage));
 
         // 初始化watchDogHandler
         watchDogHandler.init(frontChannelHandlers.toArray(), afterChannelHandlers.toArray());
@@ -105,7 +110,7 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
         runThread.execute(() -> {
             try {
                 // 发起连接请求
-                channelFuture = bootstrap.connect(this.remoteHost, this.remotePort).sync();
+                channelFuture = bootstrap.connect(this.remoteNode.getHostName(), this.remoteNode.getPort()).sync();
                 boolean isStartSuccess = channelFuture.isSuccess();
                 if (isStartSuccess) {
                     // 启动成功
@@ -130,28 +135,16 @@ public class Sender extends AbstractAsyncExecutor implements Closeable {
     /**
      * 初始化相关配置
      *
+     * @param localNode
+     *     本地节点
      * @param remoteNode
      *     远端节点
      * @param sessionMessage
      *     本地节点连接到远端节点后发送的SessionMessage
      */
-    private void init(RemoteNode remoteNode, SessionMessage sessionMessage) {
-        init(remoteNode.getHostName(), remoteNode.getPort(), sessionMessage);
-    }
-
-    /**
-     * 初始化相关配置
-     *
-     * @param remoteHost
-     *     远端HOST
-     * @param remotePort
-     *     远端端口
-     * @param sessionMessage
-     *     本地节点连接到远端节点后发送的SessionMessage
-     */
-    private void init(String remoteHost, int remotePort, SessionMessage sessionMessage) {
-        this.remoteHost = remoteHost;
-        this.remotePort = remotePort;
+    private void init(LocalNode localNode, RemoteNode remoteNode, SessionMessage sessionMessage) {
+        this.localNode = localNode;
+        this.remoteNode = remoteNode;
 
         this.sessionMessage = sessionMessage;
 

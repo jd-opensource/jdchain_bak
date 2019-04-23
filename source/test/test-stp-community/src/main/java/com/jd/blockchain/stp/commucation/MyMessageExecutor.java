@@ -25,8 +25,8 @@ public class MyMessageExecutor implements MessageExecutor {
     @Override
     public byte[] receive(String key, byte[] data, RemoteSession session) {
         String receiveMsg = new String(data, Charset.defaultCharset());
-        System.out.printf("receive client {%s} request {%s} \r\n", session.sessionId(), receiveMsg);
-        String msg = session.sessionId() + " -> received !!!";
+        System.out.printf("receive client {%s} request {%s} \r\n", session.remoteNode().toString(), receiveMsg);
+        String msg = session.localId() + " -> received !!!";
         return msg.getBytes(Charset.defaultCharset());
     }
 

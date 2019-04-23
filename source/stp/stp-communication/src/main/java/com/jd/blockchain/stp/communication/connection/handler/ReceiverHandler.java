@@ -16,10 +16,12 @@ import com.jd.blockchain.stp.communication.connection.listener.ReplyListener;
 import com.jd.blockchain.stp.communication.manager.ConnectionManager;
 import com.jd.blockchain.stp.communication.message.SessionMessage;
 import com.jd.blockchain.stp.communication.message.TransferMessage;
+import com.jd.blockchain.stp.communication.node.LocalNode;
 import com.jd.blockchain.stp.communication.node.RemoteNode;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.commons.codec.binary.Hex;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -86,11 +88,17 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
      */
     private MessageExecutor defaultMessageExecutor;
 
+    /**
+     * 本地节点
+     */
+    private LocalNode localNode;
+
     public ReceiverHandler(ConnectionManager connectionManager, String localMsgExecutorClass,
-                           MessageExecutor defaultMessageExecutor) {
+                           LocalNode localNode) {
         this.connectionManager = connectionManager;
         this.localMsgExecutorClass = localMsgExecutorClass;
-        this.defaultMessageExecutor = defaultMessageExecutor;
+        this.defaultMessageExecutor = localNode.defaultMessageExecutor();
+        this.localNode = localNode;
         initMsgExecutorPool();
     }
 
@@ -109,7 +117,7 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        System.out.println("Receive Biz Message -> " + msg.toString());
+        System.out.printf("%s Receive Biz Message -> %s \r\n", this.localNode.toString(), msg.toString());
         // 有数据接入
         // 首先判断数据是否TransferMessage，当前Handler不处理非TransferMessage
         TransferMessage tm = TransferMessage.toTransferMessage(msg);
@@ -239,7 +247,7 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
                     // 假设连接失败的话，返回的Connection对象为null，此时不放入Map，等后续再处理
                     if (remoteConnection != null) {
 
-                        remoteSession = new RemoteSession(sessionId, remoteConnection, messageExecutor);
+                        remoteSession = new RemoteSession(this.localId(), remoteConnection, messageExecutor);
 
                         // Double check ！！！
                         if (!remoteSessions.containsKey(sessionId)) {
@@ -310,6 +318,24 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
                 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(QUEUE_CAPACITY),
                 msgExecuteThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+    }
+
+    /**
+     * 返回本地节点
+     *
+     * @return
+     */
+    public LocalNode localNode() {
+        return localNode;
+    }
+
+    /**
+     * 返回本地节点ID
+     *
+     * @return
+     */
+    private String localId() {
+        return Hex.encodeHexString(localNode.toString().getBytes());
     }
 
     @Override
