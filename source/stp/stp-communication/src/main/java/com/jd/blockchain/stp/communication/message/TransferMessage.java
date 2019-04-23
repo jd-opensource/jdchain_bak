@@ -112,8 +112,7 @@ public class TransferMessage extends AbstractMessage implements IMessage{
      * @return
      */
     public String toListenKey() {
-        // 格式：sessionId:key
-        return sessionId + ":" + key;
+        return key;
     }
 
     public String getSessionId() {
