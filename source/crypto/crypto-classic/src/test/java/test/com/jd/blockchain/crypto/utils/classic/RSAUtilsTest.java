@@ -42,6 +42,9 @@ public class RSAUtilsTest {
                 RSAUtils.privKey2Bytes_RawKey(RSAUtils.bytes2PrivKey_RawKey(privKeyBytes_RawKey));
         assertArrayEquals(privKeyBytes_RawKey,privKeyBytesConverted_RawKey);
 
+        System.out.println(pubKeyBytes_RawKey.length);
+        System.out.println(privKeyBytes_RawKey.length);
+
         byte[] pubKeyBytes_PKCS1 = RSAUtils.pubKey2Bytes_PKCS1(pubKey);
         byte[] pubKeyBytesConverted_PKCS1 =
                 RSAUtils.pubKey2Bytes_PKCS1(RSAUtils.bytes2PubKey_PKCS1(pubKeyBytes_PKCS1));
@@ -163,7 +166,7 @@ public class RSAUtilsTest {
     public void performanceTest(){
 
         int count = 10000;
-        byte[] data = new byte[1024];
+        byte[] data = new byte[128];
         Random random = new Random();
         random.nextBytes(data);
 
@@ -172,6 +175,7 @@ public class RSAUtilsTest {
         AsymmetricKeyParameter pubKey = keyPair.getPublic();
 
         byte[] signature = RSAUtils.sign(data,privKey);
+        byte[] ciphertext = RSAUtils.encrypt(data,pubKey);
 
         System.out.println("=================== do RSA sign test ===================");
 
@@ -179,7 +183,7 @@ public class RSAUtilsTest {
             System.out.println("------------- round[" + r + "] --------------");
             long startTS = System.currentTimeMillis();
             for (int i = 0; i < count; i++) {
-                 RSAUtils.sign(data,privKey);
+                RSAUtils.sign(data,privKey);
             }
             long elapsedTS = System.currentTimeMillis() - startTS;
             System.out.println(String.format("RSA Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
@@ -197,11 +201,37 @@ public class RSAUtilsTest {
             System.out.println(String.format("RSA Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
                     (count * 1000.00D) / elapsedTS));
         }
+
+        System.out.println("=================== do RSA encrypt test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                RSAUtils.encrypt(data,pubKey);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("RSA Encrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do RSA decrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                RSAUtils.decrypt(ciphertext,privKey);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("RSA Decrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
     }
 
     @Test
-    public void consistencyTest(){
+    public void encryptionConsistencyTest(){
 
+        int count = 10000;
         byte[] data = new byte[222];
         Random random = new Random();
         random.nextBytes(data);
@@ -226,30 +256,171 @@ public class RSAUtilsTest {
 
         Cipher cipher;
         byte[] ciphertext = null;
-        try {
-            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            ciphertext = cipher.doFinal(data);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+        byte[] plaintext = null;
+
+        System.out.println("=================== do BouncyCastle-based RSA encrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ciphertext = RSAUtils.encrypt(data,pubKey);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("BouncyCastle-based RSA Encrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
         }
 
         assert ciphertext != null;
-        byte[] plaintext = RSAUtils.decrypt(ciphertext,privKey);
-        assertArrayEquals(data,plaintext);
-
-        ciphertext = RSAUtils.encrypt(data,pubKey);
-
-        try {
-            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            plaintext = cipher.doFinal(ciphertext);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+        System.out.println("=================== do BouncyCastle-based RSA decrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                plaintext = RSAUtils.decrypt(ciphertext,privKey);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("BouncyCastle-based RSA Decrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
         }
 
+        System.out.println("=================== do JDK-based RSA encrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                try {
+                    cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                    ciphertext = cipher.doFinal(data);
+                } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                        | IllegalBlockSizeException | BadPaddingException e) {
+                    e.printStackTrace();
+                }
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("JDK-based RSA Encrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do JDK-based RSA decrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                try {
+                    cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                    cipher.init(Cipher.DECRYPT_MODE, privateKey);
+                    plaintext = cipher.doFinal(ciphertext);
+                } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                        | IllegalBlockSizeException | BadPaddingException e) {
+                    e.printStackTrace();
+                }
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("JDK-based RSA Decrypting Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+
         assertArrayEquals(data,plaintext);
+        assertArrayEquals(data,plaintext);
+    }
+
+    @Test
+    public void signatureConsistencyTest() {
+
+        int count = 10000;
+        byte[] data = new byte[222];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        KeyPairGenerator keyPairGen = null;
+        try {
+            keyPairGen = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        assert keyPairGen != null;
+        keyPairGen.initialize(2048, new SecureRandom());
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+
+        byte[] publicKeyBytes = publicKey.getEncoded();
+        byte[] privateKeyBytes = privateKey.getEncoded();
+
+        byte[] signature = null;
+        boolean isValid = false;
+
+        RSAKeyParameters pubKey = RSAUtils.bytes2PubKey_PKCS8(publicKeyBytes);
+        RSAPrivateCrtKeyParameters privKey = RSAUtils.bytes2PrivKey_PKCS8(privateKeyBytes);
+
+        System.out.println("=================== do BouncyCastle-based RSA sign test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                signature = RSAUtils.sign(data,privKey);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("BouncyCastle-based RSA Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do BouncyCastle-based RSA verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                isValid = RSAUtils.verify(data,pubKey,signature);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("BouncyCastle-based RSA Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+
+
+
+        System.out.println("=================== do JDK-based RSA sign test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                try {
+                    Signature signer = Signature.getInstance("SHA256withRSA");
+                    signer.initSign(privateKey);
+                    signer.update(data);
+                    signature = signer.sign();
+                } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+                    e.printStackTrace();
+                }
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("JDK-based RSA Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do JDK-based RSA verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                try {
+                    Signature verifier = Signature.getInstance("SHA256withRSA");
+                    verifier.initVerify(publicKey);
+                    verifier.update(data);
+                    isValid = verifier.verify(signature);
+                } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+                    e.printStackTrace();
+                }
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("JDK-based RSA Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println(isValid);
+
     }
 }

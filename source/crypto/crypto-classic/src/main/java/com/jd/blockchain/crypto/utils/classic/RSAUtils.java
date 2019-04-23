@@ -31,8 +31,8 @@ import java.security.spec.X509EncodedKeySpec;
 /**
  * @author zhanglin33
  * @title: RSAUtils
- * @description: RSA2048 encryption(ECB) and signature algorithms with SHA256,
- *               and keys are output in both PKCS1v2 format and PKCS8
+ * @description: RSA2048 encryption(RSA/ECB/PKCS1Padding) and signature(SHA256withRSA) algorithms,
+ *               and keys are output in raw, PKCS1v2 and PKCS8 formats
  * @date 2019-03-25, 17:20
  */
 public class  RSAUtils {
@@ -47,6 +47,8 @@ public class  RSAUtils {
     private static final int DP_LENGTH      = 1024 / 8;
     private static final int DQ_LENGTH      = 1024 / 8;
     private static final int QINV_LENGTH    = 1024 / 8;
+
+    private static final BigInteger PUBEXP_0X03 = BigInteger.valueOf(0x03);
 
     private static final BigInteger VERSION_2PRIMES = BigInteger.valueOf(0);
 
@@ -69,11 +71,8 @@ public class  RSAUtils {
     }
 
     public static AsymmetricCipherKeyPair generateKeyPair(SecureRandom random){
-
         AsymmetricCipherKeyPairGenerator kpGen = new RSAKeyPairGenerator();
-
-        BigInteger exponent = BigInteger.valueOf(0x11);
-        kpGen.init(new RSAKeyGenerationParameters(exponent, random, KEYSIZEBITS, CERTAINTY));
+        kpGen.init(new RSAKeyGenerationParameters(PUBEXP_0X03, random, KEYSIZEBITS, CERTAINTY));
         return kpGen.generateKeyPair();
     }
 

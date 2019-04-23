@@ -11,11 +11,12 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 public class SM4Utils {
 
-    // SM4 supports 128-bit secret key
-    private static final int KEY_LENGTH = 128;
+    // SM4 supports 128-bit(16 bytes) secret key
+    private static final int KEY_SIZE = 128 / 8;
     // One block contains 16 bytes
     private static final int BLOCK_SIZE = 16;
     // Initial vector's size is 16 bytes
@@ -33,10 +34,15 @@ public class SM4Utils {
 
         // To provide secure randomness and key length as input
         // to prepare generate private key
-        keyGenerator.init(new KeyGenerationParameters(new SecureRandom(), KEY_LENGTH));
+        keyGenerator.init(new KeyGenerationParameters(new SecureRandom(), KEY_SIZE * 8));
 
         // To generate key
         return keyGenerator.generateKey();
+    }
+
+    public static byte[] generateKey(byte[] seed){
+        byte[] hash  = SM3Utils.hash(seed);
+        return Arrays.copyOf(hash, KEY_SIZE);
     }
 
 
@@ -54,6 +60,16 @@ public class SM4Utils {
         if (plainBytes == null)
         {
             throw new CryptoException("plaintext is null!");
+        }
+
+        if (secretKey.length != KEY_SIZE)
+        {
+            throw new CryptoException("secretKey's length is wrong!");
+        }
+
+        if (iv.length != IV_SIZE)
+        {
+            throw new CryptoException("iv's length is wrong!");
         }
 
         // To get the value padded into input
@@ -108,6 +124,11 @@ public class SM4Utils {
         if (cipherBytes.length % BLOCK_SIZE != 0)
         {
             throw new CryptoException("ciphertext's length is wrong!");
+        }
+
+        if (secretKey.length != KEY_SIZE)
+        {
+            throw new CryptoException("secretKey's length is wrong!");
         }
 
         byte[] iv = new byte[IV_SIZE];

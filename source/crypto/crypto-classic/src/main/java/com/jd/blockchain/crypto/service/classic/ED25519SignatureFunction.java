@@ -50,7 +50,6 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 		// 调用ED25519签名算法计算签名结果
 		return new SignatureDigest(ED25519, ED25519Utils.sign(data, rawPrivKeyBytes));
-
 	}
 
 	@Override
@@ -69,7 +68,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 			throw new CryptoException("This key is not ED25519 public key!");
 		}
 
-		// 验证密文数据的算法标识对应ED25519签名算法，并且原始摘要长度为64字节
+		// 验证签名数据的算法标识对应ED25519签名算法，并且原始摘要长度为64字节
 		if (digest.getAlgorithm() != ED25519.code() || rawDigestBytes.length != SIGNATUREDIGEST_SIZE) {
 			throw new CryptoException("This is not ED25519 signature digest!");
 		}
@@ -106,7 +105,6 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		// 验证输入字节数组长度=算法标识长度+密钥类型长度+密钥长度，密钥数据的算法标识对应ED25519签名算法，并且密钥类型是公钥
 		return pubKeyBytes.length == PUBKEY_LENGTH && CryptoAlgorithm.match(ED25519, pubKeyBytes)
 				&& pubKeyBytes[ALGORYTHM_CODE_SIZE] == PUBLIC.CODE;
-
 	}
 
 	@Override
@@ -140,6 +138,7 @@ public class ED25519SignatureFunction implements SignatureFunction {
 
 	@Override
 	public AsymmetricKeypair generateKeypair() {
+
 		// 调用ED25519算法的密钥生成算法生成公私钥对priKey和pubKey，返回密钥对
 		AsymmetricCipherKeyPair keyPair = ED25519Utils.generateKeyPair();
 		Ed25519PrivateKeyParameters privKeyParams = (Ed25519PrivateKeyParameters) keyPair.getPrivate();
@@ -148,6 +147,5 @@ public class ED25519SignatureFunction implements SignatureFunction {
 		byte[] privKeyBytes = privKeyParams.getEncoded();
 		byte[] pubKeyBytes = pubKeyParams.getEncoded();
 		return new AsymmetricKeypair(new PubKey(ED25519, pubKeyBytes), new PrivKey(ED25519, privKeyBytes));
-
 	}
 }
