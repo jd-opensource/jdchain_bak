@@ -21,6 +21,8 @@ import com.jd.blockchain.stp.communication.node.RemoteNode;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.Random;
+
 /**
  * 统一连接对象
  * 该对象中有两个对象Receiver和Sender
@@ -144,8 +146,15 @@ public class Connection {
      * @return
      */
     private String loadKey(LoadMessage loadMessage) {
+        // key每次不能一致，因此增加随机数
+        byte[] randomBytes = new byte[8];
+        new Random().nextBytes(randomBytes);
+        byte[] loadBytes = loadMessage.toBytes();
+        byte[] keyBytes = new byte[loadBytes.length + randomBytes.length];
+        System.arraycopy(randomBytes, 0, keyBytes, 0, randomBytes.length);
+        System.arraycopy(loadBytes, 0, keyBytes, randomBytes.length, loadBytes.length);
         // 使用Sha256求Hash
-        byte[] sha256Bytes = DigestUtils.sha256(loadMessage.toBytes());
+        byte[] sha256Bytes = DigestUtils.sha256(keyBytes);
         // 使用base64作为Key
         return Base64.encodeBase64String(sha256Bytes);
     }
