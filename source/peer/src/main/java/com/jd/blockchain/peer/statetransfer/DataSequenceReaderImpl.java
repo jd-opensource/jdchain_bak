@@ -1,7 +1,9 @@
 package com.jd.blockchain.peer.statetransfer;
 
+import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.hash.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.TransactionSet;
@@ -38,8 +40,8 @@ public class DataSequenceReaderImpl implements DataSequenceReader {
 
 
     /**
-     *
-     *
+     * @param id 账本哈希的Base58编码
+     * @return DataSequenceInfo  数据序列信息
      */
     @Override
     public DataSequenceInfo getDSInfo(String id) {
@@ -58,7 +60,10 @@ public class DataSequenceReaderImpl implements DataSequenceReader {
 
     /**
      *
-     *
+     * @param id 账本哈希的Base58编码
+     * @param from 数据序列复制的起始高度
+     * @param to 数据序列复制的结束高度
+     * @return DataSequenceElement【】数据序列差异数据元素的数组
      */
     @Override
     public DataSequenceElement[] getDSDiffContent(String id, long from, long to) {
@@ -72,11 +77,26 @@ public class DataSequenceReaderImpl implements DataSequenceReader {
     }
 
     /**
-     *
-     *
+     * 账本交易序列化
+     * @param transaction 账本交易
+     * @return byte[] 对账本交易进行序列化的结果
+     */
+    private byte[] serialize(LedgerTransaction transaction) {
+        return BinaryEncodingUtils.encode(transaction, LedgerTransaction.class);
+    }
+
+    /**
+     * 获得账本某一高度区块上的所有交易
+     * @param id 账本哈希的Base58编码
+     * @param height 账本的某个区块高度
+     * @return DataSequenceElement 数据序列差异数据元素
      */
     @Override
     public DataSequenceElement getDSDiffContent(String id, long height) {
+
+        int lastHeightTxTotalNums = 0;
+
+        byte[][] transacionDatas = null;
 
         byte[] hashBytes = Base58Utils.decode(id);
 
@@ -89,9 +109,25 @@ public class DataSequenceReaderImpl implements DataSequenceReader {
 
         LedgerBlock ledgerBlock = ledgerRepository.getBlock(height);
         TransactionSet transactionSet = ledgerRepository.getTransactionSet(ledgerBlock);
-        //todo
 
+        if (height > 0) {
+            lastHeightTxTotalNums = (int) ledgerRepository.getTransactionSet(ledgerRepository.getBlock(height - 1)).getTotalCount();
+        }
 
-        return null;
+        int currentHeightTxTotalNums = (int)ledgerRepository.getTransactionSet(ledgerRepository.getBlock(height)).getTotalCount();
+
+        // get all transactions from current height block
+        int currentHeightTxNums = currentHeightTxTotalNums - lastHeightTxTotalNums;
+
+        LedgerTransaction[] transactions = transactionSet.getTxs(lastHeightTxTotalNums , currentHeightTxNums);
+
+        for (int i = 0; i < transactions.length; i++) {
+            byte[] transactionData = serialize(transactions[i]);
+            transacionDatas[i] = transactionData;
+        }
+
+        return new DataSequenceElement(id, height, transacionDatas);
     }
+
+
 }

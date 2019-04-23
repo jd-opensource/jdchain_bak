@@ -30,8 +30,10 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
     }
 
     /**
-     * check height to data sequence diff elements
-     *
+     * 检查数据序列差异元素中的高度是否合理；
+     * @param currHeight 当前结点的账本高度
+     * @param dsUpdateElements 需要更新到本地结点的数据序列元素List
+     * @return
      */
     private int checkElementsHeight(long currHeight, ArrayList<DataSequenceElement> dsUpdateElements) {
         boolean lossMiddleElements = false;
@@ -65,10 +67,12 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
     }
 
     /**
-     *
-     *
+     * 对本地结点执行账本更新
+     * @param realmName  账本哈希的Base58编码
+     * @return void
      */
     private void exeUpdate(String realmName) {
+
         for (int i = 0; i < deceidedElements.size(); i++) {
             byte[][] element = deceidedElements.get(i).getData();
 
@@ -78,6 +82,7 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
                 for (byte[] txContent : element) {
                     batchMessageHandle.processOrdered(msgId++, txContent, realmName, batchId);
                 }
+                // 结块
                 batchMessageHandle.completeBatch(realmName, batchId);
                 batchMessageHandle.commitBatch(realmName, batchId);
             } catch (Exception e) {
@@ -89,18 +94,19 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
     }
 
     /**
-     *
-     *
+     * @param dsInfo 当前结点的数据序列信息
+     * @param diffContents 数据序列差异的数据元素数组
+     * @return int 更新结果码
      */
     @Override
-    public int updateDSInfo(DataSequenceInfo id, DataSequenceElement[] diffContents) {
+    public int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement[] diffContents) {
         int result = 0;
 
         try {
             ArrayList<DataSequenceElement> dsUpdateElements = new ArrayList<DataSequenceElement>();
             //remove unexpected elements
             for (int i = 0 ; i < diffContents.length; i++) {
-                if (diffContents[i].getId().equals(id.getId())) {
+                if (diffContents[i].getId().equals(dsInfo.getId())) {
                     dsUpdateElements.add(diffContents[i]);
                 }
             }
@@ -108,7 +114,7 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
             // sort elements by height
             Collections.sort(dsUpdateElements, new DataSequenceComparator());
 
-            currHeight = id.getHeight();
+            currHeight = dsInfo.getHeight();
 
             // check element's height
             result = checkElementsHeight(currHeight, dsUpdateElements);
@@ -119,7 +125,7 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
             }
             // exe elements update
             else {
-                exeUpdate(id.getId());
+                exeUpdate(dsInfo.getId());
                 return result;
             }
         } catch (Exception e) {
@@ -131,14 +137,15 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
     }
 
     @Override
-    public int updateDSInfo(DataSequenceInfo id, DataSequenceElement diffContents) {
+    public int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement diffContents) {
         return 0;
     }
 
 
     /**
-     * data sequence transfer error type
-     *
+     * 数据序列更新错误码
+     * @param
+     * @return
      */
     public enum DataSequenceErrorType {
         DATA_SEQUENCE_LOSS_FIRST_ELEMENT((byte) 0x1),

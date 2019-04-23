@@ -15,12 +15,12 @@ public interface DataSequenceWriter {
      *更新数据序列的当前状态，一次更新多个高度的差异
      * return void
      */
-    int updateDSInfo(DataSequenceInfo id, DataSequenceElement[] diffContents);
+    int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement[] diffContents);
 
     /**
      *更新数据序列的当前状态，一次更新一个高度的差异
      * return void
      */
-    int updateDSInfo(DataSequenceInfo id, DataSequenceElement diffContents);
+    int updateDSInfo(DataSequenceInfo id, DataSequenceElement diffContent);
 
 }
