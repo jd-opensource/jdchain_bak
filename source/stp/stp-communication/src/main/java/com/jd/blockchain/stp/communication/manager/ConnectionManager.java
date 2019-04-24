@@ -33,7 +33,7 @@ public class ConnectionManager {
      * Connection对应Map
      * RemoteNode唯一性：IP（HOST）+PORT
      */
-    private static final Map<RemoteNode, Connection> connectionMap = new ConcurrentHashMap<>();
+    private final Map<RemoteNode, Connection> connectionMap = new ConcurrentHashMap<>();
 
     /**
      * 连接管理器对应MAP

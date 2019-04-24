@@ -251,7 +251,7 @@ public class ReceiverHandler extends ChannelInboundHandlerAdapter implements Clo
 
                         // Double check ！！！
                         if (!remoteSessions.containsKey(sessionId)) {
-                            remoteSessions.put(sessionId, remoteSession);
+                            this.putRemoteSession(sessionId, remoteSession);
                         }
                     }
                 } finally {

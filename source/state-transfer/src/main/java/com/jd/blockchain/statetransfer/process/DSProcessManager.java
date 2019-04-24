@@ -55,7 +55,7 @@ public class DSProcessManager {
         try {
 
             //wait all listener nodes start
-            Thread.sleep(10000);
+            Thread.sleep(2000);
 
             // start network connections with targets
             dsTransferProcess.start();
@@ -89,17 +89,17 @@ public class DSProcessManager {
                 }
             }
 
-            System.out.println("Compute diff info!");
+            System.out.printf("%s:%d Compute diff info!\r\n", listener.getHostName(), listener.getPort());
             // step3: process received responses
             DSInfoResponseResult diffResult = dsTransferProcess.computeDiffInfo(receiveResponses);
 
-            System.out.println("Diff info result height = " + diffResult.getMaxHeight() + "!");
+            System.out.printf("%s:%d Diff info result height = %x!\r\n", listener.getHostName(), listener.getPort(), diffResult.getMaxHeight());
 
             // height diff
             long diff = dsInfo.getHeight() - diffResult.getMaxHeight();
 
             if (diff == 0 ||  diff > 0) {
-                System.out.println("No duplication is required!");
+                System.out.printf("%s:%d No duplication is required!\r\n", listener.getHostName(), listener.getPort());
                 // no duplication is required， life cycle ends
 //                dsTransferProcess.close();
                 dSProcessMap.remove(dsInfo.getId());
@@ -107,7 +107,7 @@ public class DSProcessManager {
 
             }
             else {
-                System.out.println("Duplication is required!");
+                System.out.printf("%s:%d Duplication is required!\r\n", listener.getHostName(), listener.getPort());
                 // step4: async send get data sequence diff request
                 // single step get diff
                 // async message send process
@@ -138,7 +138,7 @@ public class DSProcessManager {
                     }
                 }
 
-                System.out.println("ReceiveDiffResponses size =  "+ receiveDiffResponses.size());
+                System.out.printf("%s:%d ReceiveDiffResponses size = %d !\r\n", listener.getHostName(), listener.getPort(), receiveDiffResponses.size());
                 // step6: process data sequence diff response, update local data sequence state
                 System.out.println("Compute diff elements!");
                 ArrayList<DataSequenceElement> dataSequenceElements = dsTransferProcess.computeDiffElement(receiveDiffResponses.toArray(new byte[receiveDiffResponses.size()][]));
