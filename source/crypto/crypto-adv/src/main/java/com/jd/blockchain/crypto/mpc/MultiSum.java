@@ -2,6 +2,8 @@ package com.jd.blockchain.crypto.mpc;
 
 import java.math.BigInteger;
 
+import com.n1analytics.paillier.PaillierPrivateKey;
+import com.n1analytics.paillier.PaillierPublicKey;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
@@ -12,9 +14,6 @@ import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
-import com.jd.blockchain.crypto.paillier.KeyPair;
-import com.jd.blockchain.crypto.paillier.PaillierUtils;
-import com.jd.blockchain.crypto.paillier.PublicKey;
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
 import com.jd.blockchain.crypto.utils.sm.SM3Utils;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -32,7 +31,6 @@ public class MultiSum {
         this.ePubKey  = (ECPublicKeyParameters) eKeyPair.getPublic();
         this.curve = SM2Utils.getCurve();
         this.domainParams = SM2Utils.getDomainParams();
-
     }
 
     public BigInteger calculateAgreement(CipherParameters otherEPubKey){
@@ -47,20 +45,23 @@ public class MultiSum {
         return new BigInteger(1,SM3Utils.hash(inputBytes));
     }
 
-    public static BigInteger encryptBlindedMsg(PublicKey encKey, BigInteger msg, BigInteger frontShare, BigInteger rearShare){
-        return encKey.encrypt(msg.add(frontShare).subtract(rearShare).mod(encKey.getN()));
+    public static BigInteger encryptBlindedMsg(PaillierPublicKey encKey, BigInteger msg, BigInteger frontShare, BigInteger rearShare){
+        BigInteger modulus = encKey.getModulus();
+        BigInteger plaintext = msg.add(frontShare).subtract(rearShare).mod(modulus);
+        return encKey.raw_encrypt(plaintext);
     }
 
-    public static BigInteger aggregateCiphertexts(PublicKey encKey, BigInteger... bigIntegersList){
+    public static BigInteger aggregateCiphertexts(PaillierPublicKey encKey, BigInteger... bigIntegers){
         BigInteger aggregatedCiphertext = BigInteger.ONE;
-        for (BigInteger entry : bigIntegersList) {
-            aggregatedCiphertext = aggregatedCiphertext.multiply(entry).mod(encKey.getnSquared());
+        BigInteger modulusSquared = encKey.getModulusSquared();
+        for (BigInteger entry : bigIntegers) {
+            aggregatedCiphertext = aggregatedCiphertext.multiply(entry).mod(modulusSquared);
         }
         return aggregatedCiphertext;
     }
 
-    public static BigInteger decrypt(KeyPair keyPair, BigInteger ciphertext){
-        return keyPair.decrypt(ciphertext);
+    public static BigInteger decrypt(PaillierPrivateKey decKey, BigInteger ciphertext){
+        return decKey.raw_decrypt(ciphertext);
     }
 
     public ECPublicKeyParameters getEPubKey(){return ePubKey;}
@@ -79,7 +80,7 @@ public class MultiSum {
     }
 
     public byte[] getEPrivKeyBytes(){
-        return PaillierUtils.BigIntegerToLBytes(ePrivKey.getD(),32);
+        return BigIntegerToLBytes(ePrivKey.getD(),32);
     }
 
     public ECPublicKeyParameters resolveEPubKey(byte[] ePubKeyBytes){
@@ -95,4 +96,16 @@ public class MultiSum {
         return new ECPrivateKeyParameters(new BigInteger(1,ePrivKeyBytes),domainParams);
     }
 
+    // To convert BigInteger to byte[] whose length is l
+    private static byte[] BigIntegerToLBytes(BigInteger b, int l){
+        byte[] tmp = b.toByteArray();
+        byte[] result = new byte[l];
+        if (tmp.length > result.length) {
+            System.arraycopy(tmp, tmp.length - result.length, result, 0, result.length);
+        }
+        else {
+            System.arraycopy(tmp,0,result,result.length-tmp.length,tmp.length);
+        }
+        return result;
+    }
 }

@@ -1,9 +1,8 @@
 package test.com.jd.blockchain.crypto.mpc;
 
 import com.jd.blockchain.crypto.mpc.MultiSum;
-import com.jd.blockchain.crypto.paillier.KeyPair;
-import com.jd.blockchain.crypto.paillier.KeyPairBuilder;
-import com.jd.blockchain.crypto.paillier.PublicKey;
+import com.n1analytics.paillier.PaillierPrivateKey;
+import com.n1analytics.paillier.PaillierPublicKey;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.util.encoders.Hex;
@@ -16,14 +15,13 @@ import static org.junit.Assert.*;
 
 public class MultiSumTest {
 
-    private KeyPair keyPair;
-    private PublicKey encKey;
+    private PaillierPrivateKey decKey;
+    private PaillierPublicKey encKey;
 
     @Before
     public void init() {
-        KeyPairBuilder keygen = new KeyPairBuilder();
-        keyPair = keygen.generateKeyPair();
-        encKey = keyPair.getPublicKey();
+        decKey = PaillierPrivateKey.create(2048);
+        encKey = decKey.getPublicKey();
     }
     
     @Test
@@ -72,7 +70,7 @@ public class MultiSumTest {
 
         BigInteger aggregatedCiphertext = MultiSum.aggregateCiphertexts(encKey,c1,c2,c3);
 
-        BigInteger decryptedValue = MultiSum.decrypt(keyPair,aggregatedCiphertext);
+        BigInteger decryptedValue = MultiSum.decrypt(decKey,aggregatedCiphertext);
 
         assertEquals(expectedSum,decryptedValue);
     }
