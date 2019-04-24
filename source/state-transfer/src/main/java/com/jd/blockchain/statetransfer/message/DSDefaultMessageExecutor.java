@@ -35,9 +35,8 @@ public class DSDefaultMessageExecutor implements MessageExecutor {
             Object object = DSMsgResolverFactory.getDecoder(dsWriter, dsReader).decode(data);
 
             if (object instanceof String) {
-
                 String id = (String)object;
-                byte[] respLoadMsg = DSMsgResolverFactory.getEncoder(dsWriter, dsReader).encode(DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_RESPONSE, id, 0, 0);
+                byte[] respLoadMsg = DSMsgResolverFactory.getEncoder(dsWriter, dsReader).encode(DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_RESPONSE, id, 0, 0);
                 session.reply(key, new DataSequenceLoadMessage(respLoadMsg));
             }
             else if (object instanceof DSDiffRequestResult) {

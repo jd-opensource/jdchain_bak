@@ -15,6 +15,8 @@ import com.jd.blockchain.stp.communication.node.RemoteNode;
 import com.jd.blockchain.utils.IllegalDataException;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -78,12 +80,14 @@ public class DSTransferProcess {
      *
      *
      */
-    public DataSequenceElement[] computeDiffElement(byte[][] diffArray) {
-        DataSequenceElement[] dataSequenceElements = new DataSequenceElement[diffArray.length];
-        for (int i = 0 ; i < dataSequenceElements.length; i++) {
+    public ArrayList<DataSequenceElement> computeDiffElement(byte[][] diffArray) {
+
+        ArrayList<DataSequenceElement> dataSequenceElements = new ArrayList<>();
+
+        for (int i = 0 ; i < diffArray.length; i++) {
             Object object = DSMsgResolverFactory.getDecoder(dsWriter, dsReader).decode(diffArray[i]);
             if (object instanceof DataSequenceElement) {
-               dataSequenceElements[i] = (DataSequenceElement) object;
+               dataSequenceElements.add((DataSequenceElement) object);
             }
             else {
                 throw new IllegalDataException("Unknown instance object!");
@@ -97,27 +101,36 @@ public class DSTransferProcess {
      *
      *
      */
-    public DSInfoResponseResult computeDiffInfo(Map<RemoteSession, byte[]> responseMap) {
+    public DSInfoResponseResult computeDiffInfo(LinkedList<CallBackDataListener> receiveResponses) {
         long maxHeight = 0;
-        RemoteSession maxHeightSession = null;
+        RemoteNode maxHeightRemoteNode = null;
 
-        for (RemoteSession remoteSession : responseMap.keySet()) {
-           Object object = DSMsgResolverFactory.getDecoder(dsWriter, dsReader).decode(responseMap.get(remoteSession));
-           if (object instanceof DataSequenceInfo) {
-               DataSequenceInfo dsInfo = (DataSequenceInfo) object;
-               long height = dsInfo.getHeight();
-               if (maxHeight < height) {
-                   maxHeight = height;
-                   maxHeightSession = remoteSession;
-               }
-           }
-           else {
-               throw new IllegalDataException("Unknown instance object!");
-           }
+        System.out.println("ComputeDiffInfo receiveResponses size = "+ receiveResponses.size());
 
+        try {
+            for (CallBackDataListener receiveResponse : receiveResponses) {
+                Object object = DSMsgResolverFactory.getDecoder(dsWriter, dsReader).decode(receiveResponse.getCallBackData());
+//                System.out.println("ComputeDiffInfo object = "+object);
+                if (object instanceof DataSequenceInfo) {
+                    DataSequenceInfo dsInfo = (DataSequenceInfo) object;
+                    long height = dsInfo.getHeight();
+//                    System.out.println("ComputeDiffInfo height = " +height);
+                    if (maxHeight < height) {
+                        maxHeight = height;
+                        maxHeightRemoteNode = receiveResponse.remoteNode();
+                    }
+                }
+                else {
+                    throw new IllegalDataException("Unknown instance object!");
+                }
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
-        return new DSInfoResponseResult(maxHeight, maxHeightSession);
+        return new DSInfoResponseResult(maxHeight, maxHeightRemoteNode);
     }
 
     /**

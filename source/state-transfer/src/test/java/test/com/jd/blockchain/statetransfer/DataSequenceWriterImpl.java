@@ -22,7 +22,18 @@ public class DataSequenceWriterImpl implements DataSequenceWriter {
     @Override
     public int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement[] diffContents) {
 
+        if (diffContents == null) {
+            throw new IllegalArgumentException("Update diffContents is null!");
+        }
+
+        System.out.println("Old data sequence state:  ");
+        System.out.println("   Current height =  " + currDataSequence.getDataSequenceElements().getLast().getHeight());
         currDataSequence.addElements(diffContents);
+
+        System.out.println("Update diffContents is completed!");
+        System.out.println("New data sequence state:  ");
+        System.out.println("   Current height =  " + currDataSequence.getDataSequenceElements().getLast().getHeight());
+
 
         return DataSequenceErrorType.DATA_SEQUENCE_ELEMENT_HEIGHT_NORMAL.CODE;
 

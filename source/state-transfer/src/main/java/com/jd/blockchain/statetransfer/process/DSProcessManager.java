@@ -4,6 +4,7 @@ import com.jd.blockchain.statetransfer.DataSequenceElement;
 import com.jd.blockchain.statetransfer.DataSequenceInfo;
 import com.jd.blockchain.statetransfer.callback.DataSequenceReader;
 import com.jd.blockchain.statetransfer.callback.DataSequenceWriter;
+import com.jd.blockchain.statetransfer.comparator.DataSequenceComparator;
 import com.jd.blockchain.statetransfer.message.DSDefaultMessageExecutor;
 import com.jd.blockchain.statetransfer.result.DSInfoResponseResult;
 import com.jd.blockchain.stp.communication.RemoteSession;
@@ -11,11 +12,11 @@ import com.jd.blockchain.stp.communication.callback.CallBackBarrier;
 import com.jd.blockchain.stp.communication.callback.CallBackDataListener;
 import com.jd.blockchain.stp.communication.manager.RemoteSessionManager;
 import com.jd.blockchain.stp.communication.node.LocalNode;
+import com.jd.blockchain.stp.communication.node.RemoteNode;
 import com.jd.blockchain.utils.concurrent.CompletableAsyncFuture;
 
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -28,7 +29,7 @@ public class DSProcessManager {
 
     private static Map<String, DSTransferProcess> dSProcessMap = new ConcurrentHashMap<>();
     private RemoteSession[] remoteSessions;
-    private long dsInfoResponseTimeout = 2000;
+    private long dsInfoResponseTimeout = 20000;
     private ExecutorService writeExecutors = Executors.newFixedThreadPool(5);
     private int returnCode = 0;
     /**
@@ -52,6 +53,10 @@ public class DSProcessManager {
         dSProcessMap.put(dsInfo.getId(), dsTransferProcess);
 
         try {
+
+            //wait all listener nodes start
+            Thread.sleep(10000);
+
             // start network connections with targets
             dsTransferProcess.start();
 
@@ -62,52 +67,58 @@ public class DSProcessManager {
             CallBackBarrier callBackBarrier = CallBackBarrier.newCallBackBarrier(remoteSessions.length, dsInfoResponseTimeout);
 
             // response message manage map
-            Map<RemoteSession, CallBackDataListener> dsInfoResponses = new ConcurrentHashMap<>();
+            LinkedList<CallBackDataListener> dsInfoResponses = new LinkedList<>();
 
+            System.out.println("Async send CMD_DSINFO_REQUEST msg to targets will start!");
             // step1: send get dsInfo request, then hold
             for (RemoteSession remoteSession : remoteSessions) {
-
                 CallBackDataListener dsInfoResponse = dsTransferProcess.send(DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_REQUEST, remoteSession, 0, 0, callBackBarrier);
-
-                dsInfoResponses.put(remoteSession, dsInfoResponse);
+                dsInfoResponses.addLast(dsInfoResponse);
             }
 
+            System.out.println("Wait CMD_DSINFO_RESPONSE msg from targets!");
             // step2: collect get dsInfo response
-            Map<RemoteSession, byte[]> receiveResponses = new ConcurrentHashMap<>();
+            LinkedList<CallBackDataListener> receiveResponses = new LinkedList<>();
             if (callBackBarrier.tryCall()) {
-                for (RemoteSession remoteSession : dsInfoResponses.keySet()) {
-                    CallBackDataListener  asyncFuture = dsInfoResponses.get(remoteSession);
-                    // if really done
-                    if (asyncFuture.isDone()) {
-                        receiveResponses.put(remoteSession, asyncFuture.getCallBackData());
+                Iterator<CallBackDataListener> iterator = dsInfoResponses.iterator();
+                while (iterator.hasNext()) {
+                    CallBackDataListener receiveResponse = iterator.next();
+                    if (receiveResponse.isDone()) {
+                        receiveResponses.addLast(receiveResponse);
                     }
                 }
             }
 
+            System.out.println("Compute diff info!");
             // step3: process received responses
             DSInfoResponseResult diffResult = dsTransferProcess.computeDiffInfo(receiveResponses);
+
+            System.out.println("Diff info result height = " + diffResult.getMaxHeight() + "!");
 
             // height diff
             long diff = dsInfo.getHeight() - diffResult.getMaxHeight();
 
             if (diff == 0 ||  diff > 0) {
+                System.out.println("No duplication is required!");
                 // no duplication is required， life cycle ends
-                dsTransferProcess.close();
+//                dsTransferProcess.close();
                 dSProcessMap.remove(dsInfo.getId());
                 return returnCode;
 
             }
             else {
-
+                System.out.println("Duplication is required!");
                 // step4: async send get data sequence diff request
                 // single step get diff
                 // async message send process
                 CallBackBarrier callBackBarrierDiff = CallBackBarrier.newCallBackBarrier((int)(diffResult.getMaxHeight() - dsInfo.getHeight()), dsInfoResponseTimeout);
                 LinkedList<CallBackDataListener> dsDiffResponses = new LinkedList<>();
 
+                RemoteSession responseSession = findResponseSession(diffResult.getMaxHeightRemoteNode(), remoteSessions);
+                System.out.println("Async send CMD_GETDSDIFF_REQUEST msg to targets will start!");
                 // step5: collect get data sequence diff response
                 for (long height = dsInfo.getHeight() + 1; height < diffResult.getMaxHeight() + 1; height++) {
-                    CallBackDataListener dsDiffResponse = dsTransferProcess.send(DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST, diffResult.getMaxHeightSession(), height, height, callBackBarrierDiff);
+                    CallBackDataListener dsDiffResponse = dsTransferProcess.send(DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST, responseSession, height, height, callBackBarrierDiff);
                     dsDiffResponses.addLast(dsDiffResponse);
                 }
 
@@ -116,6 +127,7 @@ public class DSProcessManager {
 //
 //                });
 
+                System.out.println("Wait CMD_GETDSDIFF_RESPONSE msg from targets!");
                 LinkedList<byte[]> receiveDiffResponses = new LinkedList<>();
                 if (callBackBarrierDiff.tryCall()) {
                     for (int i = 0; i < dsDiffResponses.size(); i++) {
@@ -125,13 +137,18 @@ public class DSProcessManager {
                         }
                     }
                 }
+
+                System.out.println("ReceiveDiffResponses size =  "+ receiveDiffResponses.size());
                 // step6: process data sequence diff response, update local data sequence state
-                DataSequenceElement[] dataSequenceElements = dsTransferProcess.computeDiffElement(receiveDiffResponses.toArray(new byte[receiveDiffResponses.size()][]));
-                returnCode = dsWriter.updateDSInfo(dsInfo, dataSequenceElements);
+                System.out.println("Compute diff elements!");
+                ArrayList<DataSequenceElement> dataSequenceElements = dsTransferProcess.computeDiffElement(receiveDiffResponses.toArray(new byte[receiveDiffResponses.size()][]));
+                System.out.println("Update local data sequence!");
+                Collections.sort(dataSequenceElements, new DataSequenceComparator());
+                returnCode = dsWriter.updateDSInfo(dsInfo, dataSequenceElements.toArray(new DataSequenceElement[dataSequenceElements.size()]));
 
                 // data sequence transfer complete, close all sessions, end process life cycle
-
-                dsTransferProcess.close();
+                System.out.println("Close all sessions");
+//                dsTransferProcess.close();
                 dSProcessMap.remove(dsInfo.getId());
             }
 
@@ -142,7 +159,14 @@ public class DSProcessManager {
         return returnCode;
     }
 
-
+    RemoteSession findResponseSession(RemoteNode remoteNode, RemoteSession[] remoteSessions) {
+        for (RemoteSession remoteSession : remoteSessions) {
+            if (remoteSession.remoteNode().equals(remoteNode)) {
+                return remoteSession;
+            }
+        }
+        return null;
+    }
     /**
      *
      *

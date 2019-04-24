@@ -43,7 +43,7 @@ public class DataSequenceMsgEncoder {
                 loadMessage = new byte[dataLength];
 
                 System.arraycopy(BytesUtils.toBytes(dataLength), 0, loadMessage, 0, 4);
-                System.arraycopy(msgType.CODE, 0, loadMessage, 4, msgTypeSize);
+                loadMessage[4] = msgType.CODE;
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize, 4);
                 System.arraycopy(id.getBytes(), 0, loadMessage, 4 + msgTypeSize + 4, idSize);
             } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST) {
@@ -56,12 +56,12 @@ public class DataSequenceMsgEncoder {
                 loadMessage = new byte[dataLength];
 
                 System.arraycopy(BytesUtils.toBytes(dataLength), 0, loadMessage, 0, 4);
-                System.arraycopy(msgType.CODE, 0, loadMessage, 4, msgTypeSize);
+                loadMessage[4] = msgType.CODE;
                 System.arraycopy(BytesUtils.toBytes(fromHeight), 0, loadMessage, 4 + msgTypeSize, heightSize);
                 System.arraycopy(BytesUtils.toBytes(toHeight), 0, loadMessage, 4 + msgTypeSize + heightSize, heightSize);
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize + heightSize + heightSize, 4);
                 System.arraycopy(id.getBytes(), 0, loadMessage, 4 + msgTypeSize + heightSize + heightSize + 4, idSize);
-            } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_RESPONSE) {
+            } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_RESPONSE) {
 
                 // CMD_DSINFO_RESPONSE Message parts : 4 bytes total message size, 1 byte message type coe, 8 bytes data sequence local height,
                 // 4 bytes id length, id content size bytes
@@ -71,7 +71,7 @@ public class DataSequenceMsgEncoder {
                 loadMessage = new byte[dataLength];
 
                 System.arraycopy(BytesUtils.toBytes(dataLength), 0, loadMessage, 0, 4);
-                System.arraycopy(msgType.CODE, 0, loadMessage, 4, msgTypeSize);
+                loadMessage[4] = msgType.CODE;
                 System.arraycopy(BytesUtils.toBytes(dsReader.getDSInfo(id).getHeight()), 0, loadMessage, 4 + msgTypeSize, heightSize);
 
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize + heightSize, 4);
@@ -94,7 +94,7 @@ public class DataSequenceMsgEncoder {
                 loadMessage = new byte[dataLength];
 
                 System.arraycopy(BytesUtils.toBytes(dataLength), 0, loadMessage, 0, 4); //total size
-                System.arraycopy(msgType.CODE, 0, loadMessage, 4, msgTypeSize); //msgType size
+                loadMessage[4] = msgType.CODE; //msgType size
                 System.arraycopy(BytesUtils.toBytes(diffElem.length), 0, loadMessage, 4 + msgTypeSize, 4); // diffElem size
                 System.arraycopy(diffElem, 0, loadMessage, 4 + msgTypeSize + 4, diffElem.length); // diffElem bytes
             }

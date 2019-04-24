@@ -11,7 +11,7 @@ public class DataSequence {
     private InetSocketAddress address;
     private String id;
 
-    private static LinkedList<DataSequenceElement> dataSequenceElements = new LinkedList<>();
+    private LinkedList<DataSequenceElement> dataSequenceElements = new LinkedList<>();
 
 
     public DataSequence(InetSocketAddress address, String id) {

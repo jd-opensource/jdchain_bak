@@ -2,8 +2,6 @@ package test.com.jd.blockchain.statetransfer;
 
 import com.jd.blockchain.statetransfer.DataSequenceElement;
 import com.jd.blockchain.statetransfer.DataSequenceInfo;
-import com.jd.blockchain.statetransfer.callback.DataSequenceReader;
-import com.jd.blockchain.statetransfer.callback.DataSequenceWriter;
 import com.jd.blockchain.statetransfer.process.DSProcessManager;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import org.junit.Before;
@@ -30,13 +28,7 @@ public class StateTransferLayerTest {
 
     private Random rand = new Random();
 
-    private String[] dataSequenceIds;
-
-    private DSProcessManager dsProcessManager;
-
-    private DataSequenceReader dataSequenceReader;
-
-    private DataSequenceWriter dataSequenceWriter;
+    private String[] dataSequenceIds = new String[DataSequenceNum];
 
     private InetSocketAddress[] remoteNodeIps = new InetSocketAddress[nodesNum];
 
@@ -59,10 +51,6 @@ public class StateTransferLayerTest {
             dataSequenceIds[i] = Base58Utils.encode(idBytes);
         }
 
-        // 创建数据序列处理管理者实例
-        dsProcessManager = new DSProcessManager();
-
-
         // 准备好所有的远端结点，包括监听者
         for (int i = 0; i < nodesNum; i++) {
             remoteNodeIps[i] = new InetSocketAddress(localIp, listenPorts[i]);
@@ -80,8 +68,8 @@ public class StateTransferLayerTest {
                DataSequence dataSequence = new DataSequence(remoteNodeIps[i], id);
 
                 // 为数据序列的0，1，2高度添加内容
-                for (int j = 0; j < 3; i++) {
-                    dataSequence.addElement(new DataSequenceElement(id, i, dsElementDatas));
+                for (int j = 0; j < 3; j++) {
+                    dataSequence.addElement(new DataSequenceElement(id, j, dsElementDatas));
                 }
                 dataSequencesPerNode.addLast(dataSequence);
             }
@@ -91,7 +79,7 @@ public class StateTransferLayerTest {
                 DataSequence dataSequence = dataSequencesPerNode.get(i);
                 if (dataSequence.getAddress().getPort() != listenPorts[0]) {
                     // 为数据序列的3,4高度添加内容
-                    for (int j = 3; j < 5; i++) {
+                    for (int j = 3; j < 5; j++) {
                         dataSequence.addElement(new DataSequenceElement(id, j, dsElementDatas));
                     }
                 }
@@ -136,6 +124,8 @@ public class StateTransferLayerTest {
             for (int i = 0; i < nodesNum; i++) {
                 InetSocketAddress listenNode = remoteNodeIps[i];
                 threadPool.execute(() -> {
+                    // 创建数据序列处理管理者实例
+                    DSProcessManager dsProcessManager = new DSProcessManager();
                     DataSequence currDataSequence = findDataSequence(id, listenNode);
                     DataSequenceInfo dsInfo = currDataSequence.getDSInfo();
                     InetSocketAddress[] targets = getTargetNodesIp(listenNode, remoteNodeIps);
@@ -147,6 +137,7 @@ public class StateTransferLayerTest {
 
         // 等待数据序列更新完成
         try {
+            Thread.sleep(60000);
             countDownLatch.await();
         } catch (Exception e) {
             e.printStackTrace();
