@@ -5,11 +5,10 @@ import com.jd.blockchain.statetransfer.DataSequenceInfo;
 import com.jd.blockchain.statetransfer.callback.DataSequenceWriter;
 
 /**
- *数据序列差异的请求者需要使用的回调接口实现类
+ * 数据序列差异的请求者需要使用的回调接口实现类(测试)
  * @author zhangshuang
  * @create 2019/4/22
  * @since 1.0.0
- *
  */
 public class DataSequenceWriterImpl implements DataSequenceWriter {
 

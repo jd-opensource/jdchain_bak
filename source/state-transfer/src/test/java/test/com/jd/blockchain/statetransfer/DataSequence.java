@@ -6,11 +6,18 @@ import com.jd.blockchain.statetransfer.DataSequenceInfo;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
 
+/**
+ * 测试过程建立的一个数据序列
+ * @author zhangshuang
+ * @create 2019/4/18
+ * @since 1.0.0
+ */
 public class DataSequence {
 
     private InetSocketAddress address;
     private String id;
 
+    // 每个数据序列维护了一系列的数据序列元素
     private LinkedList<DataSequenceElement> dataSequenceElements = new LinkedList<>();
 
 
@@ -26,6 +33,7 @@ public class DataSequence {
     public InetSocketAddress getAddress() {
         return address;
     }
+
 
     public void addElements(DataSequenceElement[] elements) {
         for (DataSequenceElement element : elements) {

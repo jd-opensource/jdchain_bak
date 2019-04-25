@@ -1,7 +1,7 @@
 package com.jd.blockchain.statetransfer;
 
 /**
- *共识结点上的某个数据序列的当前状态信息，每个共识结点可以对应任意个数据序列；
+ * 共识结点上的某个数据序列的当前状态信息，每个共识结点可以对应任意个数据序列；
  * @author zhangshuang
  * @create 2019/4/11
  * @since 1.0.0

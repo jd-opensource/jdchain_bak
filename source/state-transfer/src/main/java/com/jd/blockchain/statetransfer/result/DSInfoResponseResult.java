@@ -1,13 +1,12 @@
 package com.jd.blockchain.statetransfer.result;
 
-import com.jd.blockchain.stp.communication.RemoteSession;
 import com.jd.blockchain.stp.communication.node.RemoteNode;
 
 /**
- *
- *
- *
- *
+ * 数据序列差异请求者解码提供者"CMD_DSINFO_RESPONSE"消息时得到的结果
+ * @author zhangshuang
+ * @create 2019/4/18
+ * @since 1.0.0
  */
 public class DSInfoResponseResult {
 

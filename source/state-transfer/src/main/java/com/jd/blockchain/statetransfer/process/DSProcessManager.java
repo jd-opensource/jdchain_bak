@@ -13,17 +13,17 @@ import com.jd.blockchain.stp.communication.callback.CallBackDataListener;
 import com.jd.blockchain.stp.communication.manager.RemoteSessionManager;
 import com.jd.blockchain.stp.communication.node.LocalNode;
 import com.jd.blockchain.stp.communication.node.RemoteNode;
-import com.jd.blockchain.utils.concurrent.CompletableAsyncFuture;
 
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.*;
 
 /**
- *
+ * 数据序列状态复制过程管理器
  * @author zhangshuang
  * @create 2019/4/11
  * @since 1.0.0
+ *
  */
 public class DSProcessManager {
 
@@ -32,14 +32,19 @@ public class DSProcessManager {
     private long dsInfoResponseTimeout = 20000;
     private ExecutorService writeExecutors = Executors.newFixedThreadPool(5);
     private int returnCode = 0;
+
     /**
-     *
-     *
+     * 启动一个指定数据序列的状态复制过程
+     * @param dsInfo 数据序列当前状态信息
+     * @param listener 本地监听者
+     * @param targets 目标结点
+     * @param dsWriter 差异请求者执行数据序列更新的执行器
+     * @param dsReader 差异响应者执行数据序列读取的执行器
+     * @return returnCode 执行结果码
      */
     public int startDSProcess(DataSequenceInfo dsInfo, InetSocketAddress listener, InetSocketAddress[] targets, DataSequenceWriter dsWriter, DataSequenceReader dsReader) {
 
         // create remote sessions manager， add listener
-
         LocalNode listenNode = new LocalNode(listener.getHostName(), listener.getPort(), new DSDefaultMessageExecutor(dsReader, dsWriter));
 
         RemoteSessionManager remoteSessionManager = new RemoteSessionManager(listenNode);
@@ -116,17 +121,13 @@ public class DSProcessManager {
 
                 RemoteSession responseSession = findResponseSession(diffResult.getMaxHeightRemoteNode(), remoteSessions);
                 System.out.println("Async send CMD_GETDSDIFF_REQUEST msg to targets will start!");
+
                 // step5: collect get data sequence diff response
                 for (long height = dsInfo.getHeight() + 1; height < diffResult.getMaxHeight() + 1; height++) {
                     CallBackDataListener dsDiffResponse = dsTransferProcess.send(DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST, responseSession, height, height, callBackBarrierDiff);
                     dsDiffResponses.addLast(dsDiffResponse);
                 }
-
-                  // 考虑性能
-//                writeExecutors.execute(() -> {
-//
-//                });
-
+                // 上述发送不合理，考虑一次性发送请求
                 System.out.println("Wait CMD_GETDSDIFF_RESPONSE msg from targets!");
                 LinkedList<byte[]> receiveDiffResponses = new LinkedList<>();
                 if (callBackBarrierDiff.tryCall()) {
@@ -159,6 +160,12 @@ public class DSProcessManager {
         return returnCode;
     }
 
+    /**
+     * 根据远端结点找与远端结点建立的会话
+     * @param remoteNode 远端结点
+     * @param remoteSessions 本地维护的远端结点会话表
+     * @return 与远端结点对应的会话
+     */
     RemoteSession findResponseSession(RemoteNode remoteNode, RemoteSession[] remoteSessions) {
         for (RemoteSession remoteSession : remoteSessions) {
             if (remoteSession.remoteNode().equals(remoteNode)) {
@@ -171,9 +178,9 @@ public class DSProcessManager {
      *
      *
      */
-    void setDSReader(DataSequenceReader reader) {
-
-    }
+//    void setDSReader(DataSequenceReader reader) {
+//
+//    }
 
 
 }

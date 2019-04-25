@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author zhangshuang
  * @create 2019/4/11
  * @since 1.0.0
- *
  */
 public class DataSequenceReaderImpl implements DataSequenceReader {
 

@@ -1,5 +1,11 @@
 package com.jd.blockchain.statetransfer.result;
 
+/**
+ * 数据序列差异提供者解码请求者"CMD_GETDSDIFF_REQUEST"消息时得到的结果
+ * @author zhangshuang
+ * @create 2019/4/18
+ * @since 1.0.0
+ */
 public class DSDiffRequestResult {
 
     String id;

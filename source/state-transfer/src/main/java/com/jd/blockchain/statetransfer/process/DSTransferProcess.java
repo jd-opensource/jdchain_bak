@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- *
+ * 数据序列状态复制过程
  * @author zhangshuang
  * @create 2019/4/11
  * @since 1.0.0
@@ -36,8 +36,8 @@ public class DSTransferProcess {
     private String id;
 
     /**
-     *
-     *
+     * @param dsInfo 数据序列当前状态信息
+     * @param targets 目标结点
      */
     public DSTransferProcess(DataSequenceInfo dsInfo, InetSocketAddress[] targets) {
         this.dsInfo = dsInfo;
@@ -45,30 +45,46 @@ public class DSTransferProcess {
         this.id = dsInfo.getId();
     }
 
+    /**
+     * @param dsWriter 差异请求者执行数据序列更新的执行器
+     * @return void
+     */
     public void setDSWriter(DataSequenceWriter dsWriter) {
         this.dsWriter = dsWriter;
     }
 
+    /**
+     * @param dsReader 差异响应者执行数据序列读取的执行器
+     * @return void
+     */
     public void setDSReader(DataSequenceReader dsReader) {
         this.dsReader = dsReader;
     }
 
+    /**
+     * @param remoteSessionManager 远端会话管理器
+     * @return void
+     */
     public void setRemoteSessionManager(RemoteSessionManager remoteSessionManager) {
         this.remoteSessionManager = remoteSessionManager;
     }
 
 
     /**
-     * get unique id from data sequence transfer process
      *
+     * @return 数据序列标识符
      */
     public String getId() {
         return id;
     }
 
     /**
-     *
-     *
+     * @param msgType 数据序列差异请求消息类型
+     * @param remoteSession 目标结点对应的会话
+     * @param fromHeight 差异起始高度
+     * @param toHeight 差异结束高度
+     * @param callBackBarrier 异步回调
+     * @return 异步回调
      */
     CallBackDataListener send(DataSequenceMsgType msgType, RemoteSession remoteSession, long fromHeight, long toHeight, CallBackBarrier callBackBarrier) {
 
@@ -76,9 +92,11 @@ public class DSTransferProcess {
 
         return remoteSession.asyncRequest(new DataSequenceLoadMessage(loadMessage), callBackBarrier);
     }
+
     /**
-     *
-     *
+     * 计算数据序列差异元素数组
+     * @param diffArray 差异的字节数组
+     * @return 对差异字节数组的解码结果
      */
     public ArrayList<DataSequenceElement> computeDiffElement(byte[][] diffArray) {
 
@@ -98,8 +116,9 @@ public class DSTransferProcess {
     }
 
     /**
-     *
-     *
+     * 根据差异提供者响应的数据序列状态信息找到拥有最大数据序列高度的远端结点
+     * @param receiveResponses 数据序列差异请求者收到的远端结点状态的响应信息
+     * @return 得到远端数据序列的最大高度以及拥有者结点
      */
     public DSInfoResponseResult computeDiffInfo(LinkedList<CallBackDataListener> receiveResponses) {
         long maxHeight = 0;
@@ -110,11 +129,10 @@ public class DSTransferProcess {
         try {
             for (CallBackDataListener receiveResponse : receiveResponses) {
                 Object object = DSMsgResolverFactory.getDecoder(dsWriter, dsReader).decode(receiveResponse.getCallBackData());
-//                System.out.println("ComputeDiffInfo object = "+object);
                 if (object instanceof DataSequenceInfo) {
                     DataSequenceInfo dsInfo = (DataSequenceInfo) object;
                     long height = dsInfo.getHeight();
-//                    System.out.println("ComputeDiffInfo height = " +height);
+                    // sava max height and its remote node
                     if (maxHeight < height) {
                         maxHeight = height;
                         maxHeightRemoteNode = receiveResponse.remoteNode();
@@ -134,24 +152,17 @@ public class DSTransferProcess {
     }
 
     /**
-     *
-     *
-     */
-    public void getDSInfo(String id) {
-
-    }
-
-    /**
-     *
-     *
+     * 获取本复制过程维护的远端会话表
+     * @param
+     * @return 远端会话表数组
      */
     public RemoteSession[] getSessions() {
         return remoteSessions;
     }
 
     /**
-     * close all sessions
-     *
+     * 关闭本复制过程维护的所有远端会话
+     * @return void
      */
     public void close() {
         for (RemoteSession session : remoteSessions) {
@@ -160,8 +171,8 @@ public class DSTransferProcess {
     }
 
     /**
-     * establish connections with target remote nodes
-     *
+     * 建立与远端目标结点的连接，产生本地维护的远端会话表
+     * @return void
      */
     public void start() {
 
@@ -176,7 +187,7 @@ public class DSTransferProcess {
 
 
     /**
-     * data sequence transfer message type
+     * 数据序列状态传输使用的消息类型
      *
      */
     public enum DataSequenceMsgType {

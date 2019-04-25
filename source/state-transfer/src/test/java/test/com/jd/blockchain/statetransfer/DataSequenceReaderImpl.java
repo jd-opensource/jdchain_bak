@@ -8,11 +8,10 @@ import java.net.InetSocketAddress;
 import java.util.LinkedList;
 
 /**
- *数据序列差异的提供者需要使用的回调接口实现类
+ * 数据序列差异的提供者需要使用的回调接口实现类(测试)
  * @author zhangshuang
  * @create 2019/4/22
  * @since 1.0.0
- *
  */
 
 public class DataSequenceReaderImpl implements DataSequenceReader {

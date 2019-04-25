@@ -7,6 +7,12 @@ import com.jd.blockchain.statetransfer.process.DSTransferProcess;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
+/**
+ * 数据序列消息编码器
+ * @author zhangshuang
+ * @create 2019/4/18
+ * @since 1.0.0
+ */
 public class DataSequenceMsgEncoder {
 
     private int heightSize = 8;
@@ -21,8 +27,12 @@ public class DataSequenceMsgEncoder {
     }
 
     /**
-     * 目前暂时考虑fromHeight与toHeight相同的情况，即每次只对一个高度的差异编码并响应
-     *
+     * 目前暂时考虑fromHeight与toHeight相同的情况，即每次只对一个高度的差异内容进行编码并响应
+     * 把消息编码成字节数组，再交给通信层传输
+     * @param msgType 数据序列状态复制消息类型
+     * @param id 数据序列唯一标识符
+     * @param fromHeight 差异元素起始高度
+     * @param toHeight 差异元素结束高度
      */
     public byte[] encode(DSTransferProcess.DataSequenceMsgType msgType, String id, long fromHeight, long toHeight) {
 
@@ -33,6 +43,7 @@ public class DataSequenceMsgEncoder {
             byte[] loadMessage = null;
 
             // different encoding methods for different message types
+            // send by diff requester, diff requester encode
             if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_REQUEST) {
 
                 // CMD_DSINFO_REQUEST Message parts : 4 bytes total message size, 1 byte message type coe,
@@ -46,7 +57,9 @@ public class DataSequenceMsgEncoder {
                 loadMessage[4] = msgType.CODE;
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize, 4);
                 System.arraycopy(id.getBytes(), 0, loadMessage, 4 + msgTypeSize + 4, idSize);
-            } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST) {
+            }
+            // send by diff requester, diff requester encode
+            else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_REQUEST) {
 
                 // CMD_GETDSDIFF_REQUEST Message parts : 4 bytes total message size, 1 byte message type coe, 8 bytes from height,
                 // 8 bytes to height, 4 bytes id length, id content size bytes
@@ -61,7 +74,9 @@ public class DataSequenceMsgEncoder {
                 System.arraycopy(BytesUtils.toBytes(toHeight), 0, loadMessage, 4 + msgTypeSize + heightSize, heightSize);
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize + heightSize + heightSize, 4);
                 System.arraycopy(id.getBytes(), 0, loadMessage, 4 + msgTypeSize + heightSize + heightSize + 4, idSize);
-            } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_RESPONSE) {
+            }
+            // send by diff provider, diff provider encode
+            else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_DSINFO_RESPONSE) {
 
                 // CMD_DSINFO_RESPONSE Message parts : 4 bytes total message size, 1 byte message type coe, 8 bytes data sequence local height,
                 // 4 bytes id length, id content size bytes
@@ -77,7 +92,9 @@ public class DataSequenceMsgEncoder {
                 System.arraycopy(BytesUtils.toBytes(idSize), 0, loadMessage, 4 + msgTypeSize + heightSize, 4);
                 System.arraycopy(id.getBytes(), 0, loadMessage, 4 + msgTypeSize + heightSize + 4, idSize);
 
-            } else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_RESPONSE) {
+            }
+            // send by diff provider, diff provider encode
+            else if (msgType == DSTransferProcess.DataSequenceMsgType.CMD_GETDSDIFF_RESPONSE) {
                 if (fromHeight != toHeight) {
                     throw new IllegalArgumentException("Height parameter error!");
                 }

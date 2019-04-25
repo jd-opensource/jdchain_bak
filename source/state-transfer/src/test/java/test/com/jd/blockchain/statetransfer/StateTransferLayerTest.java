@@ -14,6 +14,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author zhangshuang
+ * @create 2019/4/18
+ * @since 1.0.0
+ */
 public class StateTransferLayerTest {
 
     private final int[] listenPorts = new int[]{9000, 9010, 9020, 9030};
@@ -87,9 +92,9 @@ public class StateTransferLayerTest {
         }
     }
 
-    // 获得除监听结点之外的其他远端结点
     InetSocketAddress[] getTargetNodesIp(InetSocketAddress listenIp, InetSocketAddress[] remoteNodeIps) {
 
+        // 获得除监听结点之外的其他远端结点
         InetSocketAddress[] targets = new InetSocketAddress[remoteNodeIps.length - 1];
         int j = 0;
 
@@ -103,6 +108,7 @@ public class StateTransferLayerTest {
         return targets;
 
     }
+
 
     DataSequence findDataSequence(String id, InetSocketAddress listenNodeAddr) {
         for (DataSequence dataSequence : dataSequencesPerNode) {
