@@ -39,35 +39,29 @@ public class EqualVerifyTest {
         byte[] responderOutput;
         boolean isEqual;
 
-        int i;
+        
+        sponsorInput   = 666;
+        responderInput = 666;
 
-        for (i = 0; i < 1000; i++) {
-
-            sponsorInput   = 666;
-            responderInput = 666;
-
-           sponsorOutput = EqualVerify.sponsor(sponsorInput,sponsorEPubKeyBytes);
-           responderOutput = EqualVerify.responder(responderInput,sponsorOutput,
+        sponsorOutput = EqualVerify.sponsor(sponsorInput,sponsorEPubKeyBytes);
+        responderOutput = EqualVerify.responder(responderInput,sponsorOutput,
                  responderEPubKeyBytes,responderEPrivKeyBytes);
 
-           isEqual = EqualVerify.sponsorCheck(sponsorInput,responderOutput,sponsorEPrivKeyBytes);
+        isEqual = EqualVerify.sponsorCheck(sponsorInput,responderOutput,sponsorEPrivKeyBytes);
 
-           assertTrue(isEqual);
-        }
+        assertTrue(isEqual);
 
-        for (i = 0; i < 1000; i++){
 
-            sponsorInput   = 666;
-            responderInput = 667;
+        sponsorInput   = 666;
+        responderInput = 667;
 
-            sponsorOutput = EqualVerify.sponsor(sponsorInput,sponsorEPubKeyBytes);
-            responderOutput = EqualVerify.responder(responderInput,sponsorOutput,
+        sponsorOutput = EqualVerify.sponsor(sponsorInput,sponsorEPubKeyBytes);
+        responderOutput = EqualVerify.responder(responderInput,sponsorOutput,
                     responderEPubKeyBytes,responderEPrivKeyBytes);
 
-            isEqual = EqualVerify.sponsorCheck(sponsorInput,responderOutput,sponsorEPrivKeyBytes);
+        isEqual = EqualVerify.sponsorCheck(sponsorInput,responderOutput,sponsorEPrivKeyBytes);
 
-            assertTrue(!isEqual);
+        assertTrue(!isEqual);
         }
     }
-
 }
