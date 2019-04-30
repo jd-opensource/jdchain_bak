@@ -39,7 +39,7 @@ public class EqualVerifyTest {
         byte[] responderOutput;
         boolean isEqual;
 
-        
+
         sponsorInput   = 666;
         responderInput = 666;
 
