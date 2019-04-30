@@ -29,11 +29,10 @@ public class IntCompareTest {
         int sponsorInput = 10000;
         int responderInput = 9999;
 
-            cipherArray = IntCompare.sponsor(sponsorInput, pubKeyBytes);
-            aggregatedCipherArray = IntCompare.responder(responderInput, cipherArray, pubKeyBytes);
-            output = IntCompare.sponsorOutput(aggregatedCipherArray, privKeyBytes);
-            assertEquals(1, output);
-
+        cipherArray = IntCompare.sponsor(sponsorInput, pubKeyBytes);
+        aggregatedCipherArray = IntCompare.responder(responderInput, cipherArray, pubKeyBytes);
+        output = IntCompare.sponsorOutput(aggregatedCipherArray, privKeyBytes);
+        assertEquals(1, output);
 
         sponsorInput = 10000;
         responderInput = 19999;

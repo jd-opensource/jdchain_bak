@@ -62,6 +62,6 @@ public class EqualVerifyTest {
         isEqual = EqualVerify.sponsorCheck(sponsorInput,responderOutput,sponsorEPrivKeyBytes);
 
         assertTrue(!isEqual);
-        }
+
     }
 }
