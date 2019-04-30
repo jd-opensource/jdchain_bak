@@ -13,12 +13,6 @@ import com.jd.blockchain.utils.ValueType;
 @DataContract(code= TypeCodes.TX_OP_CONTRACT_EVENT_SEND)
 public interface ContractEventSendOperation extends Operation {
 	
-//	@DataField(order=1, refEnum=true)
-//	@Override
-//	default OperationType getType() {
-//		return OperationType.SEND_CONTRACT_EVENT;
-//	}
-	
 	@DataField(order=2, primitiveType=ValueType.BYTES)
 	Bytes getContractAddress();
 	

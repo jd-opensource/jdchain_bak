@@ -11,7 +11,7 @@ package com.jd.blockchain.sdk.converters;
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.consensus.ClientIdentifications;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.http.RequestBodyConverter;
 
 import java.io.IOException;

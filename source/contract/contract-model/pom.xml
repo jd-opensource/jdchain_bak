@@ -10,7 +10,7 @@
 	<artifactId>contract-model</artifactId>
 
 	<dependencies>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>sdk-client</artifactId>
 			<version>${project.version}</version>
@@ -26,12 +26,7 @@
 					<groupId>com.jd.blockchain</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 
-		<!--<dependency>-->
-			<!--<groupId>com.jd.blockchain</groupId>-->
-			<!--<artifactId>tools-initializer</artifactId>-->
-			<!--<version>${project.version}</version>-->
-		<!--</dependency>-->
 	</dependencies>
 </project>

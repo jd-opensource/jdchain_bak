@@ -37,10 +37,10 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionData;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
-import com.jd.blockchain.ledger.data.BlockchainOperationFactory;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
-import com.jd.blockchain.ledger.data.TxContentBlob;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.BlockchainOperationFactory;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.TxContentBlob;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.io.ByteArray;
 
 /**

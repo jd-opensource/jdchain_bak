@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.gateway.PeerConnector;
 import com.jd.blockchain.gateway.PeerService;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.sdk.BlockchainQueryService;
 import com.jd.blockchain.sdk.service.PeerBlockchainServiceFactory;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TransactionService;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 import java.util.List;

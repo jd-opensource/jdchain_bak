@@ -1,9 +1,9 @@
 package com.jd.blockchain.sdk.client;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.sdk.BlockchainQueryService;
 import com.jd.blockchain.sdk.proxy.BlockchainServiceProxy;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TransactionService;
 
 public class GatewayBlockchainServiceProxy extends BlockchainServiceProxy {
 

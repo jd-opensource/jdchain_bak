@@ -20,7 +20,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.data.TxResponseMessage;
+import com.jd.blockchain.transaction.TxResponseMessage;
 
 /**
  *

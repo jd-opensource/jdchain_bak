@@ -13,9 +13,9 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 
 /**

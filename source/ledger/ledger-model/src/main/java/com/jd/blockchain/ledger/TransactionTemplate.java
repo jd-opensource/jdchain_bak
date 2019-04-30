@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.data.ClientOperator;
+import com.jd.blockchain.transaction.ClientOperator;
 
 /**
  * 区块链交易模板；

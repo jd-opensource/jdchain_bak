@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract.jvm;
 
-import com.jd.blockchain.contract.ContractEngine;
-import com.jd.blockchain.contract.ContractServiceProvider;
+import com.jd.blockchain.contract.engine.ContractEngine;
+import com.jd.blockchain.contract.engine.ContractServiceProvider;
 
 public class JVMContractServiceProvider implements ContractServiceProvider {
 	@Override

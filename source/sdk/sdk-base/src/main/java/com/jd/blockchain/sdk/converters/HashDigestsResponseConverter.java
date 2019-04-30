@@ -7,7 +7,7 @@ import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.ledger.data.TxResponseMessage;
+import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.http.HttpServiceContext;
 import com.jd.blockchain.utils.http.ResponseConverter;

@@ -24,7 +24,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.data.ContractCodeDeployOpTemplate;
+import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 /**

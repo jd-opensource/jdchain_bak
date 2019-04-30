@@ -18,9 +18,9 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.ParticipantCertData;
-import com.jd.blockchain.ledger.data.ConsensusParticipantData;
-import com.jd.blockchain.ledger.data.LedgerInitOpTemplate;
-import com.jd.blockchain.ledger.data.LedgerInitSettingData;
+import com.jd.blockchain.transaction.ConsensusParticipantData;
+import com.jd.blockchain.transaction.LedgerInitOpTemplate;
+import com.jd.blockchain.transaction.LedgerInitSettingData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 

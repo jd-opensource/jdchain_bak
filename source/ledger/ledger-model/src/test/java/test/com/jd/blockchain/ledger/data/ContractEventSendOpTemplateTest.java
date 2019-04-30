@@ -13,8 +13,8 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.data.ContractEventSendOpTemplate;
-import com.jd.blockchain.ledger.data.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.utils.Bytes;
 
 import org.junit.Before;

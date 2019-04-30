@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract.jvm;
 
-import com.jd.blockchain.contract.ContractCode;
-import com.jd.blockchain.contract.ContractEngine;
+import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.contract.engine.ContractEngine;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.runtime.RuntimeContext;
 

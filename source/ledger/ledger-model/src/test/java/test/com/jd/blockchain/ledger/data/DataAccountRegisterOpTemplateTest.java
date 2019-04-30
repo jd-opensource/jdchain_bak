@@ -22,7 +22,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.data.DataAccountRegisterOpTemplate;
+import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
 
 /**
  *

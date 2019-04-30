@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract.samples;
 
-import com.jd.blockchain.contract.model.Contract;
-import com.jd.blockchain.contract.model.ContractEvent;
+import com.jd.blockchain.contract.Contract;
+import com.jd.blockchain.contract.ContractEvent;
 
 /**
  *  示例：一个“资产管理”智能合约；

@@ -28,7 +28,7 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.data.TxBuilder;
+import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.io.BytesUtils;

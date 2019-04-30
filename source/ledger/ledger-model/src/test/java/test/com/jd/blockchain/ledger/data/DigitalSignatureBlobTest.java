@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.DigitalSignatureBody;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
 
 /**
  *
