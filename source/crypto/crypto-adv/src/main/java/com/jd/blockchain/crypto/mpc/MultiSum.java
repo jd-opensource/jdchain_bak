@@ -2,17 +2,15 @@ package com.jd.blockchain.crypto.mpc;
 
 import java.math.BigInteger;
 
-import com.n1analytics.paillier.PaillierPrivateKey;
-import com.n1analytics.paillier.PaillierPublicKey;
+import com.jd.blockchain.crypto.paillier.PaillierPublicKeyParameters;
+import com.jd.blockchain.crypto.paillier.PaillierUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.encoders.Hex;
 
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
 import com.jd.blockchain.crypto.utils.sm.SM3Utils;
@@ -20,68 +18,73 @@ import com.jd.blockchain.utils.io.BytesUtils;
 
 public class MultiSum {
 
-    private ECPrivateKeyParameters ePrivKey;
-    private ECPublicKeyParameters ePubKey;
-    private ECCurve curve;
-    private ECDomainParameters domainParams;
+    private static byte[] ePrivKey;
+    private static byte[] ePubKey;
+    private static ECCurve curve;
+    private static ECDomainParameters domainParams;
 
-    public void generateEphemeralKeyPair(){
+    public static void generateEphemeralKeyPair(){
         AsymmetricCipherKeyPair eKeyPair = SM2Utils.generateKeyPair();
-        this.ePrivKey = (ECPrivateKeyParameters) eKeyPair.getPrivate();
-        this.ePubKey  = (ECPublicKeyParameters) eKeyPair.getPublic();
-        this.curve = SM2Utils.getCurve();
-        this.domainParams = SM2Utils.getDomainParams();
+        ECPrivateKeyParameters ecPrivKey = (ECPrivateKeyParameters) eKeyPair.getPrivate();
+        ECPublicKeyParameters ecPubKey= (ECPublicKeyParameters) eKeyPair.getPublic();
+        ePrivKey = bigIntegerToBytes(ecPrivKey.getD());
+        ePubKey  = ecPubKey.getQ().getEncoded(false);
+        curve = SM2Utils.getCurve();
+        domainParams = SM2Utils.getDomainParams();
     }
 
-    public BigInteger calculateAgreement(CipherParameters otherEPubKey){
+    public static byte[] calculateAgreement(byte[] otherEPubKey, byte[] ePrivKey){
         ECDHBasicAgreement basicAgreement = new ECDHBasicAgreement();
-        basicAgreement.init(ePrivKey);
-        return basicAgreement.calculateAgreement(otherEPubKey);
+        ECPoint ePubKeyPoint = resolvePubKeyBytes(otherEPubKey);
+        ECPublicKeyParameters pubKey = new ECPublicKeyParameters(ePubKeyPoint, domainParams);
+        ECPrivateKeyParameters privateKey = new ECPrivateKeyParameters(new BigInteger(1,ePrivKey), domainParams);
+
+        basicAgreement.init(privateKey);
+        BigInteger agreement = basicAgreement.calculateAgreement(pubKey);
+        return bigIntegerToBytes(agreement);
     }
 
-    public static BigInteger deriveShares(byte[] frontID, byte[] rearID, BigInteger agreement){
-        byte[] agreementBytes = agreement.toByteArray();
+    public static byte[] deriveShares(byte[] frontID, byte[] rearID, byte[] agreementBytes){
         byte[] inputBytes = BytesUtils.concat(frontID,rearID,agreementBytes);
-        return new BigInteger(1,SM3Utils.hash(inputBytes));
+        return SM3Utils.hash(inputBytes);
     }
 
-    public static BigInteger encryptBlindedMsg(PaillierPublicKey encKey, BigInteger msg, BigInteger frontShare, BigInteger rearShare){
+    public static byte[] encryptBlindedMsg(byte[] paillierPubKey, int input, byte[] frontShare, byte[] rearShare){
+        BigInteger integer = BigInteger.valueOf(input);
+        BigInteger frontInteger = new BigInteger(1,frontShare);
+        BigInteger rearInteger = new BigInteger(1,rearShare);
+        PaillierPublicKeyParameters encKey = PaillierUtils.bytes2PubKey(paillierPubKey);
         BigInteger modulus = encKey.getModulus();
-        BigInteger plaintext = msg.add(frontShare).subtract(rearShare).mod(modulus);
-        return encKey.raw_encrypt(plaintext);
+        BigInteger plaintext = integer.add(frontInteger).subtract(rearInteger).mod(modulus);
+        return PaillierUtils.encrypt(plaintext.toByteArray(),encKey);
     }
 
-    public static BigInteger aggregateCiphertexts(PaillierPublicKey encKey, BigInteger... bigIntegers){
-        BigInteger aggregatedCiphertext = BigInteger.ONE;
-        BigInteger modulusSquared = encKey.getModulusSquared();
-        for (BigInteger entry : bigIntegers) {
-            aggregatedCiphertext = aggregatedCiphertext.multiply(entry).mod(modulusSquared);
-        }
-        return aggregatedCiphertext;
+    public static byte[] aggregateCiphertexts(byte[] paillierPubKey, byte[]... ciphertexts){
+        return PaillierUtils.add(paillierPubKey,ciphertexts);
     }
 
-    public static BigInteger decrypt(PaillierPrivateKey decKey, BigInteger ciphertext){
-        return decKey.raw_decrypt(ciphertext);
+    public static byte[] decrypt(byte[] paillierPrivKey, byte[] ciphertext){
+        return PaillierUtils.decrypt(ciphertext,paillierPrivKey);
     }
 
-    public ECPublicKeyParameters getEPubKey(){return ePubKey;}
+    public static byte[] getEPubKey(){return ePubKey;}
 
-    public ECPrivateKeyParameters getEPrivKey(){return ePrivKey;}
+    public static byte[] getEPrivKey(){return ePrivKey;}
 
 
-    public byte[] getEPubKeyBytes(){
-        byte[] ePubKeyBytes = new byte[65];
-        byte[] ePubKeyBytesX = ePubKey.getQ().getAffineXCoord().getEncoded();
-        byte[] ePubKeyBytesY = ePubKey.getQ().getAffineYCoord().getEncoded();
-        System.arraycopy(Hex.decode("04"),0,ePubKeyBytes,0,1);
-        System.arraycopy(ePubKeyBytesX,0,ePubKeyBytes,1,32);
-        System.arraycopy(ePubKeyBytesY,0,ePubKeyBytes,1+32,32);
-        return ePubKeyBytes;
-    }
-
-    public byte[] getEPrivKeyBytes(){
-        return BigIntegerToLBytes(ePrivKey.getD(),32);
-    }
+//    public byte[] getEPubKeyBytes(){
+//        byte[] ePubKeyBytes = new byte[65];
+//        byte[] ePubKeyBytesX = ePubKey.getQ().getAffineXCoord().getEncoded();
+//        byte[] ePubKeyBytesY = ePubKey.getQ().getAffineYCoord().getEncoded();
+//        System.arraycopy(Hex.decode("04"),0,ePubKeyBytes,0,1);
+//        System.arraycopy(ePubKeyBytesX,0,ePubKeyBytes,1,32);
+//        System.arraycopy(ePubKeyBytesY,0,ePubKeyBytes,1+32,32);
+//        return ePubKeyBytes;
+//    }
+//
+//    public byte[] getEPrivKeyBytes(){
+//        return bigIntegerToBytes(ePrivKey.getD());
+//    }
 
     public ECPublicKeyParameters resolveEPubKey(byte[] ePubKeyBytes){
         byte[] ePubKeyX = new byte[32];
@@ -97,9 +100,9 @@ public class MultiSum {
     }
 
     // To convert BigInteger to byte[] whose length is l
-    private static byte[] BigIntegerToLBytes(BigInteger b, int l){
+    private static byte[] bigIntegerToBytes(BigInteger b){
         byte[] tmp = b.toByteArray();
-        byte[] result = new byte[l];
+        byte[] result = new byte[32];
         if (tmp.length > result.length) {
             System.arraycopy(tmp, tmp.length - result.length, result, 0, result.length);
         }
@@ -108,4 +111,10 @@ public class MultiSum {
         }
         return result;
     }
+
+    // To retrieve the public key point from publicKey in byte array mode
+    private static ECPoint resolvePubKeyBytes(byte[] publicKey){
+        return curve.decodePoint(publicKey);
+    }
+
 }

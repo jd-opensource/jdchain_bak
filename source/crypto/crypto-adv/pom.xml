@@ -45,11 +45,5 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.n1analytics</groupId>
-			<artifactId>javallier_2.10</artifactId>
-			<version>0.6.0</version>
-		</dependency>
-
 	</dependencies>
 </project>

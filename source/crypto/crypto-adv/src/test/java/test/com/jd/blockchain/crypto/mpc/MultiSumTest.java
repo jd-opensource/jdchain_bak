@@ -1,103 +1,88 @@
 package test.com.jd.blockchain.crypto.mpc;
 
 import com.jd.blockchain.crypto.mpc.MultiSum;
-import com.n1analytics.paillier.PaillierPrivateKey;
-import com.n1analytics.paillier.PaillierPublicKey;
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.util.encoders.Hex;
-import org.junit.Before;
+import com.jd.blockchain.crypto.paillier.PaillierPrivateKeyParameters;
+import com.jd.blockchain.crypto.paillier.PaillierPublicKeyParameters;
+import com.jd.blockchain.crypto.paillier.PaillierUtils;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.junit.Test;
-
-import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
 public class MultiSumTest {
 
-    private PaillierPrivateKey decKey;
-    private PaillierPublicKey encKey;
-
-    @Before
-    public void init() {
-        decKey = PaillierPrivateKey.create(2048);
-        encKey = decKey.getPublicKey();
-    }
-    
     @Test
     public void testMultiSum() {
 
-        MultiSum instance1 = new MultiSum();
-        MultiSum instance2 = new MultiSum();
-        MultiSum instance3 = new MultiSum();
+        AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
+        PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
+        PaillierPrivateKeyParameters privKeyParams = (PaillierPrivateKeyParameters) keyPair.getPrivate();
 
-        BigInteger value1 = BigInteger.valueOf(6);
-        BigInteger value2 = BigInteger.valueOf(60);
-        BigInteger value3 = BigInteger.valueOf(600);
-        BigInteger expectedSum = BigInteger.valueOf(666);
+        byte[] encKey = PaillierUtils.pubKey2Bytes(pubKeyParams);
+        byte[] decKey = PaillierUtils.privKey2Bytes(privKeyParams);
+
+        int int1 = 6;
+        int int2 = 60;
+        int int3 = 600;
+        int sum  = 666;
 
         byte[] id1 = "1".getBytes();
         byte[] id2 = "2".getBytes();
         byte[] id3 = "3".getBytes();
 
-        instance1.generateEphemeralKeyPair();
-        instance2.generateEphemeralKeyPair();
-        instance3.generateEphemeralKeyPair();
+        MultiSum.generateEphemeralKeyPair();
+        byte[] ePubKey1  = MultiSum.getEPubKey();
+        byte[] ePrivKey1 = MultiSum.getEPrivKey();
 
-        ECPublicKeyParameters ePubKey1 = instance1.getEPubKey();
-        ECPublicKeyParameters ePubKey2 = instance2.getEPubKey();
-        ECPublicKeyParameters ePubKey3 = instance3.getEPubKey();
+        MultiSum.generateEphemeralKeyPair();
+        byte[] ePubKey2  = MultiSum.getEPubKey();
+        byte[] ePrivKey2 = MultiSum.getEPrivKey();
 
-        BigInteger sk12 = instance1.calculateAgreement(ePubKey2);
-        BigInteger sk23 = instance2.calculateAgreement(ePubKey3);
-        BigInteger sk31 = instance1.calculateAgreement(ePubKey3);
+        MultiSum.generateEphemeralKeyPair();
+        byte[] ePubKey3  = MultiSum.getEPubKey();
+        byte[] ePrivKey3 = MultiSum.getEPrivKey();
 
-        assertEquals(sk12,instance2.calculateAgreement(ePubKey1));
-        assertEquals(sk23,instance3.calculateAgreement(ePubKey2));
-        assertEquals(sk31,instance3.calculateAgreement(ePubKey1));
 
-        BigInteger s12 = MultiSum.deriveShares(id1,id2,sk12);
-        BigInteger s23 = MultiSum.deriveShares(id2,id3,sk23);
-        BigInteger s31 = MultiSum.deriveShares(id3,id1,sk31);
+        byte[] sk12 = MultiSum.calculateAgreement(ePubKey2,ePrivKey1);
+        byte[] sk23 = MultiSum.calculateAgreement(ePubKey3,ePrivKey2);
+        byte[] sk31 = MultiSum.calculateAgreement(ePubKey1,ePrivKey3);
 
-        assertEquals(s12, MultiSum.deriveShares(id1,id2,sk12));
-        assertEquals(s23, MultiSum.deriveShares(id2,id3,sk23));
-        assertEquals(s31, MultiSum.deriveShares(id3,id1,sk31));
+        assertArrayEquals(sk12,MultiSum.calculateAgreement(ePubKey1,ePrivKey2));
+        assertArrayEquals(sk23,MultiSum.calculateAgreement(ePubKey2,ePrivKey3));
+        assertArrayEquals(sk31,MultiSum.calculateAgreement(ePubKey3,ePrivKey1));
 
-        BigInteger c1 = MultiSum.encryptBlindedMsg(encKey,value1,s12,s31);
-        BigInteger c2 = MultiSum.encryptBlindedMsg(encKey,value2,s23,s12);
-        BigInteger c3 = MultiSum.encryptBlindedMsg(encKey,value3,s31,s23);
+        byte[] s12 = MultiSum.deriveShares(id1,id2,sk12);
+        byte[] s23 = MultiSum.deriveShares(id2,id3,sk23);
+        byte[] s31 = MultiSum.deriveShares(id3,id1,sk31);
 
-        BigInteger aggregatedCiphertext = MultiSum.aggregateCiphertexts(encKey,c1,c2,c3);
+        assertArrayEquals(s12, MultiSum.deriveShares(id1,id2,sk12));
+        assertArrayEquals(s23, MultiSum.deriveShares(id2,id3,sk23));
+        assertArrayEquals(s31, MultiSum.deriveShares(id3,id1,sk31));
 
-        BigInteger decryptedValue = MultiSum.decrypt(decKey,aggregatedCiphertext);
+        byte[] c1 = MultiSum.encryptBlindedMsg(encKey,int1,s12,s31);
+        byte[] c2 = MultiSum.encryptBlindedMsg(encKey,int2,s23,s12);
+        byte[] c3 = MultiSum.encryptBlindedMsg(encKey,int3,s31,s23);
 
-        assertEquals(expectedSum,decryptedValue);
+        byte[] aggregatedCiphertext = MultiSum.aggregateCiphertexts(encKey,c1,c2,c3);
+
+        byte[] decryptedValue = MultiSum.decrypt(decKey,aggregatedCiphertext);
+
+        assertEquals(sum,byteArrayToInt(decryptedValue));
     }
 
-    @Test
-    public void testResolveEPrivKey(){
-
-        MultiSum instance = new MultiSum();
-        instance.generateEphemeralKeyPair();
-
-        ECPrivateKeyParameters expectedEPrivKey = instance.getEPrivKey();
-        byte[] ePrivKeyBytes = instance.getEPrivKeyBytes();
-        ECPrivateKeyParameters ePrivKey = instance.resolveEPrivKey(ePrivKeyBytes);
-        assertEquals(expectedEPrivKey.getD(),ePrivKey.getD());
-    }
-
-    @Test
-    public void testResolveEPubKey(){
-
-        MultiSum instance = new MultiSum();
-        instance.generateEphemeralKeyPair();
-
-        ECPublicKeyParameters expectedEPubKey = instance.getEPubKey();
-        byte[] ePubKeyBytes = instance.getEPubKeyBytes();
-        ECPublicKeyParameters ePubKey = instance.resolveEPubKey(ePubKeyBytes);
-
-        assertEquals(Hex.toHexString(expectedEPubKey.getQ().getAffineXCoord().getEncoded()),Hex.toHexString(ePubKey.getQ().getAffineXCoord().getEncoded()));
-        assertEquals(Hex.toHexString(expectedEPubKey.getQ().getAffineYCoord().getEncoded()),Hex.toHexString(ePubKey.getQ().getAffineYCoord().getEncoded()));
+    private static int byteArrayToInt(byte[] input) {
+        int result;
+        int length = input.length;
+        byte[] buffer = new byte[4];
+        if (length <= buffer.length){
+            System.arraycopy(input,0,buffer,buffer.length - length,length);
+        } else {
+            System.arraycopy(input,length - buffer.length,buffer,0, buffer.length);
+        }
+        result =  buffer[3] & 0xFF |
+                (buffer[2] & 0xFF) << 8 |
+                (buffer[1] & 0xFF) << 16 |
+                (buffer[0] & 0xFF) << 24;
+        return result;
     }
 }
