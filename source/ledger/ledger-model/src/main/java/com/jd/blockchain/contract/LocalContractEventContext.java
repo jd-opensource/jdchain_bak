@@ -1,11 +1,10 @@
 package com.jd.blockchain.contract;
 
+import java.util.Set;
+
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.utils.io.ByteArray;
-
-import java.util.Set;
 
 /**
  * @Author zhaogw
@@ -21,10 +20,10 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
     private Set<BlockchainIdentity> contractOwners;
     private LedgerContext ledgerContext;
 
-    public LocalContractEventContext(HashDigest ledgeHash, byte[] chainCode, String event){
+    public LocalContractEventContext(HashDigest ledgeHash, String event){
         this.ledgeHash = ledgeHash;
         this.event = event;
-        this.chainCode = chainCode;
+//        this.chainCode = chainCode;
     }
 
     @Override
@@ -92,14 +91,14 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
         return this;
     }
 
-    public byte[] getChainCode() {
-        return chainCode;
-    }
-
-    public LocalContractEventContext setChainCode(byte[] chainCode) {
-        this.chainCode = chainCode;
-        return this;
-    }
+//    public byte[] getChainCode() {
+//        return chainCode;
+//    }
+//
+//    public LocalContractEventContext setChainCode(byte[] chainCode) {
+//        this.chainCode = chainCode;
+//        return this;
+//    }
 
     public LocalContractEventContext setArgs(byte[] args) {
         this.args = args;

@@ -1,10 +1,11 @@
 package com.jd.blockchain.contract.engine;
 
 import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.utils.Bytes;
 
 public interface ContractCode {
 
-	String getAddress();
+	Bytes getAddress();
 	
 	long getVersion();
 

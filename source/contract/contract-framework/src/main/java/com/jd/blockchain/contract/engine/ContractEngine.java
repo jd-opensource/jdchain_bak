@@ -1,5 +1,7 @@
 package com.jd.blockchain.contract.engine;
 
+import com.jd.blockchain.utils.Bytes;
+
 /**
  * 合约引擎；
  * 
@@ -16,7 +18,7 @@ public interface ContractEngine {
 	 * @param address
 	 * @return
 	 */
-	ContractCode getContract(String address, long version);
+	ContractCode getContract(Bytes address, long version);
 
 	/**
 	 * 装入合约代码；<br>
@@ -27,6 +29,6 @@ public interface ContractEngine {
 	 * @param code
 	 * @return
 	 */
-	ContractCode setupContract(String address, long version, byte[] code);
+	ContractCode setupContract(Bytes address, long version, byte[] code);
 
 }

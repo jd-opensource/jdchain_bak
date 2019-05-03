@@ -14,6 +14,7 @@ import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.utils.BaseConstant;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * contract code based jvm
@@ -22,18 +23,18 @@ import com.jd.blockchain.utils.BaseConstant;
 public class JavaContractCode implements ContractCode {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaContractCode.class);
 	private Module codeModule;
-	private String address;
+	private Bytes address;
 	private long version;
 	private ContractEventContext contractEventContext;
 	
-	public JavaContractCode(String address, long version, Module codeModule) {
+	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
 		this.version = version;
 		this.codeModule = codeModule;
 	}
 
 	@Override
-	public String getAddress() {
+	public Bytes getAddress() {
 		return address;
 	}
 	
