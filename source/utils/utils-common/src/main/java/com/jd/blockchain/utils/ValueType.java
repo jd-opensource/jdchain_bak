@@ -16,12 +16,11 @@ public enum ValueType {
 	/**
 	 * 布尔型；
 	 */
-	BOOLEAN((byte) 0x10),
+	BOOLEAN((byte)  0x10),
 
 	/**
 	 * 数值型：
 	 */
-
 	INT8((byte) 0x11),
 
 	INT16((byte) 0x12),
@@ -89,6 +88,13 @@ public enum ValueType {
 //	 * 
 //	 */
 //	REFERENCE((byte) 0x80);
+	
+
+	public static final byte NUMERIC_FLAG = (byte)0x10;
+	
+	public static final byte TEXT_FLAG = (byte)0x20;
+	
+	public static final byte BINARY_FLAG = (byte)0x40;
 
 	public final byte CODE;
 

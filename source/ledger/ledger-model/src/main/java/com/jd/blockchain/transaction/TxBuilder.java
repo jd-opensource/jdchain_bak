@@ -87,7 +87,7 @@ public class TxBuilder implements TransactionBuilder {
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException("Not implemented.");
 	}
 
 }
