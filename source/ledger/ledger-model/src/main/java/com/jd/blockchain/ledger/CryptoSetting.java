@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 
 /**
@@ -23,7 +23,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.INT16)
+	@DataField(order = 1, primitiveType = PrimitiveType.INT16)
 	public short getHashAlgorithm();
 
 	/**
@@ -35,7 +35,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = DataType.BOOLEAN)
+	@DataField(order = 2, primitiveType = PrimitiveType.BOOLEAN)
 	public boolean getAutoVerifyHash();
 
 }

@@ -10,7 +10,7 @@ public interface EnumSpecification {
 	
 	long getVersion();
 	
-	DataType getValueType();
+	PrimitiveType getValueType();
 	
 	int[] getItemValues();
 	

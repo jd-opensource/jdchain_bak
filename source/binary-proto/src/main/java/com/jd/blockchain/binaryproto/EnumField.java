@@ -13,11 +13,11 @@ public @interface EnumField {
 	 * 枚举值的类型；
 	 * 
 	 * <p>
-	 * 注：只支持 {@link DataType#INT8} ~ {@link DataType#INT32} 这几种类型；
+	 * 注：只支持 {@link PrimitiveType#INT8} ~ {@link PrimitiveType#INT32} 这几种类型；
 	 * 
 	 * 
 	 * @return
 	 */
-	DataType type();
+	PrimitiveType type();
 	
 }

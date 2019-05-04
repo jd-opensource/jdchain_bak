@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 
@@ -29,7 +29,7 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.TEXT)
+	@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
 	String getAddress();
 
 	/**
@@ -37,7 +37,7 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = DataType.TEXT)
+	@DataField(order = 2, primitiveType = PrimitiveType.TEXT)
 	String getName();
 
 	/**
@@ -45,6 +45,6 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 3, primitiveType = DataType.BYTES)
+	@DataField(order = 3, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
 }

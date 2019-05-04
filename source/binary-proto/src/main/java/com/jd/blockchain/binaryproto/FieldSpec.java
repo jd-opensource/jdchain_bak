@@ -33,11 +33,11 @@ public interface FieldSpec {
 	 * 字段的值的类型；
 	 * <p>
 	 * 如果不是字段的值不是基本类型，则返回 null（即: {@link DataField#primitiveType()} 设置为
-	 * {@link DataType#NIL}）；
+	 * {@link PrimitiveType#NIL}）；
 	 * 
 	 * @return
 	 */
-	DataType getPrimitiveType();
+	PrimitiveType getPrimitiveType();
 
 	/**
 	 * 字段的值引用的枚举契约；

@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
 
@@ -20,7 +20,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = DataType.BYTES)
+	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	HashDigest getContentHash();
 
 	/**
@@ -36,7 +36,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=3, primitiveType = DataType.BYTES)
+	@DataField(order=3, primitiveType = PrimitiveType.BYTES)
 	HashDigest getBlockHash();
 
 	/**
@@ -47,10 +47,10 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=4, primitiveType=DataType.INT64)
+	@DataField(order=4, primitiveType=PrimitiveType.INT64)
 	long getBlockHeight();
 	
-	@DataField(order=5, primitiveType=DataType.BOOLEAN)
+	@DataField(order=5, primitiveType=PrimitiveType.BOOLEAN)
 	boolean isSuccess();
 
 }

@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 
 @DataContract(code= DataCodes.TX_OP_CONTRACT_DEPLOY)
@@ -11,7 +11,7 @@ public interface ContractCodeDeployOperation extends Operation {
 	@DataField(order=2, refContract = true)
 	BlockchainIdentity getContractID();
 	
-	@DataField(order=3, primitiveType=DataType.BYTES)
+	@DataField(order=3, primitiveType=PrimitiveType.BYTES)
 	byte[] getChainCode();
 	
     

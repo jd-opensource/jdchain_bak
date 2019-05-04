@@ -3,7 +3,7 @@ package com.jd.blockchain.binaryproto.impl;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.binaryproto.EnumSpecification;
 
 /**
@@ -11,7 +11,7 @@ import com.jd.blockchain.binaryproto.EnumSpecification;
  */
 public class EnumSpecificationInfo implements EnumSpecification {
 
-	private DataType valueType;
+	private PrimitiveType valueType;
 
 	private Class<?> dataType;
 
@@ -24,7 +24,7 @@ public class EnumSpecificationInfo implements EnumSpecification {
 	// private Map<Object, Object> itemCodeMapping = new HashMap<>();
 	// private Map<Object, Object> codeItemMapping = new HashMap<>();
 
-	public EnumSpecificationInfo(DataType valueType, int code, long version, String name, String description, Class<?> dataType) {
+	public EnumSpecificationInfo(PrimitiveType valueType, int code, long version, String name, String description, Class<?> dataType) {
 		this.valueType = valueType;
 		this.code = code;
 		this.version = version;
@@ -54,7 +54,7 @@ public class EnumSpecificationInfo implements EnumSpecification {
 	}
 
 	@Override
-	public DataType getValueType() {
+	public PrimitiveType getValueType() {
 		return this.valueType;
 	}
 

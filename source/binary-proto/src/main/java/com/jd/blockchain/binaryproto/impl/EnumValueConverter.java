@@ -1,14 +1,14 @@
 package com.jd.blockchain.binaryproto.impl;
 
 import com.jd.blockchain.binaryproto.DataContractException;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.utils.io.BytesSlice;
 
 public class EnumValueConverter implements FixedValueConverter {
 
 	private Class<?> enumType;
 
-	private DataType codeType;
+	private PrimitiveType codeType;
 
 	private int[] values;
 
@@ -16,7 +16,7 @@ public class EnumValueConverter implements FixedValueConverter {
 
 	private FixedValueConverter valueConverter;
 
-	public EnumValueConverter(Class<?> enumType, DataType codeType, int[] values, Object[] constants, FixedValueConverter valueConverter) {
+	public EnumValueConverter(Class<?> enumType, PrimitiveType codeType, int[] values, Object[] constants, FixedValueConverter valueConverter) {
 		this.enumType = enumType;
 		this.values = values;
 		this.constants = constants;

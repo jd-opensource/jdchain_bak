@@ -5,11 +5,11 @@ import com.jd.blockchain.utils.io.BytesSlice;
 /**
  * Created by zhangshuang3 on 2018/12/3.
  */
-public class BytesValueImpl implements BytesValue{
+public class BytesValueEntry implements BytesValue{
     BytesValueType type;
     BytesSlice slice;
 
-    public BytesValueImpl(BytesValueType type, byte[] bytes) {
+    public BytesValueEntry(BytesValueType type, byte[] bytes) {
         this.type = type;
         this.slice = new BytesSlice(bytes);
     }

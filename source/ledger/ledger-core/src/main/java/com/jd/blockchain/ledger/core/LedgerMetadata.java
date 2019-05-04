@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
 
@@ -14,7 +14,7 @@ public interface LedgerMetadata {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	byte[] getSeed();
 
 	/**
@@ -22,7 +22,7 @@ public interface LedgerMetadata {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = DataType.BYTES)
+	@DataField(order = 2, primitiveType = PrimitiveType.BYTES)
 	HashDigest getParticipantsHash();
 
 	/**

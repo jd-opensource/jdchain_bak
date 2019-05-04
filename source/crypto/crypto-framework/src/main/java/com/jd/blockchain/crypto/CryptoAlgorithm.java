@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.utils.io.BytesUtils;
 
@@ -63,7 +63,7 @@ public interface CryptoAlgorithm {
 	 * {@link #EXT_ALGORITHM}) 5 种）; 接下来4位标识密钥类型（包括：{@link #SYMMETRIC_KEY},
 	 * {@link #ASYMMETRIC_KEY}）； 最后8位是算法唯一ID；
 	 */
-	@DataField(primitiveType = DataType.INT16, order = 0)
+	@DataField(primitiveType = PrimitiveType.INT16, order = 0)
 	short code();
 
 	/**

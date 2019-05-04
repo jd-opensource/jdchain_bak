@@ -2,7 +2,7 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -21,7 +21,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 0, primitiveType = DataType.BYTES)
+	@DataField(order = 0, primitiveType = PrimitiveType.BYTES)
 	byte[] getIdentityInfo();
 
 	/**
@@ -29,7 +29,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
 
 	/**
@@ -37,7 +37,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = DataType.BYTES)
+	@DataField(order = 2, primitiveType = PrimitiveType.BYTES)
 	SignatureDigest getSignature();
 
 	/**
@@ -45,6 +45,6 @@ public interface ClientIdentification {
 	 *
 	 * @return
 	 */
-	@DataField(order = 3, primitiveType = DataType.TEXT)
+	@DataField(order = 3, primitiveType = PrimitiveType.TEXT)
 	String getProviderName();
 }

@@ -2,7 +2,7 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 
 /**
@@ -19,7 +19,7 @@ public interface ClientIncomingSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 0, primitiveType = DataType.INT32)
+	@DataField(order = 0, primitiveType = PrimitiveType.INT32)
 	int getClientId();
 
 	/**
@@ -27,7 +27,7 @@ public interface ClientIncomingSettings {
 	 *
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.TEXT)
+	@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
 	String getProviderName();
 
 	/**

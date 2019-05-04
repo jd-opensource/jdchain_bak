@@ -2,7 +2,7 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 
@@ -22,7 +22,7 @@ public interface NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order=0, primitiveType=DataType.TEXT)
+	@DataField(order=0, primitiveType=PrimitiveType.TEXT)
 	String getAddress();
 
 	/**
@@ -30,6 +30,6 @@ public interface NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
 }

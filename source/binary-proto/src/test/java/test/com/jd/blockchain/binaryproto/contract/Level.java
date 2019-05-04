@@ -1,6 +1,6 @@
 package test.com.jd.blockchain.binaryproto.contract;
 
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.binaryproto.EnumContract;
 import com.jd.blockchain.binaryproto.EnumField;
 
@@ -11,7 +11,7 @@ public enum Level {
 
 	V2((byte) 2);
 
-	@EnumField(type=DataType.INT8)
+	@EnumField(type=PrimitiveType.INT8)
 	public final byte CODE;
 	public byte getCode() {
 		return CODE;

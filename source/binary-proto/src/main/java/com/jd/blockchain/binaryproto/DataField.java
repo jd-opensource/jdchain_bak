@@ -37,11 +37,11 @@ public @interface DataField {
 	 * 基本数据类型；
 	 * <p>
 	 * 
-	 * 如果字段的类型属于 {@link DataType} 枚举中的基本数据类型，则需要显式指定一种具体的类型；
+	 * 如果字段的类型属于 {@link PrimitiveType} 枚举中的基本数据类型，则需要显式指定一种具体的类型；
 	 * 
 	 * @return
 	 */
-	DataType primitiveType() default DataType.NIL;
+	PrimitiveType primitiveType() default PrimitiveType.NIL;
 
 	/**
 	 * 是否是枚举类型；
@@ -78,8 +78,8 @@ public @interface DataField {
 	/**
 	 * 最大长度，单位为“byte”
 	 * <p>
-	 * 仅对于文本、字节数组、大整数等相关的数据类型有效（即：{@link DataType} 枚举中编码大于等于 0x20
-	 * {@link DataType#TEXT}的数据类型）；
+	 * 仅对于文本、字节数组、大整数等相关的数据类型有效（即：{@link PrimitiveType} 枚举中编码大于等于 0x20
+	 * {@link PrimitiveType#TEXT}的数据类型）；
 	 * 
 	 * @return
 	 */

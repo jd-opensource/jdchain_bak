@@ -2,10 +2,16 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.utils.io.BytesSlice;
 
+/**
+ * BytesValue is the base structure of Value in Blockchain Account;
+ * 
+ * @author huanghaiquan
+ *
+ */
 @DataContract(code = DataCodes.BYTES_VALUE)
 public interface BytesValue {
 
@@ -22,7 +28,7 @@ public interface BytesValue {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = DataType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	BytesSlice getValue();
 	
 }

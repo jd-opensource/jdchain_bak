@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.binaryproto.EnumContract;
 import com.jd.blockchain.binaryproto.EnumField;
 import com.jd.blockchain.consts.DataCodes;
@@ -11,90 +11,78 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@EnumContract(code = DataCodes.ENUM_TYPE_DATA_TYPE, name = "DataType", decription = "")
+@EnumContract(code = DataCodes.ENUM_TYPE_BYTES_VALUE_TYPE, name = "BytesValueType", decription = "")
 public enum BytesValueType {
 
 	/**
 	 * 空；
 	 */
-	NIL(DataType.NIL.CODE),
+	NIL(PrimitiveType.NIL.CODE),
 
 	/**
 	 * 布尔型；
 	 */
-	BOOLEAN((byte) 0x10),
+	BOOLEAN(PrimitiveType.BOOLEAN.CODE),
 
 	/**
 	 * 数值型：
 	 */
 
-	INT8((byte) 0x11),
+	INT8(PrimitiveType.INT8.CODE),
 
-	INT16((byte) 0x12),
+	INT16(PrimitiveType.INT16.CODE),
 
-	INT32((byte) 0x13),
+	INT32(PrimitiveType.INT32.CODE),
 
-	INT64((byte) 0x14),
+	INT64(PrimitiveType.INT64.CODE),
 
 	/**
 	 * 日期时间；
 	 */
-	DATETIME((byte) 0x15),
+	DATETIME(PrimitiveType.DATETIME.CODE),
 
 	/**
 	 * 文本数据；
 	 */
-	TEXT((byte) 0x20),
+	TEXT(PrimitiveType.TEXT.CODE),
 
 	/**
 	 * 文本数据；
 	 */
-	JSON((byte) 0x21),
+	JSON(PrimitiveType.JSON.CODE),
 
 	/**
 	 * 文本数据；
 	 */
-	XML((byte) 0x22),
+	XML(PrimitiveType.XML.CODE),
 
 	/**
 	 * 二进制数据；
 	 */
-	BYTES((byte) 0x40),
+	BYTES(PrimitiveType.BYTES.CODE),
 
 	/**
 	 * 大整数；
 	 */
-	BIG_INT((byte) 0x41),
+	BIG_INT(PrimitiveType.BIG_INT.CODE),
 
 	/**
 	 * 图片；
 	 */
-	IMG((byte) 0x42),
+	IMG(PrimitiveType.IMG.CODE),
 
 	/**
 	 * 视频；
 	 */
-	VIDEO((byte) 0x43),
+	VIDEO(PrimitiveType.VIDEO.CODE),
 
 	/**
 	 * 位置；
 	 */
-	LOCATION((byte) 0x44);
+	LOCATION(PrimitiveType.LOCATION.CODE);
 
-	// /**
-	// * 引用； <br>
-	// *
-	// * 表示引用区块链系统中的某一个特定的对象，用以下形式的 URI 表示；
-	// *
-	// * state://ledger/account/key/version <br>
-	// * 或 <br>
-	// * proof:state://account_merkle_path/key_merkle_path
-	// *
-	// * proof:tx://
-	// *
-	// */
-	// REFERENCE((byte) 0x80);
-	@EnumField(type = DataType.INT8)
+
+	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 
 	private BytesValueType(byte code) {
@@ -107,7 +95,7 @@ public enum BytesValueType {
 				return dataType;
 			}
 		}
-		throw new IllegalArgumentException("Unsupported code[" + code + "] of DataType!");
+		throw new IllegalArgumentException("Code [" + code + "] not supported by BytesValueType enum!");
 	}
 
 }

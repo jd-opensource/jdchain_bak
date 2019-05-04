@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 
 public interface KVDataEntry {
 
@@ -27,7 +27,7 @@ public interface KVDataEntry {
 	 * 
 	 * @return
 	 */
-	DataType getType();
+	PrimitiveType getType();
 	
 	/**
 	 * 值；

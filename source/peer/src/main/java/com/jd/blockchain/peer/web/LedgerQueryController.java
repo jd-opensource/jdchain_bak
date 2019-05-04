@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
@@ -339,11 +339,11 @@ public class LedgerQueryController implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, DataType.NIL, null);
+				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
 				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
 				BytesValue decodeData = BinaryEncodingUtils.decode(value);
-				entries[i] = new KVDataObject(keys[i], ver, DataType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
 			}
 		}
 		

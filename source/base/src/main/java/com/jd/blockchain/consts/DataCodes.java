@@ -89,7 +89,7 @@ public interface DataCodes {
 
 	public static final int ENUM_TYPE_TRANSACTION_STATE = 0xB22;
 
-	public static final int ENUM_TYPE_DATA_TYPE = 0xB23;
+	public static final int ENUM_TYPE_BYTES_VALUE_TYPE = 0xB23;
 
 	public static final int DIGITALSIGNATURE = 0xB30;
 

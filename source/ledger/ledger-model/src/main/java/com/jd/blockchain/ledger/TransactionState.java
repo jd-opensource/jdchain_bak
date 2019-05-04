@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.binaryproto.EnumContract;
 import com.jd.blockchain.binaryproto.EnumField;
 import com.jd.blockchain.consts.DataCodes;
@@ -39,7 +39,7 @@ public enum TransactionState {
 	 */
 	TIMEOUT((byte) 0x81);
 
-	@EnumField(type= DataType.INT8)
+	@EnumField(type= PrimitiveType.INT8)
 	public final byte CODE;
 
 	private TransactionState(byte code) {
