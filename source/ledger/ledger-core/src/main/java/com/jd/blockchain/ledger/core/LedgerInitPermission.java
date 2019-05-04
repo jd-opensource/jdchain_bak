@@ -2,10 +2,10 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 账本初始化许可；
@@ -13,7 +13,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.METADATA_INIT_PERMISSION)
+@DataContract(code = DataCodes.METADATA_INIT_PERMISSION)
 public interface LedgerInitPermission {
 
 	/**
@@ -21,7 +21,7 @@ public interface LedgerInitPermission {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.INT32)
+	@DataField(order = 1, primitiveType = DataType.INT32)
 	int getParticipantId();
 
 	/**
@@ -39,7 +39,7 @@ public interface LedgerInitPermission {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = ValueType.BYTES)
+	@DataField(order = 2, primitiveType = DataType.BYTES)
 	SignatureDigest getTransactionSignature();
 
 }

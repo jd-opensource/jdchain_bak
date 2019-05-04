@@ -2,8 +2,8 @@ package test.com.jd.blockchain.binaryproto;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.ValueType;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 /**
@@ -12,37 +12,37 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 @DataContract(code = 0x05, name = "Primitive", description = "")
 public interface PrimitiveDatas {
 
-	@DataField(order = 2, primitiveType = ValueType.BOOLEAN)
+	@DataField(order = 2, primitiveType = DataType.BOOLEAN)
 	boolean isEnable();
 
-	@DataField(order = 3, primitiveType = ValueType.INT8)
+	@DataField(order = 3, primitiveType = DataType.INT8)
 	byte isBoy();
 
-	@DataField(order = 4, primitiveType = ValueType.INT16)
+	@DataField(order = 4, primitiveType = DataType.INT16)
 	short getAge();
 
-	@DataField(order = -1, primitiveType = ValueType.INT32)
+	@DataField(order = -1, primitiveType = DataType.INT32)
 	int getId();
 
-	@DataField(order = 6, primitiveType = ValueType.TEXT)
+	@DataField(order = 6, primitiveType = DataType.TEXT)
 	String getName();
 	
-	@DataField(order = 7, primitiveType = ValueType.INT64)
+	@DataField(order = 7, primitiveType = DataType.INT64)
 	long getValue();
 	
-	@DataField(order = 12, primitiveType = ValueType.BYTES)
+	@DataField(order = 12, primitiveType = DataType.BYTES)
 	byte[] getImage();
 	
-	@DataField(order = 100, primitiveType = ValueType.INT16)
+	@DataField(order = 100, primitiveType = DataType.INT16)
 	char getFlag();
 
-	@DataField(order = 200, primitiveType = ValueType.BYTES)
+	@DataField(order = 200, primitiveType = DataType.BYTES)
 	Bytes getConfig();
 	
-	@DataField(order = 201, primitiveType = ValueType.BYTES)
+	@DataField(order = 201, primitiveType = DataType.BYTES)
 	Bytes getSetting();
 
-	@DataField(order = 202, primitiveType = ValueType.BYTES)
+	@DataField(order = 202, primitiveType = DataType.BYTES)
 	NetworkAddress getNetworkAddr();
 
 }

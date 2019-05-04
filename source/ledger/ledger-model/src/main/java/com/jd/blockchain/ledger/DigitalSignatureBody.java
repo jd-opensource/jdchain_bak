@@ -2,10 +2,10 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 数字签名；
@@ -13,7 +13,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.DIGITALSIGNATURE_BODY)
+@DataContract(code= DataCodes.DIGITALSIGNATURE_BODY)
 public interface DigitalSignatureBody {
 
 	/**
@@ -23,7 +23,7 @@ public interface DigitalSignatureBody {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = DataType.BYTES)
 	PubKey getPubKey();
 
 	/**
@@ -31,7 +31,7 @@ public interface DigitalSignatureBody {
 	 * 
 	 * @return
 	 */
-	@DataField(order=2, primitiveType = ValueType.BYTES )
+	@DataField(order=2, primitiveType = DataType.BYTES )
 	SignatureDigest getDigest();
 
 }

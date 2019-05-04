@@ -1,6 +1,7 @@
 package com.jd.blockchain.ledger.core.impl;
 
 import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
@@ -23,7 +24,6 @@ import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
-import com.jd.blockchain.utils.ValueType;
 
 public class LedgerQueryService implements BlockchainQueryService {
 	
@@ -271,11 +271,11 @@ public class LedgerQueryService implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, ValueType.NIL, null);
+				entries[i] = new KVDataObject(keys[i], -1, DataType.NIL, null);
 			}else {
 				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
 				BytesValue decodeData = BinaryEncodingUtils.decode(value);
-				entries[i] = new KVDataObject(keys[i], ver, ValueType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				entries[i] = new KVDataObject(keys[i], ver, DataType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
 			}
 		}
 		

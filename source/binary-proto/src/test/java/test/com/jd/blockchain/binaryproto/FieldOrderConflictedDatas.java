@@ -2,8 +2,7 @@ package test.com.jd.blockchain.binaryproto;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.DataType;
 
 /**
  * Created by zhangshuang3 on 2018/7/11.
@@ -11,22 +10,22 @@ import com.jd.blockchain.utils.ValueType;
 @DataContract(code = 0x06, name = "Primitive", description = "")
 public interface FieldOrderConflictedDatas {
 
-	@DataField(order = 2, primitiveType = ValueType.BOOLEAN)
+	@DataField(order = 2, primitiveType = DataType.BOOLEAN)
 	boolean isEnable();
 
-	@DataField(order = 3, primitiveType = ValueType.INT8)
+	@DataField(order = 3, primitiveType = DataType.INT8)
 	byte isBoy();
 
-	@DataField(order = 7, primitiveType = ValueType.INT16)
+	@DataField(order = 7, primitiveType = DataType.INT16)
 	short getAge();
 
-	@DataField(order = -1, primitiveType = ValueType.INT32)
+	@DataField(order = -1, primitiveType = DataType.INT32)
 	int getId();
 
-	@DataField(order = 6, primitiveType = ValueType.TEXT)
+	@DataField(order = 6, primitiveType = DataType.TEXT)
 	String getName();
 	
-	@DataField(order = 7, primitiveType = ValueType.INT64)
+	@DataField(order = 7, primitiveType = DataType.INT64)
 	long getValue();
 	
 

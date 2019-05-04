@@ -10,8 +10,8 @@ package com.jd.blockchain.consensus.mq.settings;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  *
@@ -19,12 +19,12 @@ import com.jd.blockchain.utils.ValueType;
  * @create 2018/12/13
  * @since 1.0.0
  */
-@DataContract(code = TypeCodes.CONSENSUS_MSGQUEUE_BLOCK_SETTINGS)
+@DataContract(code = DataCodes.CONSENSUS_MSGQUEUE_BLOCK_SETTINGS)
 public interface MsgQueueBlockSettings {
 
-    @DataField(order = 0, primitiveType = ValueType.INT32)
+    @DataField(order = 0, primitiveType = DataType.INT32)
     int getTxSizePerBlock();
 
-    @DataField(order = 1, primitiveType = ValueType.INT64)
+    @DataField(order = 1, primitiveType = DataType.INT64)
     long getMaxDelayMilliSecondsPerBlock();
 }

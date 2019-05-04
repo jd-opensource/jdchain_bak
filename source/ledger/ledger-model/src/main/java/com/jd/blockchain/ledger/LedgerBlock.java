@@ -2,11 +2,11 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.ValueType;
 
-@DataContract(code = TypeCodes.BLOCK)
+@DataContract(code = DataCodes.BLOCK)
 public interface LedgerBlock extends BlockBody {
 
 	/**
@@ -19,7 +19,7 @@ public interface LedgerBlock extends BlockBody {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.BYTES)
+	@DataField(order = 1, primitiveType = DataType.BYTES)
 	HashDigest getHash();
 
 }

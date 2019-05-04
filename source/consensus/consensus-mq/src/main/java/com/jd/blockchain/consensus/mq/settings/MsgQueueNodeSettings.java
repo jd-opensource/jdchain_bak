@@ -10,7 +10,7 @@ package com.jd.blockchain.consensus.mq.settings;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.consensus.NodeSettings;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  *
@@ -19,7 +19,7 @@ import com.jd.blockchain.consts.TypeCodes;
  * @since 1.0.0
  */
 
-@DataContract(code=TypeCodes.CONSENSUS_MSGQUEUE_NODE_SETTINGS)
+@DataContract(code=DataCodes.CONSENSUS_MSGQUEUE_NODE_SETTINGS)
 public interface MsgQueueNodeSettings extends NodeSettings {
 
 }

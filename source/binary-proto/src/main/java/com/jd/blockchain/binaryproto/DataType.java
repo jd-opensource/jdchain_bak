@@ -1,4 +1,4 @@
-package com.jd.blockchain.utils;
+package com.jd.blockchain.binaryproto;
 
 /**
  * 键值操作的数据类型；
@@ -6,7 +6,7 @@ package com.jd.blockchain.utils;
  * @author huanghaiquan
  *
  */
-public enum ValueType {
+public enum DataType {
 
 	/**
 	 * 空；
@@ -98,12 +98,12 @@ public enum ValueType {
 
 	public final byte CODE;
 
-	private ValueType(byte code) {
+	private DataType(byte code) {
 		this.CODE = code;
 	}
 
-	public static ValueType valueOf(byte code) {
-		for (ValueType dataType : ValueType.values()) {
+	public static DataType valueOf(byte code) {
+		for (DataType dataType : DataType.values()) {
 			if (dataType.CODE == code) {
 				return dataType;
 			}

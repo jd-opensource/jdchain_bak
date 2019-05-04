@@ -1,9 +1,9 @@
 package com.jd.blockchain.ledger;
 
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.binaryproto.EnumContract;
 import com.jd.blockchain.binaryproto.EnumField;
-import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  * 交易（事务）执行状态；
@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@EnumContract(code= TypeCodes.ENUM_TYPE_TRANSACTION_STATE)
+@EnumContract(code= DataCodes.ENUM_TYPE_TRANSACTION_STATE)
 public enum TransactionState {
 
 	/**
@@ -39,7 +39,7 @@ public enum TransactionState {
 	 */
 	TIMEOUT((byte) 0x81);
 
-	@EnumField(type= ValueType.INT8)
+	@EnumField(type= DataType.INT8)
 	public final byte CODE;
 
 	private TransactionState(byte code) {

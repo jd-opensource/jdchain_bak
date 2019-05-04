@@ -2,18 +2,18 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.ValueType;
 
-@DataContract(code = TypeCodes.METADATA_LEDGER_SETTING)
+@DataContract(code = DataCodes.METADATA_LEDGER_SETTING)
 public interface LedgerSetting {
 	
-	@DataField(order=0, primitiveType=ValueType.TEXT)
+	@DataField(order=0, primitiveType=DataType.TEXT)
 	String getConsensusProvider();
 
-    @DataField(order=1, primitiveType=ValueType.BYTES)
+    @DataField(order=1, primitiveType=DataType.BYTES)
 	Bytes getConsensusSetting();
 
 	@DataField(order=2, refContract=true)

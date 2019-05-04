@@ -2,10 +2,10 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 客户端的身份证明；
@@ -13,7 +13,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.CLIENT_IDENTIFICATION)
+@DataContract(code = DataCodes.CLIENT_IDENTIFICATION)
 public interface ClientIdentification {
 
 	/**
@@ -21,7 +21,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 0, primitiveType = ValueType.BYTES)
+	@DataField(order = 0, primitiveType = DataType.BYTES)
 	byte[] getIdentityInfo();
 
 	/**
@@ -29,7 +29,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.BYTES)
+	@DataField(order = 1, primitiveType = DataType.BYTES)
 	PubKey getPubKey();
 
 	/**
@@ -37,7 +37,7 @@ public interface ClientIdentification {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = ValueType.BYTES)
+	@DataField(order = 2, primitiveType = DataType.BYTES)
 	SignatureDigest getSignature();
 
 	/**
@@ -45,6 +45,6 @@ public interface ClientIdentification {
 	 *
 	 * @return
 	 */
-	@DataField(order = 3, primitiveType = ValueType.TEXT)
+	@DataField(order = 3, primitiveType = DataType.TEXT)
 	String getProviderName();
 }

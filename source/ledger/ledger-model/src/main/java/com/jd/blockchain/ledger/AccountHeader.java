@@ -2,22 +2,22 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.ValueType;
 
-@DataContract(code= TypeCodes.ACCOUNT_HEADER)
+@DataContract(code= DataCodes.ACCOUNT_HEADER)
 public interface AccountHeader {
 	
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = DataType.BYTES)
 	Bytes getAddress();
 	
-	@DataField(order=2, primitiveType = ValueType.BYTES)
+	@DataField(order=2, primitiveType = DataType.BYTES)
 	PubKey getPubKey();
 	
-	@DataField(order=3, primitiveType = ValueType.BYTES)
+	@DataField(order=3, primitiveType = DataType.BYTES)
 	HashDigest getRootHash();
 	
 }

@@ -2,8 +2,8 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  * 默克尔树算法相关的配置；
@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.METADATA_CRYPTO_SETTING)
+@DataContract(code = DataCodes.METADATA_CRYPTO_SETTING)
 public interface CryptoSetting {
 
 	/**
@@ -23,7 +23,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.INT16)
+	@DataField(order = 1, primitiveType = DataType.INT16)
 	public short getHashAlgorithm();
 
 	/**
@@ -35,7 +35,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = ValueType.BOOLEAN)
+	@DataField(order = 2, primitiveType = DataType.BOOLEAN)
 	public boolean getAutoVerifyHash();
 
 }

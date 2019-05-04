@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  * 数字签名；
@@ -9,7 +9,7 @@ import com.jd.blockchain.consts.TypeCodes;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.DIGITALSIGNATURE)
+@DataContract(code= DataCodes.DIGITALSIGNATURE)
 public interface DigitalSignature extends DigitalSignatureBody {
 
 }

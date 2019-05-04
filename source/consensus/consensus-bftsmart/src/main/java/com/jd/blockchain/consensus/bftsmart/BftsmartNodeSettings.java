@@ -2,13 +2,13 @@ package com.jd.blockchain.consensus.bftsmart;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.consensus.NodeSettings;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.utils.ValueType;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
-@DataContract(code = TypeCodes.CONSENSUS_BFTSMART_NODE_SETTINGS)
+@DataContract(code = DataCodes.CONSENSUS_BFTSMART_NODE_SETTINGS)
 public interface BftsmartNodeSettings extends NodeSettings {
 
 	/**
@@ -31,7 +31,7 @@ public interface BftsmartNodeSettings extends NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = ValueType.INT32)
+	@DataField(order = 2, primitiveType = DataType.INT32)
 	int getId();
 
 	/**
@@ -39,7 +39,7 @@ public interface BftsmartNodeSettings extends NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 3, primitiveType = ValueType.BYTES)
+	@DataField(order = 3, primitiveType = DataType.BYTES)
 	NetworkAddress getNetworkAddress();
 
 }

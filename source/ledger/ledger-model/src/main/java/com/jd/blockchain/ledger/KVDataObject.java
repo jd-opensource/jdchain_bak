@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Date;
 
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.io.BytesUtils;
 
@@ -25,11 +25,11 @@ public class KVDataObject implements KVDataEntry {
 
 	private long version;
 
-	private ValueType type;
+	private DataType type;
 
 	private byte[] bytesValue;
 
-	public KVDataObject(String key, long version, ValueType type, byte[] bytesValue) {
+	public KVDataObject(String key, long version, DataType type, byte[] bytesValue) {
 		this.key = key;
 		this.type = type;
 		this.version = version < 0 ? -1 : version;
@@ -62,7 +62,7 @@ public class KVDataObject implements KVDataEntry {
 	 * @see com.jd.blockchain.ledger.KVDataEntry#getType()
 	 */
 	@Override
-	public ValueType getType() {
+	public DataType getType() {
 		return type;
 	}
 
@@ -97,13 +97,13 @@ public class KVDataObject implements KVDataEntry {
 	 * 是否为空值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#NIL} 时返回 true，其它情况返回 false；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#NIL} 时返回 true，其它情况返回 false；
 	 * <p>
 	 * 
 	 * @return
 	 */
 	public boolean isNil() {
-		return ValueType.NIL == type;
+		return DataType.NIL == type;
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class KVDataObject implements KVDataEntry {
 	 * 返回 8 位整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#INT8} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#INT8} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -127,17 +127,17 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public byte tinyValue() {
-		if (ValueType.INT8 == type) {
+		if (DataType.INT8 == type) {
 			return bytesValue[0];
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.INT8, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT8, type));
 	}
 
 	/**
 	 * 返回 16 位整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#INT16} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#INT16} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -145,17 +145,17 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public short shortValue() {
-		if (ValueType.INT16 == type) {
+		if (DataType.INT16 == type) {
 			return BytesUtils.toShort(bytesValue, 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.INT16, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT16, type));
 	}
 
 	/**
 	 * 返回 32 位整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#INT32} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#INT32} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -163,17 +163,17 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public int intValue() {
-		if (ValueType.INT32 == type) {
+		if (DataType.INT32 == type) {
 			return BytesUtils.toInt(bytesValue, 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.INT32, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT32, type));
 	}
 
 	/**
 	 * 返回 64 位整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#INT64} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#INT64} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -181,10 +181,10 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public long longValue() {
-		if (ValueType.INT64 == type) {
+		if (DataType.INT64 == type) {
 			return BytesUtils.toLong(bytesValue, 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.INT64, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT64, type));
 
 	}
 
@@ -192,7 +192,7 @@ public class KVDataObject implements KVDataEntry {
 	 * 返回大整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#BIG_INT} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#BIG_INT} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -200,17 +200,17 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public BigInteger bigIntValue() {
-		if (ValueType.BIG_INT == type) {
+		if (DataType.BIG_INT == type) {
 			return new BigInteger(bytesValue);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.BIG_INT, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.BIG_INT, type));
 	}
 
 	/**
 	 * 返回布尔值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#BIG_INT} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#BIG_INT} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -218,17 +218,17 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public boolean boolValue() {
-		if (ValueType.BOOLEAN == type) {
+		if (DataType.BOOLEAN == type) {
 			return bytesValue[0] != 0;
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.BOOLEAN, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.BOOLEAN, type));
 	}
 
 	/**
 	 * 返回日期时间值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#DATETIME} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#DATETIME} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -236,19 +236,19 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public Date datetimeValue() {
-		if (ValueType.DATETIME == type) {
+		if (DataType.DATETIME == type) {
 			long ts = BytesUtils.toLong(bytesValue);
 			return new Date(ts);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", ValueType.DATETIME, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.DATETIME, type));
 	}
 
 	/**
 	 * 返回大整数值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link ValueType#TEXT} / {@link ValueType#JSON} /
-	 * {@link ValueType#XML} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link DataType#TEXT} / {@link DataType#JSON} /
+	 * {@link DataType#XML} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -256,15 +256,15 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public String stringValue() {
-		if (ValueType.TEXT == type || ValueType.JSON == type || ValueType.XML == type) {
+		if (DataType.TEXT == type || DataType.JSON == type || DataType.XML == type) {
 			try {
 				return new String(bytesValue, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				throw new IllegalStateException(e.getMessage(), e);
 			}
 		}
-		throw new IllegalStateException(String.format("Expected type [%s] or [%s] or [%s] , but [%s]", ValueType.TEXT,
-				ValueType.JSON, ValueType.XML, type));
+		throw new IllegalStateException(String.format("Expected type [%s] or [%s] or [%s] , but [%s]", DataType.TEXT,
+				DataType.JSON, DataType.XML, type));
 	}
 
 //	// ----------------

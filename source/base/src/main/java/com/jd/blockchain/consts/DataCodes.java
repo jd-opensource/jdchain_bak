@@ -1,10 +1,12 @@
 package com.jd.blockchain.consts;
 
 /**
+ * A const registeration of codes of all data contracts in ledger model;
+ * 
  * @author huanghaiquan
  *
  */
-public interface TypeCodes {
+public interface DataCodes {
 
 	public static final int BYTES_VALUE = 0x80;
 
@@ -59,11 +61,11 @@ public interface TypeCodes {
 
 	public static final int METADATA_CONSENSUS_PARTICIPANT = 0x621;
 
-//	public static final int METADATA_CONSENSUS_NODE = 0x630;
+	// public static final int METADATA_CONSENSUS_NODE = 0x630;
 
 	public static final int METADATA_CONSENSUS_SETTING = 0x631;
 
-//	public static final int METADATA_PARTICIPANT_INFO = 0x640;
+	// public static final int METADATA_PARTICIPANT_INFO = 0x640;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
 
@@ -87,7 +89,7 @@ public interface TypeCodes {
 
 	public static final int ENUM_TYPE_TRANSACTION_STATE = 0xB22;
 
-    public static final int ENUM_TYPE_DATA_TYPE= 0xB23;
+	public static final int ENUM_TYPE_DATA_TYPE = 0xB23;
 
 	public static final int DIGITALSIGNATURE = 0xB30;
 
@@ -103,8 +105,6 @@ public interface TypeCodes {
 
 	public static final int REQUEST_ENDPOINT = 0xD20;
 
-
-
 	// ------------------ 共识相关 ----------------
 
 	public static final int CONSENSUS = 0x1000;
@@ -112,12 +112,11 @@ public interface TypeCodes {
 	public static final int CONSENSUS_ACTION_REQUEST = CONSENSUS | 0x01;
 
 	public static final int CONSENSUS_ACTION_RESPONSE = CONSENSUS | 0x02;
-	
-	
+
 	public static final int CONSENSUS_SETTINGS = CONSENSUS | 0x03;
 
 	public static final int CONSENSUS_NODE_SETTINGS = CONSENSUS | 0x04;
-	
+
 	public static final int CONSENSUS_CLI_INCOMING_SETTINGS = CONSENSUS | 0x05;
 
 	// ------------------ 共识相关（BFTSMART） ----------------
@@ -126,7 +125,7 @@ public interface TypeCodes {
 	public static final int CONSENSUS_BFTSMART_SETTINGS = CONSENSUS_BFTSMART | 0x01;
 
 	public static final int CONSENSUS_BFTSMART_NODE_SETTINGS = CONSENSUS_BFTSMART | 0x02;
-	
+
 	public static final int CONSENSUS_BFTSMART_CLI_INCOMING_SETTINGS = CONSENSUS_BFTSMART | 0x03;
 
 	public static final int CONSENSUS_BFTSMART_BLOCK_SETTINGS = CONSENSUS_BFTSMART | 0x04;
@@ -144,5 +143,4 @@ public interface TypeCodes {
 
 	public static final int CONSENSUS_MSGQUEUE_BLOCK_SETTINGS = CONSENSUS_MSGQUEUE | 0x05;
 
-	
 }

@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
-@DataContract(code= TypeCodes.TX_OP_USER_REG)
+@DataContract(code= DataCodes.TX_OP_USER_REG)
 public interface UserRegisterOperation extends Operation {
 	
 //	@Override

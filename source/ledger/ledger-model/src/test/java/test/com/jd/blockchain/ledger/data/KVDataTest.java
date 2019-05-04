@@ -12,7 +12,7 @@ import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.BytesValueImpl;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataType;
+import com.jd.blockchain.ledger.BytesValueType;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.transaction.KVData;
 
@@ -39,7 +39,7 @@ public class KVDataTest {
         byte[] value = "test-value".getBytes();
         long expectedVersion = 9999L;
 
-        kvData = new KVData(key, new BytesValueImpl(DataType.BYTES, value), expectedVersion);
+        kvData = new KVData(key, new BytesValueImpl(BytesValueType.BYTES, value), expectedVersion);
     }
 
     @Test

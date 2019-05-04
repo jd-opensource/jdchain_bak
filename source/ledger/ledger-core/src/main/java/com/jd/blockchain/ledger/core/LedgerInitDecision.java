@@ -2,10 +2,10 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 账本初始化决定；
@@ -13,7 +13,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.METADATA_INIT_DECISION)
+@DataContract(code = DataCodes.METADATA_INIT_DECISION)
 public interface LedgerInitDecision {
 
 	/**
@@ -21,14 +21,14 @@ public interface LedgerInitDecision {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType=ValueType.INT32)
+	@DataField(order=1, primitiveType=DataType.INT32)
 	int getParticipantId();
 	
 	/**
 	 * 新建账本的哈希；
 	 * @return
 	 */
-	@DataField(order=2, primitiveType = ValueType.BYTES)
+	@DataField(order=2, primitiveType = DataType.BYTES)
 	HashDigest getLedgerHash();
 
 	/**
@@ -40,7 +40,7 @@ public interface LedgerInitDecision {
 	 * 
 	 * @return
 	 */
-	@DataField(order=3, primitiveType = ValueType.BYTES)
+	@DataField(order=3, primitiveType = DataType.BYTES)
 	SignatureDigest getSignature();
 
 }

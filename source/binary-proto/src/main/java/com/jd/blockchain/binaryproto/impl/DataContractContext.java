@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +17,12 @@ import com.jd.blockchain.binaryproto.DataContractEncoder;
 import com.jd.blockchain.binaryproto.DataContractException;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.DataSpecification;
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.binaryproto.EnumContract;
 import com.jd.blockchain.binaryproto.EnumField;
 import com.jd.blockchain.binaryproto.EnumSpecification;
 import com.jd.blockchain.binaryproto.FieldSpec;
 import com.jd.blockchain.binaryproto.impl.EnumSpecificationInfo.EnumConstant;
-import com.jd.blockchain.utils.ValueType;
 import com.jd.blockchain.utils.io.BytesSerializable;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.security.SHA256Hash;
@@ -66,23 +65,23 @@ public class DataContractContext {
 
 	private static Map<Class<?>, EnumSpecification> enumContractSpecMap = new ConcurrentHashMap<>();
 
-	private static Map<ValueType, Map<Class<?>, ValueConverter>> primitiveTypeConverters = new HashMap<>();
+	private static Map<DataType, Map<Class<?>, ValueConverter>> primitiveTypeConverters = new HashMap<>();
 
 	static {
-		addConverterMapping(ValueType.BOOLEAN, boolean.class, new BoolConverter());
-		addConverterMapping(ValueType.BOOLEAN, Boolean.class, new BoolWrapperConverter());
-		addConverterMapping(ValueType.INT8, byte.class, new Int8ByteConverter());
-		addConverterMapping(ValueType.INT8, Byte.class, new Int8ByteWrapperConverter());
-		addConverterMapping(ValueType.INT16, short.class, new Int16ShortConverter());
-		addConverterMapping(ValueType.INT16, Short.class, new Int16ShortWrapperConverter());
-		addConverterMapping(ValueType.INT16, char.class, new Int16CharConverter());
-		addConverterMapping(ValueType.INT16, Character.class, new Int16CharWrapperConverter());
-		addConverterMapping(ValueType.INT32, int.class, new Int32IntConverter());
-		addConverterMapping(ValueType.INT32, Integer.class, new Int32IntWrapperConverter());
-		addConverterMapping(ValueType.INT64, long.class, new Int64LongConverter());
-		addConverterMapping(ValueType.INT64, Long.class, new Int64LongWrapperConverter());
-		addConverterMapping(ValueType.TEXT, String.class, new StringValueConverter());
-		addConverterMapping(ValueType.BYTES, byte[].class, new BytesValueConverter());
+		addConverterMapping(DataType.BOOLEAN, boolean.class, new BoolConverter());
+		addConverterMapping(DataType.BOOLEAN, Boolean.class, new BoolWrapperConverter());
+		addConverterMapping(DataType.INT8, byte.class, new Int8ByteConverter());
+		addConverterMapping(DataType.INT8, Byte.class, new Int8ByteWrapperConverter());
+		addConverterMapping(DataType.INT16, short.class, new Int16ShortConverter());
+		addConverterMapping(DataType.INT16, Short.class, new Int16ShortWrapperConverter());
+		addConverterMapping(DataType.INT16, char.class, new Int16CharConverter());
+		addConverterMapping(DataType.INT16, Character.class, new Int16CharWrapperConverter());
+		addConverterMapping(DataType.INT32, int.class, new Int32IntConverter());
+		addConverterMapping(DataType.INT32, Integer.class, new Int32IntWrapperConverter());
+		addConverterMapping(DataType.INT64, long.class, new Int64LongConverter());
+		addConverterMapping(DataType.INT64, Long.class, new Int64LongWrapperConverter());
+		addConverterMapping(DataType.TEXT, String.class, new StringValueConverter());
+		addConverterMapping(DataType.BYTES, byte[].class, new BytesValueConverter());
 
 		ENCODER_LOOKUP = new DataContractEncoderLookup() {
 			@Override
@@ -102,7 +101,7 @@ public class DataContractContext {
 		};
 	}
 
-	private static void addConverterMapping(ValueType protocalType, Class<?> javaType, ValueConverter converter) {
+	private static void addConverterMapping(DataType protocalType, Class<?> javaType, ValueConverter converter) {
 		Map<Class<?>, ValueConverter> converterMap = primitiveTypeConverters.get(protocalType);
 		if (converterMap == null) {
 			converterMap = new HashMap<>();
@@ -111,14 +110,14 @@ public class DataContractContext {
 		converterMap.put(javaType, converter);
 	}
 
-	private static ValueConverter getPrimitiveTypeConverter(ValueType protocalType, Class<?> javaType) {
+	private static ValueConverter getPrimitiveTypeConverter(DataType protocalType, Class<?> javaType) {
 		Map<Class<?>, ValueConverter> converterMap = primitiveTypeConverters.get(protocalType);
 		if (converterMap != null) {
 			ValueConverter converter = converterMap.get(javaType);
 			if (converter != null) {
 				return converter;
 			}
-			if (ValueType.BYTES == protocalType && BytesSerializable.class.isAssignableFrom(javaType)) {
+			if (DataType.BYTES == protocalType && BytesSerializable.class.isAssignableFrom(javaType)) {
 				converter = new BytesSerializableValueConverter(javaType);
 				converterMap.put(javaType, converter);
 				return converter;
@@ -367,7 +366,7 @@ public class DataContractContext {
 		EnumSpecificationInfo enumSpec = (EnumSpecificationInfo) fieldInfo.fieldSpec.getRefEnum();
 		int[] values = enumSpec.getItemValues();
 		Object[] constants = enumSpec.getConstants();
-		ValueType codeType = enumSpec.getValueType();
+		DataType codeType = enumSpec.getValueType();
 
 		ValueConverter baseConverter = getPrimitiveTypeConverter(codeType, enumSpec.getDataType());
 
@@ -411,8 +410,8 @@ public class DataContractContext {
 	private static BinarySliceSpec buildSlice(FieldSpecInfo fieldSpec) {
 		boolean fixed = false;
 		int len = -1;
-		ValueType fixedValueType = null;
-		if (fieldSpec.getPrimitiveType() != null && fieldSpec.getPrimitiveType() != ValueType.NIL) {
+		DataType fixedValueType = null;
+		if (fieldSpec.getPrimitiveType() != null && fieldSpec.getPrimitiveType() != DataType.NIL) {
 			fixedValueType = fieldSpec.getPrimitiveType();
 		} else if (fieldSpec.getRefEnum() != null) {
 			fixedValueType = fieldSpec.getRefEnum().getValueType();
@@ -547,7 +546,7 @@ public class DataContractContext {
 		}
 
 		int maxSize = annoField.maxSize();
-		ValueType primitiveType = annoField.primitiveType();
+		DataType primitiveType = annoField.primitiveType();
 		if (primitiveType != null) {
 			primitiveType = verifyPrimitiveType(primitiveType, dataType, accessor);
 		}
@@ -651,7 +650,7 @@ public class DataContractContext {
 	 * @param dataType
 	 * @return
 	 */
-	private static ValueType verifyPrimitiveType(ValueType primitiveType, Class<?> dataType, Method accessor) {
+	private static DataType verifyPrimitiveType(DataType primitiveType, Class<?> dataType, Method accessor) {
 		switch (primitiveType) {
 		case NIL:
 			return null;

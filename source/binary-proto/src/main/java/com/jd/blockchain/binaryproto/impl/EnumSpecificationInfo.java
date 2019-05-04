@@ -3,15 +3,15 @@ package com.jd.blockchain.binaryproto.impl;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.jd.blockchain.binaryproto.DataType;
 import com.jd.blockchain.binaryproto.EnumSpecification;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * Created by zhangshuang3 on 2018/6/21.
  */
 public class EnumSpecificationInfo implements EnumSpecification {
 
-	private ValueType valueType;
+	private DataType valueType;
 
 	private Class<?> dataType;
 
@@ -24,7 +24,7 @@ public class EnumSpecificationInfo implements EnumSpecification {
 	// private Map<Object, Object> itemCodeMapping = new HashMap<>();
 	// private Map<Object, Object> codeItemMapping = new HashMap<>();
 
-	public EnumSpecificationInfo(ValueType valueType, int code, long version, String name, String description, Class<?> dataType) {
+	public EnumSpecificationInfo(DataType valueType, int code, long version, String name, String description, Class<?> dataType) {
 		this.valueType = valueType;
 		this.code = code;
 		this.version = version;
@@ -54,7 +54,7 @@ public class EnumSpecificationInfo implements EnumSpecification {
 	}
 
 	@Override
-	public ValueType getValueType() {
+	public DataType getValueType() {
 		return this.valueType;
 	}
 
