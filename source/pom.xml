@@ -32,10 +32,12 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
+		<module>state-transfer</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
+		<module>stp</module>
 	</modules>
 
 	<properties>
@@ -296,6 +298,12 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>4.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>19.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

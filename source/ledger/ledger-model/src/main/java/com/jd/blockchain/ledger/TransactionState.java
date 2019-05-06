@@ -30,6 +30,11 @@ public enum TransactionState {
 	LEDGER_ERROR((byte) 2),
 
 	/**
+	 * 数据序列更新错误；
+	 */
+	DATA_SEQUENCE_UPDATE_ERROR((byte) 3),
+
+	/**
 	 * 系统错误；
 	 */
 	SYSTEM_ERROR((byte) 0x80),
