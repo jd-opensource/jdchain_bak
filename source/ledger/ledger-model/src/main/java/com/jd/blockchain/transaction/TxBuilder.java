@@ -1,6 +1,6 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -42,7 +42,7 @@ public class TxBuilder implements TransactionBuilder {
 		TxContentBlob txContent = new TxContentBlob(ledgerHash);
 		txContent.addOperations(opFactory.getOperations());
 		
-		byte[] contentBodyBytes = BinaryEncodingUtils.encode(txContent, TransactionContentBody.class);
+		byte[] contentBodyBytes = BinaryProtocol.encode(txContent, TransactionContentBody.class);
 		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
 		txContent.setHash(contentHash);
 		

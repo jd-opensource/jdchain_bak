@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
@@ -274,7 +274,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
 				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				BytesValue decodeData = BinaryEncodingUtils.decode(value);
+				BytesValue decodeData = BinaryProtocol.decode(value);
 				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
 			}
 		}

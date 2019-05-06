@@ -9,7 +9,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -75,8 +75,8 @@ public class LedgerInitOperationTest {
 
 		LedgerInitOpTemplate template = new LedgerInitOpTemplate(ledgerInitSettingData);
 
-		byte[] encode = BinaryEncodingUtils.encode(template, LedgerInitOperation.class);
-		LedgerInitOperation decode = BinaryEncodingUtils.decode(encode);
+		byte[] encode = BinaryProtocol.encode(template, LedgerInitOperation.class);
+		LedgerInitOperation decode = BinaryProtocol.decode(encode);
 
 		for (int i = 0; i < template.getInitSetting().getConsensusParticipants().length; i++) {
 			assertEquals(template.getInitSetting().getConsensusParticipants()[i].getAddress(),
@@ -115,8 +115,8 @@ public class LedgerInitOperationTest {
 
 		LedgerInitOpTemplate template = new LedgerInitOpTemplate(ledgerInitSettingData);
 
-		byte[] encode = BinaryEncodingUtils.encode(template, LedgerInitOperation.class);
-		LedgerInitOperation decode = BinaryEncodingUtils.decode(encode);
+		byte[] encode = BinaryProtocol.encode(template, LedgerInitOperation.class);
+		LedgerInitOperation decode = BinaryProtocol.decode(encode);
 
 		for (int i = 0; i < template.getInitSetting().getConsensusParticipants().length; i++) {
 			assertEquals(template.getInitSetting().getConsensusParticipants()[i].getAddress(),

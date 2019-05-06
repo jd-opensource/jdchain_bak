@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -288,11 +288,11 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 	}
 
 	private LedgerMetadata deserializeMetadata(byte[] bytes) {
-		return BinaryEncodingUtils.decode(bytes);
+		return BinaryProtocol.decode(bytes);
 	}
 
 	private byte[] serializeMetadata(LedgerMetadataImpl config) {
-		return BinaryEncodingUtils.encode(config, LedgerMetadata.class);
+		return BinaryProtocol.encode(config, LedgerMetadata.class);
 	}
 
 	@Override

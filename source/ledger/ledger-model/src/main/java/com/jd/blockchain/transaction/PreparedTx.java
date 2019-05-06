@@ -1,6 +1,6 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -39,7 +39,7 @@ public class PreparedTx implements PreparedTransaction {
 	public DigitalSignature sign(AsymmetricKeypair keyPair) {
 		SignatureFunction signatureFunction = Crypto.getSignatureFunction(keyPair.getAlgorithm());
 		PrivKey privKey = keyPair.getPrivKey();
-		byte[] content = BinaryEncodingUtils.encode(getTransactionContent(), TransactionContent.class);
+		byte[] content = BinaryProtocol.encode(getTransactionContent(), TransactionContent.class);
 		SignatureDigest signatureDigest = signatureFunction.sign(privKey, content);
 		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
 		addSignature(signature);

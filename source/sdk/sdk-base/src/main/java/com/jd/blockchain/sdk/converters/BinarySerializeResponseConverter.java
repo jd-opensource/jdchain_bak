@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.sdk.converters;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.http.HttpServiceContext;
 import com.jd.blockchain.utils.http.ResponseConverter;
@@ -30,7 +30,7 @@ public class BinarySerializeResponseConverter implements ResponseConverter {
     public Object getResponse(ServiceRequest request, InputStream responseStream, HttpServiceContext serviceContext)
             throws Exception {
         byte[] serializeBytes = BytesUtils.readBytes(responseStream);
-        Object resolvedObj = BinaryEncodingUtils.decode(serializeBytes);
+        Object resolvedObj = BinaryProtocol.decode(serializeBytes);
         return resolvedObj;
     }
 

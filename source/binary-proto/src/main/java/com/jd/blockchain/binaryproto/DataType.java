@@ -2,10 +2,23 @@ package com.jd.blockchain.binaryproto;
 
 public interface DataType {
 
-	public static final byte NUMERIC_FLAG = (byte)0x10;
-	
-	public static final byte TEXT_FLAG = (byte)0x20;
-	
-	public static final byte BINARY_FLAG = (byte)0x40;
-	
+	/**
+	 * 空值；
+	 */
+	public static final byte NIL = (byte) 0x00;
+
+	/**
+	 * 布尔；
+	 */
+	public static final byte BOOLEAN = (byte) 0x01;
+
+	/**
+	 * 数值；
+	 */
+	public static final byte NUMERIC = (byte) 0x10;
+
+	public static final byte TEXT = (byte) 0x20;
+
+	public static final byte BINARY = (byte) 0x40;
+
 }

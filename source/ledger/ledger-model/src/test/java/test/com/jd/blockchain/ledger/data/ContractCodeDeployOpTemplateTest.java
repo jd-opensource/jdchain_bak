@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
@@ -51,8 +51,8 @@ public class ContractCodeDeployOpTemplateTest {
 
 	@Test
 	public void testSerialize_ContractCodeDeployOperation() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, ContractCodeDeployOperation.class);
-		ContractCodeDeployOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, ContractCodeDeployOperation.class);
+		ContractCodeDeployOperation resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertArrayEquals(resolvedData.getChainCode(), data.getChainCode());
 		assertEquals(resolvedData.getContractID().getAddress(), data.getContractID().getAddress());
@@ -62,8 +62,8 @@ public class ContractCodeDeployOpTemplateTest {
 
 	@Test
 	public void testSerialize_Operation() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, ContractCodeDeployOperation.class);
-		ContractCodeDeployOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, ContractCodeDeployOperation.class);
+		ContractCodeDeployOperation resolvedData = BinaryProtocol.decode(serialBytes);
 		BlockchainIdentity expCodeId = data.getContractID();
 		BlockchainIdentity actualCodeId = resolvedData.getContractID();
 

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -50,8 +50,8 @@ public class TxResponseMessageTest {
 
 	@Test
 	public void testSerialize_TransactionResponse() {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, TransactionResponse.class);
-		TransactionResponse resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, TransactionResponse.class);
+		TransactionResponse resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getBlockHash(), data.getBlockHash());
 		assertEquals(resolvedData.getBlockHeight(), data.getBlockHeight());

@@ -1,6 +1,6 @@
 package com.jd.blockchain.peer.consensus;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
@@ -70,7 +70,7 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 		if (!realmProcessor.getCurrBatchId().equalsIgnoreCase(batchId)) {
 			throw new IllegalArgumentException("BatchId is not begin!");
 		}
-		TransactionRequest txRequest = BinaryEncodingUtils.decode(message);
+		TransactionRequest txRequest = BinaryProtocol.decode(message);
 		return realmProcessor.schedule(txRequest);
 	}
 
@@ -258,7 +258,7 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 					TxResponse txResponse = new TxResponse(entry.getKey());
 					txResponse.setBlockHeight(blockHeight);
 					txResponse.setBlockHash(blockHash);
-					asyncResult.complete(BinaryEncodingUtils.encode(txResponse, TransactionResponse.class));
+					asyncResult.complete(BinaryProtocol.encode(txResponse, TransactionResponse.class));
 				}
 			});
 		}

@@ -10,7 +10,7 @@ import com.jd.blockchain.utils.io.BytesOutputBuffer;
 import com.jd.blockchain.utils.io.BytesSlice;
 import com.jd.blockchain.utils.io.BytesUtils;
 
-public class BinaryEncodingUtils {
+public class BinaryProtocol {
 	
 
 	public static void encode(Object data, Class<?> contractType, OutputStream out) {

@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
@@ -225,11 +225,11 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 			if (block.getHeight() == 0) {
 				// 计算创世区块的 hash 时，不包括 ledgerHash 字段；
 				block.setLedgerHash(null);
-				blockBodyBytes = BinaryEncodingUtils.encode(block, BlockBody.class);
+				blockBodyBytes = BinaryProtocol.encode(block, BlockBody.class);
 				// 恢复；
 				block.setLedgerHash(block.getHash());
 			} else {
-				blockBodyBytes = BinaryEncodingUtils.encode(block, BlockBody.class);
+				blockBodyBytes = BinaryProtocol.encode(block, BlockBody.class);
 			}
 			HashFunction hashFunc = Crypto.getHashFunction(blockHash.getAlgorithm());
 			boolean pass = hashFunc.verify(blockHash, blockBodyBytes);
@@ -256,7 +256,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	private LedgerBlock deserialize(byte[] blockBytes) {
-		return BinaryEncodingUtils.decode(blockBytes);
+		return BinaryProtocol.decode(blockBytes);
 	}
 
 	@Override

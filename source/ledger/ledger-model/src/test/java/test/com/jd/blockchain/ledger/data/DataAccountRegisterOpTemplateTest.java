@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PubKey;
@@ -48,8 +48,8 @@ public class DataAccountRegisterOpTemplateTest {
 
     @Test
     public void testSerialize_DataAccountRegisterOperation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, DataAccountRegisterOperation.class);
-        DataAccountRegisterOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, DataAccountRegisterOperation.class);
+        DataAccountRegisterOperation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedData.getAccountID().getAddress(), data.getAccountID().getAddress());
         assertEquals(resolvedData.getAccountID().getPubKey(), data.getAccountID().getPubKey());
@@ -59,8 +59,8 @@ public class DataAccountRegisterOpTemplateTest {
 
     @Test
     public void testSerialize_Operation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, Operation.class);
-        Operation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, Operation.class);
+        Operation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         System.out.println("serialBytesLength=" + serialBytes.length);
         System.out.println(resolvedData);

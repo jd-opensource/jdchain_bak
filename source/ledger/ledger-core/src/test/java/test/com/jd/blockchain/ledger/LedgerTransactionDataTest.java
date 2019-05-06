@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -86,8 +86,8 @@ public class LedgerTransactionDataTest {
 
 	@Test
 	public void testSerialize_LedgerTransaction() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerTransaction.class);
-		LedgerTransaction resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, LedgerTransaction.class);
+		LedgerTransaction resolvedData = BinaryProtocol.decode(serialBytes);
 
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getAdminAccountHash(), data.getAdminAccountHash());
@@ -120,8 +120,8 @@ public class LedgerTransactionDataTest {
 
 	@Test
 	public void testSerialize_Transaction() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, Transaction.class);
-		Transaction resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, Transaction.class);
+		Transaction resolvedData = BinaryProtocol.decode(serialBytes);
 
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getExecutionState(), data.getExecutionState());
@@ -150,8 +150,8 @@ public class LedgerTransactionDataTest {
 
 	@Test
 	public void testSerialize_LedgerDataSnapshot() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerDataSnapshot.class);
-		LedgerDataSnapshot resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, LedgerDataSnapshot.class);
+		LedgerDataSnapshot resolvedData = BinaryProtocol.decode(serialBytes);
 
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getAdminAccountHash(), data.getAdminAccountHash());
@@ -163,8 +163,8 @@ public class LedgerTransactionDataTest {
 
 	@Test
 	public void testSerialize_NodeRequest() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, NodeRequest.class);
-		NodeRequest resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, NodeRequest.class);
+		NodeRequest resolvedData = BinaryProtocol.decode(serialBytes);
 
 		System.out.println("------Assert start ------");
 		// EndpointSignatures 验证
@@ -189,8 +189,8 @@ public class LedgerTransactionDataTest {
 
 	@Test
 	public void testSerialize_EndpointRequest() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, EndpointRequest.class);
-		EndpointRequest resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, EndpointRequest.class);
+		EndpointRequest resolvedData = BinaryProtocol.decode(serialBytes);
 
 		System.out.println("------Assert start ------");
 		// EndpointSignatures 验证

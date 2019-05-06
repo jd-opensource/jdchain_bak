@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
@@ -141,7 +141,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 			value = baseAccount.dataset.getValuesAtIndex(fromIndex);
 			key = baseAccount.dataset.getKeyAtIndex(fromIndex);
 			ver = baseAccount.dataset.getVersion(key);
-			BytesValue decodeData = BinaryEncodingUtils.decode(value);
+			BytesValue decodeData = BinaryProtocol.decode(value);
 			kvDataEntries[i] = new KVDataObject(key, ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
 			fromIndex++;
 		}

@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
@@ -99,7 +99,7 @@ public class AccountSet implements Transactional, MerkleProvable {
 	// }
 
 	private AccountHeader deserialize(byte[] txBytes) {
-		return BinaryEncodingUtils.decode(txBytes);
+		return BinaryProtocol.decode(txBytes);
 	}
 
 	/**
@@ -289,13 +289,13 @@ public class AccountSet implements Transactional, MerkleProvable {
 
 	private VersioningAccount deserialize(byte[] bytes, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly, long version) {
-		AccountHeader accInfo = BinaryEncodingUtils.decode(bytes);
+		AccountHeader accInfo = BinaryProtocol.decode(bytes);
 		return new VersioningAccount(accInfo.getAddress(), accInfo.getPubKey(), accInfo.getRootHash(), cryptoSetting,
 				keyPrefix, exStorage, verStorage, readonly, accessPolicy, version);
 	}
 
 	private byte[] serialize(AccountHeader account) {
-		return BinaryEncodingUtils.encode(account, AccountHeader.class);
+		return BinaryProtocol.encode(account, AccountHeader.class);
 	}
 
 	@Override

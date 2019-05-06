@@ -3,7 +3,7 @@ package com.jd.blockchain.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -86,7 +86,7 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 		txMessage.addEndpointSignatures(endpointSignatures);
 		txMessage.addNodeSignatures(nodeSignatures);
 
-		byte[] reqBytes = BinaryEncodingUtils.encode(txMessage, NodeRequest.class);
+		byte[] reqBytes = BinaryProtocol.encode(txMessage, NodeRequest.class);
 		HashDigest reqHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(reqBytes);
 		txMessage.setHash(reqHash);
 

@@ -7,73 +7,72 @@ package com.jd.blockchain.binaryproto;
  *
  */
 public enum PrimitiveType {
-	
+
 	/**
 	 * 空；
 	 */
-	NIL((byte) 0x00),
+	NIL(DataType.NIL),
 
 	/**
 	 * 布尔型；
 	 */
-	BOOLEAN((byte)  0x10),
+	BOOLEAN(DataType.BOOLEAN),
 
 	/**
 	 * 数值型：
 	 */
-	INT8((byte) 0x11),
+	INT8((byte) (DataType.NUMERIC | 0x01)),
 
-	INT16((byte) 0x12),
+	INT16((byte) (DataType.NUMERIC | 0x02)),
 
-	INT32((byte) 0x13),
+	INT32((byte) (DataType.NUMERIC | 0x03)),
 
-	INT64((byte) 0x14),
+	INT64((byte) (DataType.NUMERIC | 0x04)),
 
 	/**
 	 * 日期时间；
 	 */
-	DATETIME((byte) 0x15),
+	DATETIME((byte) (DataType.NUMERIC | 0x08)),
 
 	/**
 	 * 文本数据；
 	 */
-	TEXT((byte) 0x20),
+	TEXT(DataType.TEXT),
 
 	/**
 	 * 文本数据；
 	 */
-	JSON((byte) 0x21),
+	JSON((byte) (DataType.TEXT | 0x01)),
 
 	/**
 	 * 文本数据；
 	 */
-	XML((byte) 0x22),
+	XML((byte) (DataType.TEXT | 0x02)),
 
 	/**
 	 * 二进制数据；
 	 */
-	BYTES((byte) 0x40),
+	BYTES(DataType.BINARY),
 
 	/**
 	 * 大整数；
 	 */
-	BIG_INT((byte) 0x41),
+	BIG_INT((byte) (DataType.BINARY | 0x01)),
 
 	/**
 	 * 图片；
 	 */
-	IMG((byte) 0x42),
+	IMG((byte) (DataType.BINARY | 0x02)),
 
 	/**
 	 * 视频；
 	 */
-	VIDEO((byte) 0x43),
+	VIDEO((byte) (DataType.BINARY | 0x03)),
 
 	/**
-	 * 位置；
+	 * 位置坐标；
 	 */
-	LOCATION((byte) 0x44);
-	
+	LOCATION((byte) (DataType.BINARY | 0x04));
 
 	public final byte CODE;
 

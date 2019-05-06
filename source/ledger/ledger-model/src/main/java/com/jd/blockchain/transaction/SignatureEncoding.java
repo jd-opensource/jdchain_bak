@@ -2,17 +2,17 @@ package com.jd.blockchain.transaction;
 
 import org.springframework.util.Base64Utils;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.ledger.DigitalSignature;
 
 public class SignatureEncoding {
 	
 	public static byte[] encode(DigitalSignature signature) {
-		return BinaryEncodingUtils.encode(signature, DigitalSignature.class);
+		return BinaryProtocol.encode(signature, DigitalSignature.class);
 	}
 	
 	public static DigitalSignature decode(byte[] bytesSignature) {
-		return BinaryEncodingUtils.decode(bytesSignature);
+		return BinaryProtocol.decode(bytesSignature);
 	}
 	
 	public static DigitalSignature decodeFromBase64(String base64Signature) {

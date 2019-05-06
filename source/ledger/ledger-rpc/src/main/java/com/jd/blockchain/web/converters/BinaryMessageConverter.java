@@ -19,7 +19,7 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 
 /**
  * 针对二进制对象的序列化和反序列化的 HTTP 消息转换器；
@@ -95,7 +95,7 @@ public class BinaryMessageConverter extends AbstractHttpMessageConverter<Object>
             throws IOException, HttpMessageNotReadableException {
         InputStream in = inputMessage.getBody();
         byte[] serializeBytes = BytesUtils.readBytes(in);
-        Object resolvedObj = BinaryEncodingUtils.decode(serializeBytes);
+        Object resolvedObj = BinaryProtocol.decode(serializeBytes);
         return resolvedObj;
     }
 
@@ -104,7 +104,7 @@ public class BinaryMessageConverter extends AbstractHttpMessageConverter<Object>
             throws IOException, HttpMessageNotWritableException {
         OutputStream out = outputMessage.getBody();
         if (t instanceof TransactionResponse) {
-            byte[] serializeBytes = BinaryEncodingUtils.encode(t, TransactionResponse.class);
+            byte[] serializeBytes = BinaryProtocol.encode(t, TransactionResponse.class);
             out.write(serializeBytes);
             out.flush();
         }

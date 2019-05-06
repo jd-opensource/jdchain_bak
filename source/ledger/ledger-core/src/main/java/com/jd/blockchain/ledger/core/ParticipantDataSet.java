@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -65,7 +65,7 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 	 */
 	public void addConsensusParticipant(ParticipantNode participant) {
 		Bytes key = encodeKey(participant.getAddress());
-		byte[] participantBytes = BinaryEncodingUtils.encode(participant, ParticipantNode.class);
+		byte[] participantBytes = BinaryProtocol.encode(participant, ParticipantNode.class);
 		long nv = dataset.setValue(key, participantBytes, -1);
 		if (nv < 0) {
 			throw new LedgerException("Participant already exist! --[id=" + key + "]");
@@ -92,7 +92,7 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 		if (bytes == null) {
 			return null;
 		}
-		return BinaryEncodingUtils.decode(bytes);
+		return BinaryProtocol.decode(bytes);
 	}
 	
 	public ParticipantNode[] getParticipants() {
@@ -100,7 +100,7 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 		ParticipantNode[] pns = new ParticipantNode[bytes.length];
 		
 		for (int i = 0; i < pns.length; i++) {
-			pns[i] = BinaryEncodingUtils.decode(bytes[i]);
+			pns[i] = BinaryProtocol.decode(bytes[i]);
 		}
 		return pns;
 	}

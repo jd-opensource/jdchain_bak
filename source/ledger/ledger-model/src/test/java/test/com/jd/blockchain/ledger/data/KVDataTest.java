@@ -8,7 +8,7 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -44,8 +44,8 @@ public class KVDataTest {
 
     @Test
     public void testSerialize_KVEntry() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(kvData, DataAccountKVSetOperation.KVWriteEntry.class);
-        DataAccountKVSetOpTemplate.KVWriteEntry resolvedKvData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(kvData, DataAccountKVSetOperation.KVWriteEntry.class);
+        DataAccountKVSetOpTemplate.KVWriteEntry resolvedKvData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedKvData.getKey(), kvData.getKey());
         assertEquals(resolvedKvData.getExpectedVersion(), kvData.getExpectedVersion());

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
@@ -53,7 +53,7 @@ public class TxProcessingController implements TransactionService {
 			throw new IllegalStateException("Not implemented!");
 		} else {
 			// 验证签名；
-			byte[] content = BinaryEncodingUtils.encode(txRequest.getTransactionContent(), TransactionContent.class);
+			byte[] content = BinaryProtocol.encode(txRequest.getTransactionContent(), TransactionContent.class);
 			for (DigitalSignature sign : partiSigns) {
 				SignatureFunction signFunc = Crypto
 						.getSignatureFunction(sign.getPubKey().getAlgorithm());
