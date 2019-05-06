@@ -8,7 +8,7 @@
  */
 package com.jd.blockchain.consensus.mq.config;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIncomingSettings;
 import com.jd.blockchain.consensus.ConsensusSettings;
@@ -75,14 +75,14 @@ public class MsgQueueSettingsFactory implements SettingsFactory {
         @Override
         public byte[] encode(ConsensusSettings data) {
             if (data instanceof MsgQueueConsensusSettings) {
-                return BinaryEncodingUtils.encode(data, MsgQueueConsensusSettings.class);
+                return BinaryProtocol.encode(data, MsgQueueConsensusSettings.class);
             }
             throw new IllegalArgumentException("Settings data isn't supported! Accept MsgQueueConsensusSettings only!");
         }
 
         @Override
         public MsgQueueConsensusSettings decode(byte[] bytes) {
-            return BinaryEncodingUtils.decodeAs(bytes, MsgQueueConsensusSettings.class);
+            return BinaryProtocol.decodeAs(bytes, MsgQueueConsensusSettings.class);
         }
     }
 
@@ -91,14 +91,14 @@ public class MsgQueueSettingsFactory implements SettingsFactory {
         @Override
         public byte[] encode(ClientIncomingSettings data) {
             if (data instanceof MsgQueueClientIncomingSettings) {
-                return BinaryEncodingUtils.encode(data, MsgQueueClientIncomingSettings.class);
+                return BinaryProtocol.encode(data, MsgQueueClientIncomingSettings.class);
             }
             throw new IllegalArgumentException("Settings data isn't supported! Accept MsgQueueClientIncomingSettings only!");
         }
 
         @Override
         public MsgQueueClientIncomingSettings decode(byte[] bytes) {
-            return BinaryEncodingUtils.decodeAs(bytes, MsgQueueClientIncomingSettings.class);
+            return BinaryProtocol.decodeAs(bytes, MsgQueueClientIncomingSettings.class);
         }
 
     }

@@ -10,7 +10,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>contract-model</module>
 		<module>contract-framework</module>
 		<module>contract-jvm</module>
 		<module>contract-maven-plugin</module>

@@ -10,8 +10,8 @@ package com.jd.blockchain.consensus.mq.settings;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  *
@@ -19,18 +19,18 @@ import com.jd.blockchain.utils.ValueType;
  * @create 2018/12/12
  * @since 1.0.0
  */
-@DataContract(code = TypeCodes.CONSENSUS_MSGQUEUE_NETWORK_SETTINGS)
+@DataContract(code = DataCodes.CONSENSUS_MSGQUEUE_NETWORK_SETTINGS)
 public interface MsgQueueNetworkSettings {
 
-    @DataField(order = 0, primitiveType = ValueType.TEXT)
+    @DataField(order = 0, primitiveType = PrimitiveType.TEXT)
     String getServer();
 
-    @DataField(order = 1, primitiveType = ValueType.TEXT)
+    @DataField(order = 1, primitiveType = PrimitiveType.TEXT)
     String getTxTopic();
 
-    @DataField(order = 2, primitiveType = ValueType.TEXT)
+    @DataField(order = 2, primitiveType = PrimitiveType.TEXT)
     String getBlTopic();
 
-    @DataField(order = 3, primitiveType = ValueType.TEXT)
+    @DataField(order = 3, primitiveType = PrimitiveType.TEXT)
     String getMsgTopic();
 }

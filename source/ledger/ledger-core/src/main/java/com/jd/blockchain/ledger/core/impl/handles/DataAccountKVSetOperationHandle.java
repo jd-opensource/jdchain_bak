@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -24,7 +24,7 @@ public class DataAccountKVSetOperationHandle implements OperationHandle{
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
 		KVWriteEntry[] writeset = kvWriteOp.getWriteSet();
 		for (KVWriteEntry kvw : writeset) {
-			byte[] value = BinaryEncodingUtils.encode(kvw.getValue(), BytesValue.class);
+			byte[] value = BinaryProtocol.encode(kvw.getValue(), BytesValue.class);
 			account.setBytes(Bytes.fromString(kvw.getKey()), value, kvw.getExpectedVersion());
 		}
 	}

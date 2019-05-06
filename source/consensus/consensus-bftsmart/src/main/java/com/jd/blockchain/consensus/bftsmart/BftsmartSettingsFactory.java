@@ -1,6 +1,6 @@
 package com.jd.blockchain.consensus.bftsmart;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.*;
 import com.jd.blockchain.utils.io.BytesEncoder;
@@ -40,14 +40,14 @@ public class BftsmartSettingsFactory implements SettingsFactory {
 		@Override
 		public byte[] encode(ConsensusSettings data) {
 			if (data instanceof BftsmartConsensusSettings) {
-				return BinaryEncodingUtils.encode(data, BftsmartConsensusSettings.class);
+				return BinaryProtocol.encode(data, BftsmartConsensusSettings.class);
 			}
 			throw new IllegalArgumentException("Settings data isn't supported! Accept BftsmartConsensusSettings only!");
 		}
 
 		@Override
 		public ConsensusSettings decode(byte[] bytes) {
-			return BinaryEncodingUtils.decodeAs(bytes, BftsmartConsensusSettings.class);
+			return BinaryProtocol.decodeAs(bytes, BftsmartConsensusSettings.class);
 		}
 		
 	}
@@ -57,14 +57,14 @@ public class BftsmartSettingsFactory implements SettingsFactory {
 		@Override
 		public byte[] encode(ClientIncomingSettings data) {
 			if (data instanceof BftsmartClientIncomingSettings) {
-				return BinaryEncodingUtils.encode(data, BftsmartClientIncomingSettings.class);
+				return BinaryProtocol.encode(data, BftsmartClientIncomingSettings.class);
 			}
 			throw new IllegalArgumentException("Settings data isn't supported! Accept BftsmartClientIncomingSettings only!");
 		}
 
 		@Override
 		public ClientIncomingSettings decode(byte[] bytes) {
-			return BinaryEncodingUtils.decodeAs(bytes, BftsmartClientIncomingSettings.class);
+			return BinaryProtocol.decodeAs(bytes, BftsmartClientIncomingSettings.class);
 		}
 		
 	}

@@ -10,7 +10,7 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  *
@@ -18,7 +18,7 @@ import com.jd.blockchain.consts.TypeCodes;
  * @create 2018/12/19
  * @since 1.0.0
  */
-@DataContract(code = TypeCodes.CLIENT_IDENTIFICATIONS)
+@DataContract(code = DataCodes.CLIENT_IDENTIFICATIONS)
 public interface ClientIdentifications {
 
     @DataField(order = 0, list = true, refContract = true, genericContract = true)

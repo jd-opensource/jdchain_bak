@@ -2,7 +2,7 @@ package com.jd.blockchain.sdk.client;
 
 import java.io.Closeable;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -12,13 +12,13 @@ import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
-import com.jd.blockchain.sdk.BlockchainQueryService;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.BlockchainServiceFactory;
 import com.jd.blockchain.sdk.proxy.HttpBlockchainQueryService;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.http.agent.HttpServiceAgent;
 import com.jd.blockchain.utils.http.agent.ServiceConnection;
 import com.jd.blockchain.utils.http.agent.ServiceConnectionManager;
@@ -135,7 +135,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 			//TODO: 未实现按不同的账本的密码参数配置，采用不同的哈希算法和签名算法；
 			if (!reqMsg.containsEndpointSignature(userKey.getAddress())) {
 				// TODO: 优化上下文对此 TransactionContent 的多次序列化带来的额外性能开销；
-				byte[] txContentBytes = BinaryEncodingUtils.encode(txRequest.getTransactionContent(),
+				byte[] txContentBytes = BinaryProtocol.encode(txRequest.getTransactionContent(),
 						TransactionContent.class);
 				PrivKey userPrivKey = userKey.getPrivKey();
 				SignatureFunction signatureFunction = Crypto.getSignatureFunction(userKey.getAlgorithm());

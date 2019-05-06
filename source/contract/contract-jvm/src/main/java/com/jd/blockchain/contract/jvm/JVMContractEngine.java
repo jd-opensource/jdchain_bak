@@ -1,21 +1,21 @@
 package com.jd.blockchain.contract.jvm;
 
-import com.jd.blockchain.contract.ContractCode;
-import com.jd.blockchain.contract.ContractEngine;
+import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.contract.engine.ContractEngine;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.runtime.RuntimeContext;
+import com.jd.blockchain.utils.Bytes;
 
 public class JVMContractEngine implements ContractEngine {
 
 	private RuntimeContext runtimeContext = RuntimeContext.get();
-//    private RuntimeContext runtimeContext = ModularRuntimeContext.setup(System.getProperty("user.dir"));
 	
-	private String getCodeName(String address, long version) {
-		return address + "_" + version;
+	private String getCodeName(Bytes address, long version) {
+		return address.toBase58() + "_" + version;
 	}
 	
 	@Override
-	public ContractCode getContract(String address, long version) {
+	public ContractCode getContract(Bytes address, long version) {
 		String codeName = getCodeName(address, version);
 		Module module = runtimeContext.getDynamicModule(codeName);
 		if (module == null) {
@@ -25,7 +25,7 @@ public class JVMContractEngine implements ContractEngine {
 	}
 
 	@Override
-	public ContractCode setupContract(String address, long version, byte[] code) {
+	public ContractCode setupContract(Bytes address, long version, byte[] code) {
 	    //is there the contractCode before setup? if yes ,then return;
         ContractCode contractCode = getContract(address,version);
         if(contractCode != null){

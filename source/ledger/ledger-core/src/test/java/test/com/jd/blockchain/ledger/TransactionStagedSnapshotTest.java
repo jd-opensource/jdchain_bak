@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -43,8 +43,8 @@ public class TransactionStagedSnapshotTest {
 
 	@Test
 	public void testSerialize_LedgerDataSnapshot() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerDataSnapshot.class);
-		LedgerDataSnapshot resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, LedgerDataSnapshot.class);
+		LedgerDataSnapshot resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getAdminAccountHash(), data.getAdminAccountHash());
 		assertEquals(resolvedData.getContractAccountSetHash(), data.getContractAccountSetHash());

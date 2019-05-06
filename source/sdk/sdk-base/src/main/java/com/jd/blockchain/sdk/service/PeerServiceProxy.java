@@ -3,11 +3,11 @@ package com.jd.blockchain.sdk.service;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.data.TransactionService;
 import com.jd.blockchain.sdk.BlockchainException;
-import com.jd.blockchain.sdk.BlockchainQueryService;
 import com.jd.blockchain.sdk.LedgerAccessContext;
 import com.jd.blockchain.sdk.proxy.BlockchainServiceProxy;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TransactionService;
 
 import java.util.HashMap;
 import java.util.List;

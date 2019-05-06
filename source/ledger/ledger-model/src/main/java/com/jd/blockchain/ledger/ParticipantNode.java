@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 参与方节点；
@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.METADATA_CONSENSUS_PARTICIPANT)
+@DataContract(code = DataCodes.METADATA_CONSENSUS_PARTICIPANT)
 public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 
 	/**
@@ -29,7 +29,7 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.TEXT)
+	@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
 	String getAddress();
 
 	/**
@@ -37,7 +37,7 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 2, primitiveType = ValueType.TEXT)
+	@DataField(order = 2, primitiveType = PrimitiveType.TEXT)
 	String getName();
 
 	/**
@@ -45,6 +45,6 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 3, primitiveType = ValueType.BYTES)
+	@DataField(order = 3, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
 }

@@ -7,7 +7,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
@@ -48,8 +48,8 @@ public class LedgerAccountTest {
 				pubKey, hashDigest);
 
 		// encode and decode
-		byte[] encodeBytes = BinaryEncodingUtils.encode(accountHeaderData, AccountHeader.class);
-		AccountHeader deAccountHeaderData = BinaryEncodingUtils.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(accountHeaderData, AccountHeader.class);
+		AccountHeader deAccountHeaderData = BinaryProtocol.decode(encodeBytes);
 
 		// verify start
 		assertEquals(accountHeaderData.getAddress(), deAccountHeaderData.getAddress());

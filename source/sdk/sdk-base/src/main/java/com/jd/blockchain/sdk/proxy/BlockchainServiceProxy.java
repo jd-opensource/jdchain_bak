@@ -2,12 +2,12 @@ package com.jd.blockchain.sdk.proxy;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.ledger.data.TxTemplate;
 import com.jd.blockchain.sdk.BlockchainEventHandle;
 import com.jd.blockchain.sdk.BlockchainEventListener;
-import com.jd.blockchain.sdk.BlockchainQueryService;
 import com.jd.blockchain.sdk.BlockchainService;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxTemplate;
 
 public abstract class BlockchainServiceProxy implements BlockchainService {
 

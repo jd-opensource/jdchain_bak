@@ -8,10 +8,10 @@
  */
 package com.jd.blockchain.sdk.converters;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.ClientIdentifications;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.http.RequestBodyConverter;
 
 import java.io.IOException;
@@ -32,11 +32,11 @@ public class BinarySerializeRequestConverter implements RequestBodyConverter {
     public void write(Object param, OutputStream out) throws IOException {
         // 使用自定义的序列化方式
         if (param instanceof TransactionRequest) {
-            byte[] serializeBytes = BinaryEncodingUtils.encode(param, TransactionRequest.class);
+            byte[] serializeBytes = BinaryProtocol.encode(param, TransactionRequest.class);
             out.write(serializeBytes);
             out.flush();
         } else if (param instanceof ClientIdentifications) {
-            byte[] serializeBytes = BinaryEncodingUtils.encode(param, ClientIdentifications.class);
+            byte[] serializeBytes = BinaryProtocol.encode(param, ClientIdentifications.class);
             out.write(serializeBytes);
             out.flush();
         }

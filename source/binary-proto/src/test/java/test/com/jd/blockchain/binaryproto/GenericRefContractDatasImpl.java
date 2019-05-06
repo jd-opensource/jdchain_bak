@@ -1,8 +1,6 @@
 package test.com.jd.blockchain.binaryproto;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 /**

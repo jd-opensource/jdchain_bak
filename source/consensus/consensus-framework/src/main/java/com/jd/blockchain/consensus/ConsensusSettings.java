@@ -2,7 +2,7 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  * 共识网络的配置参数；
@@ -10,7 +10,7 @@ import com.jd.blockchain.consts.TypeCodes;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.CONSENSUS_SETTINGS)
+@DataContract(code = DataCodes.CONSENSUS_SETTINGS)
 public interface ConsensusSettings {
 
 	/**

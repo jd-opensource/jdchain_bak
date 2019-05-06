@@ -20,9 +20,9 @@ import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
-import com.jd.blockchain.ledger.service.TransactionBatchProcess;
-import com.jd.blockchain.ledger.service.TransactionBatchResult;
-import com.jd.blockchain.ledger.service.TransactionBatchResultHandle;
+import com.jd.blockchain.service.TransactionBatchProcess;
+import com.jd.blockchain.service.TransactionBatchResult;
+import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.utils.Bytes;
 
 public class TransactionBatchProcessor implements TransactionBatchProcess {

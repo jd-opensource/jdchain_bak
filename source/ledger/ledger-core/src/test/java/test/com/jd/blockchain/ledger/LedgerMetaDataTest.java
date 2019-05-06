@@ -10,7 +10,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
@@ -71,8 +71,8 @@ public class LedgerMetaDataTest {
 		ledgerMetadata.setParticipantsHash(hashDigest);
 
 		// encode and decode
-		byte[] encodeBytes = BinaryEncodingUtils.encode(ledgerMetadata, LedgerMetadata.class);
-		LedgerMetadata deLedgerMetaData = BinaryEncodingUtils.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(ledgerMetadata, LedgerMetadata.class);
+		LedgerMetadata deLedgerMetaData = BinaryProtocol.decode(encodeBytes);
 
 		// verify start
 		assertArrayEquals(ledgerMetadata.getSeed(), deLedgerMetaData.getSeed());
@@ -99,8 +99,8 @@ public class LedgerMetaDataTest {
 
 		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider, new Bytes(csSettingsBytes),
 				cryptoConfig);
-		byte[] encodeBytes = BinaryEncodingUtils.encode(ledgerConfiguration, LedgerSetting.class);
-		LedgerSetting deLedgerConfiguration = BinaryEncodingUtils.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(ledgerConfiguration, LedgerSetting.class);
+		LedgerSetting deLedgerConfiguration = BinaryProtocol.decode(encodeBytes);
 		// verify start
 		assertTrue(ledgerConfiguration.getConsensusSetting().equals(deLedgerConfiguration.getConsensusSetting()));
 		assertEquals(ledgerConfiguration.getCryptoSetting().getAutoVerifyHash(),
@@ -136,8 +136,8 @@ public class LedgerMetaDataTest {
 		CryptoConfig cryptoConfig = new CryptoConfig();
 		cryptoConfig.setAutoVerifyHash(true);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
-		byte[] encodeBytes = BinaryEncodingUtils.encode(cryptoConfig, CryptoSetting.class);
-		CryptoSetting deCryptoConfig = BinaryEncodingUtils.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(cryptoConfig, CryptoSetting.class);
+		CryptoSetting deCryptoConfig = BinaryProtocol.decode(encodeBytes);
 
 		// verify start
 		assertEquals(cryptoConfig.getHashAlgorithm(), deCryptoConfig.getHashAlgorithm());
@@ -162,8 +162,8 @@ public class LedgerMetaDataTest {
 		ParticipantCertData participantCertData = new ParticipantCertData(address, name, pubKey);
 
 		// encode and decode
-		byte[] encodeBytes = BinaryEncodingUtils.encode(participantCertData, ParticipantNode.class);
-		ParticipantNode deParticipantInfoData = BinaryEncodingUtils.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(participantCertData, ParticipantNode.class);
+		ParticipantNode deParticipantInfoData = BinaryProtocol.decode(encodeBytes);
 
 		// verify start
 		assertEquals(participantCertData.getAddress(), deParticipantInfoData.getAddress());

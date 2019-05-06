@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 
-@DataContract(code = TypeCodes.REQUEST_NODE)
+@DataContract(code = DataCodes.REQUEST_NODE)
 public interface NodeRequest extends EndpointRequest {
 
 

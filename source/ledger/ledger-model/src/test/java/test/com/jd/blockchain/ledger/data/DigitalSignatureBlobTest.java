@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.DigitalSignatureBody;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
 
 /**
  *
@@ -50,8 +50,8 @@ public class DigitalSignatureBlobTest {
 
     @Test
     public void testSerialize_DigitalSignature() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, DigitalSignature.class);
-        DigitalSignature resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, DigitalSignature.class);
+        DigitalSignature resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedData.getDigest(), data.getDigest());
         assertEquals(resolvedData.getPubKey(), data.getPubKey());
@@ -60,8 +60,8 @@ public class DigitalSignatureBlobTest {
 
     @Test
     public void testSerialize_DigitalSignatureBody() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, DigitalSignatureBody.class);
-        DigitalSignatureBody resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, DigitalSignatureBody.class);
+        DigitalSignatureBody resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedData.getDigest(), data.getDigest());
         assertEquals(resolvedData.getPubKey(), data.getPubKey());

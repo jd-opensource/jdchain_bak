@@ -8,14 +8,14 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesValueImpl;
+import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataType;
+import com.jd.blockchain.ledger.BytesValueType;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.data.DataAccountKVSetOpTemplate;
-import com.jd.blockchain.ledger.data.KVData;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.utils.Bytes;
 
 import org.junit.Before;
@@ -43,11 +43,11 @@ public class DataAccountKVSetOpTemplateTest {
         String accountAddress = "zhangsandhakhdkah";
         data = new DataAccountKVSetOpTemplate(Bytes.fromString(accountAddress));
         KVData kvData1 =
-                new KVData("test1", new BytesValueImpl(DataType.TEXT, "zhangsan".getBytes()), 9999L);
+                new KVData("test1", new BytesValueEntry(BytesValueType.TEXT, "zhangsan".getBytes()), 9999L);
         KVData kvData2 =
-                new KVData("test2", new BytesValueImpl(DataType.TEXT, "lisi".getBytes()), 9990L);
+                new KVData("test2", new BytesValueEntry(BytesValueType.TEXT, "lisi".getBytes()), 9990L);
         KVData kvData3 =
-                new KVData("test3", new BytesValueImpl(DataType.TEXT, "wangwu".getBytes()), 1990L);
+                new KVData("test3", new BytesValueEntry(BytesValueType.TEXT, "wangwu".getBytes()), 1990L);
         data.set(kvData1);
         data.set(kvData2);
         data.set(kvData3);
@@ -56,8 +56,8 @@ public class DataAccountKVSetOpTemplateTest {
 
     @Test
     public void testSerialize_DataAccountKVSetOperation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, DataAccountKVSetOperation.class);
-        DataAccountKVSetOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, DataAccountKVSetOperation.class);
+        DataAccountKVSetOperation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedData.getAccountAddress(), data.getAccountAddress());
         DataAccountKVSetOperation.KVWriteEntry[] resolvedKv = resolvedData.getWriteSet();
@@ -75,8 +75,8 @@ public class DataAccountKVSetOpTemplateTest {
 
     @Test
     public void testSerialize_Operation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, Operation.class);
-        Operation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, Operation.class);
+        Operation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         System.out.println(resolvedData);
         System.out.println("serialBytesLength=" + serialBytes.length);

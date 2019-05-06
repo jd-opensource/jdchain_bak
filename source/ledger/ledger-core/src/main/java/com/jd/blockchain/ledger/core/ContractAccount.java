@@ -8,11 +8,8 @@ import com.jd.blockchain.utils.io.BytesUtils;
 
 public class ContractAccount implements AccountHeader {
 
-	// private static final String CONTRACT_INFO_PREFIX = "INFO" +
-	// LedgerConsts.KEY_SEPERATOR;
 	private static final Bytes CONTRACT_INFO_PREFIX = Bytes.fromString("INFO" + LedgerConsts.KEY_SEPERATOR);
 
-	// private static final String CHAIN_CODE_KEY = "CHAIN-CODE";
 	private static final Bytes CHAIN_CODE_KEY = Bytes.fromString("CHAIN-CODE");
 
 	private BaseAccount accBase;
@@ -74,7 +71,6 @@ public class ContractAccount implements AccountHeader {
 
 	private Bytes encodePropertyKey(Bytes key) {
 		return CONTRACT_INFO_PREFIX.concat(key);
-//		return key.concatTo(CONTRACT_INFO_PREFIX);
 	}
 
 }

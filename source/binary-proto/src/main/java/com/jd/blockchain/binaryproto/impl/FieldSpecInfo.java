@@ -1,9 +1,9 @@
 package com.jd.blockchain.binaryproto.impl;
 
 import com.jd.blockchain.binaryproto.DataSpecification;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.binaryproto.EnumSpecification;
 import com.jd.blockchain.binaryproto.FieldSpec;
-import com.jd.blockchain.utils.ValueType;
 
 public class FieldSpecInfo implements FieldSpec {
 
@@ -15,7 +15,7 @@ public class FieldSpecInfo implements FieldSpec {
 
 	private boolean repeatable;
 
-	private ValueType primitiveType;
+	private PrimitiveType primitiveType;
 
 	private EnumSpecification enumSpec;
 
@@ -27,7 +27,7 @@ public class FieldSpecInfo implements FieldSpec {
 
 	private boolean isGenericContract = false;
 
-	public FieldSpecInfo(int order, String name, String decription, ValueType primitiveType, boolean repeatable,
+	public FieldSpecInfo(int order, String name, String decription, PrimitiveType primitiveType, boolean repeatable,
 			int maxSize, Class<?> dataType) {
 		if (primitiveType == null) {
 			throw new IllegalArgumentException("primitiveType is null!");
@@ -71,7 +71,7 @@ public class FieldSpecInfo implements FieldSpec {
 	}
 
 	@Override
-	public ValueType getPrimitiveType() {
+	public PrimitiveType getPrimitiveType() {
 		return primitiveType;
 	}
 

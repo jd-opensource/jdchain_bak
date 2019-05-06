@@ -1,6 +1,6 @@
 package com.jd.blockchain.sdk.service;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.MessageService;
 import com.jd.blockchain.consensus.client.ConsensusClient;
@@ -13,9 +13,9 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 
 /**
@@ -63,7 +63,7 @@ public class NodeSigningAppender implements TransactionService {
 		TxRequestMessage txMessage = new TxRequestMessage(txRequest);
 
 		// 生成网关签名；
-		byte[] endpointRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
+		byte[] endpointRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);
 
 		short signAlgorithm = nodeKeyPair.getAlgorithm();
 		SignatureFunction signFunc = Crypto.getSignatureFunction(signAlgorithm);
@@ -71,13 +71,13 @@ public class NodeSigningAppender implements TransactionService {
 		txMessage.addNodeSignatures(new DigitalSignatureBlob(nodeKeyPair.getPubKey(), signDigest));
 
 		// 计算交易哈希；
-		byte[] nodeRequestBytes = BinaryEncodingUtils.encode(txMessage, TransactionRequest.class);
+		byte[] nodeRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);
 		HashFunction hashFunc = Crypto.getHashFunction(signAlgorithm);
 		HashDigest txHash = hashFunc.hash(nodeRequestBytes);
 		txMessage.setHash(txHash);
 
-		AsyncFuture<byte[]> result =  messageService.sendOrdered(BinaryEncodingUtils.encode(txMessage, TransactionRequest.class));
+		AsyncFuture<byte[]> result =  messageService.sendOrdered(BinaryProtocol.encode(txMessage, TransactionRequest.class));
 
-		return BinaryEncodingUtils.decode(result.get());
+		return BinaryProtocol.decode(result.get());
 	}
 }

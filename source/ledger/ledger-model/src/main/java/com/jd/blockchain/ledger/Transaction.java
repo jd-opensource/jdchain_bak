@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.ValueType;
 import com.jd.blockchain.utils.io.ByteArray;
 
 /**
@@ -13,7 +13,7 @@ import com.jd.blockchain.utils.io.ByteArray;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.TX)
+@DataContract(code= DataCodes.TX)
 public interface Transaction extends NodeRequest, HashObject {
 
 	/**
@@ -23,7 +23,7 @@ public interface Transaction extends NodeRequest, HashObject {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	@Override
 	HashDigest getHash();
 
@@ -32,7 +32,7 @@ public interface Transaction extends NodeRequest, HashObject {
 	 * 
 	 * @return
 	 */
-	@DataField(order=2, primitiveType=ValueType.INT64)
+	@DataField(order=2, primitiveType=PrimitiveType.INT64)
 	long getBlockHeight();
 
 	/**

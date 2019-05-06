@@ -15,8 +15,8 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.ledger.data.TxTemplate;
+import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxTemplate;
 
 public class LedgerTestUtils {
 

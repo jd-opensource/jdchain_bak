@@ -13,7 +13,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
@@ -87,7 +87,7 @@ public class LedgerInitMessageConverter implements HttpMessageConverter<Object> 
 		
 		Class<?> contractType = getContractType(clazz);
 		Class<?> implType = SUPPORTED_CONTRACT_TYPES.get(contractType);
-		return BinaryEncodingUtils.decode(inputMessage.getBody());
+		return BinaryProtocol.decode(inputMessage.getBody());
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class LedgerInitMessageConverter implements HttpMessageConverter<Object> 
 			if (contractType == null) {
 				throw new IllegalStateException("Unsupported type[" + t.getClass().getName() + "]!");
 			}
-			byte[] data = BinaryEncodingUtils.encode(t, contractType);
+			byte[] data = BinaryProtocol.encode(t, contractType);
 			resp = LedgerInitResponse.success(data);
 			outputMessage.getBody().write(resp.toBytes());
 		}

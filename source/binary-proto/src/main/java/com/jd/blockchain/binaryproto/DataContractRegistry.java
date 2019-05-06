@@ -13,6 +13,9 @@ public class DataContractRegistry {
 	private DataContractRegistry() {
 	}
 
+	
+	//TODO: Refactor contract type registering in service provider mode;
+	
 	public static DataContractEncoder register(Class<?> contractType) {
 		DataContractEncoder encoder = DataContractContext.resolve(contractType);
 		return encoder;

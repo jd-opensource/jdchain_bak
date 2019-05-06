@@ -2,7 +2,7 @@ package test.com.jd.blockchain.binaryproto.contract;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 
 /**
  * Created by zhangshuang3 on 2018/7/30.
@@ -10,7 +10,7 @@ import com.jd.blockchain.utils.ValueType;
 @DataContract(code=0x0f, name="PrivilegeModelSetting", description ="Privilege Model setting")
 public interface PrivilegeModelSetting {
 
-    @DataField(order=1, primitiveType= ValueType.INT64)
+    @DataField(order=1, primitiveType= PrimitiveType.INT64)
     long getLatestVersion();
 
     //@DataField(order=2, refContract=true)

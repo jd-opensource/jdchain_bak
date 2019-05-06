@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
 
 /**
@@ -10,7 +10,7 @@ import com.jd.blockchain.crypto.HashDigest;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.HASH_OBJECT)
+@DataContract(code= DataCodes.HASH_OBJECT)
 public interface HashObject {
 
 	/**

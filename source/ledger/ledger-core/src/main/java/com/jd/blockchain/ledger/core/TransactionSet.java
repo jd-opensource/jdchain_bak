@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -142,11 +142,11 @@ public class TransactionSet implements Transactional, MerkleProvable {
 	}
 
 	private LedgerTransaction deserialize(byte[] txBytes) {
-		return BinaryEncodingUtils.decode(txBytes);
+		return BinaryProtocol.decode(txBytes);
 	}
 
 	private byte[] serialize(LedgerTransaction txRequest) {
-		return BinaryEncodingUtils.encode(txRequest, LedgerTransaction.class);
+		return BinaryProtocol.encode(txRequest, LedgerTransaction.class);
 	}
 
 	public boolean isReadonly() {
