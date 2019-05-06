@@ -1,7 +1,4 @@
-package test.com.jd.blockchain.statetransfer;
-
-import com.jd.blockchain.statetransfer.DataSequenceElement;
-import com.jd.blockchain.statetransfer.DataSequenceInfo;
+package com.jd.blockchain.statetransfer;
 
 import java.net.InetSocketAddress;
 import java.util.LinkedList;

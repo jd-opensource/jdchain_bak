@@ -25,6 +25,6 @@ public interface DataSequenceWriter {
      * @param diffContent 需要更新的差异元素
      * @return 更新结果编码
      */
-    int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement diffContent);
+//    int updateDSInfo(DataSequenceInfo dsInfo, DataSequenceElement diffContent);
 
 }

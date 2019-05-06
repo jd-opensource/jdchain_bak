@@ -1,7 +1,10 @@
 package test.com.jd.blockchain.statetransfer;
 
+import com.jd.blockchain.statetransfer.DataSequence;
 import com.jd.blockchain.statetransfer.DataSequenceElement;
 import com.jd.blockchain.statetransfer.DataSequenceInfo;
+import com.jd.blockchain.statetransfer.callback.DataSequenceReaderImpl;
+import com.jd.blockchain.statetransfer.callback.DataSequenceWriterImpl;
 import com.jd.blockchain.statetransfer.process.DSProcessManager;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import org.junit.Before;
