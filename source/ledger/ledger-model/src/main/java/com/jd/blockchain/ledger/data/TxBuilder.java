@@ -42,6 +42,7 @@ public class TxBuilder implements TransactionBuilder {
 	public TransactionContent prepareContent() {
 		TxContentBlob txContent = new TxContentBlob(ledgerHash);
 		txContent.addOperations(opFactory.getOperations());
+		txContent.setTxOpTime(System.currentTimeMillis());
 		
 		byte[] contentBodyBytes = BinaryEncodingUtils.encode(txContent, TransactionContentBody.class);
 		HashDigest contentHash = CryptoUtils.hash(defaultHashAlgorithm).hash(contentBodyBytes);

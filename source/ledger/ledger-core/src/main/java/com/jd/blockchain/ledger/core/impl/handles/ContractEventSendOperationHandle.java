@@ -42,7 +42,7 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 					contract.getAddress().toBase58(),contract.getChaincodeVersion(),contract.getChainCode()).
 					processEvent(localContractEventContext);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new LedgerException("contract processEvent exception. detail:"+e.getMessage());
 		}
 	}
 

@@ -18,4 +18,8 @@ public interface TransactionContent extends TransactionContentBody, HashObject {
     @DataField(order=1, primitiveType = ValueType.BYTES)
     HashDigest getHash();
 
+    //获得交易操作时间；
+    @DataField(order=2, primitiveType = ValueType.INT64)
+    Long getTxOpTime();
+
 }
