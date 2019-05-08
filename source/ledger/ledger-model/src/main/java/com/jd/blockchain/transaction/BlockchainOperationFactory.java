@@ -31,7 +31,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
 
-	
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
 	private UserRegisterOperationBuilder userRegOpBuilder = new UserRegisterOperationBuilderFilter();
@@ -41,6 +40,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private ContractCodeDeployOperationBuilder contractCodeDeployOpBuilder = new ContractCodeDeployOperationBuilderFilter();
 
 	private ContractEventSendOperationBuilder contractEventSendOpBuilder = new ContractEventSendOperationBuilderFilter();
+
+	private ContractInvocationProxyBuilder contractInvoProxyBuilder = new ContractInvocationProxyBuilder();
 
 	private List<Operation> operationList = new ArrayList<>();
 
@@ -77,11 +78,15 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	public ContractEventSendOperationBuilder contractEvents() {
 		return contractEventSendOpBuilder;
 	}
-	
+
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
-		// TODO Auto-generated method stub
-		return null;
+		return contractInvoProxyBuilder.create(address, contractIntf, contractEventSendOpBuilder);
+	}
+
+	@Override
+	public <T> T contract(Bytes address, Class<T> contractIntf) {
+		return contractInvoProxyBuilder.create(address, contractIntf, contractEventSendOpBuilder);
 	}
 
 	public Collection<Operation> getOperations() {
@@ -152,6 +157,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			}
 			return this;
 		}
+
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
 			innerBuilder.set(key, value, expVersion);
@@ -161,6 +167,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			}
 			return this;
 		}
+
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, long value, long expVersion) {
 			innerBuilder.set(key, value, expVersion);
@@ -170,6 +177,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			}
 			return this;
 		}
+
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, Bytes value, long expVersion) {
 			innerBuilder.set(key, value, expVersion);

@@ -59,6 +59,11 @@ public class TxTemplate implements TransactionTemplate {
 //	}
 	
 	@Override
+	public <T> T contract(Bytes address, Class<T> contractIntf) {
+		return txBuilder.contract(address, contractIntf);
+	}
+	
+	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
 		return txBuilder.contract(address, contractIntf);
 	}

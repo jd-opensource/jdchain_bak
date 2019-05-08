@@ -9,16 +9,16 @@ public class ContractInvocationProxyBuilder {
 
 	private Map<Class<?>, ContractType> contractTypes;
 
-	public <T> T create(String address, Class<T> contractIntf, BlockchainOperationFactory opFactory) {
-		return create(Bytes.fromBase58(address), contractIntf, opFactory);
+	public <T> T create(String address, Class<T> contractIntf, ContractEventSendOperationBuilder contractEventBuilder) {
+		return create(Bytes.fromBase58(address), contractIntf, contractEventBuilder);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T create(Bytes address, Class<T> contractIntf, BlockchainOperationFactory opFactory) {
+	public <T> T create(Bytes address, Class<T> contractIntf, ContractEventSendOperationBuilder contractEventBuilder) {
 		ContractType contractType = resolveContractType(contractIntf);
 
 		ContractInvocationProxy proxyHandler = new ContractInvocationProxy(address, contractType,
-				opFactory.contractEvents());
+				contractEventBuilder);
 		T proxy = (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
 				new Class<?>[] { contractIntf }, proxyHandler);
 
