@@ -139,7 +139,7 @@ public class IntegrationTest4Bftsmart {
         }
 
         try {
-            Thread.sleep(60000000);
+            Thread.sleep(60000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
