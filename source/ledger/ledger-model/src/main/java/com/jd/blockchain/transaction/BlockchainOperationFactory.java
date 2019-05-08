@@ -74,7 +74,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		return contractCodeDeployOpBuilder;
 	}
 
-	@Override
 	public ContractEventSendOperationBuilder contractEvents() {
 		return contractEventSendOpBuilder;
 	}

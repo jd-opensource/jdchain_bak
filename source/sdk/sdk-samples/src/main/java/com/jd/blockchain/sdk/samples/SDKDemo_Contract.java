@@ -68,9 +68,12 @@ public class SDKDemo_Contract {
 		Remark remark = new Remark();
 		String remarkJSON = JSONSerializeUtils.serializeToJSON(remark);
 		
-//		AssetContract assetContract = txTemp.contract("", AssetContract.class);
-//		txTemp.contractInvocation(assetContract.issue(amount, assetHolderAddress))
-
+		AssetContract assetContract = txTemp.contract(profitDistributionContract, AssetContract.class);
+		assetContract.issue(1000, receiptorAccount1);
+		assetContract.transfer(receiptorAccount1, receiptorAccount2, 600);
+		
+//		assetContract.
+		
 		// --------------------------------------
 
 		// TX 准备就绪；

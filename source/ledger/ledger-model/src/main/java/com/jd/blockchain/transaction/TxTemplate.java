@@ -53,10 +53,10 @@ public class TxTemplate implements TransactionTemplate {
 		return txBuilder.contracts();
 	}
 
-	@Override
-	public ContractEventSendOperationBuilder contractEvents() {
-		return txBuilder.contractEvents();
-	}
+//	@Override
+//	public ContractEventSendOperationBuilder contractEvents() {
+//		return txBuilder.contractEvents();
+//	}
 	
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {

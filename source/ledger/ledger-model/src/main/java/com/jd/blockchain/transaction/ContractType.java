@@ -4,12 +4,12 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.SortedMap;
 
-class ContractType {
-	
+public class ContractType {
+
 	private String name;
-	
+
 	private SortedMap<String, Method> events;
-	
+
 	private SortedMap<Method, String> handleMethods;
 
 	/**
@@ -17,7 +17,7 @@ class ContractType {
 	 * 
 	 * @return
 	 */
-	Set<String> getEvents() {
+	public Set<String> getEvents() {
 		return events.keySet();
 	}
 
@@ -29,7 +29,7 @@ class ContractType {
 	 * @param method
 	 * @return
 	 */
-	String getEvent(Method method) {
+	public String getEvent(Method method) {
 		return handleMethods.get(method);
 	}
 
@@ -41,16 +41,15 @@ class ContractType {
 	 * @param event
 	 * @return
 	 */
-	Method getHandleMethod(String event) {
+	public Method getHandleMethod(String event) {
 		return events.get(event);
 	}
-	
+
 	private ContractType() {
 	}
-	
-	
-//	public static ContractType resolve(Class<?> contractIntf) {
-//		
-//	}
+
+	// public static ContractType resolve(Class<?> contractIntf) {
+	//
+	// }
 
 }

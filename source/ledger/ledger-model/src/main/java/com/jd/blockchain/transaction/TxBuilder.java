@@ -21,6 +21,8 @@ public class TxBuilder implements TransactionBuilder {
 	private static final String DEFAULT_HASH_ALGORITHM = "SHA256";
 	
 	private HashDigest ledgerHash;
+	
+	private ContractInvocationProxyBuilder contractInvoProxyBuilder;
 
 	public TxBuilder(HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
@@ -79,15 +81,18 @@ public class TxBuilder implements TransactionBuilder {
 		return opFactory.contracts();
 	}
 
-	@Override
 	public ContractEventSendOperationBuilder contractEvents() {
 		return opFactory.contractEvents();
 	}
 	
 	@Override
+	public <T> T contract(Bytes address, Class<T> contractIntf) {
+		return contractInvoProxyBuilder.create(address, contractIntf, opFactory);
+	}
+
+	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException("Not implemented.");
+		return contractInvoProxyBuilder.create(address, contractIntf, opFactory);
 	}
 
 }
