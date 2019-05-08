@@ -77,10 +77,10 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         //used later
         this.stateMachineReplicate = stateMachineReplicate;
         this.messageHandle = messageHandler;
-        this.manageService = new BftsmartConsensusManageService(this);
         createConfig();
         serverId = findServerId();
         initConfig(serverId, systemConfig, hostsConfig);
+        this.manageService = new BftsmartConsensusManageService(this);
     }
 
     protected int findServerId() {

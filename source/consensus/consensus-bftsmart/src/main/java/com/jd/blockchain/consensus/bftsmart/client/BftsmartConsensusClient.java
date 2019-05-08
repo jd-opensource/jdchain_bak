@@ -21,7 +21,7 @@ public class BftsmartConsensusClient implements ConsensusClient {
         this.clientSettings = clientSettings;
         this.gatewayId = clientSettings.getClientId();
 
-        connect();
+//        connect();
     }
 
 
