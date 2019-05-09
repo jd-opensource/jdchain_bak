@@ -33,9 +33,6 @@ public class TxContentBlob implements TransactionContent {
 
 	private HashDigest ledgerHash;
 
-	//交易操作时间;
-	private Long txOpTime;
-
 	@DConstructor(name ="TxContentBlob")
 	public TxContentBlob(@FieldSetter(name="getLedgerHash", type="HashDigest") HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
@@ -91,14 +88,5 @@ public class TxContentBlob implements TransactionContent {
 	
 	public void addOperations(Collection<Operation> operations) {
 		operationList.addAll(operations);
-	}
-
-	@Override
-	public Long getTxOpTime() {
-		return txOpTime;
-	}
-
-	public void setTxOpTime(Long txOpTime) {
-		this.txOpTime = txOpTime;
 	}
 }

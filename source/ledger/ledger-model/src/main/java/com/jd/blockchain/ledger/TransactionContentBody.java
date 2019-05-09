@@ -33,12 +33,4 @@ public interface TransactionContentBody {
 	@DataField(order = 2, list = true, refContract = true, genericContract = true)
 	Operation[] getOperations();
 
-	/**
-	 * 交易操作时间
-	 *
-	 * @return
-	 */
-	@DataField(order = 3, primitiveType = ValueType.INT64)
-	Long getTxOpTime();
-
 }

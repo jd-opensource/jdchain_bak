@@ -28,5 +28,9 @@ public interface ContractEventSendOperation extends Operation {
 	
 	@DataField(order=4, primitiveType=ValueType.BYTES)
 	byte[] getArgs();
+
+	//获得交易操作时间;
+	@DataField(order=5, primitiveType=ValueType.INT64)
+	Long getTxOpTime();
 	
 }
