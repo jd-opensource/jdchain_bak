@@ -39,16 +39,16 @@ public class Utils {
 
 	public static final String PASSWORD = "abc";
 
-	public static final String[] PUB_KEYS = { "endPsK36koyFr1D245Sa9j83vt6pZUdFBJoJRB3xAsWM6cwhRbna",
-			"endPsK36sC5JdPCDPDAXUwZtS3sxEmqEhFcC4whayAsTTh8Z6eoZ",
-			"endPsK36jEG281HMHeh6oSqzqLkT95DTnCM6REDURjdb2c67uR3R",
-			"endPsK36nse1dck4uF19zPvAMijCV336Y3zWdgb4rQG8QoRj5ktR" };
+	public static final String[] PUB_KEYS = { "3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu",
+			"3snPdw7i7Ph1SYLQt9uqVEqiuvNXjxCdGvEdN6otJsg5rbr7Aze7kf",
+			"3snPdw7i7PezptA6dNBkotPjmKEbTkY8fmusLBnfj8Cf7eFwhWDwKr",
+			"3snPdw7i7PerZYfRzEB61SAN9tFK4yHm9wUSRtkLSSGXHkQRbB5PkS" };
 
 	public static final String[] PRIV_KEYS = {
-			"177gjsj5PHeCpbAtJE7qnbmhuZMHAEKuMsd45zHkv8F8AWBvTBbff8yRKdCyT3kwrmAjSnY",
-			"177gjw9u84WtuCsK8u2WeH4nWqzgEoJWY7jJF9AU6XwLHSosrcNX3H6SSBsfvR53HgX7KR2",
-			"177gk2FpjufgEon92mf2oRRFXDBZkRy8SkFci7Jxc5pApZEJz3oeCoxieWatDD3Xg7i1QEN",
-			"177gjvv7qvfCAXroFezSn23UFXLVLFofKS3y6DXkJ2DwVWS4LcRNtxRgiqWmQEeWNz4KQ3J" };
+			"177gjyoEUhdD1NkQSxBVvfSyovMd1ha5H46zsb9kyErLNBuQkLRAf2ea6CNjStjCFJQN8S1",
+			"177gjsa6KcyxUpx7T3tvCVMuqHvvguiQFRLmDY9jaMcH6L9R4k7XgANLfY3paC5XaXeASej",
+			"177gju7AgXp371qqprjEN3Lg4Hc4EWHnDH9eWgTttEUoN8PuNpQTbS253uTxdKn5w1zZXUp",
+			"177gjtddYr7CtN6iN6KRgu1kKzFn6quQsx3DQLnUD1xgj5E2QhUTMDnpZKzSKbB7kt35gzj" };
 
 	private Map<NetworkAddress, LedgerInitConsensusService> serviceRegisterMap = new ConcurrentHashMap<>();
 
