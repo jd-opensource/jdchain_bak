@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author zhanglin33
  * @title: SHA256UtilsTest
- * @description: Tests for the hash method in ECDSAUtils
+ * @description: Tests for the hash method in SHA256Utils
  * @date 2019-04-09, 16:18
  */
 public class SHA256UtilsTest {

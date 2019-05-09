@@ -23,13 +23,14 @@ public class ClassicCryptoService implements CryptoService {
 
 	public static final JVMSecureRandomFunction JVM_SECURE_RANDOM = new JVMSecureRandomFunction();
 
-	// public static final ECDSASignatureFunction ECDSA = new
-	// ECDSASignatureFunction();
+	public static final ECDSASignatureFunction ECDSA = new ECDSASignatureFunction();
+
+	public static final RSACryptoFunction RSA = new RSACryptoFunction();
 
 	private static final Collection<CryptoFunction> FUNCTIONS;
 
 	static {
-		List<CryptoFunction> funcs = Arrays.asList(AES, ED25519, RIPEMD160, SHA256, JVM_SECURE_RANDOM);
+		List<CryptoFunction> funcs = Arrays.asList(AES, ED25519, ECDSA, RSA, RIPEMD160, SHA256, JVM_SECURE_RANDOM);
 		FUNCTIONS = Collections.unmodifiableList(funcs);
 	}
 

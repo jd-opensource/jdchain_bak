@@ -89,10 +89,10 @@ public class ECDSAUtils {
         return sign(data,params);
     }
 
-    public static byte[] sign(byte[] data, byte[] privateKey, SecureRandom random, String ID){
+    public static byte[] sign(byte[] data, byte[] privateKey, SecureRandom random){
 
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(new BigInteger(1,privateKey), DOMAIN_PARAMS);
-        CipherParameters params = new ParametersWithID(new ParametersWithRandom(privKey,random),ID.getBytes());
+        CipherParameters params = new ParametersWithRandom(privKey,random);
 
         return sign(data,params);
     }
@@ -100,15 +100,13 @@ public class ECDSAUtils {
     public static byte[] sign(byte[] data, CipherParameters params){
 
         byte[] hashedMsg = SHA256Utils.hash(data);
+        return sign(params,hashedMsg);
+    }
 
+    public static byte[] sign(CipherParameters params, byte[] hashedMsg){
         ECDSASigner signer = new ECDSASigner();
         signer.init(true, params);
         BigInteger[] signature = signer.generateSignature(hashedMsg);
-
-//        // To decode the signature
-//        ASN1Sequence sig = ASN1Sequence.getInstance(encodedSignature);
-//        byte[] rBytes = BigIntegerTo32Bytes(ASN1Integer.getInstance(sig.getObjectAt(0)).getValue());
-//        byte[] sBytes = BigIntegerTo32Bytes(ASN1Integer.getInstance(sig.getObjectAt(1)).getValue());
 
         byte[] rBytes = BigIntegerTo32Bytes(signature[0]);
         byte[] sBytes = BigIntegerTo32Bytes(signature[1]);
@@ -119,6 +117,7 @@ public class ECDSAUtils {
 
         return result;
     }
+
 
     /**
      * verification
@@ -139,6 +138,10 @@ public class ECDSAUtils {
     public static boolean verify(byte[] data, CipherParameters params, byte[] signature){
 
         byte[] hashedMsg = SHA256Utils.hash(data);
+        return verify(params,signature,hashedMsg);
+    }
+
+    public static boolean verify(CipherParameters params, byte[] signature, byte[] hashedMsg){
 
         byte[] rBytes = new byte[R_SIZE];
         byte[] sBytes = new byte[S_SIZE];
@@ -152,7 +155,6 @@ public class ECDSAUtils {
         verifier.init(false,params);
         return verifier.verifySignature(hashedMsg,r,s);
     }
-
 
     // To convert BigInteger to byte[] whose length is 32
     private static byte[] BigIntegerTo32Bytes(BigInteger b){

@@ -1,27 +1,31 @@
-package com.jd.blockchain.crypto.utils.sm;
+package com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.CryptoException;
 import org.bouncycastle.crypto.CipherKeyGenerator;
 import org.bouncycastle.crypto.KeyGenerationParameters;
-import org.bouncycastle.crypto.engines.SM4Engine;
+import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-public class SM4Utils {
+/**
+ * @author zhanglin33
+ * @title: AESUtils
+ * @description: AES128/CBC/PKCS7Padding symmetric encryption algorithm
+ * @date 2019-04-22, 09:37
+ */
+public class AESUtils {
 
-    // SM4 supports 128-bit(16 bytes) secret key
+    // AES128 supports 128-bit(16 bytes) secret key
     private static final int KEY_SIZE = 128 / 8;
     // One block contains 16 bytes
     private static final int BLOCK_SIZE = 16;
     // Initial vector's size is 16 bytes
     private static final int IV_SIZE = 16;
-
 
     /**
      * key generation
@@ -41,7 +45,7 @@ public class SM4Utils {
     }
 
     public static byte[] generateKey(byte[] seed){
-        byte[] hash  = SM3Utils.hash(seed);
+        byte[] hash  = SHA256Utils.hash(seed);
         return Arrays.copyOf(hash, KEY_SIZE);
     }
 
@@ -83,7 +87,7 @@ public class SM4Utils {
         // To add padding
         padder.addPadding(plainBytesWithPadding, plainBytes.length);
 
-        CBCBlockCipher encryptor = new CBCBlockCipher(new SM4Engine());
+        CBCBlockCipher encryptor = new CBCBlockCipher(new AESEngine());
         // To provide key and initialisation vector as input
         encryptor.init(true,new ParametersWithIV(new KeyParameter(secretKey),iv));
         byte[] output = new byte[plainBytesWithPadding.length + IV_SIZE];
@@ -134,7 +138,7 @@ public class SM4Utils {
         byte[] iv = new byte[IV_SIZE];
         System.arraycopy(cipherBytes,0,iv,0,BLOCK_SIZE);
 
-        CBCBlockCipher decryptor = new CBCBlockCipher(new SM4Engine());
+        CBCBlockCipher decryptor = new CBCBlockCipher(new AESEngine());
         // To prepare the decryption
         decryptor.init(false,new ParametersWithIV(new KeyParameter(secretKey),iv));
         byte[] outputWithPadding = new byte[cipherBytes.length-BLOCK_SIZE];
@@ -152,14 +156,14 @@ public class SM4Utils {
         }
         for(int i = 0 ; i < p ; i++)
         {
-            if(outputWithPadding[outputWithPadding.length-i-1] != p)
+            if(outputWithPadding[outputWithPadding.length - i -1] != p)
             {
                 throw new CryptoException("Padding is invalid!");
             }
         }
 
         // To remove the padding from output and obtain plaintext
-        byte[] output = new byte[outputWithPadding.length-p];
+        byte[] output = new byte[outputWithPadding.length - p];
         System.arraycopy(outputWithPadding, 0, output, 0, output.length);
         return output;
     }

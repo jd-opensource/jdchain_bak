@@ -1,10 +1,19 @@
 package test.my.utils.security;
 
+import static com.jd.blockchain.utils.security.RSAUtils.ALG_RSA;
 import static org.junit.Assert.*;
 
 import java.io.UnsupportedEncodingException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import com.jd.blockchain.utils.codec.HexUtils;
@@ -54,6 +63,25 @@ public class RSAUtilsTest {
 		System.out.println("DECRYPT-DATA=[" + HexUtils.encode(enContentBytes) + "]");
 		
 		assertEquals(DATA_HEX, deContent);
+
+	}
+
+	@Test
+	public void generateKeyPairTest() throws NoSuchAlgorithmException {
+		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+		keyPairGen.initialize(2048, new SecureRandom());
+		KeyPair keyPair = keyPairGen.generateKeyPair();
+		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+
+		byte[] pubKey = publicKey.getEncoded();
+		byte[] privKey = privateKey.getEncoded();
+
+		System.out.println(Base64.toBase64String(pubKey));
+		System.out.println(Base64.toBase64String(privKey));
+
+		System.out.println(Hex.toHexString(pubKey));
+		System.out.println(Hex.toHexString(privKey));
 
 	}
 

@@ -9,6 +9,7 @@ import com.jd.blockchain.crypto.CryptoBytes;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.crypto.utils.classic.RIPEMD160Utils;
 import com.jd.blockchain.utils.security.RipeMD160Utils;
 
 public class RIPEMD160HashFunction implements HashFunction {
@@ -34,7 +35,7 @@ public class RIPEMD160HashFunction implements HashFunction {
 			throw new CryptoException("data is null!");
 		}
 
-		byte[] digestBytes = RipeMD160Utils.hash(data);
+		byte[] digestBytes = RIPEMD160Utils.hash(data);
 		return new HashDigest(RIPEMD160, digestBytes);
 	}
 
