@@ -1,9 +1,5 @@
 package com.jd.blockchain.binaryproto;
 
-import java.util.Set;
-
-import com.jd.blockchain.utils.ValueType;
-
 public interface EnumSpecification {
 	
 	int getCode();
@@ -14,7 +10,7 @@ public interface EnumSpecification {
 	
 	long getVersion();
 	
-	ValueType getValueType();
+	PrimitiveType getValueType();
 	
 	int[] getItemValues();
 	

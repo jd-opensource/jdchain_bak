@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -54,8 +54,8 @@ public class LedgerBlockImplTest {
 
 	@Test
 	public void testSerialize_LedgerBlock() throws Exception {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, LedgerBlock.class);
-		LedgerBlock resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, LedgerBlock.class);
+		LedgerBlock resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getHash(), data.getHash());
 		assertEquals(resolvedData.getHeight(), data.getHeight());
@@ -105,8 +105,8 @@ public class LedgerBlockImplTest {
 		transactionStagedSnapshot.setDataAccountSetHash(data);
 		transactionStagedSnapshot.setUserAccountSetHash(user);
 
-		byte[] serialBytes = BinaryEncodingUtils.encode(transactionStagedSnapshot, LedgerDataSnapshot.class);
-		LedgerDataSnapshot resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(transactionStagedSnapshot, LedgerDataSnapshot.class);
+		LedgerDataSnapshot resolvedData = BinaryProtocol.decode(serialBytes);
 
 		// verify start
 		assertEquals(resolvedData.getAdminAccountHash(), transactionStagedSnapshot.getAdminAccountHash());

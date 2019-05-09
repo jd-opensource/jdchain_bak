@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core.impl;
 
 import java.util.Stack;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockBody;
@@ -188,7 +188,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		newlyBlock.setTransactionSetHash(lastTxCtx.txset.getRootHash());
 
 		// compute block hash;
-		byte[] blockBodyBytes = BinaryEncodingUtils.encode(newlyBlock, BlockBody.class);
+		byte[] blockBodyBytes = BinaryProtocol.encode(newlyBlock, BlockBody.class);
 		HashDigest blockHash = Crypto.getHashFunction(cryptoSetting.getHashAlgorithm())
 				.hash(blockBodyBytes);
 		newlyBlock.setHash(blockHash);
@@ -199,7 +199,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 		// persist block bytes;
 		// only one version per block;
-		byte[] blockBytes = BinaryEncodingUtils.encode(newlyBlock, LedgerBlock.class);
+		byte[] blockBytes = BinaryProtocol.encode(newlyBlock, LedgerBlock.class);
 		Bytes blockStorageKey = LedgerRepositoryImpl.encodeBlockStorageKey(newlyBlock.getHash());
 		long v = bufferedStorage.set(blockStorageKey, blockBytes, -1);
 		if (v < 0) {

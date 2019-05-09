@@ -14,7 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.HashDigest;
@@ -29,7 +29,6 @@ import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitPermission;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
-import com.jd.blockchain.ledger.data.TxRequestBuilder;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
@@ -42,6 +41,7 @@ import com.jd.blockchain.tools.initializer.web.HttpInitConsensServiceFactory;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -138,32 +138,32 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			LedgerInitOperation initOp0 = (LedgerInitOperation) oplist0[0];
 			LedgerInitOperation initOp1 = (LedgerInitOperation) oplist1[0];
 
-			byte[] initOpBytes0 = BinaryEncodingUtils.encode(initOp0, LedgerInitOperation.class);
-			byte[] initOpBytes1 = BinaryEncodingUtils.encode(initOp1, LedgerInitOperation.class);
+			byte[] initOpBytes0 = BinaryProtocol.encode(initOp0, LedgerInitOperation.class);
+			byte[] initOpBytes1 = BinaryProtocol.encode(initOp1, LedgerInitOperation.class);
 			assertTrue(BytesUtils.equals(initOpBytes0, initOpBytes1));
 
 			UserRegisterOperation regOp00 = (UserRegisterOperation) oplist0[1];
 			UserRegisterOperation regOp10 = (UserRegisterOperation) oplist1[1];
-			byte[] regOpBytes00 = BinaryEncodingUtils.encode(regOp00, UserRegisterOperation.class);
-			byte[] regOpBytes10 = BinaryEncodingUtils.encode(regOp10, UserRegisterOperation.class);
+			byte[] regOpBytes00 = BinaryProtocol.encode(regOp00, UserRegisterOperation.class);
+			byte[] regOpBytes10 = BinaryProtocol.encode(regOp10, UserRegisterOperation.class);
 			assertTrue(BytesUtils.equals(regOpBytes00, regOpBytes10));
 
 			UserRegisterOperation regOp01 = (UserRegisterOperation) oplist0[2];
 			UserRegisterOperation regOp11 = (UserRegisterOperation) oplist1[2];
-			byte[] regOpBytes01 = BinaryEncodingUtils.encode(regOp01, UserRegisterOperation.class);
-			byte[] regOpBytes11 = BinaryEncodingUtils.encode(regOp11, UserRegisterOperation.class);
+			byte[] regOpBytes01 = BinaryProtocol.encode(regOp01, UserRegisterOperation.class);
+			byte[] regOpBytes11 = BinaryProtocol.encode(regOp11, UserRegisterOperation.class);
 			assertTrue(BytesUtils.equals(regOpBytes01, regOpBytes11));
 
 			UserRegisterOperation regOp02 = (UserRegisterOperation) oplist0[3];
 			UserRegisterOperation regOp12 = (UserRegisterOperation) oplist1[3];
-			byte[] regOpBytes02 = BinaryEncodingUtils.encode(regOp02, UserRegisterOperation.class);
-			byte[] regOpBytes12 = BinaryEncodingUtils.encode(regOp12, UserRegisterOperation.class);
+			byte[] regOpBytes02 = BinaryProtocol.encode(regOp02, UserRegisterOperation.class);
+			byte[] regOpBytes12 = BinaryProtocol.encode(regOp12, UserRegisterOperation.class);
 			assertTrue(BytesUtils.equals(regOpBytes02, regOpBytes12));
 
 			UserRegisterOperation regOp03 = (UserRegisterOperation) oplist0[4];
 			UserRegisterOperation regOp13 = (UserRegisterOperation) oplist1[4];
-			byte[] regOpBytes03 = BinaryEncodingUtils.encode(regOp03, UserRegisterOperation.class);
-			byte[] regOpBytes13 = BinaryEncodingUtils.encode(regOp13, UserRegisterOperation.class);
+			byte[] regOpBytes03 = BinaryProtocol.encode(regOp03, UserRegisterOperation.class);
+			byte[] regOpBytes13 = BinaryProtocol.encode(regOp13, UserRegisterOperation.class);
 			assertTrue(BytesUtils.equals(regOpBytes03, regOpBytes13));
 
 		}

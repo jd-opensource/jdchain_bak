@@ -9,31 +9,32 @@
 	</parent>
 	<artifactId>contract-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<properties>
-		<contract.version>${parent.version}</contract.version>
-		<utils.version>${parent.version}</utils.version>
-		<junit.version>4.12</junit.version>
-	</properties>
 
-	<version>0.9.0-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>contract-model</artifactId>
-			<version>${contract.version}</version>
+			<artifactId>ledger-model</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-common</artifactId>
-			<version>${utils.version}</version>
+			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>sdk-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-keygen</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugin-tools/maven-plugin-annotations -->
 		<dependency>
@@ -83,29 +84,30 @@
 					<showWarnings>false</showWarnings>
 				</configuration>
 			</plugin>
-			<!--<plugin>-->
-				<!--<artifactId>maven-assembly-plugin</artifactId>-->
-				<!--<configuration>-->
-					<!--<archive>-->
-						<!--<manifest>-->
-							<!--&lt;!&ndash;这里要替换成jar包main方法所在类 &ndash;&gt;-->
-							<!--<mainClass>com.jd.blockchain.ContractDeployMojo</mainClass>-->
-						<!--</manifest>-->
-					<!--</archive>-->
-					<!--<descriptorRefs>-->
-						<!--<descriptojar-rRef>jar-with-dependencies</descriptojar-rRef>-->
-					<!--</descriptorRefs>-->
-				<!--</configuration>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>make-assembly</id> &lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
-						<!--<phase>package</phase> &lt;!&ndash; 指定在打包节点执行jar包合并操作 &ndash;&gt;-->
-						<!--<goals>-->
-							<!--<goal>single</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
+			<!--<plugin> -->
+			<!--<artifactId>maven-assembly-plugin</artifactId> -->
+			<!--<configuration> -->
+			<!--<archive> -->
+			<!--<manifest> -->
+			<!--&lt;!&ndash;这里要替换成jar包main方法所在类 &ndash;&gt; -->
+			<!--<mainClass>com.jd.blockchain.ContractDeployMojo</mainClass> -->
+			<!--</manifest> -->
+			<!--</archive> -->
+			<!--<descriptorRefs> -->
+			<!--<descriptojar-rRef>jar-with-dependencies</descriptojar-rRef> -->
+			<!--</descriptorRefs> -->
+			<!--</configuration> -->
+			<!--<executions> -->
+			<!--<execution> -->
+			<!--<id>make-assembly</id> &lt;!&ndash; this is used for inheritance merges 
+				&ndash;&gt; -->
+			<!--<phase>package</phase> &lt;!&ndash; 指定在打包节点执行jar包合并操作 &ndash;&gt; -->
+			<!--<goals> -->
+			<!--<goal>single</goal> -->
+			<!--</goals> -->
+			<!--</execution> -->
+			<!--</executions> -->
+			<!--</plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

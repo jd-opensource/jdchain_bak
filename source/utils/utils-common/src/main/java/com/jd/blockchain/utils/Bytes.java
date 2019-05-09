@@ -8,6 +8,12 @@ import com.jd.blockchain.utils.io.BytesSerializable;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.RuntimeIOException;
 
+/**
+ * Bytes 被设计为不可变对象；
+ * 
+ * @author huanghaiquan
+ *
+ */
 public class Bytes implements BytesSerializable {
 
 	public static final Bytes EMPTY = new Bytes(BytesUtils.EMPTY_BYTES);
@@ -38,7 +44,7 @@ public class Bytes implements BytesSerializable {
 	}
 
 	public Bytes() {
-		prefix=null;
+		prefix = null;
 		data = null;
 		hashCode = hashCode(1);
 	}
@@ -47,7 +53,7 @@ public class Bytes implements BytesSerializable {
 		if (data == null) {
 			throw new IllegalArgumentException("data is null!");
 		}
-		this.prefix=null;
+		this.prefix = null;
 		this.data = data;
 		hashCode = hashCode(1);
 	}
@@ -56,30 +62,30 @@ public class Bytes implements BytesSerializable {
 		if (data == null) {
 			throw new IllegalArgumentException("data is null!");
 		}
-		this.prefix=prefix;
+		this.prefix = prefix;
 		this.data = data;
-//		setPrefix(prefix);
+		// setPrefix(prefix);
 		hashCode = hashCode(1);
 	}
 
 	public Bytes(Bytes prefix, Bytes data) {
-//		setData(data.toBytes());
-//		setPrefix(prefix);
+		// setData(data.toBytes());
+		// setPrefix(prefix);
 		if (data == null) {
 			throw new IllegalArgumentException("data is null!");
 		}
-		this.prefix=prefix;
+		this.prefix = prefix;
 		this.data = data.toBytes();
-		
+
 		hashCode = hashCode(1);
 	}
 
-//	private void setData(byte[] data) {
-//		if (data == null) {
-//			throw new IllegalArgumentException("data is null!");
-//		}
-//		this.data = data;
-//	}
+	// private void setData(byte[] data) {
+	// if (data == null) {
+	// throw new IllegalArgumentException("data is null!");
+	// }
+	// this.data = data;
+	// }
 
 	/**
 	 * 返回当前的字节数组（不包含前缀对象）；
@@ -98,16 +104,16 @@ public class Bytes implements BytesSerializable {
 		return new Bytes(Base58Utils.decode(str));
 	}
 
-//	/**
-//	 * 连接指定的前缀后面；此操作并不会更改“prefix”参数；
-//	 * 
-//	 * @param prefix
-//	 * @return
-//	 */
-//	private Bytes setPrefix(Bytes prefix) {
-//		this.prefix = prefix;
-//		return this;
-//	}
+	// /**
+	// * 连接指定的前缀后面；此操作并不会更改“prefix”参数；
+	// *
+	// * @param prefix
+	// * @return
+	// */
+	// private Bytes setPrefix(Bytes prefix) {
+	// this.prefix = prefix;
+	// return this;
+	// }
 
 	public Bytes concat(Bytes key) {
 		return new Bytes(this, key);

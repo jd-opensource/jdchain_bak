@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
@@ -33,10 +33,10 @@ import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.data.BlockchainOperationFactory;
-import com.jd.blockchain.ledger.data.DigitalSignatureBlob;
-import com.jd.blockchain.ledger.data.TxContentBlob;
-import com.jd.blockchain.ledger.data.TxRequestMessage;
+import com.jd.blockchain.transaction.BlockchainOperationFactory;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.TxContentBlob;
+import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.io.ByteArray;
 
 /**
@@ -85,8 +85,8 @@ public class TxRequestMessageTest {
 
 	@Test
 	public void testSerialize_TransactionRequest() {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, TransactionRequest.class);
-		TransactionRequest resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, TransactionRequest.class);
+		TransactionRequest resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getEndpointSignatures().length, data.getEndpointSignatures().length);
 		assertEquals(resolvedData.getNodeSignatures().length, data.getNodeSignatures().length);
@@ -124,8 +124,8 @@ public class TxRequestMessageTest {
 
 	@Test
 	public void testSerialize_NodeRequest() {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, NodeRequest.class);
-		NodeRequest resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, NodeRequest.class);
+		NodeRequest resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getEndpointSignatures().length, data.getEndpointSignatures().length);
 		assertEquals(resolvedData.getNodeSignatures().length, data.getNodeSignatures().length);
@@ -161,8 +161,8 @@ public class TxRequestMessageTest {
 
 	@Test
 	public void testSerialize_EndpointRequest() {
-		byte[] serialBytes = BinaryEncodingUtils.encode(data, EndpointRequest.class);
-		EndpointRequest resolvedData = BinaryEncodingUtils.decode(serialBytes);
+		byte[] serialBytes = BinaryProtocol.encode(data, EndpointRequest.class);
+		EndpointRequest resolvedData = BinaryProtocol.decode(serialBytes);
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedData.getEndpointSignatures().length, data.getEndpointSignatures().length);
 		DigitalSignature[] dataEndpointSignatures = data.getEndpointSignatures();

@@ -4,17 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.jd.blockchain.contract.model.LedgerContext;
+import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.BytesValueType;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
-import com.jd.blockchain.ledger.data.DataAccountKVSetOperationBuilder;
-import com.jd.blockchain.ledger.data.DataAccountRegisterOperationBuilder;
-import com.jd.blockchain.ledger.data.DataAccountRegisterOperationBuilderImpl;
-import com.jd.blockchain.ledger.data.KVData;
-import com.jd.blockchain.ledger.data.UserRegisterOperationBuilder;
-import com.jd.blockchain.ledger.data.UserRegisterOperationBuilderImpl;
-import com.jd.blockchain.sdk.BlockchainQueryService;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.DataAccountKVSetOperationBuilder;
+import com.jd.blockchain.transaction.DataAccountRegisterOperationBuilder;
+import com.jd.blockchain.transaction.DataAccountRegisterOperationBuilderImpl;
+import com.jd.blockchain.transaction.KVData;
+import com.jd.blockchain.transaction.UserRegisterOperationBuilder;
+import com.jd.blockchain.transaction.UserRegisterOperationBuilderImpl;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 
@@ -258,7 +273,7 @@ public class ContractLedgerContext implements LedgerContext {
 
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-			BytesValue bytesValue = new BytesValueImpl(DataType.BYTES, value);
+			BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			generatedOpList.add(op);
 			opHandleContext.handle(op);
@@ -268,10 +283,10 @@ public class ContractLedgerContext implements LedgerContext {
 		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
 			BytesValue bytesValue;
 			if (isJson(value)) {
-				bytesValue = new BytesValueImpl(DataType.JSON, value.getBytes());
+				bytesValue = new BytesValueEntry(BytesValueType.JSON, value.getBytes());
 			}
 			else {
-				bytesValue = new BytesValueImpl(DataType.TEXT, value.getBytes());
+				bytesValue = new BytesValueEntry(BytesValueType.TEXT, value.getBytes());
 			}
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			generatedOpList.add(op);
@@ -280,7 +295,7 @@ public class ContractLedgerContext implements LedgerContext {
 		}
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, Bytes value, long expVersion) {
-			BytesValue bytesValue = new BytesValueImpl(DataType.BYTES, value.toBytes());
+			BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value.toBytes());
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			generatedOpList.add(op);
 			opHandleContext.handle(op);
@@ -288,7 +303,7 @@ public class ContractLedgerContext implements LedgerContext {
 		}
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, long value, long expVersion) {
-			BytesValue bytesValue = new BytesValueImpl(DataType.INT64, BytesUtils.toBytes(value));
+			BytesValue bytesValue = new BytesValueEntry(BytesValueType.INT64, BytesUtils.toBytes(value));
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			generatedOpList.add(op);
 			opHandleContext.handle(op);

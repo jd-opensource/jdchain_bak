@@ -33,8 +33,8 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionData;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
-import com.jd.blockchain.ledger.data.TxBuilder;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
+import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 public class TransactionSetTest {

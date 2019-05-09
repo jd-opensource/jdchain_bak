@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.jd.blockchain.contract.model.ContractException;
-import com.jd.blockchain.contract.model.ContractEventContext;
-import com.jd.blockchain.contract.model.EventProcessingAwire;
+import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.ContractException;
+import com.jd.blockchain.contract.EventProcessingAwire;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;

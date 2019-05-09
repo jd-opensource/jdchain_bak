@@ -1,7 +1,5 @@
 package test.com.jd.blockchain.binaryproto;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 

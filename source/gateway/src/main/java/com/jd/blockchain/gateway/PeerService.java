@@ -1,7 +1,7 @@
 package com.jd.blockchain.gateway;
 
-import com.jd.blockchain.ledger.data.TransactionService;
-import com.jd.blockchain.sdk.BlockchainQueryService;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TransactionService;
 
 public interface PeerService {
 	

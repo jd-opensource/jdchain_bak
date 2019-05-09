@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractException;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.utils.Bytes;
@@ -37,7 +37,7 @@ public class BinaryEncodingTest {
 		pd.setConfig(Bytes.fromString("Configuration of something."));
 		pd.setNetworkAddress(networkAddress);
 
-		byte[] bytes = BinaryEncodingUtils.encode(pd, PrimitiveDatas.class);
+		byte[] bytes = BinaryProtocol.encode(pd, PrimitiveDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;
@@ -109,7 +109,7 @@ public class BinaryEncodingTest {
 	public void testEncoding_Null() {
 		DataContractRegistry.register(PrimitiveDatas.class);
 
-		byte[] bytes = BinaryEncodingUtils.encode(null, PrimitiveDatas.class);
+		byte[] bytes = BinaryProtocol.encode(null, PrimitiveDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;// 暂不校验 version;
@@ -138,8 +138,8 @@ public class BinaryEncodingTest {
 		pd.setConfig(Bytes.fromString("Configuration of something."));
 		pd.setNetworkAddress(networkAddress);
 
-		byte[] bytes = BinaryEncodingUtils.encode(pd, PrimitiveDatas.class);
-		PrimitiveDatas decodeData = BinaryEncodingUtils.decode(bytes);
+		byte[] bytes = BinaryProtocol.encode(pd, PrimitiveDatas.class);
+		PrimitiveDatas decodeData = BinaryProtocol.decode(bytes);
 		assertEquals(pd.getId(), decodeData.getId());
 		assertEquals(pd.isEnable(), decodeData.isEnable());
 		assertEquals(pd.isBoy(), decodeData.isBoy());
@@ -163,7 +163,7 @@ public class BinaryEncodingTest {
 		EnumDatasImpl enumDatas = new EnumDatasImpl();
 		enumDatas.setLevel(EnumLevel.V1);
 
-		byte[] bytes = BinaryEncodingUtils.encode(enumDatas, EnumDatas.class);
+		byte[] bytes = BinaryProtocol.encode(enumDatas, EnumDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;
@@ -186,8 +186,8 @@ public class BinaryEncodingTest {
 		EnumDatasImpl enumDatas = new EnumDatasImpl();
 		enumDatas.setLevel(EnumLevel.V1);
 
-		byte[] bytes = BinaryEncodingUtils.encode(enumDatas, EnumDatas.class);
-		EnumDatas decodeData = BinaryEncodingUtils.decode(bytes);
+		byte[] bytes = BinaryProtocol.encode(enumDatas, EnumDatas.class);
+		EnumDatas decodeData = BinaryProtocol.decode(bytes);
 		assertEquals(enumDatas.getLevel(), decodeData.getLevel());
 	}
 
@@ -215,7 +215,7 @@ public class BinaryEncodingTest {
 
 		refContractDatas.setPrimitiveDatas(primitiveDatas);
 
-		byte[] bytes = BinaryEncodingUtils.encode(refContractDatas, RefContractDatas.class);
+		byte[] bytes = BinaryProtocol.encode(refContractDatas, RefContractDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;
@@ -248,7 +248,7 @@ public class BinaryEncodingTest {
 
 		RefContractDatasImpl refContractDatas = new RefContractDatasImpl();
 
-		byte[] bytes = BinaryEncodingUtils.encode(refContractDatas, RefContractDatas.class);
+		byte[] bytes = BinaryProtocol.encode(refContractDatas, RefContractDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;
@@ -295,8 +295,8 @@ public class BinaryEncodingTest {
 
 		refContractDatas.setPrimitiveDatas(primitiveDatas);
 
-		byte[] bytes = BinaryEncodingUtils.encode(refContractDatas, RefContractDatas.class);
-		RefContractDatas decodeData = BinaryEncodingUtils.decode(bytes);
+		byte[] bytes = BinaryProtocol.encode(refContractDatas, RefContractDatas.class);
+		RefContractDatas decodeData = BinaryProtocol.decode(bytes);
 
 		assertEquals(refContractDatas.getPrimitive().getId(), decodeData.getPrimitive().getId());
 		assertEquals(refContractDatas.getPrimitive().isEnable(), decodeData.getPrimitive().isEnable());
@@ -329,7 +329,7 @@ public class BinaryEncodingTest {
 		operations[0] = subOperation;
 		genericRefContractDatas.setOperations(operations);
 
-		byte[] bytes = BinaryEncodingUtils.encode(genericRefContractDatas, GenericRefContractDatas.class);
+		byte[] bytes = BinaryProtocol.encode(genericRefContractDatas, GenericRefContractDatas.class);
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
 		offset += 12;
@@ -391,9 +391,9 @@ public class BinaryEncodingTest {
 		operations[0] = subOperation;
 		genericRefContractDatas.setOperations(operations);
 
-		byte[] bytes = BinaryEncodingUtils.encode(genericRefContractDatas, GenericRefContractDatas.class);
+		byte[] bytes = BinaryProtocol.encode(genericRefContractDatas, GenericRefContractDatas.class);
 
-		GenericRefContractDatas decodeData = BinaryEncodingUtils.decode(bytes);
+		GenericRefContractDatas decodeData = BinaryProtocol.decode(bytes);
 
 		assertEquals("Jerry", ((SubOperation) (decodeData.getOperations()[0])).getUserName());
 	}
@@ -432,7 +432,7 @@ public class BinaryEncodingTest {
 		operations[0] = subOperation;
 		compositeDatas.setOperations(operations);
 
-		byte[] bytes = BinaryEncodingUtils.encode(compositeDatas, CompositeDatas.class);
+		byte[] bytes = BinaryProtocol.encode(compositeDatas, CompositeDatas.class);
 
 		int offset = 0;
 		int code = BytesUtils.toInt(bytes, offset);
@@ -508,8 +508,8 @@ public class BinaryEncodingTest {
 		operations[0] = subOperation;
 		compositeDatas.setOperations(operations);
 
-		byte[] bytes = BinaryEncodingUtils.encode(compositeDatas, CompositeDatas.class);
-		CompositeDatas decodeData = BinaryEncodingUtils.decode(bytes);
+		byte[] bytes = BinaryProtocol.encode(compositeDatas, CompositeDatas.class);
+		CompositeDatas decodeData = BinaryProtocol.decode(bytes);
 
 		assertEquals(compositeDatas.isEnable(), decodeData.isEnable());
 		assertEquals(compositeDatas.getAge(), decodeData.getAge());

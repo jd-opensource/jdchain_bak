@@ -3,9 +3,8 @@ package com.jd.blockchain.sdk.proxy;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
-import com.jd.blockchain.sdk.BlockchainQueryService;
-
 import com.jd.blockchain.sdk.converters.HashDigestsResponseConverter;
+import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.http.*;
 import com.jd.blockchain.utils.web.client.WebResponseConverterFactory;
 import com.jd.blockchain.sdk.converters.HashDigestToStringConverter;

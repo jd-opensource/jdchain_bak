@@ -1,5 +1,7 @@
 package com.jd.blockchain.sdk;
 
+import com.jd.blockchain.transaction.BlockchainQueryService;
+
 /**
  * 区块链服务；
  * 

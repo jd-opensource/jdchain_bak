@@ -2,9 +2,9 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 节点的配置参数；
@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code=TypeCodes.CONSENSUS_NODE_SETTINGS)
+@DataContract(code=DataCodes.CONSENSUS_NODE_SETTINGS)
 public interface NodeSettings {
 
 	/**
@@ -22,7 +22,7 @@ public interface NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order=0, primitiveType=ValueType.TEXT)
+	@DataField(order=0, primitiveType=PrimitiveType.TEXT)
 	String getAddress();
 
 	/**
@@ -30,6 +30,6 @@ public interface NodeSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
 }

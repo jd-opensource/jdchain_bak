@@ -10,6 +10,8 @@ package com.jd.blockchain.sdk;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -20,8 +20,8 @@ import com.jd.blockchain.ledger.HashObject;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.data.BlockchainOperationFactory;
-import com.jd.blockchain.ledger.data.TxContentBlob;
+import com.jd.blockchain.transaction.BlockchainOperationFactory;
+import com.jd.blockchain.transaction.TxContentBlob;
 import com.jd.blockchain.utils.io.ByteArray;
 
 public class TxContentBlobTest {
@@ -56,8 +56,8 @@ public class TxContentBlobTest {
 	public void testSerialize_TransactionContentBody()
 			throws IOException, InstantiationException, IllegalAccessException {
 
-		byte[] bytesContent = BinaryEncodingUtils.encode(contentBlob, TransactionContentBody.class);
-		TransactionContentBody resolvedContentBlob = BinaryEncodingUtils.decode(bytesContent);
+		byte[] bytesContent = BinaryProtocol.encode(contentBlob, TransactionContentBody.class);
+		TransactionContentBody resolvedContentBlob = BinaryProtocol.decode(bytesContent);
 
 		assertEquals(contentBlob.getLedgerHash(), resolvedContentBlob.getLedgerHash());
 		// assertEquals(contentBlob.getSubjectAccount(),
@@ -87,8 +87,8 @@ public class TxContentBlobTest {
 	@Test
 	public void testSerialize_TransactionContent() throws IOException, InstantiationException, IllegalAccessException {
 
-		byte[] bytesContent = BinaryEncodingUtils.encode(contentBlob, TransactionContent.class);
-		TransactionContentBody resolvedContentBlob = BinaryEncodingUtils.decode(bytesContent);
+		byte[] bytesContent = BinaryProtocol.encode(contentBlob, TransactionContent.class);
+		TransactionContentBody resolvedContentBlob = BinaryProtocol.decode(bytesContent);
 
 		assertEquals(contentBlob.getLedgerHash(), resolvedContentBlob.getLedgerHash());
 		// assertEquals(contentBlob.getSubjectAccount(),

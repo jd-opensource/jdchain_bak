@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 交易请求 {@link TransactionRequest} 的回复；
@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.TX_RESPONSE)
+@DataContract(code= DataCodes.TX_RESPONSE)
 public interface TransactionResponse {
 
 	/**
@@ -20,7 +20,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	HashDigest getContentHash();
 
 	/**
@@ -36,7 +36,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=3, primitiveType = ValueType.BYTES)
+	@DataField(order=3, primitiveType = PrimitiveType.BYTES)
 	HashDigest getBlockHash();
 
 	/**
@@ -47,10 +47,10 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=4, primitiveType=ValueType.INT64)
+	@DataField(order=4, primitiveType=PrimitiveType.INT64)
 	long getBlockHeight();
 	
-	@DataField(order=5, primitiveType=ValueType.BOOLEAN)
+	@DataField(order=5, primitiveType=PrimitiveType.BOOLEAN)
 	boolean isSuccess();
 
 }

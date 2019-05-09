@@ -1,10 +1,9 @@
 package com.jd.blockchain.sdk;
 
 import com.jd.blockchain.consensus.ClientIdentifications;
-import com.jd.blockchain.manage.GatewayIncomingSetting;
-
 import com.jd.blockchain.sdk.converters.BinarySerializeRequestConverter;
 import com.jd.blockchain.sdk.converters.BinarySerializeResponseConverter;
+import com.jd.blockchain.setting.GatewayIncomingSetting;
 import com.jd.blockchain.utils.http.HttpAction;
 import com.jd.blockchain.utils.http.HttpMethod;
 import com.jd.blockchain.utils.http.HttpService;

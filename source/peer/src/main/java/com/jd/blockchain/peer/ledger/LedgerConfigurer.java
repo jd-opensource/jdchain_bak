@@ -7,7 +7,7 @@ import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.impl.TransactionEngineImpl;
-import com.jd.blockchain.ledger.service.TransactionEngine;
+import com.jd.blockchain.service.TransactionEngine;
 
 @Configuration
 public class LedgerConfigurer {

@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.capability.settings.CapabilitySettings;
 import com.jd.blockchain.consensus.mq.factory.MsgQueueFactory;
 import com.jd.blockchain.consensus.mq.producer.MsgQueueProducer;
@@ -28,7 +28,7 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.data.TxBuilder;
+import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -240,7 +240,7 @@ public class RemoteTransactionService {
         instanceFactory.execute(() -> {
             List<byte[]> currentBytes = new ArrayList<>();
             TransactionRequest txRequest = dataAccountRegisterRequest(CapabilitySettings.ledgerHash, CapabilitySettings.adminKey);
-            byte[] serializeBytes = BinaryEncodingUtils.encode(txRequest, TransactionRequest.class);
+            byte[] serializeBytes = BinaryProtocol.encode(txRequest, TransactionRequest.class);
             currentBytes.add(serializeBytes);
             try {
                 txBlockingQueue.put(currentBytes);
@@ -285,7 +285,7 @@ public class RemoteTransactionService {
         LinkedList<byte[]> txSerializeBytes = new LinkedList<>();
         for (int i = 0; i < CapabilitySettings.TX_SIZE_PER_SEND; i++) {
             TransactionRequest txRequest = userRegisterRequest(CapabilitySettings.ledgerHash, CapabilitySettings.adminKey);
-            byte[] serializeBytes = BinaryEncodingUtils.encode(txRequest, TransactionRequest.class);
+            byte[] serializeBytes = BinaryProtocol.encode(txRequest, TransactionRequest.class);
             txSerializeBytes.addFirst(serializeBytes);
         }
         return txSerializeBytes;
@@ -300,7 +300,7 @@ public class RemoteTransactionService {
         LinkedList<byte[]> txSerializeBytes = new LinkedList<>();
         for (int i = 0; i < CapabilitySettings.TX_SIZE_PER_SEND; i++) {
             TransactionRequest txRequest = dataAccountRegisterRequest(CapabilitySettings.ledgerHash, CapabilitySettings.adminKey, isSave);
-            byte[] serializeBytes = BinaryEncodingUtils.encode(txRequest, TransactionRequest.class);
+            byte[] serializeBytes = BinaryProtocol.encode(txRequest, TransactionRequest.class);
             txSerializeBytes.addFirst(serializeBytes);
         }
         return txSerializeBytes;
@@ -311,7 +311,7 @@ public class RemoteTransactionService {
         LinkedList<byte[]> txSerializeBytes = new LinkedList<>();
         for (int i = 0; i < CapabilitySettings.TX_SIZE_PER_SEND; i++) {
             TransactionRequest txRequest = kvStorageRequest(address, CapabilitySettings.ledgerHash, CapabilitySettings.adminKey);
-            byte[] serializeBytes = BinaryEncodingUtils.encode(txRequest, TransactionRequest.class);
+            byte[] serializeBytes = BinaryProtocol.encode(txRequest, TransactionRequest.class);
             txSerializeBytes.addFirst(serializeBytes);
         }
         return txSerializeBytes;

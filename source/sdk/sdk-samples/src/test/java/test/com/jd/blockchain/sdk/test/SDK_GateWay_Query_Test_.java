@@ -38,9 +38,9 @@ import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.data.TxResponseMessage;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
 /**

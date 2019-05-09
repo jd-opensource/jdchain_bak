@@ -8,13 +8,13 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.data.ContractEventSendOpTemplate;
-import com.jd.blockchain.ledger.data.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.utils.Bytes;
 
 import org.junit.Before;
@@ -45,8 +45,8 @@ public class ContractEventSendOpTemplateTest {
 
     @Test
     public void testSerialize_ContractEventSendOperation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, ContractEventSendOperation.class);
-        ContractEventSendOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, ContractEventSendOperation.class);
+        ContractEventSendOperation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(resolvedData.getContractAddress(), data.getContractAddress());
         assertEquals(resolvedData.getEvent(), data.getEvent());
@@ -56,8 +56,8 @@ public class ContractEventSendOpTemplateTest {
 
     @Test
     public void testSerialize_Operation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, Operation.class);
-        Operation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, Operation.class);
+        Operation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         System.out.println(resolvedData);
         System.out.println("------Assert OK ------");

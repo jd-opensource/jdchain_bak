@@ -2,8 +2,8 @@ package com.jd.blockchain.consensus;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
-import com.jd.blockchain.utils.ValueType;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 
 /**
  * 共识网络的客户接入参数；
@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code = TypeCodes.CONSENSUS_CLI_INCOMING_SETTINGS)
+@DataContract(code = DataCodes.CONSENSUS_CLI_INCOMING_SETTINGS)
 public interface ClientIncomingSettings {
 
 	/**
@@ -19,7 +19,7 @@ public interface ClientIncomingSettings {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 0, primitiveType = ValueType.INT32)
+	@DataField(order = 0, primitiveType = PrimitiveType.INT32)
 	int getClientId();
 
 	/**
@@ -27,7 +27,7 @@ public interface ClientIncomingSettings {
 	 *
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = ValueType.TEXT)
+	@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
 	String getProviderName();
 
 	/**

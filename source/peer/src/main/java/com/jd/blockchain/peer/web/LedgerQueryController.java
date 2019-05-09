@@ -1,16 +1,37 @@
 package com.jd.blockchain.peer.web;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.*;
-import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
-import com.jd.blockchain.sdk.BlockchainQueryService;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.core.ContractAccountSet;
+import com.jd.blockchain.ledger.core.DataAccount;
+import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.LedgerAdministration;
+import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.ParticipantCertData;
+import com.jd.blockchain.ledger.core.TransactionSet;
+import com.jd.blockchain.ledger.core.UserAccountSet;
+import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
-import com.jd.blockchain.utils.ValueType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/")
@@ -318,11 +339,11 @@ public class LedgerQueryController implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, ValueType.NIL, null);
+				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
 				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				BytesValue decodeData = BinaryEncodingUtils.decode(value);
-				entries[i] = new KVDataObject(keys[i], ver, ValueType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				BytesValue decodeData = BinaryProtocol.decode(value);
+				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
 			}
 		}
 		

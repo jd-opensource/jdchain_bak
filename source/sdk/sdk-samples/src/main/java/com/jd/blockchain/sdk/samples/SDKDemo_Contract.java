@@ -1,5 +1,6 @@
 package com.jd.blockchain.sdk.samples;
 
+import com.jd.blockchain.contract.samples.AssetContract;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
@@ -35,12 +36,6 @@ public class SDKDemo_Contract {
 				new NetworkAddress("192.168.10.11", 8080), new NetworkAddress("192.168.10.12", 8080),
 				new NetworkAddress("192.168.10.13", 8080) };
 
-		// 网关客户端编号；
-		int gatewayId = 1001;
-		// 客户端的认证账户；
-		// String clientAddress = "kkjsafieweqEkadsfaslkdslkae998232jojf==";
-		// String privKey = "safefsd32q34vdsvs";
-
 		// 创建服务代理；
 		final String GATEWAY_IP = "127.0.0.1";
 		final int GATEWAY_PORT = 80;
@@ -72,15 +67,10 @@ public class SDKDemo_Contract {
 		// 备注信息；
 		Remark remark = new Remark();
 		String remarkJSON = JSONSerializeUtils.serializeToJSON(remark);
+		
+//		AssetContract assetContract = txTemp.contract("", AssetContract.class);
+//		txTemp.contractInvocation(assetContract.issue(amount, assetHolderAddress))
 
-		// 合约代码的参数表；
-		ByteArray[] args = {};
-		// 调用合约代码的分配操作；
-		// txTemp.deployContract().deploy(identity, appByteCodes);
-
-		// todo args暂时无数据，尚未确定填入什么
-		txTemp.contractEvents().send(commerceAccount, "trans-asset", null);
-//		txTemp.invokeContract().send(commerceAccount, "trans-asset", args);
 		// --------------------------------------
 
 		// TX 准备就绪；

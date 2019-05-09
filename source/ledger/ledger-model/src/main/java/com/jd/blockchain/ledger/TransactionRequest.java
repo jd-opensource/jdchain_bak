@@ -2,9 +2,9 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.ValueType;
 
 /**
  * 交易请求；
@@ -12,7 +12,7 @@ import com.jd.blockchain.utils.ValueType;
  * @author huanghaiquan
  *
  */
-@DataContract(code= TypeCodes.REQUEST)
+@DataContract(code= DataCodes.REQUEST)
 public interface TransactionRequest extends NodeRequest, HashObject {
 
 	/**
@@ -21,6 +21,6 @@ public interface TransactionRequest extends NodeRequest, HashObject {
 	 * @return
 	 */
 	@Override
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	HashDigest getHash();
 }

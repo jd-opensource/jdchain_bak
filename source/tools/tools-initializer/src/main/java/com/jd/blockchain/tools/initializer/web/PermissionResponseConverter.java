@@ -2,7 +2,7 @@ package com.jd.blockchain.tools.initializer.web;
 
 import java.io.InputStream;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.ledger.core.LedgerInitPermissionData;
 import com.jd.blockchain.tools.initializer.LedgerInitException;
 import com.jd.blockchain.utils.http.HttpServiceContext;
@@ -18,7 +18,7 @@ public class PermissionResponseConverter implements ResponseConverter {
 		if (resp.isError()) {
 			throw new LedgerInitException("Error occurred at remote participant! --" + resp.getErrorMessage());
 		}
-		return BinaryEncodingUtils.decode(resp.getData());
+		return BinaryProtocol.decode(resp.getData());
 	}
 
 }

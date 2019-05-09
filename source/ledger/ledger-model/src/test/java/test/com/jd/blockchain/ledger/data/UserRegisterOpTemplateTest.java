@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jd.blockchain.binaryproto.BinaryEncodingUtils;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
@@ -22,7 +22,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.data.UserRegisterOpTemplate;
+import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 
 /**
  *
@@ -47,8 +47,8 @@ public class UserRegisterOpTemplateTest {
 
     @Test
     public void testSerialize_UserRegisterOperation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, UserRegisterOperation.class);
-        UserRegisterOperation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, UserRegisterOperation.class);
+        UserRegisterOperation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         assertEquals(data.getUserID().getAddress(), resolvedData.getUserID().getAddress());
         assertEquals(data.getUserID().getPubKey(), resolvedData.getUserID().getPubKey());
@@ -57,8 +57,8 @@ public class UserRegisterOpTemplateTest {
 
     @Test
     public void testSerialize_Operation() throws Exception {
-        byte[] serialBytes = BinaryEncodingUtils.encode(data, Operation.class);
-        Operation resolvedData = BinaryEncodingUtils.decode(serialBytes);
+        byte[] serialBytes = BinaryProtocol.encode(data, Operation.class);
+        Operation resolvedData = BinaryProtocol.decode(serialBytes);
         System.out.println("------Assert start ------");
         System.out.println("serialBytesLength=" + serialBytes.length);
         System.out.println(resolvedData);

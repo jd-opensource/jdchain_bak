@@ -1,22 +1,20 @@
 package com.jd.blockchain.contract.jvm;
 
-import com.jd.blockchain.contract.ContractCode;
-import com.jd.blockchain.contract.model.ContractEvent;
-import com.jd.blockchain.contract.model.ContractEventContext;
-import com.jd.blockchain.runtime.Module;
-import com.jd.blockchain.utils.BaseConstant;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import static com.jd.blockchain.utils.BaseConstant.CONTRACT_MAIN_CLASS_KEY;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import com.jd.blockchain.contract.ContractEvent;
+import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.runtime.Module;
+import com.jd.blockchain.utils.BaseConstant;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * contract code based jvm
@@ -25,18 +23,18 @@ import java.util.Properties;
 public class JavaContractCode implements ContractCode {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaContractCode.class);
 	private Module codeModule;
-	private String address;
+	private Bytes address;
 	private long version;
 	private ContractEventContext contractEventContext;
 	
-	public JavaContractCode(String address, long version, Module codeModule) {
+	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
 		this.version = version;
 		this.codeModule = codeModule;
 	}
 
 	@Override
-	public String getAddress() {
+	public Bytes getAddress() {
 		return address;
 	}
 	

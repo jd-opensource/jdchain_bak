@@ -2,14 +2,14 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
-import com.jd.blockchain.consts.TypeCodes;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.ValueType;
 
-@DataContract(code= TypeCodes.REQUEST_ENDPOINT)
+@DataContract(code= DataCodes.REQUEST_ENDPOINT)
 public interface EndpointRequest {
 
-	@DataField(order=1, primitiveType = ValueType.BYTES)
+	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	HashDigest getHash();
 	/**
 	 * 交易内容；
