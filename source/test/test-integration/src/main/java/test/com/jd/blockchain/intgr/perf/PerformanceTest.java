@@ -23,7 +23,8 @@ public class PerformanceTest {
 		try {
 			boolean testLedger = !ArgumentSet.hasOption(args, "-test=storage");
 			if (testLedger) {
-				LedgerPerformanceTest.test(new String[]{"-silent", "-contract", "-o"});
+//				LedgerPerformanceTest.test(new String[]{"-silent", "-usertest", "-o"});
+				LedgerPerformanceTest.test(new String[]{"-silent", "-o", "-rocksdb"});
 				return;
 			}
 

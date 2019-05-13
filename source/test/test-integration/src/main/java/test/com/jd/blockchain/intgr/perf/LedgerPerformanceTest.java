@@ -110,7 +110,7 @@ public class LedgerPerformanceTest {
 				dbType = DBType.ROCKSDB;
 			}
 
-			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? Crypto.getAlgorithm("RIPEMD260")
+			CryptoAlgorithm hashAlg = ArgumentSet.hasOption(args, "-160") ? Crypto.getAlgorithm("RIPEMD160")
 					: Crypto.getAlgorithm("SHA256");
 			System.out.println(
 					String.format("----- LedgerPerformanceTest [HashAlgorithm=%s][DBType=%s] ----", hashAlg, dbType));

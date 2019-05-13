@@ -8,6 +8,7 @@ import org.rocksdb.RocksDBException;
 
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.KVStorageService;
+import com.jd.blockchain.utils.io.FileUtils;
 
 public class RocksDBConnection implements DbConnection {
 
@@ -19,6 +20,10 @@ public class RocksDBConnection implements DbConnection {
 
 	public RocksDBConnection(String dbPath, Options options) {
 		try {
+			String parentDir = FileUtils.getParent(dbPath);
+			if (!FileUtils.existDirectory(parentDir)) {
+				FileUtils.makeDirectory(parentDir);
+			}
 			this.db = RocksDB.open(options, dbPath);
 		} catch (RocksDBException e) {
 			throw new IllegalStateException(e.getMessage(), e);
@@ -43,7 +48,7 @@ public class RocksDBConnection implements DbConnection {
 		this.options = null;
 		RocksDB db = this.db;
 		this.db = null;
-		
+
 		if (options != null) {
 			options.close();
 		}
