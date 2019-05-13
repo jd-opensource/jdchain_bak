@@ -49,6 +49,7 @@ public class  RSAUtils {
     private static final int QINV_LENGTH    = 1024 / 8;
 
     private static final BigInteger PUBEXP_0X03 = BigInteger.valueOf(0x03);
+    private static final BigInteger PUBEXP_0X010001 = BigInteger.valueOf(0x010001);
 
     private static final BigInteger VERSION_2PRIMES = BigInteger.valueOf(0);
 
@@ -71,6 +72,21 @@ public class  RSAUtils {
     }
 
     public static AsymmetricCipherKeyPair generateKeyPair(SecureRandom random){
+        AsymmetricCipherKeyPairGenerator kpGen = new RSAKeyPairGenerator();
+        kpGen.init(new RSAKeyGenerationParameters(PUBEXP_0X010001, random, KEYSIZEBITS, CERTAINTY));
+        return kpGen.generateKeyPair();
+    }
+
+    /**
+     * key pair generation with short public exponent， resulting in verifying and encrypting more efficiently
+     *
+     * @return key pair
+     */
+    public static AsymmetricCipherKeyPair generateKeyPair_shortExp(){
+        return generateKeyPair(new SecureRandom());
+    }
+
+    public static AsymmetricCipherKeyPair generateKeyPair_shortExp(SecureRandom random){
         AsymmetricCipherKeyPairGenerator kpGen = new RSAKeyPairGenerator();
         kpGen.init(new RSAKeyGenerationParameters(PUBEXP_0X03, random, KEYSIZEBITS, CERTAINTY));
         return kpGen.generateKeyPair();

@@ -50,9 +50,7 @@ public class CertTest {
             String name = cert.getIssuerX500Principal().getName();
             System.out.println(name);
             bIn.close();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (CertificateException | IOException e) {
             e.printStackTrace();
         }
         return dn;

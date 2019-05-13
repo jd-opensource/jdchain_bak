@@ -33,10 +33,20 @@ import static org.junit.Assert.*;
 public class RSAUtilsTest {
 
     @Test
-    public void generateKeyPairTest() throws IOException {
+    public void generateKeyPairTest() {
         AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair();
-        RSAKeyParameters pubKey = (RSAKeyParameters) kp.getPublic();
-        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) kp.getPrivate();
+        keyPairTest(kp);
+    }
+
+    @Test
+    public void generateKeyPair_ShortExpTest() {
+        AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair_shortExp();
+        keyPairTest(kp);
+    }
+
+    private void keyPairTest(AsymmetricCipherKeyPair keyPair) {
+        RSAKeyParameters pubKey = (RSAKeyParameters) keyPair.getPublic();
+        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) keyPair.getPrivate();
 
         byte[] pubKeyBytes_RawKey = RSAUtils.pubKey2Bytes_RawKey(pubKey);
         byte[] pubKeyBytesConverted_RawKey =
@@ -47,9 +57,6 @@ public class RSAUtilsTest {
         byte[] privKeyBytesConverted_RawKey =
                 RSAUtils.privKey2Bytes_RawKey(RSAUtils.bytes2PrivKey_RawKey(privKeyBytes_RawKey));
         assertArrayEquals(privKeyBytes_RawKey,privKeyBytesConverted_RawKey);
-
-        System.out.println(pubKeyBytes_RawKey.length);
-        System.out.println(privKeyBytes_RawKey.length);
 
         byte[] pubKeyBytes_PKCS1 = RSAUtils.pubKey2Bytes_PKCS1(pubKey);
         byte[] pubKeyBytesConverted_PKCS1 =
@@ -65,17 +72,6 @@ public class RSAUtilsTest {
         byte[] pubKeyBytesConverted_PKCS8 =
                 RSAUtils.pubKey2Bytes_PKCS8(RSAUtils.bytes2PubKey_PKCS8(pubKeyBytes_PKCS8));
         assertArrayEquals(pubKeyBytes_PKCS8,pubKeyBytesConverted_PKCS8);
-//
-////        String str = "1.2.840.113549.1.1";
-////        System.out.println(Hex.toHexString(str.getBytes()));
-//        byte[] bytes = null;
-//        AlgorithmIdentifier RSA_ALGORITHM_IDENTIFIER =
-//                new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
-////        byte[] result = KeyUtil.getEncodedSubjectPublicKeyInfo(RSA_ALGORITHM_IDENTIFIER, bytes);
-//        byte[] algo = RSA_ALGORITHM_IDENTIFIER.getEncoded();
-//        System.out.println(Hex.toHexString(algo));
-////        System.out.println(Hex.toHexString(result));
-//        System.out.println(Hex.toHexString(pubKeyBytes_PKCS8));
 
         byte[] privKeyBytes_PKCS8 = RSAUtils.privKey2Bytes_PKCS8(privKey);
         byte[] privKeyBytesConverted_PKCS8 =
