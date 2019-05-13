@@ -46,7 +46,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 					String.format("Not supported db connection string with scheme \"%s\"!", dbUri.getScheme()));
 		}
 
-		String uriHead = URI_SCHEME + "://";
+		String uriHead = dbPrefix();
 		int beginIndex = dbConnectionString.indexOf(uriHead);
 		String dbPath = dbConnectionString.substring(beginIndex + uriHead.length());
 		if (!dbPath.startsWith(File.separator)) {
@@ -66,6 +66,11 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		return conn;
 	}
 
+
+	@Override
+	public String dbPrefix() {
+		return URI_SCHEME + "://";
+	}
 
 	@Override
 	public boolean support(String scheme) {

@@ -13,10 +13,16 @@ import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class BftsmartConsensusManageService implements ConsensusManageService {
 
-	public static final int CLIENT_RANGE = 100 * 1000;
+	public static final int GATEWAY_SIZE = 100;
+
+	public static final int CLIENT_SIZE_PER_GATEWAY = 1000;
+
+	public static final int CLIENT_RANGE = GATEWAY_SIZE * CLIENT_SIZE_PER_GATEWAY;
 
 	private BftsmartNodeServer nodeServer;
+
 	private int clientId;
+
 	private static final Lock authLock = new ReentrantLock();
 
 	public BftsmartConsensusManageService(BftsmartNodeServer nodeServer) {
@@ -41,6 +47,7 @@ public class BftsmartConsensusManageService implements ConsensusManageService {
 			try {
 				authLock.lock();
 				((BftsmartClientIncomingConfig) clientIncomingSettings).setClientId(clientId++);
+				clientId += CLIENT_SIZE_PER_GATEWAY;
 			} finally {
 				authLock.unlock();
 			}

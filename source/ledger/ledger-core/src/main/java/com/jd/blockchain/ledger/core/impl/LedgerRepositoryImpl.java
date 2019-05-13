@@ -4,12 +4,7 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
-import com.jd.blockchain.ledger.BlockBody;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerDataSnapshot;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.AccountAccessPolicy;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccountSet;
@@ -20,7 +15,6 @@ import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerException;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.LedgerSetting;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.ledger.core.UserAccountSet;
@@ -486,7 +480,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	static TransactionSet newTransactionSet(LedgerSetting ledgerSetting, String keyPrefix,
-			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
+											ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// TransactionSet transactionSet = new
 		// TransactionSet(ledgerSetting.getCryptoSetting(),
 		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerExStorage),

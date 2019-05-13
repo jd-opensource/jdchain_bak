@@ -7,9 +7,9 @@ public abstract class BaseCryptoKey extends BaseCryptoBytes implements CryptoKey
 	public static final int KEY_TYPE_BYTES = 1;
 	private static final long serialVersionUID = 4543074827807908363L;
 
-	// public BaseCryptoKey() {
-	// super();
-	// }
+	public BaseCryptoKey() {
+	    super();
+	}
 
 	protected BaseCryptoKey(short algorithm, byte[] rawKeyBytes, CryptoKeyType keyType) {
 		super(algorithm, CryptoBytesEncoding.encodeKeyBytes(rawKeyBytes, keyType));

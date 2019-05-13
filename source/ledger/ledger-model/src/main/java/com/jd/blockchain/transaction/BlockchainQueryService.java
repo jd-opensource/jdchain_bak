@@ -37,6 +37,14 @@ public interface BlockchainQueryService {
 	ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash);
 
 	/**
+	 * 返回当前账本的元数据
+	 *
+	 * @param ledgerHash
+	 * @return
+	 */
+	LedgerMetadata getLedgerMetadata(HashDigest ledgerHash);
+
+	/**
 	 * 返回指定账本序号的区块；
 	 *
 	 * @param ledgerHash

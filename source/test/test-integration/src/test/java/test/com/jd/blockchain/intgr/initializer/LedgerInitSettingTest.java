@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.jd.blockchain.crypto.AddressEncoding;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -13,6 +14,7 @@ import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.codec.HexUtils;
+import test.com.jd.blockchain.intgr.IntegrationBase;
 
 public class LedgerInitSettingTest {
 
@@ -49,6 +51,20 @@ public class LedgerInitSettingTest {
 			
 		} finally {
 			in.close();
+		}
+	}
+
+	@Test
+	public void testPubKeyAddress() {
+		String[] pubKeys = IntegrationBase.PUB_KEYS;
+		int index = 0;
+		for (String pubKeyStr : pubKeys) {
+			System.out.println("[" + index + "][配置] = " + pubKeyStr);
+			PubKey pubKey = KeyGenCommand.decodePubKey(pubKeyStr);
+			System.out.println("[" + index + "][公钥Base58] = " + pubKey.toBase58());
+			System.out.println("[" + index + "][地址] = " + AddressEncoding.generateAddress(pubKey).toBase58());
+			System.out.println("--------------------------------------------------------------------");
+			index++;
 		}
 	}
 

@@ -26,6 +26,11 @@ public class MemoryDBConnFactory implements DbConnectionFactory {
     private  Map<String, DbConnection> memMap = new ConcurrentHashMap<>();
 
     @Override
+    public String dbPrefix() {
+        return "memory://";
+    }
+
+    @Override
     public boolean support(String scheme) {
         return true;
     }

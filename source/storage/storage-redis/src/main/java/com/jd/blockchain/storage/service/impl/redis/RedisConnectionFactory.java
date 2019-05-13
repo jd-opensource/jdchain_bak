@@ -1,6 +1,9 @@
 package com.jd.blockchain.storage.service.impl.redis;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import com.jd.blockchain.storage.service.DbConnection;
@@ -17,13 +20,20 @@ public class RedisConnectionFactory implements DbConnectionFactory {
 	// public static final Pattern URI_PATTER = Pattern
 	// .compile("^\\w+\\://(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\:\\d+(/\\d+)?(/.*)*$");
 
+	private static final Map<String, DbConnection> connections = new ConcurrentHashMap<>();
+
 	@Override
 	public DbConnection connect(String dbUri) {
 		return connect(dbUri, null);
 	}
 
 	@Override
-	public DbConnection connect(String dbConnectionString, String password) {
+	public synchronized DbConnection connect(String dbConnectionString, String password) {
+
+		if (connections.containsKey(dbConnectionString)) {
+			// 暂不处理密码变化问题
+			return connections.get(dbConnectionString);
+		}
 
 		URI dbUri = URI.create(dbConnectionString);
 		if (!(dbUri.getScheme().equalsIgnoreCase("redis"))) {
@@ -42,7 +52,9 @@ public class RedisConnectionFactory implements DbConnectionFactory {
 		int port = dbUri.getPort();
 		int dbId = retriveDbIdFromPath(dbUri.getPath());
 		JedisPool pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, password, dbId, false);
-		return new JedisConnection(pool);
+		JedisConnection jedisConnection = new JedisConnection(pool);
+		connections.put(dbConnectionString, jedisConnection);
+		return jedisConnection;
 	}
 
 	/**
@@ -72,6 +84,11 @@ public class RedisConnectionFactory implements DbConnectionFactory {
 	}
 
 	@Override
+	public String dbPrefix() {
+		return "redis://";
+	}
+
+	@Override
 	public boolean support(String scheme) {
 		return RedisConsts.URI_SCHEME.equalsIgnoreCase(scheme);
 	}
@@ -79,5 +96,14 @@ public class RedisConnectionFactory implements DbConnectionFactory {
 	@Override
 	public void close() {
 		// TODO:  未实现连接池的关闭；
+		if (!connections.isEmpty()) {
+			for (Map.Entry<String, DbConnection> entry : connections.entrySet()) {
+				try {
+					entry.getValue().close();
+				} catch (IOException e) {
+					// 打印关闭异常日志
+				}
+			}
+		}
 	}
 }

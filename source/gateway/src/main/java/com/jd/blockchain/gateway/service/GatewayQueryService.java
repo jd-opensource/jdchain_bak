@@ -2,6 +2,7 @@ package com.jd.blockchain.gateway.service;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.sdk.LedgerInitSettings;
 
 /**
  * queryService only for gateway;
@@ -24,4 +25,13 @@ public interface GatewayQueryService {
      * @return
      */
     ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash, int fromIndex, int count);
+
+    /**
+     * 获取账本初始化配置信息
+     *
+     * @param ledgerHash
+     *     账本Hash
+     * @return
+     */
+    LedgerInitSettings getLedgerInitSettings(HashDigest ledgerHash);
 }

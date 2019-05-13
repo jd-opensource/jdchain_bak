@@ -3,16 +3,7 @@ package com.jd.blockchain.ledger.core.impl;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountSet;
@@ -50,10 +41,12 @@ public class LedgerQueryService implements BlockchainQueryService {
 
 	@Override
 	public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash) {
-		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
-		LedgerBlock block = ledger.getLatestBlock();
-		LedgerAdministration administration = ledger.getAdminAccount(block);
-		return administration.getParticipants();
+		return ledgerAdministration(ledgerHash).getParticipants();
+	}
+
+	@Override
+	public LedgerMetadata getLedgerMetadata(HashDigest ledgerHash) {
+		return ledgerAdministration(ledgerHash).getMetadata();
 	}
 
 	@Override
@@ -337,5 +330,12 @@ public class LedgerQueryService implements BlockchainQueryService {
 		ContractAccountSet contractAccountSet = ledger.getContractAccountSet(block);
 		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex,count,(int)contractAccountSet.getTotalCount());
 		return contractAccountSet.getAccounts(pages[0],pages[1]);
+	}
+
+	private LedgerAdministration ledgerAdministration(HashDigest ledgerHash) {
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerBlock block = ledger.getLatestBlock();
+		LedgerAdministration administration = ledger.getAdminAccount(block);
+		return administration;
 	}
 }
