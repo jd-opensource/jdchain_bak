@@ -3,15 +3,16 @@ package com.jd.blockchain.sdk.client;
 import java.io.Closeable;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.consensus.ClientIdentification;
+import com.jd.blockchain.consensus.ClientIdentifications;
+import com.jd.blockchain.consensus.action.ActionRequest;
+import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.BlockchainServiceFactory;
 import com.jd.blockchain.sdk.proxy.HttpBlockchainQueryService;
@@ -24,6 +25,7 @@ import com.jd.blockchain.utils.http.agent.ServiceConnection;
 import com.jd.blockchain.utils.http.agent.ServiceConnectionManager;
 import com.jd.blockchain.utils.http.agent.ServiceEndpoint;
 import com.jd.blockchain.utils.net.NetworkAddress;
+import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
 
 public class GatewayServiceFactory implements BlockchainServiceFactory, Closeable {
 
@@ -32,6 +34,31 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 	private BlockchainKeypair userKey;
 
 	private BlockchainService blockchainService;
+
+	static {
+		DataContractRegistry.register(TransactionContent.class);
+		DataContractRegistry.register(TransactionContentBody.class);
+		DataContractRegistry.register(TransactionRequest.class);
+		DataContractRegistry.register(NodeRequest.class);
+		DataContractRegistry.register(EndpointRequest.class);
+		DataContractRegistry.register(TransactionResponse.class);
+		DataContractRegistry.register(DataAccountKVSetOperation.class);
+		DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
+
+		DataContractRegistry.register(Operation.class);
+		DataContractRegistry.register(ContractCodeDeployOperation.class);
+		DataContractRegistry.register(ContractEventSendOperation.class);
+		DataContractRegistry.register(DataAccountRegisterOperation.class);
+		DataContractRegistry.register(UserRegisterOperation.class);
+
+		DataContractRegistry.register(ActionRequest.class);
+		DataContractRegistry.register(ActionResponse.class);
+		DataContractRegistry.register(ClientIdentifications.class);
+		DataContractRegistry.register(ClientIdentification.class);
+
+		ByteArrayObjectUtil.init();
+	}
+
 
 	protected GatewayServiceFactory(ServiceEndpoint gatewayEndpoint, BlockchainKeypair userKey) {
 		httpConnectionManager = new ServiceConnectionManager();
