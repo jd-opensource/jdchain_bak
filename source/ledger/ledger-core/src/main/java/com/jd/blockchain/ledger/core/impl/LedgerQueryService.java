@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core.impl;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
@@ -15,6 +16,7 @@ import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
+import com.jd.blockchain.utils.StringUtils;
 
 public class LedgerQueryService implements BlockchainQueryService {
 	
@@ -263,6 +265,9 @@ public class LedgerQueryService implements BlockchainQueryService {
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
 			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+
+			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
+
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
@@ -272,6 +277,42 @@ public class LedgerQueryService implements BlockchainQueryService {
 			}
 		}
 		
+		return entries;
+	}
+
+	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String[] keys, String[] versions) {
+		if (keys == null || keys.length == 0) {
+			return null;
+		}
+        if (versions == null || versions.length == 0) {
+            return null;
+        }
+        if(keys.length != versions.length){
+            throw new ContractException("keys.length!=versions.length!");
+        }
+
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerBlock block = ledger.getLatestBlock();
+		DataAccountSet dataAccountSet = ledger.getDataAccountSet(block);
+		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+
+		KVDataEntry[] entries = new KVDataEntry[keys.length];
+        long ver = -1;
+		for (int i = 0; i < entries.length; i++) {
+//			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+//			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
+            if(StringUtils.isNumber(versions[i])){
+                ver = Long.parseLong(versions[i]);
+            }
+			if (ver < 0) {
+				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
+			}else {
+				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+				BytesValue decodeData = BinaryProtocol.decode(value);
+				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+			}
+		}
+
 		return entries;
 	}
 

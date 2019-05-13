@@ -261,6 +261,8 @@ public interface BlockchainQueryService {
 	 */
 	KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys);
 
+	KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String[] keys, String[] versions);
+
 	/**
 	 * 返回指定数据账户中KV数据的总数； <br>
 	 *

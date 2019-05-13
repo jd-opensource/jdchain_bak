@@ -496,7 +496,12 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
                                  @PathParam(name="address") String address,
                                  @RequestParam(name="keys", array = true) String... keys);
 
-	@HttpAction(method = HttpMethod.POST, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
+	@HttpAction(method=HttpMethod.POST, path="ledgers/{ledgerHash}/accounts/{address}/entries-version")
+	@Override
+	KVDataEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+								 @PathParam(name="address") String address,
+								 @RequestParam(name="keys", array = true) String[] keys,
+								 @RequestParam(name="versions", array = true) String[] versions);
 
 	/**
 	 * 返回数据账户中指定序号的最新值；
@@ -513,6 +518,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 *            如果参数值为 -1，则返回全部的记录；<br>
 	 * @return
 	 */
+	@HttpAction(method = HttpMethod.POST, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
 	@Override
 	KVDataEntry[] getDataEntries(@PathParam(name = "ledgerHash") HashDigest ledgerHash,
 										@PathParam(name = "address") String address,

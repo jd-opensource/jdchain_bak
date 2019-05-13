@@ -148,6 +148,11 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	}
 
 	@Override
+	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String[] keys, String[] versions) {
+		return getQueryService(ledgerHash).getDataEntries(ledgerHash, address, keys, versions);
+	}
+
+	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getDataEntries(ledgerHash, address, fromIndex, count);
 	}
