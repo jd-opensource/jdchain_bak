@@ -281,6 +281,12 @@
 				<artifactId>bcprov-jdk15on</artifactId>
 				<version>1.61</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>1.61</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.nats</groupId>

@@ -15,6 +15,12 @@
 			<artifactId>crypto-framework</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>1.61</version>
+		</dependency>
 
 	</dependencies>
 </project>

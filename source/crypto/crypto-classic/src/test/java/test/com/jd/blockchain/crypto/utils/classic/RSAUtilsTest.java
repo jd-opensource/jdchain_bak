@@ -1,16 +1,22 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.RSAUtils;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -27,7 +33,7 @@ import static org.junit.Assert.*;
 public class RSAUtilsTest {
 
     @Test
-    public void generateKeyPairTest(){
+    public void generateKeyPairTest() throws IOException {
         AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair();
         RSAKeyParameters pubKey = (RSAKeyParameters) kp.getPublic();
         RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) kp.getPrivate();
@@ -59,6 +65,17 @@ public class RSAUtilsTest {
         byte[] pubKeyBytesConverted_PKCS8 =
                 RSAUtils.pubKey2Bytes_PKCS8(RSAUtils.bytes2PubKey_PKCS8(pubKeyBytes_PKCS8));
         assertArrayEquals(pubKeyBytes_PKCS8,pubKeyBytesConverted_PKCS8);
+//
+////        String str = "1.2.840.113549.1.1";
+////        System.out.println(Hex.toHexString(str.getBytes()));
+//        byte[] bytes = null;
+//        AlgorithmIdentifier RSA_ALGORITHM_IDENTIFIER =
+//                new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
+////        byte[] result = KeyUtil.getEncodedSubjectPublicKeyInfo(RSA_ALGORITHM_IDENTIFIER, bytes);
+//        byte[] algo = RSA_ALGORITHM_IDENTIFIER.getEncoded();
+//        System.out.println(Hex.toHexString(algo));
+////        System.out.println(Hex.toHexString(result));
+//        System.out.println(Hex.toHexString(pubKeyBytes_PKCS8));
 
         byte[] privKeyBytes_PKCS8 = RSAUtils.privKey2Bytes_PKCS8(privKey);
         byte[] privKeyBytesConverted_PKCS8 =
