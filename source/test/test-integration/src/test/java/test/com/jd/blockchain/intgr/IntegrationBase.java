@@ -28,6 +28,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.springframework.core.io.ClassPathResource;
+import test.com.jd.blockchain.intgr.contract.AssetContract;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -470,21 +471,20 @@ public class IntegrationBase {
         txContentHash = ptx.getHash();
 
         // execute the contract;
-        testContractExe(adminKey, ledgerHash, userKey,  blockchainService, ledgerRepository);
+        testContractExe(adminKey, ledgerHash, userKey,  blockchainService, ledgerRepository, AssetContract.class);
 
         return block;
     }
 
-    private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
-                                 BlockchainService blockchainService,LedgerRepository ledgerRepository) {
+    private <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
+                                 BlockchainService blockchainService,LedgerRepository ledgerRepository,Class<T> contractIntf) {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
         LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
 
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-        txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
-                ("888##123##" + contractDataKey.getAddress()).getBytes());
+        txTpl.contract(contractDeployKey.getAddress(),AssetContract.class).issue(10,"abc");
 
         // 签名；
         PreparedTransaction ptx = txTpl.prepare();

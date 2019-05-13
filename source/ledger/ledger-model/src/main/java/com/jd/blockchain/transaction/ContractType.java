@@ -1,8 +1,12 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.contract.ContractEvent;
+import com.jd.blockchain.contract.ContractException;
+import com.jd.blockchain.utils.BaseConstant;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 
 public class ContractType {
 
@@ -48,8 +52,40 @@ public class ContractType {
 	private ContractType() {
 	}
 
-	// public static ContractType resolve(Class<?> contractIntf) {
-	//
-	// }
+	 public static ContractType resolve(Class<?> contractIntf) {
+		ContractType contractType = new ContractType();
+		//contractIntf contains @Contract and @ContractEvent;
+		 Method[] classMethods = contractIntf.getMethods();
+		 Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
+		 for (int i = 0; i < classMethods.length; i++) {
+			 Annotation[] a = classMethods[i].getDeclaredAnnotations();
+			 methodAnnoMap.put(classMethods[i], a);
+			 // if current method contains @ContractEvent，then put it in this map;
+			 for (Annotation annotation_ : a) {
+				 if (classMethods[i].isAnnotationPresent(ContractEvent.class)) {
+					 Object obj = classMethods[i].getAnnotation(ContractEvent.class);
+					 String annoAllName = obj.toString();
+					 // format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
+					 String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),
+							 annoAllName.length() - 1);
+					 //if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
+					 if(contractType.events.containsKey(eventName_)){
+						 throw new ContractException("too many same eventNames exists in the contract, check it.");
+					 }
+					 contractType.events.put(eventName_, classMethods[i]);
+					 contractType.handleMethods.put(classMethods[i],eventName_);
+				 }
+			 }
+		 }
+		 return contractType;
+	 }
 
+	@Override
+	public String toString() {
+		return "ContractType{" +
+				"name='" + name + '\'' +
+				", events=" + events +
+				", handleMethods=" + handleMethods +
+				'}';
+	}
 }

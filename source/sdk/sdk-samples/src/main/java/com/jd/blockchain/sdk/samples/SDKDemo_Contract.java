@@ -30,14 +30,14 @@ public class SDKDemo_Contract {
 	 */
 	public static void demoContract() {
 		// 账本地址；
-		String ledgerAddress = "ffkjhkeqwiuhivnsh3298josijdocaijsda==";
+		String ledgerAddress = "6GgNS3YgtxvZDBMvHEoqDiNZvWdiJ3MMpvRS9kL4DYwr4";
 		// 节点地址列表；
-		NetworkAddress[] peerAddrs = { new NetworkAddress("192.168.10.10", 8080),
-				new NetworkAddress("192.168.10.11", 8080), new NetworkAddress("192.168.10.12", 8080),
-				new NetworkAddress("192.168.10.13", 8080) };
+//		NetworkAddress[] peerAddrs = { new NetworkAddress("192.168.10.10", 8080),
+//				new NetworkAddress("192.168.10.11", 8080), new NetworkAddress("192.168.10.12", 8080),
+//				new NetworkAddress("192.168.10.13", 8080) };
 
 		// 创建服务代理；
-		final String GATEWAY_IP = "127.0.0.1";
+		final String GATEWAY_IP = "192.168.151.39";
 		final int GATEWAY_PORT = 80;
 		final boolean SECURE = false;
 		GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IP, GATEWAY_PORT, SECURE,

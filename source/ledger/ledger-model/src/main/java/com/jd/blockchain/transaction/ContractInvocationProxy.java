@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class ContractInvocationProxy implements InvocationHandler {
 
@@ -25,6 +26,10 @@ public class ContractInvocationProxy implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+		if(contractType == null){
+			return "contractType == null, no invoke really.";
+		}
+
 		String event = contractType.getEvent(method);
 		if (event == null) {
 			// 适配 Object 对象的方法；
@@ -43,7 +48,6 @@ public class ContractInvocationProxy implements InvocationHandler {
 
 	private byte[] serializeArgs(Object[] args) {
 		// TODO 根据方法参数的定义序列化参数；
-		return null;
+		return BinarySerializeUtils.serialize(args);
 	}
-
 }

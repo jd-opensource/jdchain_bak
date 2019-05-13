@@ -74,7 +74,7 @@ public class JavaContractCode implements ContractCode {
 				ReflectionUtils.invokeMethod(beforeMth_, contractMainClassObj, contractEventContext);
 				LOGGER.info("beforeEvent,耗时:" + (System.currentTimeMillis() - startTime));
 
-				Method eventMethod = this.getMethodByAnno(contractMainClassObj, contractEventContext.getEvent());
+//				Method eventMethod = this.getMethodByAnno(contractMainClassObj, contractEventContext.getEvent());
 				startTime = System.currentTimeMillis();
 
 				// 反序列化参数；
@@ -97,40 +97,40 @@ public class JavaContractCode implements ContractCode {
 		}
 
 		// 得到当前类中相关方法和注解对应关系;
-		Method getMethodByAnno(Object classObj, String eventName) {
-			Class<?> c = classObj.getClass();
-			Class<ContractEvent> contractEventClass = null;
-			try {
-				contractEventClass = (Class<ContractEvent>) c.getClassLoader().loadClass(ContractEvent.class.getName());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			Method[] classMethods = c.getMethods();
-			Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
-			Map<String, Method> annoMethodMap = new HashMap<String, Method>();
-			for (int i = 0; i < classMethods.length; i++) {
-				Annotation[] a = classMethods[i].getDeclaredAnnotations();
-				methodAnnoMap.put(classMethods[i], a);
-				// 如果当前方法中包含@ContractEvent注解，则将其放入Map;
-				for (Annotation annotation_ : a) {
-					// 如果是合同事件类型，则放入map;
-					if (classMethods[i].isAnnotationPresent(contractEventClass)) {
-						Object obj = classMethods[i].getAnnotation(contractEventClass);
-						String annoAllName = obj.toString();
-						// format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
-						String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),
-								annoAllName.length() - 1);
-						annoMethodMap.put(eventName_, classMethods[i]);
-						break;
-					}
-				}
-			}
-			if (annoMethodMap.containsKey(eventName)) {
-				return annoMethodMap.get(eventName);
-			} else {
-				return null;
-			}
-		}
+//		Method getMethodByAnno(Object classObj, String eventName) {
+//			Class<?> c = classObj.getClass();
+//			Class<ContractEvent> contractEventClass = null;
+//			try {
+//				contractEventClass = (Class<ContractEvent>) c.getClassLoader().loadClass(ContractEvent.class.getName());
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			}
+//			Method[] classMethods = c.getMethods();
+//			Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
+//			Map<String, Method> annoMethodMap = new HashMap<String, Method>();
+//			for (int i = 0; i < classMethods.length; i++) {
+//				Annotation[] a = classMethods[i].getDeclaredAnnotations();
+//				methodAnnoMap.put(classMethods[i], a);
+//				// 如果当前方法中包含@ContractEvent注解，则将其放入Map;
+//				for (Annotation annotation_ : a) {
+//					// 如果是合同事件类型，则放入map;
+//					if (classMethods[i].isAnnotationPresent(contractEventClass)) {
+//						Object obj = classMethods[i].getAnnotation(contractEventClass);
+//						String annoAllName = obj.toString();
+//						// format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
+//						String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),
+//								annoAllName.length() - 1);
+//						annoMethodMap.put(eventName_, classMethods[i]);
+//						break;
+//					}
+//				}
+//			}
+//			if (annoMethodMap.containsKey(eventName)) {
+//				return annoMethodMap.get(eventName);
+//			} else {
+//				return null;
+//			}
+//		}
 	}
 
 }

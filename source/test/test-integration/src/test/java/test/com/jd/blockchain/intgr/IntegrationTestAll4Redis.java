@@ -48,6 +48,7 @@ import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
+import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 
 public class IntegrationTestAll4Redis {
@@ -450,10 +451,7 @@ public class IntegrationTestAll4Redis {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
-				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
-						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
-						+ "##" + pubKeyVal).getBytes());
+		txTpl.contract(contractDeployKey.getAddress(), AssetContract.class).issue(10,"abc");
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();

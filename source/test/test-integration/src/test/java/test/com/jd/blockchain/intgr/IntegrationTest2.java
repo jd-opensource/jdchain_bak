@@ -41,6 +41,7 @@ import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
+import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest.NodeWebContext;
 
@@ -50,7 +51,7 @@ import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsT
 public class IntegrationTest2 {
 	// 合约测试使用的初始化数据;
 	BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-	private String contractZipName = "AssetContract3.contract";
+	private String contractZipName = "contract.jar";
 	private String eventName = "issue-asset";
 
 	@Test
@@ -315,8 +316,7 @@ public class IntegrationTest2 {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
-				("888##999##abc").getBytes());
+		txTpl.contract(contractDeployKey.getAddress(), AssetContract.class).issue(10,"abc");
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
