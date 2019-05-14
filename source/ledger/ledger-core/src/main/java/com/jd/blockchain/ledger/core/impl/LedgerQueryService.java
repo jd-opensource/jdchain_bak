@@ -18,6 +18,9 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
 import com.jd.blockchain.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LedgerQueryService implements BlockchainQueryService {
 	
     private LedgerService ledgerService;
@@ -280,7 +283,21 @@ public class LedgerQueryService implements BlockchainQueryService {
 		return entries;
 	}
 
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String[] keys, String[] versions) {
+	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
+		//parse kvInfoVO;
+		List<String> keyList = new ArrayList<>();
+		List<Long> versionList = new ArrayList<>();
+		if(kvInfoVO != null){
+			for(KVDataVO kvDataVO : kvInfoVO.getData()){
+				for(Long version : kvDataVO.getVersion()){
+					keyList.add(kvDataVO.getKey());
+					versionList.add(version);
+				}
+			}
+		}
+		String[] keys = keyList.toArray(new String[keyList.size()]);
+		Long[] versions = versionList.toArray(new Long[versionList.size()]);
+
 		if (keys == null || keys.length == 0) {
 			return null;
 		}
@@ -301,9 +318,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 //			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 //			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
-            if(StringUtils.isNumber(versions[i])){
-                ver = Long.parseLong(versions[i]);
-            }
+			ver = versions[i];
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {

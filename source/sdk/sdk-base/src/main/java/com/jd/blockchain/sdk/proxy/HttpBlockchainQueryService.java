@@ -500,8 +500,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	@Override
 	KVDataEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
 								 @PathParam(name="address") String address,
-								 @RequestParam(name="keys", array = true) String[] keys,
-								 @RequestParam(name="versions", array = true) String[] versions);
+								 @RequestBody KVInfoVO kvInfoVO);
 
 	/**
 	 * 返回数据账户中指定序号的最新值；

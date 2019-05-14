@@ -4,11 +4,7 @@ import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
@@ -25,6 +21,9 @@ import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/")
@@ -356,8 +355,21 @@ public class LedgerQueryController implements BlockchainQueryService {
 	@Override
 	public KVDataEntry[] getDataEntries(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 										@PathVariable(name = "address") String address,
-										@RequestParam("keys") String[] keys,
-										@RequestParam("versions") String[] versions) {
+										@RequestBody KVInfoVO kvInfoVO) {
+        //parse kvInfoVO;
+        List<String> keyList = new ArrayList<>();
+        List<Long> versionList = new ArrayList<>();
+        if(kvInfoVO != null){
+            for(KVDataVO kvDataVO : kvInfoVO.getData()){
+                for(Long version : kvDataVO.getVersion()){
+                    keyList.add(kvDataVO.getKey());
+                    versionList.add(version);
+                }
+            }
+        }
+        String[] keys = keyList.toArray(new String[keyList.size()]);
+        Long[] versions = versionList.toArray(new Long[versionList.size()]);
+
 		if (keys == null || keys.length == 0) {
 				return null;
 		}
@@ -377,9 +389,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 		long ver = -1;
 		for (int i = 0; i < entries.length; i++) {
 //			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
-            if(StringUtils.isNumber(versions[i])){
-                ver = Long.parseLong(versions[i]);
-            }
+            ver = versions[i];
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
