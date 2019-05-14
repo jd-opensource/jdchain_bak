@@ -1,21 +1,16 @@
 package com.jd.blockchain.contract.jvm;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
-
-import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
-import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.SerializationUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * contract code based jvm
@@ -29,7 +24,7 @@ public class JavaContractCode implements ContractCode {
 	private long version;
 	private ContractEventContext contractEventContext;
 
-	private ContractType contractType;
+	private ContractType contractType ;
 
 	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
@@ -53,9 +48,8 @@ public class JavaContractCode implements ContractCode {
 		codeModule.execute(new ContractExecution());
 	}
 
-	private Object[] resolveArgs(byte[] args) {
-		// TODO Auto-generated method stub
-		return null;
+	private Object resolveArgs(byte[] args) {
+		return SerializationUtils.deserialize(args);
 	}
 
 	class ContractExecution implements Runnable {
@@ -78,8 +72,8 @@ public class JavaContractCode implements ContractCode {
 				startTime = System.currentTimeMillis();
 
 				// 反序列化参数；
-				Method handleMethod = contractType.getHandleMethod(contractEventContext.getEvent());
-				Object[] args = resolveArgs(contractEventContext.getArgs());
+				Method handleMethod = ContractType.resolve(myClass).getHandleMethod(contractEventContext.getEvent());
+				Object args = resolveArgs(contractEventContext.getArgs());
 
 				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, args);
 

@@ -25,20 +25,24 @@ public class SDKDemo_Contract {
 
 	public static BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate("ED25519");
 
+	public static void main(String[] args) {
+		demoContract();
+	}
+
 	/**
 	 * 演示合约执行的过程；
 	 */
 	public static void demoContract() {
 		// 账本地址；
-		String ledgerAddress = "6GgNS3YgtxvZDBMvHEoqDiNZvWdiJ3MMpvRS9kL4DYwr4";
+		String ledgerAddress = "j5rpuGWVxSuUbU3gK7MDREfui797AjfdHzvAMiSaSzydu7";
 		// 节点地址列表；
 //		NetworkAddress[] peerAddrs = { new NetworkAddress("192.168.10.10", 8080),
 //				new NetworkAddress("192.168.10.11", 8080), new NetworkAddress("192.168.10.12", 8080),
 //				new NetworkAddress("192.168.10.13", 8080) };
 
 		// 创建服务代理；
-		final String GATEWAY_IP = "192.168.151.39";
-		final int GATEWAY_PORT = 80;
+		final String GATEWAY_IP = "localhost";
+		final int GATEWAY_PORT = 11000;
 		final boolean SECURE = false;
 		GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IP, GATEWAY_PORT, SECURE,
 				CLIENT_CERT);
@@ -52,13 +56,13 @@ public class SDKDemo_Contract {
 		// 一个贸易账户，贸易结算后的利润将通过一个合约账户来执行利润分配；
 		// 合约账户被设置为通用的账户，不具备对贸易结算账户的直接权限；
 		// 只有当前交易发起人具备对贸易账户的直接权限，当交易发起人对交易进行签名之后，权限被间接传递给合约账户；
-		String commerceAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
+		String commerceAccount = "LdeP13gKE6319LvYPyWAT4UXr2brvpitPRBN1";
 		// 处理利润分成的通用业务逻辑的合约账户；
-		String profitDistributionContract = "AAdfe4346fHhefe34fwf343kaeER4678RT==";
+		String profitDistributionContract = "LdeP13gKE6319LvYPyWAT4UXr2brvpitPRBN1";
 
 		// 收益人账户；
-		String receiptorAccount1 = "MMMEy902jkjjJJDkshreGeasdfassdfajjf==";
-		String receiptorAccount2 = "Kjfe8832hfa9jjjJJDkshrFjksjdlkfj93F==";
+		String receiptorAccount1 = "LdeP13gKE6319LvYPyWAT4UXr2brvpitPRBN1";
+		String receiptorAccount2 = "LdeP13gKE6319LvYPyWAT4UXr2brvpitPRBN1";
 		// 资产编码；
 		String assetKey = "RMB-ASSET";
 		// 此次待分配利润；

@@ -12,9 +12,9 @@ public class ContractType {
 
 	private String name;
 
-	private SortedMap<String, Method> events;
+	private SortedMap<String, Method> events = Collections.synchronizedSortedMap(new TreeMap<>());
 
-	private SortedMap<Method, String> handleMethods;
+	private Map<Method, String> handleMethods = new HashMap<>();;
 
 	/**
 	 * 返回声明的所有事件；
