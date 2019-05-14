@@ -83,7 +83,7 @@ public class  RSAUtils {
      * @return key pair
      */
     public static AsymmetricCipherKeyPair generateKeyPair_shortExp(){
-        return generateKeyPair(new SecureRandom());
+        return generateKeyPair_shortExp(new SecureRandom());
     }
 
     public static AsymmetricCipherKeyPair generateKeyPair_shortExp(SecureRandom random){
