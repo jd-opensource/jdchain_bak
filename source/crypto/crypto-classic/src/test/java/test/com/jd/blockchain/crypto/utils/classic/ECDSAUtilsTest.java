@@ -2,16 +2,20 @@ package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.ECDSAUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.math.ec.ECMultiplier;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.util.test.FixedSecureRandom;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -110,6 +114,80 @@ public class ECDSAUtilsTest {
         assertEquals("04" + xCoord + yCoord,Hex.toHexString(result).toUpperCase());
     }
 
+    @Test
+    public void checkDeterministicValues(){
+        // https://crypto.stackexchange.com/questions/41316/complete-set-of-test-vectors-for-ecdsa-secp256k1
+        ECDomainParameters domainParams = ECDSAUtils.getDomainParams();
+        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(
+                new BigInteger("ebb2c082fd7727890a28ac82f6bdf97bad8de9f5d7c9028692de1a255cad3e0f", 16),
+                domainParams);
+        ECPublicKeyParameters pubKey = new ECPublicKeyParameters(
+                domainParams.getCurve().decodePoint(Hex.decode("04" +
+                        "779dd197a5df977ed2cf6cb31d82d43328b790dc6b3b7d4437a427bd5847dfcd" +
+                        "e94b724a555b6d017bb7607c3e3281daf5b1699d6ef4124975c9237b917d426f")),
+                domainParams);
+
+        byte[] privKeyBytes = BigIntegerTo32Bytes(privKey.getD());
+        byte[] pubKeyBytes = ECDSAUtils.retrievePublicKey(privKeyBytes);
+
+        assertArrayEquals(pubKeyBytes,pubKey.getQ().getEncoded(false));
+
+        SecureRandom k = new FixedSecureRandom(Hex.decode("49a0d7b786ec9cde0d0721d72804befd06571c974b191efb42ecf322ba9ddd9a"));
+        CipherParameters params = new ParametersWithRandom(privKey,k);
+
+        byte[] hashedMsg = Hex.decode("4b688df40bcedbe641ddb16ff0a1842d9c67ea1c3bf63f3e0471baa664531d1a");
+
+        byte[] signature = ECDSAUtils.sign(params,hashedMsg);
+
+        String r = "241097efbf8b63bf145c8961dbdf10c310efbb3b2676bbc0f8b08505c9e2f795";
+        String s = "021006b7838609339e8b415a7f9acb1b661828131aef1ecbc7955dfb01f3ca0e";
+        assertEquals(Hex.toHexString(signature),r + s);
+
+        assertTrue(ECDSAUtils.verify(pubKey,signature,hashedMsg));
+    }
+
+    @Test
+    public void performanceTest(){
+
+        int count = 10000;
+        byte[] data = new byte[1024];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        AsymmetricCipherKeyPair keyPair = ECDSAUtils.generateKeyPair();
+        ECPrivateKeyParameters privKeyParams = (ECPrivateKeyParameters) keyPair.getPrivate();
+        ECPublicKeyParameters pubKeyParams = (ECPublicKeyParameters) keyPair.getPublic();
+
+        byte[] signatureDigest = ECDSAUtils.sign(data,privKeyParams);
+
+        assertTrue(ECDSAUtils.verify(data,pubKeyParams,signatureDigest));
+
+        System.out.println("=================== do ECDSA sign test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ECDSAUtils.sign(data,privKeyParams);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ECDSA Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do ECDSA verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ECDSAUtils.verify(data,pubKeyParams,signatureDigest);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("ECDSA Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+    }
+
     // To convert BigInteger to byte[] whose length is 32
     private static byte[] BigIntegerTo32Bytes(BigInteger b){
         byte[] tmp = b.toByteArray();
@@ -122,6 +200,4 @@ public class ECDSAUtilsTest {
         }
         return result;
     }
-
-
 }

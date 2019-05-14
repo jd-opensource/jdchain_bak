@@ -1,6 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.LedgerSetting;
 import com.jd.blockchain.utils.Bytes;
 
 public class LedgerConfiguration implements LedgerSetting {

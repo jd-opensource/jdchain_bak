@@ -484,5 +484,4 @@ public class SM2CyptoFunctionTest {
 		assertNotNull(actualEx);
 		assertTrue(expectedException.isAssignableFrom(actualEx.getClass()));
 	}
-
 }

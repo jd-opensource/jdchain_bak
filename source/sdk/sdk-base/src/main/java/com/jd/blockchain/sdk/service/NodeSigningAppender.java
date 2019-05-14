@@ -72,7 +72,7 @@ public class NodeSigningAppender implements TransactionService {
 
 		// 计算交易哈希；
 		byte[] nodeRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);
-		HashFunction hashFunc = Crypto.getHashFunction(signAlgorithm);
+		HashFunction hashFunc = Crypto.getHashFunction(this.hashAlgorithm);
 		HashDigest txHash = hashFunc.hash(nodeRequestBytes);
 		txMessage.setHash(txHash);
 

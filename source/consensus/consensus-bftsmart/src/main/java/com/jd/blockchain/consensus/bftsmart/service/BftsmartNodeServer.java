@@ -1,16 +1,13 @@
 package com.jd.blockchain.consensus.bftsmart.service;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import bftsmart.tom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.jd.blockchain.consensus.ConsensusManageService;
 import com.jd.blockchain.consensus.NodeSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
@@ -26,13 +23,8 @@ import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import com.jd.blockchain.utils.io.BytesUtils;
-
 import bftsmart.reconfiguration.util.HostsConfig;
 import bftsmart.reconfiguration.util.TOMConfiguration;
-import bftsmart.tom.MessageContext;
-import bftsmart.tom.ReplyContext;
-import bftsmart.tom.ReplyContextMessage;
-import bftsmart.tom.ServiceReplica;
 import bftsmart.tom.core.messages.TOMMessage;
 import bftsmart.tom.server.defaultservices.DefaultRecoverable;
 
@@ -42,14 +34,8 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private List<StateHandle> stateHandles = new CopyOnWriteArrayList<>();
 
-//    private List<BatchConsensusListener> batchConsensusListeners = new LinkedList<>();
-
-//    private Map<ReplyContextMessage, AsyncFuture<byte[]>> replyContextMessages = new ConcurrentHashMap<>();
-
     // TODO 暂不处理队列溢出问题
     private ExecutorService notifyReplyExecutors = Executors.newSingleThreadExecutor();
-
-//    private ExecutorService sendCommitExecutors = Executors.newFixedThreadPool(2);
 
     private volatile Status status = Status.STOPPED;
 
@@ -81,28 +67,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private int serverId;
 
-//    private volatile String  batchId = null;
-//
-////    private List<AsyncFuture<byte[]>> replyMessages ;
-//
-//    private boolean leader_has_makedicision = false;
-//
-//    private boolean commit_block_condition = false;
-//
-//    private final AtomicLong txIndex = new AtomicLong();
-//
-//    private final AtomicLong blockIndex = new AtomicLong();
-//
-//    private static final AtomicInteger incrementNum = new AtomicInteger();
-//
-////    private final BlockingQueue<ActionRequest> txRequestQueue = new LinkedBlockingQueue();
-//
-//    private final ExecutorService queueExecutor = Executors.newSingleThreadExecutor();
-//
-//    private final ScheduledExecutorService timerEexecutorService = new ScheduledThreadPoolExecutor(10);
-//    private ServiceProxy peerProxy;
-
-
     public BftsmartNodeServer() {
 
     }
@@ -113,27 +77,11 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         //used later
         this.stateMachineReplicate = stateMachineReplicate;
         this.messageHandle = messageHandler;
-        this.manageService = new BftsmartConsensusManageService(this);
         createConfig();
         serverId = findServerId();
         initConfig(serverId, systemConfig, hostsConfig);
+        this.manageService = new BftsmartConsensusManageService(this);
     }
-
-    //aim to send commit block message
-//    protected void createProxyClient() {
-//        BftsmartTopology topologyCopy = (BftsmartTopology) topology.copyOf();
-//
-//        MemoryBasedViewStorage viewStorage = new MemoryBasedViewStorage(topologyCopy.getView());
-//
-//        byte[]  bytes = BinarySerializeUtils.serialize(tomConfig);
-//
-//        TOMConfiguration decodeTomConfig = BinarySerializeUtils.deserialize(bytes);
-//
-//        decodeTomConfig.setProcessId(0);
-//
-//        peerProxy = new ServiceProxy(decodeTomConfig, viewStorage, null, null);
-//
-//    }
 
     protected int findServerId() {
         int serverId = 0;
@@ -242,214 +190,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return appExecuteBatch(commands, msgCtxs, fromConsensus, null);
     }
 
-//    private boolean checkLeaderId(MessageContext[] msgCtxs) {
-//        boolean result = false;
-//
-//        for (int i = 0; i < msgCtxs.length - 1; i++) {
-//            if (msgCtxs[i].getLeader() != msgCtxs[i+1].getLeader())
-//                return result;
-//        }
-//
-//        result = true;
-//
-//        return result;
-//    }
-//
-//    //普通消息处理
-//    private void normalMsgProcess(ReplyContextMessage replyContextMsg, byte[] msg, String realmName, String batchId) {
-//        AsyncFuture<byte[]> replyMsg = messageHandle.processOrdered(replyContextMsg.getMessageContext().getOperationId(), msg, realmName, batchId);
-//        replyContextMessages.put(replyContextMsg, replyMsg);
-//    }
-//
-//    //结块消息处理
-//    private void commitMsgProcess(ReplyContextMessage replyContextMsg, String realmName, String batchId) {
-//        try{
-//            //receive messages before commitblock message, then execute commit
-//            if (replyContextMessages.size() != 0) {
-//                messageHandle.completeBatch(realmName, batchId);
-//                messageHandle.commitBatch(realmName, batchId);
-//            }
-//
-//            // commit block msg need response too
-//            CompletableAsyncFuture<byte[]> asyncFuture = new CompletableAsyncFuture<>();
-//            TransactionResponse transactionRespHandle = new TransactionRespHandle(newBlockCommitRequest(),
-//                    TransactionState.SUCCESS, TransactionState.SUCCESS);
-//
-//            asyncFuture.complete(BinaryEncodingUtils.encode(transactionRespHandle, TransactionResponse.class));
-//            replyContextMessages.put(replyContextMsg, asyncFuture);
-//        }catch (Exception e){
-//            LOGGER.error("Error occurred on commit batch transactions, so the new block is canceled! --" + e.getMessage(), e);
-//            messageHandle.rollbackBatch(realmName, batchId, -1);
-//        }finally{
-//            this.batchId = null;
-//        }
-//    }
-
-//    private void sendCommitMessage() {
-//
-//        HashDigest ledgerHash = new HashDigest(Base58Utils.decode(realmName));
-//
-//        BlockchainKeyPair userKeyPeer = BlockchainKeyGenerator.getInstance().generate();
-//
-//        TxContentBlob txContentBlob = new TxContentBlob(ledgerHash);
-//
-//        byte[] reqBytes = BinaryEncodingUtils.encode(txContentBlob, TransactionContent.class);
-//
-//        HashDigest reqHash = CryptoUtils.hash(CryptoAlgorithm.SHA256).hash(reqBytes);
-//
-//        txContentBlob.setHash(reqHash);
-//
-//        TxRequestMessage transactionRequest = new TxRequestMessage(txContentBlob);
-//
-//        byte[] msg = BinaryEncodingUtils.encode(transactionRequest, TransactionRequest.class);
-//
-//        byte[] type = BytesUtils.toBytes(1);
-//
-//        byte[] wrapMsg = new byte[msg.length + 4];
-//
-//        System.arraycopy(type, 0, wrapMsg, 0, 4);
-//        System.arraycopy(msg, 0, wrapMsg, 4, msg.length);
-//
-//        peerProxy.invokeOrdered(wrapMsg);
-//
-//        LOGGER.info("Send commit block msg success!");
-//    }
-
-//    private TransactionRequest newBlockCommitRequest() {
-//
-//        HashDigest ledgerHash = new HashDigest(Base58Utils.decode(realmName));
-//
-//        TxContentBlob txContentBlob = new TxContentBlob(ledgerHash);
-//
-//        byte[] reqBytes = BinaryEncodingUtils.encode(txContentBlob, TransactionContent.class);
-//
-//        HashDigest reqHash = CryptoUtils.hash(CryptoAlgorithm.SHA256).hash(reqBytes);
-//
-//        txContentBlob.setHash(reqHash);
-//
-//        TxRequestMessage transactionRequest = new TxRequestMessage(txContentBlob);
-//
-//        return transactionRequest;
-//    }
-
-//    private void checkConsensusFinish() {
-//        BftsmartCommitBlockSettings commitBlockSettings = ((BftsmartServerSettings)serverSettings).getConsensusSettings().getCommitBlockSettings();
-//        int txSize = commitBlockSettings.getTxSizePerBlock();
-//        long maxDelay = commitBlockSettings.getMaxDelayMilliSecondsPerBlock();
-//
-//        long currIndex = txIndex.incrementAndGet();
-//        if (currIndex == txSize) {
-//            txIndex.set(0);
-//            this.blockIndex.getAndIncrement();
-//            sendCommitExecutors.execute(()-> {
-//                sendCommitMessage();
-//            });
-//        } else if (currIndex == 1) {
-////            System.out.printf("checkConsensusFinish schedule blockIndex = %s \r\n", this.blockIndex.get());
-//            timerEexecutorService.schedule(timeTask(this.blockIndex.get()), maxDelay, TimeUnit.MILLISECONDS);
-//        }
-//
-//        return;
-//    }
-
-//    @Override
-//    public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus, List<ReplyContextMessage> replyList) {
-//
-//        if (!checkLeaderId(msgCtxs)) {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        boolean isLeader = (msgCtxs[0].getLeader() == getId());
-//
-//        if (isLeader) {
-//            for (int i = 0; i < commands.length; i++) {
-//                byte[] wrapMsg = commands[i];
-//                byte[] type = new byte[4];
-//                byte[] msg= new byte[wrapMsg.length - 4];
-//
-//                System.arraycopy(wrapMsg, 0, type, 0, 4);
-//                System.arraycopy(wrapMsg, 4, msg, 0, wrapMsg.length - 4);
-//
-//                MessageContext messageContext = msgCtxs[i];
-//                ReplyContextMessage replyContextMessage = replyList.get(i);
-//                replyContextMessage.setMessageContext(messageContext);
-//
-//                if (batchId == null) {
-//                    batchId = messageHandle.beginBatch(realmName);
-//                }
-//
-//                int msgType = BytesUtils.readInt(new ByteArrayInputStream(type));
-//
-//                if (msgType == 0) {
-//
-//                    //only leader do it
-//                    checkConsensusFinish();
-//                    //normal message process
-//                    normalMsgProcess(replyContextMessage, msg, realmName, batchId);
-//                }
-//                if (!leader_has_makedicision) {
-//                    if (msgType == 1) {
-//                        LOGGER.error("Error occurred on appExecuteBatch msg process, leader confilicting error!");
-//                    }
-//
-//                    if (commit_block_condition) {
-//                        leader_has_makedicision = true;
-//
-////                        sendCommitExecutors.execute(() -> {
-//                            commit_block_condition = false;
-//                            LOGGER.info("Txcount execute commit block!");
-//                            sendCommitMessage();
-////                        });
-//
-//                    }
-//                } else if (msgType == 1) {
-//                    //commit block message
-//                    commitMsgProcess(replyContextMessage, realmName, batchId);
-//                    leader_has_makedicision = false;
-//                    sendReplyMessage();
-//                }
-//            }
-//        } else {
-//            for (int i = 0; i < commands.length; i++) {
-//                byte[] wrapMsg = commands[i];
-//                byte[] type = new byte[4];
-//                byte[] msg= new byte[wrapMsg.length - 4];
-//
-//                System.arraycopy(wrapMsg, 0, type, 0, 4);
-//                System.arraycopy(wrapMsg, 4, msg, 0, wrapMsg.length - 4);
-//
-//                MessageContext messageContext = msgCtxs[i];
-//                ReplyContextMessage replyContextMessage = replyList.get(i);
-//                replyContextMessage.setMessageContext(messageContext);
-//
-//                if (batchId == null) {
-//                    batchId = messageHandle.beginBatch(realmName);
-//                }
-//
-//                int msgType = BytesUtils.readInt(new ByteArrayInputStream(type));
-//
-//                if (msgType == 0) {
-//                    //normal message
-//                    normalMsgProcess(replyContextMessage, msg, realmName, batchId);
-//                } else if (msgType == 1) {
-//                    // commit block message
-//                    commitMsgProcess(replyContextMessage, realmName, batchId);
-//                    sendReplyMessage();
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
-
     @Override
     public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus, List<ReplyContextMessage> replyList) {
 
         if (replyList == null || replyList.size() == 0) {
             throw new IllegalArgumentException();
         }
-
-
         // todo 此部分需要重新改造
         /**
          * 默认BFTSmart接口提供的commands是一个或多个共识结果的顺序集合
@@ -481,52 +227,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         if (!manageConsensusCmds.isEmpty()) {
             blockAndReply(manageConsensusCmds, manageReplyMsgs);
         }
-
-
-////        if (!checkLeaderId(msgCtxs)) {
-////            throw new IllegalArgumentException();
-////        }
-//
-//        if (replyList == null || replyList.size() == 0) {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        for (int i = 0; i < commands.length; i++) {
-//            byte[] wrapMsg = commands[i];
-//            byte[] type = new byte[4];
-//            byte[] msg= new byte[wrapMsg.length - 4];
-//            // batch messages, maybe in different consensus instance, leader also maybe different
-//            boolean isLeader = (msgCtxs[i].getLeader() == getId());
-//
-//            System.arraycopy(wrapMsg, 0, type, 0, 4);
-//            System.arraycopy(wrapMsg, 4, msg, 0, wrapMsg.length - 4);
-//
-//            MessageContext messageContext = msgCtxs[i];
-//            ReplyContextMessage replyContextMessage = replyList.get(i);
-//            replyContextMessage.setMessageContext(messageContext);
-//
-//            if (batchId == null) {
-//                batchId = messageHandle.beginBatch(realmName);
-//            }
-//
-//            int msgType = BytesUtils.readInt(new ByteArrayInputStream(type));
-//
-//            if (msgType == 0) {
-//
-//                //only leader do it
-//                if (isLeader) {
-//                    checkConsensusFinish();
-//                }
-//                //normal message process
-//                normalMsgProcess(replyContextMessage, msg, realmName, batchId);
-//            }
-//            else if (msgType == 1) {
-//                //commit block message
-//                commitMsgProcess(replyContextMessage, realmName, batchId);
-//                sendReplyMessage();
-//            }
-//        }
-
         return null;
     }
 
@@ -574,46 +274,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         });
     }
 
-//    private void sendReplyMessage() {
-//        for (ReplyContextMessage  msg: replyContextMessages.keySet()) {
-//            byte[] reply = replyContextMessages.get(msg).get();
-//            msg.setReply(reply);
-//            TOMMessage request = msg.getTomMessage();
-//            ReplyContext replyContext = msg.getReplyContext();
-//            request.reply = new TOMMessage(replyContext.getId(), request.getSession(), request.getSequence(),
-//                    request.getOperationId(), msg.getReply(), replyContext.getCurrentViewId(),
-//                    request.getReqType());
-//
-//            if (replyContext.getNumRepliers() > 0) {
-//                bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
-//                        + request.getSender() + " with sequence number " + request.getSequence()
-//                        + " and operation ID " + request.getOperationId() + " via ReplyManager");
-//                replyContext.getRepMan().send(request);
-//            } else {
-//                bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
-//                        + request.getSender() + " with sequence number " + request.getSequence()
-//                        + " and operation ID " + request.getOperationId());
-//                replyContext.getReplier().manageReply(request, msg.getMessageContext());
-//                // cs.send(new int[]{request.getSender()}, request.reply);
-//            }
-//        }
-//        replyContextMessages.clear();
-//    }
-
-//    private Runnable timeTask(final long currBlockIndex) {
-//        Runnable task = () -> {
-//            boolean isAdd = this.blockIndex.compareAndSet(currBlockIndex, currBlockIndex + 1);
-//            if (isAdd) {
-//                LOGGER.info("TimerTask execute commit block! ");
-//                this.txIndex.set(0);
-//                timerEexecutorService.execute(()-> {
-//                    sendCommitMessage();
-//                });
-//            }
-//        };
-//        return task;
-//    }
-
     //notice
     public byte[] getSnapshot() {
         LOGGER.debug("------- GetSnapshot...[replica.id=" + this.getId() + "]");
@@ -623,9 +283,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         for (StateHandle stateHandle : stateHandles) {
             // TODO: 测试代码；
             return stateHandle.takeSnapshot();
-
-            // byte[] state = stateHandle.takeSnapshot();
-            // BytesEncoding.writeInNormal(state, out);
         }
         return out.toByteArray();
     }
@@ -692,33 +349,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             }
         }
     }
-
-//    private static class ActionRequestExtend {
-//
-//
-//        ReplyContextMessage replyContextMessage;
-//
-//        private byte[] message;
-//
-//        private ActionRequest actionRequest;
-//
-//        public ActionRequestExtend(byte[] message) {
-//            this.message = message;
-//            actionRequest = BinaryEncodingUtils.decode(message);
-//        }
-//
-//        public byte[] getMessage() {
-//            return message;
-//        }
-//
-//        public ReplyContextMessage getReplyContextMessage() {
-//            return replyContextMessage;
-//        }
-//
-//        public ActionRequest getActionRequest() {
-//            return actionRequest;
-//        }
-//    }
 
     enum Status {
 

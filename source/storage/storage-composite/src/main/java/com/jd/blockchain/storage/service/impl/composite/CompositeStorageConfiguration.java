@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan
 public class CompositeStorageConfiguration {
+
     @ConditionalOnMissingBean
     @Bean
     public DbConnectionFactory compositeConnectionFactory() {

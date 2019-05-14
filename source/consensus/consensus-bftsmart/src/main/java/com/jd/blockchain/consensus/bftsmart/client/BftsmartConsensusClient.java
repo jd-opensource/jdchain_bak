@@ -20,8 +20,6 @@ public class BftsmartConsensusClient implements ConsensusClient {
 
         this.clientSettings = clientSettings;
         this.gatewayId = clientSettings.getClientId();
-
-        connect();
     }
 
 
@@ -45,7 +43,7 @@ public class BftsmartConsensusClient implements ConsensusClient {
     }
 
     @Override
-    public void connect() {
+    public synchronized void connect() {
 
         //consensus client pool
         BftsmartPeerProxyFactory peerProxyFactory = new BftsmartPeerProxyFactory((BftsmartClientSettings)clientSettings, gatewayId);

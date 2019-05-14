@@ -72,7 +72,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 			throw new CryptoException("This key is not SM2 private key!");
 		}
 
-		// 验证密文数据的算法标识对应SM2签名算法，并且原始摘要长度为64字节
+		// 验证密文数据的算法标识对应SM2算法，并且密文符合长度要求
 		if (ciphertext.getAlgorithm() != SM2.code()
 				|| rawCiphertextBytes.length < ECPOINT_SIZE + HASHDIGEST_SIZE) {
 			throw new CryptoException("This is not SM2 ciphertext!");
@@ -89,14 +89,6 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		return new PubKey(SM2, rawPubKeyBytes);
 	}
 
-//	@Override
-//	public byte[] retrievePubKey(byte[] privKeyBytes) {
-//
-//		byte[] rawPrivKeyBytes = resolvePrivKey(privKeyBytes).getRawKeyBytes();
-//		byte[] rawPubKeyBytes = SM2Utils.retrievePublicKey(rawPrivKeyBytes);
-//		return new PubKey(SM2, rawPubKeyBytes).toBytes();
-//	}
-
 	@Override
 	public boolean supportPrivKey(byte[] privKeyBytes) {
 		// 验证输入字节数组长度=算法标识长度+密钥类型长度+密钥长度，密钥数据的算法标识对应SM2算法，并且密钥类型是私钥
@@ -109,7 +101,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		if (supportPrivKey(privKeyBytes)) {
 			return new PrivKey(privKeyBytes);
 		} else {
-			throw new CryptoException("privKeyBytes is invalid!");
+			throw new CryptoException("privKeyBytes are invalid!");
 		}
 	}
 
@@ -125,7 +117,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		if (supportPubKey(pubKeyBytes)) {
 			return new PubKey(pubKeyBytes);
 		} else {
-			throw new CryptoException("pubKeyBytes is invalid!");
+			throw new CryptoException("pubKeyBytes are invalid!");
 		}
 	}
 
@@ -141,7 +133,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		if (supportCiphertext(ciphertextBytes)) {
 			return new AsymmetricCiphertext(ciphertextBytes);
 		} else {
-			throw new CryptoException("ciphertextBytes is invalid!");
+			throw new CryptoException("ciphertextBytes are invalid!");
 		}
 	}
 
@@ -200,7 +192,7 @@ public class SM2CryptoFunction implements AsymmetricEncryptionFunction, Signatur
 		if (supportDigest(digestBytes)) {
 			return new SignatureDigest(digestBytes);
 		} else {
-			throw new CryptoException("digestBytes is invalid!");
+			throw new CryptoException("digestBytes are invalid!");
 		}
 	}
 

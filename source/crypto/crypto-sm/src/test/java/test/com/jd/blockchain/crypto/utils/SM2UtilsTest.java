@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import com.jd.blockchain.crypto.utils.sm.SM2Utils;
 
+import java.util.Random;
+
 public class SM2UtilsTest {
 
     @Test
@@ -160,74 +162,44 @@ public class SM2UtilsTest {
 //    }
 //
 //
-//    @Test
-//    public void signingPerformace(){
-//
-//        byte[] data = new byte[1000];
-//        Random random = new Random();
-//        random.nextBytes(data);
-//
-//        int count = 10000;
-//
-//        byte[] sm2Digest = null;
-//        byte[] ed25519Digest = null;
-//
-//        AsymmetricCipherKeyPair keyPair = SM2Utils.generateKeyPair();
-//        ECPublicKeyParameters ecPub = (ECPublicKeyParameters) keyPair.getPublic();
-//        ECPrivateKeyParameters ecPriv = (ECPrivateKeyParameters) keyPair.getPrivate();
-//
-//        System.out.println("=================== do SM2 sign test ===================");
-//
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                 sm2Digest = SM2Utils.sign(data,ecPriv);
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("SM2 Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//
-//        System.out.println("=================== do SM2 verify test ===================");
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                SM2Utils.verify(data,ecPub,sm2Digest);
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("SM2 Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//
-//        KeyPairGenerator keyPairGenerator = new KeyPairGenerator();
-//        KeyPair ed25519KeyPair = keyPairGenerator.generateKeyPair();
-//        EdDSAPrivateKey privKey = (EdDSAPrivateKey) ed25519KeyPair.getPrivate();
-//        EdDSAPublicKey pubKey = (EdDSAPublicKey) ed25519KeyPair.getPublic();
-//
-//        System.out.println("=================== do ED25519 sign test ===================");
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                ed25519Digest = Ed25519Utils.sign_512(data,privKey.getSeed());
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("ED25519 Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//
-//        System.out.println("=================== do ED25519 verify test ===================");
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                Ed25519Utils.verify(data,pubKey.getAbyte(),ed25519Digest);
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("ED25519 Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//    }
+    @Test
+    public void signingPerformace(){
+
+        byte[] data = new byte[1024];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        int count = 10000;
+
+        byte[] sm2Digest = null;
+
+        AsymmetricCipherKeyPair keyPair = SM2Utils.generateKeyPair();
+        ECPublicKeyParameters ecPub = (ECPublicKeyParameters) keyPair.getPublic();
+        ECPrivateKeyParameters ecPriv = (ECPrivateKeyParameters) keyPair.getPrivate();
+
+        System.out.println("=================== do SM2 sign test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                 sm2Digest = SM2Utils.sign(data,ecPriv);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("SM2 Signing Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do SM2 verify test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                SM2Utils.verify(data,ecPub,sm2Digest);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("SM2 Verifying Count=%s; Elapsed Times=%s; TPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+    }
 }

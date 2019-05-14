@@ -9,6 +9,7 @@ import com.jd.blockchain.crypto.CryptoBytes;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.crypto.utils.classic.SHA256Utils;
 import com.jd.blockchain.utils.security.ShaUtils;
 
 public class SHA256HashFunction implements HashFunction {
@@ -34,7 +35,7 @@ public class SHA256HashFunction implements HashFunction {
 			throw new CryptoException("data is null!");
 		}
 
-		byte[] digestBytes = ShaUtils.hash_256(data);
+		byte[] digestBytes = SHA256Utils.hash(data);
 		return new HashDigest(SHA256, digestBytes);
 	}
 

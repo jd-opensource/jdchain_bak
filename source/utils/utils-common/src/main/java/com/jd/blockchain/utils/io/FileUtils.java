@@ -41,6 +41,17 @@ public class FileUtils {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
+	
+	/**
+	 * 返回父目录的路径；
+	 * 
+	 * @param path path
+	 * @return String
+	 */
+	public static String getParent(String path) {
+		File file = new File(path);
+		return file.getParent();
+	}
 
 	/**
 	 * 以默认字符集（UTF-8）读取指定文件的首行；

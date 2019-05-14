@@ -13,26 +13,26 @@ cons_parti.0.name=jd.com
 #第0个参与方的公钥文件路径；
 cons_parti.0.pubkey-path=keys/jd-com.pub
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.0.pubkey=endPsK36koyFr1D245Sa9j83vt6pZUdFBJoJRB3xAsWM6cwhRbna
+cons_parti.0.pubkey=3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu
 #第0个参与方的共识服务的主机地址；
 cons_parti.0.consensus.host=127.0.0.1
 #第0个参与方的共识服务的端口；
 cons_parti.0.consensus.port=8900
 #第0个参与方的共识服务是否开启安全连接；
-cons_parti.0.consensus.secure=false
+cons_parti.0.consensus.secure=true
 #第0个参与方的账本初始服务的主机；
 cons_parti.0.initializer.host=127.0.0.1
 #第0个参与方的账本初始服务的端口；
-cons_parti.0.initializer.port=10100
+cons_parti.0.initializer.port=8800
 #第0个参与方的账本初始服务是否开启安全连接；
-cons_parti.0.initializer.secure=false
+cons_parti.0.initializer.secure=true
 
 #第1个参与方的名称；
 cons_parti.1.name=at.com
 #第1个参与方的公钥文件路径；
 cons_parti.1.pubkey-path=keys/at-com.pub
 #第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.1.pubkey=endPsK36sC5JdPCDPDAXUwZtS3sxEmqEhFcC4whayAsTTh8Z6eoZ
+cons_parti.1.pubkey=3snPdw7i7Ph1SYLQt9uqVEqiuvNXjxCdGvEdN6otJsg5rbr7Aze7kf
 #第1个参与方的共识服务的主机地址；
 cons_parti.1.consensus.host=127.0.0.1
 #第1个参与方的共识服务的端口；
@@ -42,7 +42,7 @@ cons_parti.1.consensus.secure=false
 #第1个参与方的账本初始服务的主机；
 cons_parti.1.initializer.host=127.0.0.1
 #第1个参与方的账本初始服务的端口；
-cons_parti.1.initializer.port=10110
+cons_parti.1.initializer.port=8810
 #第1个参与方的账本初始服务是否开启安全连接；
 cons_parti.1.initializer.secure=false
 
@@ -51,7 +51,7 @@ cons_parti.2.name=bt.com
 #第2个参与方的公钥文件路径；
 cons_parti.2.pubkey-path=keys/bt-com.pub
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.2.pubkey=endPsK36jEG281HMHeh6oSqzqLkT95DTnCM6REDURjdb2c67uR3R
+cons_parti.2.pubkey=3snPdw7i7PezptA6dNBkotPjmKEbTkY8fmusLBnfj8Cf7eFwhWDwKr
 #第2个参与方的共识服务的主机地址；
 cons_parti.2.consensus.host=127.0.0.1
 #第2个参与方的共识服务的端口；
@@ -61,16 +61,16 @@ cons_parti.2.consensus.secure=false
 #第2个参与方的账本初始服务的主机；
 cons_parti.2.initializer.host=127.0.0.1
 #第2个参与方的账本初始服务的端口；
-cons_parti.2.initializer.port=10120
+cons_parti.2.initializer.port=8820
 #第2个参与方的账本初始服务是否开启安全连接；
-cons_parti.2.initializer.secure=false
+cons_parti.2.initializer.secure=true
 
 #第3个参与方的名称；
 cons_parti.3.name=xt.com
 #第3个参与方的公钥文件路径；
 cons_parti.3.pubkey-path=keys/xt-com.pub
 #第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.3.pubkey=endPsK36nse1dck4uF19zPvAMijCV336Y3zWdgb4rQG8QoRj5ktR
+cons_parti.3.pubkey=3snPdw7i7PerZYfRzEB61SAN9tFK4yHm9wUSRtkLSSGXHkQRbB5PkS
 #第3个参与方的共识服务的主机地址；
 cons_parti.3.consensus.host=127.0.0.1
 #第3个参与方的共识服务的端口；
@@ -80,6 +80,6 @@ cons_parti.3.consensus.secure=false
 #第3个参与方的账本初始服务的主机；
 cons_parti.3.initializer.host=127.0.0.1
 #第3个参与方的账本初始服务的端口；
-cons_parti.3.initializer.port=10130
+cons_parti.3.initializer.port=8830
 #第3个参与方的账本初始服务是否开启安全连接；
 cons_parti.3.initializer.secure=false

@@ -2,7 +2,7 @@ package com.jd.blockchain.gateway.web;
 
 import java.util.List;
 
-import com.jd.blockchain.utils.io.BytesSlice;
+import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -11,12 +11,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.crypto.serialize.ByteArrayObjectDeserializer;
-import com.jd.blockchain.crypto.serialize.ByteArrayObjectSerializer;
-import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 import com.jd.blockchain.utils.web.model.JsonWebResponseMessageConverter;
@@ -29,13 +23,6 @@ import com.jd.blockchain.web.converters.HashDigestInputConverter;
  */
 @Configuration
 public class GatewayWebServerConfigurer implements WebMvcConfigurer {
-
-	private static final Class<?>[] BYTEARRAY_JSON_SERIALIZE_CLASS = new Class<?>[] {
-			HashDigest.class,
-			PubKey.class,
-			SignatureDigest.class,
-			Bytes.class,
-			BytesSlice.class};
 
 	static {
 		JSONSerializeUtils.disableCircularReferenceDetect();
@@ -67,11 +54,11 @@ public class GatewayWebServerConfigurer implements WebMvcConfigurer {
 		registry.addConverter(new HashDigestInputConverter());
 	}
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/webjars/**")
 				.addResourceLocations("classpath:/META-INF/resources");
-    }
+	}
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
@@ -79,10 +66,6 @@ public class GatewayWebServerConfigurer implements WebMvcConfigurer {
 	}
 
 	private void initByteArrayJsonSerialize() {
-		for (Class<?> byteArrayClass : BYTEARRAY_JSON_SERIALIZE_CLASS) {
-			JSONSerializeUtils.configSerialization(byteArrayClass,
-					ByteArrayObjectSerializer.getInstance(byteArrayClass),
-					ByteArrayObjectDeserializer.getInstance(byteArrayClass));
-		}
+		ByteArrayObjectUtil.init();
 	}
 }
