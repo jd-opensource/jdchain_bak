@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.SerializationUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * contract code based jvm
@@ -75,7 +77,11 @@ public class JavaContractCode implements ContractCode {
 				Method handleMethod = ContractType.resolve(myClass).getHandleMethod(contractEventContext.getEvent());
 				Object args = resolveArgs(contractEventContext.getArgs());
 
-				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, args);
+				Object[] params = null;
+				if(args.getClass().isArray()){
+					params = (Object[])args;
+				}
+				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, params);
 
 				LOGGER.info("合约执行,耗时:" + (System.currentTimeMillis() - startTime));
 
