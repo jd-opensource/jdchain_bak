@@ -1,13 +1,9 @@
 package com.jd.blockchain.crypto;
 
-import com.jd.blockchain.crypto.utils.classic.RSAUtils;
-import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStrictStyle;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveGenParameterSpec;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -47,7 +43,7 @@ public class CSRBuilder {
             pubKey  = keyPair.getPublic();
             privKey = keyPair.getPrivate();
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
+            throw new CryptoException(e.getMessage(), e);
         }
     }
 
@@ -81,7 +77,7 @@ public class CSRBuilder {
                 default: throw new CryptoException("Unsupported key algorithm[" + algoName + "] in CSR!");
             }
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
+            throw new CryptoException(e.getMessage(), e);
         }
     }
 
@@ -110,7 +106,7 @@ public class CSRBuilder {
             byte[] csrBytes = request.getEncoded();
             result = Base64.toBase64String(csrBytes);
         } catch (OperatorCreationException | IOException e) {
-            e.printStackTrace();
+            throw new CryptoException(e.getMessage(), e);
         }
 
         return result;
@@ -122,5 +118,13 @@ public class CSRBuilder {
 
     public PrivateKey getPrivKey() {
         return privKey;
+    }
+
+    public byte[] getPubKeyBytes() {
+        return pubKey.getEncoded();
+    }
+
+    public byte[] getPrivKeyBytes() {
+        return privKey.getEncoded();
     }
 }

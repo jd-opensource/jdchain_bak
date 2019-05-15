@@ -112,6 +112,4 @@ public class CSRBuilderTest {
         }
         assertTrue(isValid);
     }
-
-    
 }
