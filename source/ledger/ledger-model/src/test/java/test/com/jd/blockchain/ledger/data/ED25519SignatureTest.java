@@ -11,7 +11,7 @@ import com.jd.blockchain.utils.security.Ed25519Utils;
 
 public class ED25519SignatureTest {
 
-	@Test
+//	@Test
 	public void perfomanceTest() {
 		Random rand = new Random();
 		byte[] data = new byte[64];

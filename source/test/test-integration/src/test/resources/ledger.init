@@ -51,7 +51,7 @@ cons_parti.2.name=bt.com
 #第2个参与方的公钥文件路径；
 cons_parti.2.pubkey-path=keys/bt-com.pub
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.2.pubkey=3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x
+cons_parti.2.pubkey=
 #第2个参与方的共识服务的主机地址；
 cons_parti.2.consensus.host=127.0.0.1
 #第2个参与方的共识服务的端口；
