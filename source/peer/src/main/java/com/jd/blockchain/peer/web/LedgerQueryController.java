@@ -1,5 +1,7 @@
 package com.jd.blockchain.peer.web;
 
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,25 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.ContractAccountSet;
-import com.jd.blockchain.ledger.core.DataAccount;
-import com.jd.blockchain.ledger.core.DataAccountSet;
-import com.jd.blockchain.ledger.core.LedgerAdministration;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.ParticipantCertData;
-import com.jd.blockchain.ledger.core.TransactionSet;
-import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
@@ -77,6 +60,15 @@ public class LedgerQueryController implements BlockchainQueryService {
 			return convertNodes;
 		}
 		return null;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/metadata")
+	@Override
+	public LedgerMetadata getLedgerMetadata(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerAdministration ledgerAdministration = ledger.getAdminInfo();
+		LedgerMetadata ledgerMetadata = ledgerAdministration.getMetadata();
+		return ledgerMetadata;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/blocks/height/{blockHeight}")

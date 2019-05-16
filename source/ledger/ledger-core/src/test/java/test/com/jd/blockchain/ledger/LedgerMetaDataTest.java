@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerSetting;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,8 +23,6 @@ import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
-import com.jd.blockchain.ledger.core.LedgerMetadata;
-import com.jd.blockchain.ledger.core.LedgerSetting;
 import com.jd.blockchain.ledger.core.ParticipantCertData;
 import com.jd.blockchain.utils.Bytes;
 

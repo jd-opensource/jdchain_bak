@@ -5,13 +5,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.jd.blockchain.tools.initializer.web.InitWebSecurityConfiguration;
 import com.jd.blockchain.tools.initializer.web.InitWebServerConfiguration;
 
 @SpringBootApplication
-@EnableAutoConfiguration
+@Configuration
 @EnableConfigurationProperties
 @Import(value = { InitWebServerConfiguration.class, InitWebSecurityConfiguration.class })
 public class LedgerInitWebTestConfiguration {

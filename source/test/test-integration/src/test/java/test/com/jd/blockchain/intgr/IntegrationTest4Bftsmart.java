@@ -114,10 +114,9 @@ public class IntegrationTest4Bftsmart {
                     System.out.printf(" sdk execute time = %s threadId = %s \r\n", System.currentTimeMillis(), Thread.currentThread().getId());
                     IntegrationBase.KeyPairResponse userResponse = IntegrationBase.testSDK_RegisterUser(adminKey, ledgerHash, blockchainService);
 
-                    validKeyPair(userResponse, ledgerRepository, IntegrationBase.KeyPairType.USER);
+//                    validKeyPair(userResponse, ledgerRepository, IntegrationBase.KeyPairType.USER);
                     countDownLatch.countDown();
                 });
-
             }
         }
         try {
@@ -139,7 +138,8 @@ public class IntegrationTest4Bftsmart {
         }
 
         try {
-            Thread.sleep(60000);
+            System.out.println("----------------- Init Completed -----------------");
+            Thread.sleep(Integer.MAX_VALUE);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

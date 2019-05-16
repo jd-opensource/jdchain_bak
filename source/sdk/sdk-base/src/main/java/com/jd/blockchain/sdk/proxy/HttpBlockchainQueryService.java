@@ -204,6 +204,17 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	@Override
 	ParticipantNode[] getConsensusParticipants(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash);
 
+
+	/**
+	 * 返回指定账本的元数据
+	 *
+	 * @param ledgerHash
+	 * @return
+	 */
+	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/metadata")
+	@Override
+	LedgerMetadata getLedgerMetadata(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash);
+
 	/**
 	 * 返回指定账本序号的区块；
 	 *

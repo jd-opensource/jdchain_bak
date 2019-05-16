@@ -62,15 +62,6 @@
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
                 <include>com.jd.blockchain:tools-initializer-booter</include>
-            </includes>
-            <binaries>
-                <outputDirectory>libs</outputDirectory>
-                <unpack>false</unpack>
-            </binaries>
-        </moduleSet>
-        <moduleSet>
-            <useAllReactorProjects>true</useAllReactorProjects>
-            <includes>
                 <include>com.jd.blockchain:tools-keygen-booter</include>
             </includes>
             <binaries>

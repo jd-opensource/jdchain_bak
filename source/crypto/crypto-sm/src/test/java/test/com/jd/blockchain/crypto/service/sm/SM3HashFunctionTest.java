@@ -55,7 +55,7 @@ public class SM3HashFunctionTest {
 
 		HashDigest digest = hashFunction.hash(data);
 		byte[] rawDigestBytes = digest.getRawDigest();
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 
 		byte[] digestBytes = digest.toBytes();
 		assertEquals(256 / 8 + 2, digestBytes.length);
@@ -109,7 +109,7 @@ public class SM3HashFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		System.arraycopy(algoBytes, 0, digestBytes, 0, algoBytes.length);
 		assertFalse(hashFunction.supportHashDigest(digestBytes));
 	}
@@ -138,7 +138,7 @@ public class SM3HashFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("sm4");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawDigestBytes = digest.getRawDigest();
 		byte[] aesDigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 

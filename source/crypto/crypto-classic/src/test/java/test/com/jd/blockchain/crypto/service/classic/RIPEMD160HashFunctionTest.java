@@ -57,7 +57,7 @@ public class RIPEMD160HashFunctionTest {
 
 		HashDigest digest = hashFunction.hash(data);
 		byte[] rawDigestBytes = digest.getRawDigest();
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 
 		byte[] digestBytes = digest.toBytes();
 		assertEquals(160 / 8 + 2, digestBytes.length);
@@ -111,7 +111,7 @@ public class RIPEMD160HashFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("aes");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		System.arraycopy(algoBytes, 0, digestBytes, 0, algoBytes.length);
 		assertFalse(hashFunction.supportHashDigest(digestBytes));
 	}
@@ -140,7 +140,7 @@ public class RIPEMD160HashFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("aes");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawDigestBytes = digest.getRawDigest();
 		byte[] aesDigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
@@ -156,7 +156,7 @@ public class RIPEMD160HashFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("sha256");
 		assertNotNull(algorithm);
-		algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		rawDigestBytes = digest.getRawDigest();
 		byte[] ripemd160DigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 

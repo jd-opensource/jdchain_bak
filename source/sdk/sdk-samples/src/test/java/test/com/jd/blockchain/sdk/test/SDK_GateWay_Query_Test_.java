@@ -19,8 +19,6 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.serialize.ByteArrayObjectDeserializer;
-import com.jd.blockchain.crypto.serialize.ByteArrayObjectSerializer;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -52,17 +50,6 @@ import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
  */
 
 public class SDK_GateWay_Query_Test_ {
-
-	private static Class<?>[] byteArrayClasss = new Class<?>[] { HashDigest.class, PubKey.class,
-			SignatureDigest.class };
-
-	static {
-		for (Class<?> byteArrayClass : byteArrayClasss) {
-			JSONSerializeUtils.configSerialization(byteArrayClass,
-					ByteArrayObjectSerializer.getInstance(byteArrayClass),
-					ByteArrayObjectDeserializer.getInstance(byteArrayClass));
-		}
-	}
 
 	private BlockchainKeypair CLIENT_CERT = null;
 

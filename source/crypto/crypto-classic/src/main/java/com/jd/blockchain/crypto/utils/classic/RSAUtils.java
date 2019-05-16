@@ -1,11 +1,31 @@
 package com.jd.blockchain.crypto.utils.classic;
 
-import com.jd.blockchain.utils.io.BytesUtils;
-import org.bouncycastle.asn1.*;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.crypto.*;
+import org.bouncycastle.crypto.AsymmetricBlockCipher;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPairGenerator;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.encodings.PKCS1Encoding;
 import org.bouncycastle.crypto.engines.RSAEngine;
@@ -16,17 +36,8 @@ import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.bouncycastle.crypto.signers.RSADigestSigner;
 import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
-import sun.security.rsa.RSAPrivateCrtKeyImpl;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
  * @author zhanglin33
@@ -458,9 +469,9 @@ public class  RSAUtils {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
-        RSAPrivateCrtKeyImpl privateKey;
+        RSAPrivateCrtKey privateKey;
         try {
-            privateKey = (RSAPrivateCrtKeyImpl) keyFactory.generatePrivate(keySpec);
+            privateKey = (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
         } catch (InvalidKeySpecException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }

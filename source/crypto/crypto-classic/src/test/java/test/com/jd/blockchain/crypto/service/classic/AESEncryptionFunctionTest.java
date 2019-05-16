@@ -69,7 +69,7 @@ public class AESEncryptionFunctionTest {
 		assertEquals(algorithm.code(), symmetricKey.getAlgorithm());
 
 		assertEquals(2 + 1 + 128 / 8, symmetricKey.toBytes().length);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] keyTypeBytes = new byte[] { SYMMETRIC.CODE };
 		byte[] rawKeyBytes = symmetricKey.getRawKeyBytes();
 		assertArrayEquals(BytesUtils.concat(algoBytes, keyTypeBytes, rawKeyBytes), symmetricKey.toBytes());
@@ -167,7 +167,7 @@ public class AESEncryptionFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
 		byte[] rawKeyBytes = symmetricKey.getRawKeyBytes();
 		byte[] ripemd160KeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
@@ -197,7 +197,7 @@ public class AESEncryptionFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
 		byte[] rawKeyBytes = symmetricKey.getRawKeyBytes();
 		byte[] ripemd160KeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
@@ -235,7 +235,7 @@ public class AESEncryptionFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.toBytes();
 		byte[] ripemd160CiphertextBytes = BytesUtils.concat(algoBytes, rawCiphertextBytes);
 
@@ -275,7 +275,7 @@ public class AESEncryptionFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawCiphertextBytes = ciphertext.getRawCiphertext();
 		byte[] ripemd160CiphertextBytes = BytesUtils.concat(algoBytes, rawCiphertextBytes);
 

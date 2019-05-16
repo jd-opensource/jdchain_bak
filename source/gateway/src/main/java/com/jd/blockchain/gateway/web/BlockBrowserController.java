@@ -8,6 +8,7 @@ import com.jd.blockchain.gateway.service.DataRetrievalService;
 import com.jd.blockchain.gateway.service.GatewayQueryService;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
+import com.jd.blockchain.sdk.LedgerInitSettings;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.ConsoleUtils;
@@ -56,6 +57,17 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
     @Override
     public ParticipantNode[] getConsensusParticipants(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
         return peerService.getQueryService().getConsensusParticipants(ledgerHash);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/metadata")
+    @Override
+    public LedgerMetadata getLedgerMetadata(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+        return peerService.getQueryService().getLedgerMetadata(ledgerHash);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/settings")
+    public LedgerInitSettings getLedgerInitSettings(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+	    return gatewayQueryService.getLedgerInitSettings(ledgerHash);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/blocks")

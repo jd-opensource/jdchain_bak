@@ -1,5 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

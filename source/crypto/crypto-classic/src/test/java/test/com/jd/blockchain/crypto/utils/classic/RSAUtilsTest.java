@@ -175,7 +175,7 @@ public class RSAUtilsTest {
     }
 
 
-    @Test
+//    @Test
     public void performanceTest(){
 
         int count = 10000;
@@ -241,7 +241,7 @@ public class RSAUtilsTest {
         }
     }
 
-    @Test
+//    @Test
     public void encryptionConsistencyTest(){
 
         int count = 10000;
@@ -339,7 +339,7 @@ public class RSAUtilsTest {
         assertArrayEquals(data,plaintext);
     }
 
-    @Test
+//    @Test
     public void signatureConsistencyTest() {
 
         int count = 10000;

@@ -5,17 +5,9 @@ import java.util.Stack;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockBody;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerDataSnapshot;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
-import com.jd.blockchain.ledger.core.LedgerSetting;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
@@ -67,7 +59,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	}
 
 	public static LedgerTransactionalEditor createEditor(LedgerSetting ledgerSetting, LedgerBlock previousBlock,
-			String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
+														 String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// new block;
 		LedgerBlockData currBlock = new LedgerBlockData(previousBlock.getHeight() + 1, previousBlock.getLedgerHash(),
 				previousBlock.getHash());

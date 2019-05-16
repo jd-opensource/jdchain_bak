@@ -32,12 +32,10 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
-		<module>state-transfer</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
-		<module>stp</module>
 	</modules>
 
 	<properties>
@@ -281,12 +279,6 @@
 				<artifactId>bcprov-jdk15on</artifactId>
 				<version>1.61</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcpkix-jdk15on</artifactId>
-				<version>1.61</version>
-			</dependency>
 
 			<dependency>
 				<groupId>io.nats</groupId>
@@ -304,6 +296,19 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>4.1</version>
+			</dependency>
+
+			<!-- jar包扫描 -->
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.10</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.google.guava</groupId>
+						<artifactId>guava</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>

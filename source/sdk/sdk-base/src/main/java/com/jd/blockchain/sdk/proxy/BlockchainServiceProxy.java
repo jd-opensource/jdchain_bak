@@ -37,7 +37,12 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
         return getQueryService(ledgerHash).getConsensusParticipants(ledgerHash);
     }
 
-    @Override
+	@Override
+	public LedgerMetadata getLedgerMetadata(HashDigest ledgerHash) {
+		return getQueryService(ledgerHash).getLedgerMetadata(ledgerHash);
+	}
+
+	@Override
 	public LedgerBlock getBlock(HashDigest ledgerHash, long height) {
 		return getQueryService(ledgerHash).getBlock(ledgerHash, height);
 	}
