@@ -9,7 +9,7 @@ import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.utils.io.BytesUtils;
 
-@DataContract(code = DataCodes.CRYPTO_ALGORITHM)
+//@DataContract(code = DataCodes.CRYPTO_ALGORITHM)
 public interface CryptoAlgorithm {
 
 	/**
@@ -51,7 +51,7 @@ public interface CryptoAlgorithm {
 	static final int SYMMETRIC_KEY = 0x0200;
 
 	/**
-	 * 算法编码的字节长度；等同于 {@link #toBytes(CryptoAlgorithm)} 返回的字节数组的长度；
+	 * 算法编码的字节长度；等同于 {@link #getCodeBytes(CryptoAlgorithm)} 返回的字节数组的长度；
 	 */
 	static final int CODE_SIZE = 2;
 
@@ -63,7 +63,7 @@ public interface CryptoAlgorithm {
 	 * {@link #EXT_ALGORITHM}) 5 种）; 接下来4位标识密钥类型（包括：{@link #SYMMETRIC_KEY},
 	 * {@link #ASYMMETRIC_KEY}）； 最后8位是算法唯一ID；
 	 */
-	@DataField(primitiveType = PrimitiveType.INT16, order = 0)
+//	@DataField(primitiveType = PrimitiveType.INT16, order = 0)
 	short code();
 
 	/**
@@ -81,16 +81,16 @@ public interface CryptoAlgorithm {
 	 * 
 	 * @return
 	 */
-	static byte[] toBytes(CryptoAlgorithm algorithm) {
+	static byte[] getCodeBytes(CryptoAlgorithm algorithm) {
 		return BytesUtils.toBytes(algorithm.code());
 	}
 
-	static short resolveCode(byte[] algorithmBytes) {
-		return BytesUtils.toShort(algorithmBytes, 0);
+	static short resolveCode(byte[] codeBytes) {
+		return BytesUtils.toShort(codeBytes, 0);
 	}
 
-	static short resolveCode(byte[] algorithmBytes, int offset) {
-		return BytesUtils.toShort(algorithmBytes, offset);
+	static short resolveCode(byte[] codeBytes, int offset) {
+		return BytesUtils.toShort(codeBytes, offset);
 	}
 
 	static short resolveCode(InputStream in) {

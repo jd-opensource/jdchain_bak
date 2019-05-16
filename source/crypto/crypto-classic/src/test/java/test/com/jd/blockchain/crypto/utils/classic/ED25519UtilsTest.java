@@ -109,7 +109,7 @@ public class ED25519UtilsTest {
 
     }
 
-    @Test
+//    @Test
     public void performanceTest(){
 
         int count = 10000;

@@ -10,7 +10,7 @@ public final class CryptoBytesEncoding {
 	}
 
 	static byte[] encodeBytes(CryptoAlgorithm algorithm, byte[] rawCryptoBytes) {
-		return BytesUtils.concat(CryptoAlgorithm.toBytes(algorithm), rawCryptoBytes);
+		return BytesUtils.concat(CryptoAlgorithm.getCodeBytes(algorithm), rawCryptoBytes);
 	}
 
 	public static short decodeAlgorithm(byte[] cryptoBytes) {

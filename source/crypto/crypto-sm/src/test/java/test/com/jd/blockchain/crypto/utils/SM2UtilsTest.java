@@ -119,50 +119,50 @@ public class SM2UtilsTest {
         byte[] plaintext = SM2Utils.decrypt(ciphertext,privKeyBytes);
         assertArrayEquals(expectedMessage.getBytes(),plaintext);
     }
-//
+
 //    @Test
-//    public void encryptingPerformace(){
-//
-//        byte[] data = new byte[1000];
-//        Random random = new Random();
-//        random.nextBytes(data);
-//
-//        int count = 10000;
-//
-//        byte[] ciphertext = null;
-//
-//        AsymmetricCipherKeyPair keyPair = SM2Utils.generateKeyPair();
-//        ECPublicKeyParameters ecPub = (ECPublicKeyParameters) keyPair.getPublic();
-//        ECPrivateKeyParameters ecPriv = (ECPrivateKeyParameters) keyPair.getPrivate();
-//
-//        System.out.println("=================== do SM2 encrypt test ===================");
-//
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                ciphertext = SM2Utils.encrypt(data,ecPub);
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("SM2 Encrypting Count=%s; Elapsed Times=%s; KBPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//
-//        System.out.println("=================== do SM2 decrypt test ===================");
-//        for (int r = 0; r < 5; r++) {
-//            System.out.println("------------- round[" + r + "] --------------");
-//            long startTS = System.currentTimeMillis();
-//            for (int i = 0; i < count; i++) {
-//                SM2Utils.decrypt(ciphertext,ecPriv);
-//            }
-//            long elapsedTS = System.currentTimeMillis() - startTS;
-//            System.out.println(String.format("SM2 Decrypting Count=%s; Elapsed Times=%s; KBPS=%.2f", count, elapsedTS,
-//                    (count * 1000.00D) / elapsedTS));
-//        }
-//    }
-//
-//
-    @Test
+    public void encryptingPerformace(){
+
+        byte[] data = new byte[1000];
+        Random random = new Random();
+        random.nextBytes(data);
+
+        int count = 10000;
+
+        byte[] ciphertext = null;
+
+        AsymmetricCipherKeyPair keyPair = SM2Utils.generateKeyPair();
+        ECPublicKeyParameters ecPub = (ECPublicKeyParameters) keyPair.getPublic();
+        ECPrivateKeyParameters ecPriv = (ECPrivateKeyParameters) keyPair.getPrivate();
+
+        System.out.println("=================== do SM2 encrypt test ===================");
+
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                ciphertext = SM2Utils.encrypt(data,ecPub);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("SM2 Encrypting Count=%s; Elapsed Times=%s; KBPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+
+        System.out.println("=================== do SM2 decrypt test ===================");
+        for (int r = 0; r < 5; r++) {
+            System.out.println("------------- round[" + r + "] --------------");
+            long startTS = System.currentTimeMillis();
+            for (int i = 0; i < count; i++) {
+                SM2Utils.decrypt(ciphertext,ecPriv);
+            }
+            long elapsedTS = System.currentTimeMillis() - startTS;
+            System.out.println(String.format("SM2 Decrypting Count=%s; Elapsed Times=%s; KBPS=%.2f", count, elapsedTS,
+                    (count * 1000.00D) / elapsedTS));
+        }
+    }
+
+
+//    @Test
     public void signingPerformace(){
 
         byte[] data = new byte[1024];

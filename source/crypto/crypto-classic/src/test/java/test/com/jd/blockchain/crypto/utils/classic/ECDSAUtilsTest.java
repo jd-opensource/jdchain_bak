@@ -146,7 +146,7 @@ public class ECDSAUtilsTest {
         assertTrue(ECDSAUtils.verify(pubKey,signature,hashedMsg));
     }
 
-    @Test
+//    @Test
     public void performanceTest(){
 
         int count = 10000;
