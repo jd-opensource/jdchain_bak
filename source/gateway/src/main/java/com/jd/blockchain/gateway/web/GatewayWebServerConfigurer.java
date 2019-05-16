@@ -2,6 +2,13 @@ package com.jd.blockchain.gateway.web;
 
 import java.util.List;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.consensus.ClientIdentification;
+import com.jd.blockchain.consensus.ClientIdentifications;
+import com.jd.blockchain.consensus.action.ActionRequest;
+import com.jd.blockchain.consensus.action.ActionResponse;
+import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -27,6 +34,7 @@ public class GatewayWebServerConfigurer implements WebMvcConfigurer {
 	static {
 		JSONSerializeUtils.disableCircularReferenceDetect();
 		JSONSerializeUtils.configStringSerializer(ByteArray.class);
+		DataContractRegistry.register(BftsmartNodeSettings.class);
 	}
 
 
