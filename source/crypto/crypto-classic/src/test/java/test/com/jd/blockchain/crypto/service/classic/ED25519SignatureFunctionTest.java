@@ -93,7 +93,7 @@ public class ED25519SignatureFunctionTest {
 		assertEquals(2 + 1 + 32, pubKey.toBytes().length);
 		assertEquals(2 + 1 + 32, privKey.toBytes().length);
 
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
 		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
 		byte[] rawPubKeyBytes = pubKey.getRawKeyBytes();
@@ -189,7 +189,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
 		byte[] rawKeyBytes = privKey.getRawKeyBytes();
 		byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
@@ -221,7 +221,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
 		byte[] rawKeyBytes = privKey.getRawKeyBytes();
 		byte[] ripemd160PubKeyBytes = BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawKeyBytes);
@@ -254,7 +254,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
 		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
 		byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
@@ -286,7 +286,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
 		byte[] rawKeyBytes = pubKey.getRawKeyBytes();
 		byte[] ripemd160PrivKeyBytes = BytesUtils.concat(algoBytes, privKeyTypeBytes, rawKeyBytes);
@@ -325,7 +325,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawDigestBytes = signatureDigest.toBytes();
 		byte[] ripemd160SignatureBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
@@ -362,7 +362,7 @@ public class ED25519SignatureFunctionTest {
 
 		algorithm = Crypto.getAlgorithm("ripemd160");
 		assertNotNull(algorithm);
-		byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
+		byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
 		byte[] rawDigestBytes = signatureDigest.getRawDigest();
 		byte[] ripemd160SignatureDigestBytes = BytesUtils.concat(algoBytes, rawDigestBytes);
 
