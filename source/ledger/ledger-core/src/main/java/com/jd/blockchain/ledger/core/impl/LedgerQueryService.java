@@ -322,9 +322,15 @@ public class LedgerQueryService implements BlockchainQueryService {
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
 			}else {
-				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				BytesValue decodeData = BinaryProtocol.decode(value);
-				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				if(dataAccount.getDataEntriesTotalCount()==0 ||
+						dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null){
+					//is the address is not exist; the result is null;
+					entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
+				} else {
+					byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+					BytesValue decodeData = BinaryProtocol.decode(value);
+					entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				}
 			}
 		}
 
