@@ -308,14 +308,14 @@ public class  RSAUtils {
 
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(pubKeyBytes);
 
-        KeyFactory keyFactory = null;
+        KeyFactory keyFactory;
         try {
             keyFactory = KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
 
-        RSAPublicKey publicKey = null;
+        RSAPublicKey publicKey;
         try {
             publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (InvalidKeySpecException e) {
@@ -451,7 +451,7 @@ public class  RSAUtils {
 
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privKeyBytes);
 
-        KeyFactory keyFactory = null;
+        KeyFactory keyFactory;
         try {
             keyFactory = KeyFactory.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {

@@ -1,5 +1,6 @@
-package com.jd.blockchain.crypto;
+package com.jd.blockchain.crypto.utils;
 
+import com.jd.blockchain.crypto.utils.CSRBuilder;
 import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.pkcs.CertificationRequestInfo;

@@ -1,5 +1,6 @@
-package com.jd.blockchain.crypto;
+package com.jd.blockchain.crypto.utils;
 
+import com.jd.blockchain.crypto.CryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -15,7 +16,7 @@ import java.util.Date;
 /**
  * @author zhanglin33
  * @title: CertParser
- * @description: TODO
+ * @description: A parser for standard certificate, along with validation process
  * @date 2019-05-10, 15:17
  */
 public class CertParser {

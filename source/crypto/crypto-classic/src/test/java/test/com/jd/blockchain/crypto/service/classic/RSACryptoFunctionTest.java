@@ -55,15 +55,15 @@ public class RSACryptoFunctionTest {
         PrivKey privKey = keyPair.getPrivKey();
 
         assertEquals(PUBLIC.CODE, pubKey.getKeyType().CODE);
-        assertEquals(257, pubKey.getRawKeyBytes().length);
+        assertEquals(259, pubKey.getRawKeyBytes().length);
         assertEquals(PRIVATE.CODE, privKey.getKeyType().CODE);
-        assertEquals(1153, privKey.getRawKeyBytes().length);
+        assertEquals(1155, privKey.getRawKeyBytes().length);
 
         assertEquals(algorithm.code(), pubKey.getAlgorithm());
         assertEquals(algorithm.code(), privKey.getAlgorithm());
 
-        assertEquals(2 + 1 + 257, pubKey.toBytes().length);
-        assertEquals(2 + 1 + 1153, privKey.toBytes().length);
+        assertEquals(2 + 1 + 259, pubKey.toBytes().length);
+        assertEquals(2 + 1 + 1155, privKey.toBytes().length);
 
         byte[] algoBytes = CryptoAlgorithm.toBytes(algorithm);
         byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
@@ -243,7 +243,7 @@ public class RSACryptoFunctionTest {
         PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
 
         assertEquals(PRIVATE.CODE, resolvedPrivKey.getKeyType().CODE);
-        assertEquals(1153, resolvedPrivKey.getRawKeyBytes().length);
+        assertEquals(1155, resolvedPrivKey.getRawKeyBytes().length);
         assertEquals(ClassicAlgorithm.RSA.code(), resolvedPrivKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 23 & 0x00FF)),
                 resolvedPrivKey.getAlgorithm());
@@ -308,7 +308,7 @@ public class RSACryptoFunctionTest {
         PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
 
         assertEquals(PUBLIC.CODE, resolvedPubKey.getKeyType().CODE);
-        assertEquals(257, resolvedPubKey.getRawKeyBytes().length);
+        assertEquals(259, resolvedPubKey.getRawKeyBytes().length);
         assertEquals(ClassicAlgorithm.RSA.code(), resolvedPubKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ENCRYPTION_ALGORITHM | ASYMMETRIC_KEY | ((byte) 23 & 0x00FF)),
                 resolvedPubKey.getAlgorithm());

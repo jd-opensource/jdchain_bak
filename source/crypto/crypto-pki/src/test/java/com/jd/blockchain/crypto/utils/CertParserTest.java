@@ -1,5 +1,6 @@
-package com.jd.blockchain.crypto;
+package com.jd.blockchain.crypto.utils;
 
+import com.jd.blockchain.crypto.utils.CertParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

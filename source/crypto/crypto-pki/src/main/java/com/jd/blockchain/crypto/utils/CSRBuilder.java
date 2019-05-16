@@ -1,5 +1,6 @@
-package com.jd.blockchain.crypto;
+package com.jd.blockchain.crypto.utils;
 
+import com.jd.blockchain.crypto.CryptoException;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStrictStyle;
