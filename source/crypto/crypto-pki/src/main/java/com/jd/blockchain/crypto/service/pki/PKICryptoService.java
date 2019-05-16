@@ -2,6 +2,7 @@ package com.jd.blockchain.crypto.service.pki;
 
 import com.jd.blockchain.crypto.CryptoFunction;
 import com.jd.blockchain.crypto.CryptoService;
+import com.jd.blockchain.provider.NamedProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.List;
  * @description: TODO
  * @date 2019-05-15, 16:35
  */
+@NamedProvider("PKI-SOFTWARE")
 public class PKICryptoService implements CryptoService {
 
     public static final SHA1WITHRSA2048SignatureFunction SHA1WITHRSA2048 = new SHA1WITHRSA2048SignatureFunction();

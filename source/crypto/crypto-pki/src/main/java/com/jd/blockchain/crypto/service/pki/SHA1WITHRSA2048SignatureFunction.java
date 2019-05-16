@@ -4,18 +4,16 @@ import com.jd.blockchain.crypto.*;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.jcajce.provider.asymmetric.rsa.BCRSAPrivateCrtKey;
 import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import sun.security.rsa.RSAPrivateCrtKeyImpl;
-import sun.security.rsa.RSAPrivateKeyImpl;
-import sun.security.rsa.RSAPublicKeyImpl;
 
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import static com.jd.blockchain.crypto.BaseCryptoKey.KEY_TYPE_BYTES;
 import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
@@ -53,16 +51,21 @@ public class SHA1WITHRSA2048SignatureFunction implements SignatureFunction {
             throw new CryptoException("This key is not SHA1WITHRSA2048 private key!");
         }
 
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(rawPrivKeyBytes);
+
+        KeyFactory keyFactory;
         RSAPrivateCrtKey rawPrivKey;
         Signature signer;
         byte[] signature;
+
         try {
-            rawPrivKey = (RSAPrivateCrtKey) RSAPrivateCrtKeyImpl.newKey(rawPrivKeyBytes);
+            keyFactory = KeyFactory.getInstance("RSA");
+            rawPrivKey = (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
             signer = Signature.getInstance("SHA1withRSA");
             signer.initSign(rawPrivKey);
             signer.update(data);
             signature = signer.sign();
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | InvalidKeySpecException e) {
             throw new CryptoException(e.getMessage(), e);
         }
 
@@ -86,17 +89,23 @@ public class SHA1WITHRSA2048SignatureFunction implements SignatureFunction {
         if (digest.getAlgorithm() != SHA1WITHRSA2048.code() || rawDigestBytes.length != RAW_SIGNATUREDIGEST_SIZE) {
             throw new CryptoException("This is not SHA1WITHRSA2048 signature digest!");
         }
-        RSAPublicKeyImpl rawPubKey;
+
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(rawPubKeyBytes);
+
+        KeyFactory keyFactory;
+        RSAPublicKey rawPubKey;
         Signature verifier;
-        boolean isValid = false;
+        boolean isValid;
+
         try {
-            rawPubKey = new RSAPublicKeyImpl(rawPubKeyBytes);
+            keyFactory = KeyFactory.getInstance("RSA");
+            rawPubKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
             verifier = Signature.getInstance("SHA1withRSA");
             verifier.initVerify(rawPubKey);
             verifier.update(data);
             isValid = verifier.verify(rawDigestBytes);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | InvalidKeySpecException e) {
+            throw new CryptoException(e.getMessage(), e);
         }
 
         return isValid;
@@ -146,14 +155,20 @@ public class SHA1WITHRSA2048SignatureFunction implements SignatureFunction {
         if (privKey.getAlgorithm() != SHA1WITHRSA2048.code()) {
             throw new CryptoException("This key is not SHA1WITHRSA2048 private key!");
         }
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(rawPrivKeyBytes);
+
+        KeyFactory keyFactory;
+        RSAPrivateCrtKey rawPrivKey;
         byte[] rawPubKeyBytes;
         try {
-            RSAPrivateCrtKey rawPrivKey = (RSAPrivateCrtKey) RSAPrivateCrtKeyImpl.newKey(rawPrivKeyBytes);
+            keyFactory = KeyFactory.getInstance("RSA");
+            rawPrivKey = (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
             BigInteger modulus =  rawPrivKey.getModulus();
             BigInteger exponent = rawPrivKey.getPublicExponent();
             rawPubKeyBytes = KeyUtil.getEncodedSubjectPublicKeyInfo(RSA_ALGORITHM_IDENTIFIER,
                     new org.bouncycastle.asn1.pkcs.RSAPublicKey(modulus, exponent));
-        } catch (InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new CryptoException(e.getMessage(), e);
         }
 

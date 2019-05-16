@@ -159,10 +159,10 @@ public class RSAUtilsTest {
         AsymmetricKeyParameter privKey = keyPair.getPrivate();
         byte[] privKeyBytes = RSAUtils.privKey2Bytes_RawKey((RSAPrivateCrtKeyParameters) privKey);
 
+        Random random = new Random();
+
         byte[] data;
-        for (int i = 1; i < 1024; i++) {
-            data = new byte[i];
-            Random random = new Random();
+            data = new byte[1024];
             random.nextBytes(data);
             byte[] ciphertext = RSAUtils.encrypt(data, pubKey);
 
@@ -171,7 +171,6 @@ public class RSAUtilsTest {
 
             assertArrayEquals(data, plaintextFromPrivKey);
             assertArrayEquals(data, plaintextFromPrivKeyBytes);
-        }
     }
 
 

@@ -320,20 +320,14 @@ public class  RSAUtils {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(pubKeyBytes);
 
         KeyFactory keyFactory;
+        RSAPublicKey publicKey;
+
         try {
             keyFactory = KeyFactory.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
-        }
-
-        RSAPublicKey publicKey;
-        try {
             publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
-        } catch (InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
-
-        assert publicKey != null;
 
         BigInteger exponent = publicKey.getPublicExponent();
         BigInteger modulus = publicKey.getModulus();
@@ -430,7 +424,7 @@ public class  RSAUtils {
         BigInteger qInv    = privKey.getQInv();
 
         byte[] modulusBytes = bigInteger2Bytes(modulus,MODULUS_LENGTH);
-        byte[] pubExpBytes = pubExp.toByteArray();
+        byte[] pubExpBytes  = pubExp.toByteArray();
         byte[] privExpBytes = bigInteger2Bytes(privExp,PRIVEXP_LENGTH);
         byte[] pBytes       = bigInteger2Bytes(p,P_LENGTH);
         byte[] qBytes       = bigInteger2Bytes(q,Q_LENGTH);
@@ -463,20 +457,14 @@ public class  RSAUtils {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privKeyBytes);
 
         KeyFactory keyFactory;
+        RSAPrivateCrtKey privateKey;
+
         try {
             keyFactory = KeyFactory.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
-        }
-
-        RSAPrivateCrtKey privateKey;
-        try {
             privateKey = (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
-        } catch (InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
-
-        assert privateKey != null;
 
         BigInteger modulus = privateKey.getModulus();
         BigInteger pubExp  = privateKey.getPublicExponent();
@@ -540,7 +528,7 @@ public class  RSAUtils {
                     result,0, length);
         } else {
             System.arraycopy(srcBytes,0,
-                    result,length - srcLength, length);
+                    result,length - srcLength, srcLength);
         }
 
         return result;

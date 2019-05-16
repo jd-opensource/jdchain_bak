@@ -40,7 +40,6 @@ public class CSRBuilderTest {
         String csr = builder.buildRequest(countryName,stateName,cityName,
                                           organizationName,departmentName,domainName,
                                           emailName);
-        System.out.println(csr);
 
         PublicKey pubKey = builder.getPubKey();
         PrivateKey privKey = builder.getPrivKey();
