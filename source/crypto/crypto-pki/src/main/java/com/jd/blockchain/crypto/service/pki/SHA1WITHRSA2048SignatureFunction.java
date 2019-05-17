@@ -29,7 +29,6 @@ import static com.jd.blockchain.crypto.service.pki.PKIAlgorithm.SHA1WITHRSA2048;
  */
 public class SHA1WITHRSA2048SignatureFunction implements SignatureFunction {
 
-
     private static final int RAW_PUBKEY_SIZE = 259;
     private static final int RAW_PRIVKEY_SIZE = 1155;
 

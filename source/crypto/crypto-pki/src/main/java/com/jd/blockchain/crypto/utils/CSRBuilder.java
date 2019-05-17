@@ -14,7 +14,6 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.encoders.Base64;
 
-
 import java.io.IOException;
 import java.security.*;
 
@@ -65,17 +64,24 @@ public class CSRBuilder {
                     keyPair = generator.generateKeyPair();
                     pubKey = keyPair.getPublic();
                     privKey = keyPair.getPrivate();
+                    break;
                 }
 
                 case "SM2": {
                     generator = KeyPairGenerator.getInstance("EC", BC);
+                    if (KeyLength != 256) {
+                        throw new CryptoException("SM3withSM2 with unsupported key length [" +
+                                KeyLength +"] in CSR!");
+                    }
                     generator.initialize(new ECNamedCurveGenParameterSpec("sm2p256v1"));
                     keyPair = generator.generateKeyPair();
                     pubKey = keyPair.getPublic();
                     privKey = keyPair.getPrivate();
+                    break;
                 }
 
-                default: throw new CryptoException("Unsupported key algorithm[" + algoName + "] in CSR!");
+                default: throw new CryptoException("Unsupported algorithm [" + algoName + "] with key length [" +
+                        KeyLength +"] in CSR!");
             }
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new CryptoException(e.getMessage(), e);
@@ -86,7 +92,7 @@ public class CSRBuilder {
                                String organizationName, String departmentName, String domainName,
                                String emailName) {
 
-        String result = null;
+        String result;
         X500NameBuilder nameBuilder = new X500NameBuilder(BCStrictStyle.INSTANCE);
 
         nameBuilder.addRDN(BCStyle.C, countryName); // a country name, and China is short as CN
@@ -119,13 +125,5 @@ public class CSRBuilder {
 
     public PrivateKey getPrivKey() {
         return privKey;
-    }
-
-    public byte[] getPubKeyBytes() {
-        return pubKey.getEncoded();
-    }
-
-    public byte[] getPrivKeyBytes() {
-        return privKey.getEncoded();
     }
 }
