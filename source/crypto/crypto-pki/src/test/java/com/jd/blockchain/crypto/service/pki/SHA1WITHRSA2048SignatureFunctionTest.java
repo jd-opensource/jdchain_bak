@@ -9,9 +9,7 @@ import java.util.Random;
 import static com.jd.blockchain.crypto.CryptoAlgorithm.*;
 import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * @author zhanglin33

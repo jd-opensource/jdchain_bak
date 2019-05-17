@@ -1,6 +1,5 @@
 package com.jd.blockchain.crypto.utils;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

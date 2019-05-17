@@ -10,7 +10,6 @@ import static com.jd.blockchain.crypto.CryptoAlgorithm.ASYMMETRIC_KEY;
 import static com.jd.blockchain.crypto.CryptoAlgorithm.SIGNATURE_ALGORITHM;
 import static com.jd.blockchain.crypto.CryptoKeyType.PRIVATE;
 import static com.jd.blockchain.crypto.CryptoKeyType.PUBLIC;
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 
 /**
