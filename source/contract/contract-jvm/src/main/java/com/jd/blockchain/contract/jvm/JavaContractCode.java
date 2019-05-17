@@ -5,14 +5,12 @@ import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.serialize.binary.ContractSerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.SerializationUtils;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * contract code based jvm
@@ -50,8 +48,8 @@ public class JavaContractCode implements ContractCode {
 		codeModule.execute(new ContractExecution());
 	}
 
-	private Object resolveArgs(byte[] args) {
-		return SerializationUtils.deserialize(args);
+	private Object resolveArgs(byte[] args, Method method) {
+		return ContractSerializeUtils.deserializeMethodParam(args,method);
 	}
 
 	class ContractExecution implements Runnable {
@@ -75,7 +73,7 @@ public class JavaContractCode implements ContractCode {
 
 				// 反序列化参数；
 				Method handleMethod = ContractType.resolve(myClass).getHandleMethod(contractEventContext.getEvent());
-				Object args = resolveArgs(contractEventContext.getArgs());
+				Object args = resolveArgs(contractEventContext.getArgs(), handleMethod);
 
 				Object[] params = null;
 				if(args.getClass().isArray()){

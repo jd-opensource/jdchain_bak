@@ -1,10 +1,10 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.serialize.binary.ContractSerializeUtils;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class ContractInvocationProxy implements InvocationHandler {
 
@@ -39,15 +39,15 @@ public class ContractInvocationProxy implements InvocationHandler {
 			// hashCode 方法；
 		}
 		// 合约方法；
-		byte[] argBytes = serializeArgs(args);
+		byte[] argBytes = serializeArgs(args,method);
 		sendOpBuilder.send(contractAddress, event, argBytes);
 
 		// TODO: 暂时未考虑有返回值的情况；
 		return null;
 	}
 
-	private byte[] serializeArgs(Object[] args) {
+	private byte[] serializeArgs(Object[] args, Method method) throws Exception {
 		// TODO 根据方法参数的定义序列化参数；
-		return BinarySerializeUtils.serialize(args);
+		return ContractSerializeUtils.serializeMethodParam(args,method);
 	}
 }
