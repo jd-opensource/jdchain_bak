@@ -49,7 +49,7 @@ public class DataAccountKVSetOpTemplate implements DataAccountKVSetOperation {
 
 	public void set(String key, BytesValue value, long expVersion) {
 		if (kvset.containsKey(key)) {
-			throw new IllegalArgumentException("Cann't set the same key repeatly!");
+			throw new IllegalArgumentException("Cann't set the same key repeatedly!");
 		}
 		KVData kvdata = new KVData(key, value, expVersion);
 		kvset.put(key, kvdata);
@@ -57,7 +57,7 @@ public class DataAccountKVSetOpTemplate implements DataAccountKVSetOperation {
 
 	public void set(KVData kvData) {
 		if (kvset.containsKey(kvData.getKey())) {
-			throw new IllegalArgumentException("Cann't set the same key repeatly!");
+			throw new IllegalArgumentException("Cann't set the same key repeatedly!");
 		}
 		kvset.put(kvData.getKey(), kvData);
 	}

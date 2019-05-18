@@ -13,8 +13,12 @@ import com.jd.blockchain.ledger.LedgerMetadata;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -29,6 +33,9 @@ import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class LedgerAdminAccountTest {
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	private Random rand = new Random();
 
@@ -55,7 +62,13 @@ public class LedgerAdminAccountTest {
 		initSetting.setConsensusSettings(new Bytes(csSysSettingBytes));
 		initSetting.setConsensusProvider("consensus-provider");
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoSetting = new CryptoConfig();
+		cryptoSetting.setSupportedProviders(supportedProviders);
 		cryptoSetting.setAutoVerifyHash(true);
 		cryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		initSetting.setCryptoSetting(cryptoSetting);

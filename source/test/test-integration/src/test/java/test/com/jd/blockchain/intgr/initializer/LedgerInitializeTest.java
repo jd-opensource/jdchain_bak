@@ -19,12 +19,15 @@ import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
@@ -59,6 +62,9 @@ public class LedgerInitializeTest {
 		DataContractRegistry.register(LedgerInitOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
 	}
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	public static final String PASSWORD = IntegrationBase.PASSWORD;
 
@@ -254,7 +260,12 @@ public class LedgerInitializeTest {
 				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
 				Prompter prompter, boolean autoVerifyHash) {
 
+			CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+			for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+				supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+			}
 			CryptoConfig cryptoSetting = new CryptoConfig();
+			cryptoSetting.setSupportedProviders(supportedProviders);
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
 			cryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
 

@@ -20,12 +20,15 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -75,6 +78,10 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	static {
 		DataContractRegistry.register(TransactionRequest.class);
 	}
+	
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
+
 
 	private static final String DEFAULT_SIGN_ALGORITHM = "ED25519";
 	
@@ -299,7 +306,12 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	public CryptoSetting createDefaultCryptoSetting() {
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
 		CryptoConfig defCryptoSetting = new CryptoConfig();
+		defCryptoSetting.setSupportedProviders(supportedProviders);
 		defCryptoSetting.setAutoVerifyHash(true);
 		defCryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
 

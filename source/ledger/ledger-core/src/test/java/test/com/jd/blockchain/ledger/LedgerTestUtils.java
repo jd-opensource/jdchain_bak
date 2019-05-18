@@ -4,10 +4,13 @@ import java.util.Random;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -21,6 +24,9 @@ import com.jd.blockchain.transaction.TxTemplate;
 public class LedgerTestUtils {
 
 	// private static ThreadLocalRandom rand = ThreadLocalRandom.current();
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	private static Random rand = new Random();
 
@@ -76,7 +82,14 @@ public class LedgerTestUtils {
 	}
 
 	public static CryptoSetting createDefaultCryptoSetting() {
+
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoSetting = new CryptoConfig();
+		cryptoSetting.setSupportedProviders(supportedProviders);
 		cryptoSetting.setAutoVerifyHash(true);
 		cryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		return cryptoSetting;
