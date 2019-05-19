@@ -2,16 +2,16 @@ package com.jd.blockchain.utils.concurrent;
 
 public class InvocationResult<T> {
 
-	private volatile T result;
+	private volatile T value;
 	
 	private volatile Exception error;
 
-	public T getResult() {
-		return result;
+	public T getValue() {
+		return value;
 	}
 
-	public void setResult(T result) {
-		this.result = result;
+	public void setValue(T value) {
+		this.value = value;
 	}
 
 	public Exception getError() {

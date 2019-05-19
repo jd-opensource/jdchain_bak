@@ -28,7 +28,7 @@ import com.jd.blockchain.transaction.LedgerInitSettingData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
-public class LedgerInitSettingTest {
+public class LedgerInitSettingSerializeTest {
 	byte[] seed = null;
 	byte[] csSysSettingBytes = null;
 	LedgerInitSettingData ledgerInitSettingData = new LedgerInitSettingData();
@@ -84,7 +84,7 @@ public class LedgerInitSettingTest {
 		ConsensusParticipantData[] parties1 = Arrays.copyOf(parties, 4);
 
 		ledgerInitSettingData.setConsensusParticipants(parties1);
-
+		
 		byte[] encode = BinaryProtocol.encode(ledgerInitSettingData, LedgerInitSetting.class);
 
 		LedgerInitSetting decode = BinaryProtocol.decode(encode);

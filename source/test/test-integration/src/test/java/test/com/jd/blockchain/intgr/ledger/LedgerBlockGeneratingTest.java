@@ -141,41 +141,36 @@ public class LedgerBlockGeneratingTest {
 		NodeContext node3 = new NodeContext(initSetting.getConsensusParticipant(3).getInitializerAddress(),
 				serviceRegisterMap);
 
-		String[] memConns = new String[]{
-				"memory://local/0",
-				"memory://local/1",
-				"memory://local/2",
-				"memory://local/3"
-		};
-
+		String[] memConns = new String[] { "memory://local/0", "memory://local/1", "memory://local/2",
+				"memory://local/3" };
 
 		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeTest.PRIV_KEYS[0],
 				LedgerInitializeTest.PASSWORD);
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(memConns[0]);
-		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, csProps, csProvider, testDb0,
-				consolePrompter, !optimized);
+		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, testDb0, consolePrompter,
+				!optimized);
 
 		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeTest.PRIV_KEYS[1],
 				LedgerInitializeTest.PASSWORD);
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(memConns[1]);
-		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, csProps, csProvider, testDb1,
-				consolePrompter, !optimized);
+		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, testDb1, consolePrompter,
+				!optimized);
 
 		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeTest.PRIV_KEYS[2],
 				LedgerInitializeTest.PASSWORD);
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(memConns[2]);
-		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, csProps, csProvider, testDb2,
-				consolePrompter, !optimized);
+		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, testDb2, consolePrompter,
+				!optimized);
 
 		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeTest.PRIV_KEYS[3],
 				LedgerInitializeTest.PASSWORD);
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri(memConns[3]);
-		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, csProps, csProvider, testDb03,
-				consolePrompter, !optimized);
+		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, testDb03, consolePrompter,
+				!optimized);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();

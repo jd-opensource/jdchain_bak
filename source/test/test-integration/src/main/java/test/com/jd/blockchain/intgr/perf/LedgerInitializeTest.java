@@ -68,9 +68,6 @@ public class LedgerInitializeTest {
 	public void testInitWith4Nodes() {
 		Prompter consolePrompter = new PresetAnswerPrompter("N"); // new ConsolePrompter();
 		LedgerInitProperties initSetting = loadInitSetting();
-		Properties props = loadConsensusSetting();
-		ConsensusProvider csProvider = getConsensusProvider();
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
 
 		NodeContext node0 = new NodeContext(initSetting.getConsensusParticipant(0).getInitializerAddress(),
 				serviceRegisterMap);
@@ -81,31 +78,28 @@ public class LedgerInitializeTest {
 		NodeContext node3 = new NodeContext(initSetting.getConsensusParticipant(3).getInitializerAddress(),
 				serviceRegisterMap);
 
-		String[] memoryConnString = new String[]{"memory://local/0", "memory://local/1", "memory://local/2", "memory://local/3"};
+		String[] memoryConnString = new String[] { "memory://local/0", "memory://local/1", "memory://local/2",
+				"memory://local/3" };
 
 		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(memoryConnString[0]);
-		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, csProps, csProvider, testDb0,
-				consolePrompter);
+		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, testDb0, consolePrompter);
 
 		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(memoryConnString[1]);
-		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, csProps, csProvider, testDb1,
-				consolePrompter);
+		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, testDb1, consolePrompter);
 
 		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(memoryConnString[2]);
-		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, csProps, csProvider, testDb2,
-				consolePrompter);
+		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, testDb2, consolePrompter);
 
 		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri(memoryConnString[3]);
-		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, csProps, csProvider, testDb03,
-				consolePrompter);
+		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, testDb03, consolePrompter);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -188,23 +182,21 @@ public class LedgerInitializeTest {
 
 		public NodeContext(NetworkAddress address, Map<NetworkAddress, LedgerInitConsensusService> serviceRegisterMap) {
 			this.initCsServiceFactory = new MultiThreadInterInvokerFactory(serviceRegisterMap);
-			LedgerInitializeWebController initController = new LedgerInitializeWebController(ledgerManager, memoryDBConnFactory,
-					initCsServiceFactory);
+			LedgerInitializeWebController initController = new LedgerInitializeWebController(ledgerManager,
+					memoryDBConnFactory, initCsServiceFactory);
 			serviceRegisterMap.put(address, initController);
 			this.initProcess = initController;
 		}
 
 		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter) {
+				DBConnectionConfig dbConnConfig, Prompter prompter) {
 
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, csProps, csProvider, dbConnConfig,
-							prompter);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 
@@ -212,8 +204,7 @@ public class LedgerInitializeTest {
 		}
 
 		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter, boolean autoVerifyHash) {
+				DBConnectionConfig dbConnConfig, Prompter prompter, boolean autoVerifyHash) {
 
 			CryptoConfig cryptoSetting = new CryptoConfig();
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
@@ -224,8 +215,7 @@ public class LedgerInitializeTest {
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, csProps, csProvider, dbConnConfig,
-							prompter, cryptoSetting);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
 				}
 			};
 

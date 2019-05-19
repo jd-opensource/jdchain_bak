@@ -264,23 +264,23 @@ public class LedgerInitializeWebTest {
 
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri("memory://local/0");
-		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, csProps, csProvider, testDb0,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, testDb0, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri("memory://local/1");
-		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, csProps, csProvider, testDb1,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, testDb1, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri("memory://local/2");
-		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, csProps, csProvider, testDb2,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, testDb2, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri("memory://local/3");
-		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, csProps, csProvider, testDb03,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, testDb03, consolePrompter,
+				quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -402,8 +402,7 @@ public class LedgerInitializeWebTest {
 		}
 
 		public AsyncCallback<HashDigest> startInit(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter, CountDownLatch quitLatch) {
+				DBConnectionConfig dbConnConfig, Prompter prompter, CountDownLatch quitLatch) {
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -412,8 +411,8 @@ public class LedgerInitializeWebTest {
 
 					// NodeWebContext.this.initProcess = ctx.getBean(LedgerInitProcess.class);
 					NodeWebContext.this.dbConnConfig = dbConnConfig;
-					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting, csProps,
-							csProvider, dbConnConfig, prompter);
+					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting,
+							dbConnConfig, prompter);
 
 					quitLatch.countDown();
 					return ledgerHash;
@@ -443,8 +442,8 @@ public class LedgerInitializeWebTest {
 				@Override
 				protected HashDigest invoke() throws Exception {
 					LedgerInitCommand initCmd = new LedgerInitCommand();
-					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, csProps,
-							csProvider, dbConnConfig, prompter, conf, db);
+					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, dbConnConfig,
+							prompter, conf, db);
 					NodeWebContext.this.ledgerManager = initCmd.getLedgerManager();
 					quitLatch.countDown();
 					return ledgerHash;

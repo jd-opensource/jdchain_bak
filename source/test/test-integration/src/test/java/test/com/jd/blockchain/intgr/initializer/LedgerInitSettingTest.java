@@ -25,13 +25,14 @@ public class LedgerInitSettingTest {
 		try {
 			LedgerInitProperties setting = LedgerInitProperties.resolve(in);
 			assertEquals(4, setting.getConsensusParticipantCount());
-			String expectedLedgerSeed = "932dfe23-fe23232f-283f32fa-dd32aa76-8322ca2f-56236cda-7136b322-cb323ffe".replace("-", "");
+			String expectedLedgerSeed = "932dfe23-fe23232f-283f32fa-dd32aa76-8322ca2f-56236cda-7136b322-cb323ffe"
+					.replace("-", "");
 			String actualLedgerSeed = HexUtils.encode(setting.getLedgerSeed());
 			assertEquals(expectedLedgerSeed, actualLedgerSeed);
-			
+
 			ConsensusParticipantConfig part0 = setting.getConsensusParticipant(0);
 			assertEquals("jd.com", part0.getName());
-			assertEquals("keys/jd-com.pub", part0.getPubKeyPath());
+//			assertEquals("keys/jd-com.pub", part0.getPubKeyPath());
 			PubKey pubKey0 = KeyGenCommand.decodePubKey("3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9");
 			assertEquals(pubKey0, part0.getPubKey());
 //			assertEquals("127.0.0.1", part0.getConsensusAddress().getHost());
@@ -40,15 +41,15 @@ public class LedgerInitSettingTest {
 			assertEquals("127.0.0.1", part0.getInitializerAddress().getHost());
 			assertEquals(8800, part0.getInitializerAddress().getPort());
 			assertEquals(true, part0.getInitializerAddress().isSecure());
-			
+
 			ConsensusParticipantConfig part1 = setting.getConsensusParticipant(1);
 			assertEquals(false, part1.getInitializerAddress().isSecure());
 			PubKey pubKey1 = KeyGenCommand.decodePubKey("3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX");
 			assertEquals(pubKey1, part1.getPubKey());
-			
+
 			ConsensusParticipantConfig part2 = setting.getConsensusParticipant(2);
-			assertEquals(null, part2.getPubKey());
-			
+			assertEquals("7VeRAr3dSbi1xatq11ZcF7sEPkaMmtZhV9shonGJWk9T4pLe", part2.getPubKey().toBase58());
+
 		} finally {
 			in.close();
 		}
