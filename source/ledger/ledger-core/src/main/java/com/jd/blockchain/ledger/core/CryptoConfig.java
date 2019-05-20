@@ -13,17 +13,17 @@ public class CryptoConfig implements CryptoSetting {
 	private short hashAlgorithm;
 
 	private boolean autoVerifyHash;
-	
+
 	HashMap<String, CryptoProvider> providers;
 	HashMap<String, CryptoAlgorithm> nameAlgorithms;
 	HashMap<Short, CryptoAlgorithm> codeAlgorithms;
-
 
 	public CryptoConfig() {
 	}
 
 	public CryptoConfig(CryptoSetting setting) {
-		this.hashAlgorithm = setting.getHashAlgorithm();
+		setSupportedProviders(setting.getSupportedProviders());
+		setHashAlgorithm(setting.getHashAlgorithm());
 		this.autoVerifyHash = setting.getAutoVerifyHash();
 	}
 
@@ -68,10 +68,10 @@ public class CryptoConfig implements CryptoSetting {
 				providers.put(cryptoProvider.getName(), cryptoProvider);
 			}
 		}
-		this.providers =  providers;
+		this.providers = providers;
 		this.nameAlgorithms = nameAlgorithms;
 		this.codeAlgorithms = codeAlgorithms;
-		
+
 		this.cryptoProviders = supportedProviders;
 	}
 
@@ -81,7 +81,7 @@ public class CryptoConfig implements CryptoSetting {
 
 	public void setHashAlgorithm(short hashAlgorithm) {
 		if (codeAlgorithms == null || !codeAlgorithms.containsKey(hashAlgorithm)) {
-			throw new LedgerException("The specified algorithm has no provider!");
+			throw new LedgerException("The specified algorithm[" + hashAlgorithm + "] has no provider!");
 		}
 		this.hashAlgorithm = hashAlgorithm;
 	}

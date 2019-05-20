@@ -45,6 +45,9 @@ public class LedgerInitProperties {
 
 	// 共识服务提供者；必须；
 	public static final String CONSENSUS_SERVICE_PROVIDER = "consensus.service-provider";
+	
+	// 密码服务提供者列表，以英文逗点“,”分隔；必须；
+	public static final String CRYPTO_SERVICE_PROVIDER = "crypto.service-providers";
 
 	private byte[] ledgerSeed;
 

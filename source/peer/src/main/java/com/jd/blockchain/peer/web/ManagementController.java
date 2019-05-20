@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import com.jd.blockchain.ledger.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +31,21 @@ import com.jd.blockchain.consensus.service.NodeServer;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.ContractCodeDeployOperation;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.EndpointRequest;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.NodeRequest;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
@@ -68,35 +79,17 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 
 	public static final int MIN_GATEWAY_ID = 10000;
 
-	// @Autowired
-	// private PeerSettings peerSetting;
-
-//	@Autowired
-//	private ConsensusTransactionService consensusService;
-
-	// private ConsensusPeer consensusReplica;
-
 	@Autowired
 	private LedgerManage ledgerManager;
 
 	@Autowired
 	private DbConnectionFactory connFactory;
 
-	// private Map<HashDigest, DbConnection> ledgerConns = new
-	// ConcurrentHashMap<>();
-
 	private Map<HashDigest, MsgQueueMessageDispatcher> ledgerTxConverters = new ConcurrentHashMap<>();
 
 	private Map<HashDigest, NodeServer> ledgerPeers = new ConcurrentHashMap<>();
 	private Map<HashDigest, CryptoSetting> ledgerCryptoSettings = new ConcurrentHashMap<>();
 
-	// private Map<ConsensusNode, ConsensusRealm> nodeRealms = new
-	// ConcurrentHashMap<>();
-
-	// private Map<HashDigest, ConsensusRealm> ledgerRealms = new
-	// ConcurrentHashMap<>();
-	// private Map<HashDigest, ConsensusRealm> ledgerRealmsNoConflict = new
-	// ConcurrentHashMap<>();
 
 	private LedgerBindingConfig config;
 
@@ -105,9 +98,6 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 
 	@Autowired
 	private StateMachineReplicate consensusStateManager;
-
-	// private static int step = 0;
-	// private static int temp = 0;
 
 	static {
         DataContractRegistry.register(LedgerInitOperation.class);
@@ -132,24 +122,6 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		DataContractRegistry.register(BftsmartConsensusSettings.class);
 		DataContractRegistry.register(BftsmartNodeSettings.class);
 
-	}
-
-	@PostConstruct
-	private void init() {
-
-	}
-
-	@PreDestroy
-	private void destroy() {
-//		DbConnection[] conns = ledgerConns.values().toArray(new DbConnection[ledgerConns.size()]);
-//		ledgerConns.clear();
-//		for (DbConnection conn : conns) {
-//			try {
-//				conn.close();
-//			} catch (Exception e) {
-//				// Ignore;
-//			}
-//		}
 	}
 
 	/**
@@ -234,42 +206,8 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 			HashDigest[] ledgerHashs = config.getLedgerHashs();
 			for (HashDigest ledgerHash : ledgerHashs) {
 				setConfig(config,ledgerHash);
-//				LedgerBindingConfig.BindingConfig bindingConfig = config.getLedger(ledgerHash);
-//				DbConnection dbConnNew = connFactory.connect(bindingConfig.getDbConnection().getUri(),
-//						bindingConfig.getDbConnection().getPassword());
-//				LedgerRepository ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
-//
-//				// load provider;
-//				LedgerAdminAccount ledgerAdminAccount = ledgerRepository.getAdminAccount();
-//				String consensusProvider = ledgerAdminAccount.getSetting().getConsensusProvider();
-//				ConsensusProvider provider = ConsensusProviders.getProvider(consensusProvider);
-//				// find current node;
-//				Bytes csSettingBytes = ledgerAdminAccount.getSetting().getConsensusSetting();
-//				ConsensusSettings csSettings = provider.getSettingsFactory().getConsensusSettingsEncoder()
-//						.decode(csSettingBytes.toBytes());
-//				NodeSettings currentNode = null;
-//				for (NodeSettings nodeSettings : csSettings.getNodes()) {
-//					if (nodeSettings.getAddress().equals(bindingConfig.getParticipant().getAddress())) {
-//						currentNode = nodeSettings;
-//					}
-//				}
-//				if (currentNode == null) {
-//					throw new IllegalArgumentException(
-//							"Current node is not found from the consensus settings of ledger[" + ledgerHash.toBase58()
-//									+ "]!");
-//				}
-//				ServerSettings serverSettings = provider.getServerFactory().buildServerSettings(ledgerHash.toBase58(), csSettings, currentNode.getAddress());
-//
-//				NodeServer server = provider.getServerFactory().setupServer(serverSettings, consensusMessageHandler,
-//						consensusStateManager);
-//				ledgerPeers.put(ledgerHash, server);
-//				ledgerCryptoSettings.put(ledgerHash, ledgerAdminAccount.getSetting().getCryptoSetting());
-
 			}
 
-			// remove duplicate consensus realm,and establish consensus peer and consensus
-			// realm corresponding relationship
-			// initBindingConfig(config);
 			this.config = config;
 
 		} catch (Exception e) {
@@ -314,46 +252,6 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		return server;
 	}
 
-	// private void initBindingConfig(LedgerBindingConfig config) {
-	// boolean intersection = false;
-	// // to remove intersection consensus realm
-	// for (HashDigest hashDigest : ledgerRealms.keySet()) {
-	// ConsensusRealm consensusRealm1i = ledgerRealms.get(hashDigest);
-	// for (ConsensusRealm consensusRealm1j : ledgerRealms.values()) {
-	// // avoid compare with myself
-	// if (consensusRealm1i.equals(consensusRealm1j)) {
-	// continue;
-	// }
-	// if (consensusRealm1i.hasIntersection(consensusRealm1j)) {
-	// intersection = true;
-	// break;
-	// }
-	// }
-	// // prompt consensus realm conflict info
-	// if (intersection == true) {
-	// ConsoleUtils.info("\r\nconsensus realm intersection with other consensus
-	// realm\r\n");
-	// continue;
-	// }
-	// if (intersection == false) {
-	// // add consensus realm without conflict to ledgerRealmsNoConflict
-	// ledgerRealmsNoConflict.put(hashDigest, consensusRealm1i);
-	//
-	// // String consensusSystemFile =
-	// config.getLedger(hashDigest).getCsConfigFile();
-	// int currentId = config.getLedger(hashDigest).getParticipant().getId();
-	// // init consensusSystemConfig;
-	// ConsensusProperties csProps =
-	// ConsensusProperties.resolve(consensusRealm1i.getSetting());
-	// ConsensusPeer consensusPeer = new ConsensusPeer(consensusRealm1i, currentId,
-	// consensusService,
-	// csProps.getProperties());
-	// ledgerPeers.put(hashDigest, consensusPeer);
-	// }
-	// } // END OF FOR:get ledgerRealmsNoConflict and ledgerPeers
-	//
-	// }
-
 	@Override
 	public ConsensusRealm[] getRealms() {
 		throw new IllegalStateException("Not implemented!");
@@ -364,45 +262,6 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		for (NodeServer peer : ledgerPeers.values()) {
 			runRealm(peer);
 		}
-		// try {
-		//
-		// // for (ConsensusPeer peer : ledgerPeers.values()) {
-		// for (Map.Entry<HashDigest, ConsensusPeer> entry : ledgerPeers.entrySet()) {
-		// HashDigest ledgerHash = entry.getKey();
-		// ConsensusPeer peer = entry.getValue();
-		// // TODO: 多线程启动；
-		// ConsensusNode[] nodes = peer.getConsensusRealm().getNodes();
-		// StringBuilder consensusInfo = new StringBuilder();
-		// for (ConsensusNode node : nodes) {
-		// consensusInfo.append(
-		// String.format("[%s]-%s; ", node.getAddress(),
-		// node.getConsensusAddress().toString()));
-		// }
-		// LOGGER.debug(String.format("-------- start consensus peer[Id=%s] --Nodes=%s
-		// -------------",
-		// peer.getCurrentId(), consensusInfo.toString()));
-		// peer.start();
-		// // 设置消息队列
-		// MsgQueueMessageDispatcher messageDispatcher = ledgerTxConverters.get(ledgerHash);
-		//
-		// if (messageDispatcher == null) {
-		// LedgerBindingConfig.BindingConfig bindingConfig =
-		// this.config.getLedger(ledgerHash);
-		// MQConnectionConfig mqConnection = bindingConfig.getMqConnection();
-		// if (mqConnection != null && mqConnection.getServer() != null) {
-		// MessageQueueConfig mqConfig = new
-		// MessageQueueConfig(mqConnection.getServer(),
-		// mqConnection.getTopic());
-		// messageDispatcher = MessageDispatcherFactory.newInstance(mqConfig, peer);
-		// Executors.newSingleThreadExecutor().execute(messageDispatcher); // 启动监听
-		// }
-		// }
-		// }
-		// } catch (Exception e) {
-		// LOGGER.error("Error occurred on starting all consensus realms! --" +
-		// e.getMessage(), e);
-		// throw new IllegalStateException(e.getMessage(), e);
-		// }
 	}
 
 	@Override

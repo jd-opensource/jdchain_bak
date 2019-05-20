@@ -130,6 +130,12 @@ public final class Crypto {
 		return new CryptoProviderInfo(pd.getFullName(), algorithms);
 	}
 
+	/**
+	 * 返回指定名称的密码服务提供者；如果不存在，则返回 null ；
+	 * 
+	 * @param providerFullName
+	 * @return
+	 */
 	public static CryptoProvider getProvider(String providerFullName) {
 		Provider<CryptoService> pd = pm.getProvider(CryptoService.class, providerFullName);
 		if (pd == null) {

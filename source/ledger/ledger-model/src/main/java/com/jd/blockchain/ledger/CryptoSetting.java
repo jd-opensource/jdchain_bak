@@ -20,6 +20,7 @@ public interface CryptoSetting {
 	 * 
 	 * @return
 	 */
+	@DataField(order = 0, refContract = true, list = true)
 	public CryptoProvider[] getSupportedProviders();
 	
 	
