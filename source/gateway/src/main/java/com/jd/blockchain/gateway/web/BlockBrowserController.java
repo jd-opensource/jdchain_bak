@@ -239,6 +239,13 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	    return peerService.getQueryService().getDataEntries(ledgerHash, address, keys);
     }
 
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, path = "ledgers/{ledgerHash}/accounts/{address}/entries-version")
+    public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+                                        @PathVariable("address") String address,
+                                        @RequestBody KVInfoVO kvInfoVO) {
+        return peerService.getQueryService().getDataEntries(ledgerHash, address, kvInfoVO);
+    }
+
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
     @Override
     public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,

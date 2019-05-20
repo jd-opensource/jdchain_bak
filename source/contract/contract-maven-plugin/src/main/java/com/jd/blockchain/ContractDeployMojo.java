@@ -5,6 +5,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.utils.StringUtils;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
