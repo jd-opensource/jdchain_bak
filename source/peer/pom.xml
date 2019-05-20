@@ -22,11 +22,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>state-transfer</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
 			<artifactId>ledger-rpc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
