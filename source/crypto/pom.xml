@@ -16,6 +16,7 @@
 		<module>crypto-sm</module>
 		<!--	<module>crypto-jni-clib</module> -->
 		<module>crypto-adv</module>
+		<module>crypto-pki</module>
 	</modules>
 
 </project>

@@ -21,11 +21,11 @@ public class RSACryptoFunction implements AsymmetricEncryptionFunction, Signatur
 
     private static final CryptoAlgorithm RSA = ClassicAlgorithm.RSA;
 
-    // modulus.length = 256, publicExponent.length = 1
-    private static final int PUBKEY_SIZE = 257;
-    // modulus.length = 256, publicExponent.length = 1, privateExponent.length = 256, p.length = 128, q.length =128,
+    // modulus.length = 256, publicExponent.length = 3
+    private static final int PUBKEY_SIZE = 259;
+    // modulus.length = 256, publicExponent.length = 3, privateExponent.length = 256, p.length = 128, q.length =128,
     // dP.length = 128, dQ.length = 128, qInv.length = 128
-    private static final int PRIVKEY_SIZE = 1153;
+    private static final int PRIVKEY_SIZE = 1155;
 
     private static final int SIGNATUREDIGEST_SIZE = 256;
     private static final int CIPHERTEXTBLOCK_SIZE = 256;

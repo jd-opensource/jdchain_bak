@@ -60,6 +60,7 @@ public class  RSAUtils {
     private static final int QINV_LENGTH    = 1024 / 8;
 
     private static final BigInteger PUBEXP_0X03 = BigInteger.valueOf(0x03);
+    private static final BigInteger PUBEXP_0X010001 = BigInteger.valueOf(0x010001);
 
     private static final BigInteger VERSION_2PRIMES = BigInteger.valueOf(0);
 
@@ -82,6 +83,21 @@ public class  RSAUtils {
     }
 
     public static AsymmetricCipherKeyPair generateKeyPair(SecureRandom random){
+        AsymmetricCipherKeyPairGenerator kpGen = new RSAKeyPairGenerator();
+        kpGen.init(new RSAKeyGenerationParameters(PUBEXP_0X010001, random, KEYSIZEBITS, CERTAINTY));
+        return kpGen.generateKeyPair();
+    }
+
+    /**
+     * key pair generation with short public exponent， resulting in verifying and encrypting more efficiently
+     *
+     * @return key pair
+     */
+    public static AsymmetricCipherKeyPair generateKeyPair_shortExp(){
+        return generateKeyPair_shortExp(new SecureRandom());
+    }
+
+    public static AsymmetricCipherKeyPair generateKeyPair_shortExp(SecureRandom random){
         AsymmetricCipherKeyPairGenerator kpGen = new RSAKeyPairGenerator();
         kpGen.init(new RSAKeyGenerationParameters(PUBEXP_0X03, random, KEYSIZEBITS, CERTAINTY));
         return kpGen.generateKeyPair();
@@ -303,21 +319,15 @@ public class  RSAUtils {
 
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(pubKeyBytes);
 
-        KeyFactory keyFactory = null;
+        KeyFactory keyFactory;
+        RSAPublicKey publicKey;
+
         try {
             keyFactory = KeyFactory.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
-        }
-
-        RSAPublicKey publicKey = null;
-        try {
             publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
-        } catch (InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
-
-        assert publicKey != null;
 
         BigInteger exponent = publicKey.getPublicExponent();
         BigInteger modulus = publicKey.getModulus();
@@ -414,7 +424,7 @@ public class  RSAUtils {
         BigInteger qInv    = privKey.getQInv();
 
         byte[] modulusBytes = bigInteger2Bytes(modulus,MODULUS_LENGTH);
-        byte[] pubExpBytes = pubExp.toByteArray();
+        byte[] pubExpBytes  = pubExp.toByteArray();
         byte[] privExpBytes = bigInteger2Bytes(privExp,PRIVEXP_LENGTH);
         byte[] pBytes       = bigInteger2Bytes(p,P_LENGTH);
         byte[] qBytes       = bigInteger2Bytes(q,Q_LENGTH);
@@ -446,21 +456,15 @@ public class  RSAUtils {
 
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privKeyBytes);
 
-        KeyFactory keyFactory = null;
+        KeyFactory keyFactory;
+        RSAPrivateCrtKey privateKey;
+
         try {
             keyFactory = KeyFactory.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
-        }
-
-        RSAPrivateCrtKey privateKey;
-        try {
             privateKey = (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
-        } catch (InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new com.jd.blockchain.crypto.CryptoException(e.getMessage(), e);
         }
-
-        assert privateKey != null;
 
         BigInteger modulus = privateKey.getModulus();
         BigInteger pubExp  = privateKey.getPublicExponent();
@@ -524,7 +528,7 @@ public class  RSAUtils {
                     result,0, length);
         } else {
             System.arraycopy(srcBytes,0,
-                    result,length - srcLength, length);
+                    result,length - srcLength, srcLength);
         }
 
         return result;

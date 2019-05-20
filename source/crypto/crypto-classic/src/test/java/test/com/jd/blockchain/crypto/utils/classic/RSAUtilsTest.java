@@ -1,16 +1,22 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.RSAUtils;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.util.KeyUtil;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -27,10 +33,20 @@ import static org.junit.Assert.*;
 public class RSAUtilsTest {
 
     @Test
-    public void generateKeyPairTest(){
+    public void generateKeyPairTest() {
         AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair();
-        RSAKeyParameters pubKey = (RSAKeyParameters) kp.getPublic();
-        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) kp.getPrivate();
+        keyPairTest(kp);
+    }
+
+    @Test
+    public void generateKeyPair_ShortExpTest() {
+        AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair_shortExp();
+        keyPairTest(kp);
+    }
+
+    private void keyPairTest(AsymmetricCipherKeyPair keyPair) {
+        RSAKeyParameters pubKey = (RSAKeyParameters) keyPair.getPublic();
+        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) keyPair.getPrivate();
 
         byte[] pubKeyBytes_RawKey = RSAUtils.pubKey2Bytes_RawKey(pubKey);
         byte[] pubKeyBytesConverted_RawKey =
@@ -41,9 +57,6 @@ public class RSAUtilsTest {
         byte[] privKeyBytesConverted_RawKey =
                 RSAUtils.privKey2Bytes_RawKey(RSAUtils.bytes2PrivKey_RawKey(privKeyBytes_RawKey));
         assertArrayEquals(privKeyBytes_RawKey,privKeyBytesConverted_RawKey);
-
-        System.out.println(pubKeyBytes_RawKey.length);
-        System.out.println(privKeyBytes_RawKey.length);
 
         byte[] pubKeyBytes_PKCS1 = RSAUtils.pubKey2Bytes_PKCS1(pubKey);
         byte[] pubKeyBytesConverted_PKCS1 =
@@ -67,7 +80,7 @@ public class RSAUtilsTest {
     }
 
     @Test
-    public void retrievePublicKeyTest(){
+    public void test(){
 
         AsymmetricCipherKeyPair kp = RSAUtils.generateKeyPair();
         RSAKeyParameters pubKey = (RSAKeyParameters) kp.getPublic();
@@ -78,18 +91,10 @@ public class RSAUtilsTest {
         byte[] retrievedPubKeyBytes = RSAUtils.retrievePublicKey(privKeyBytes);
 
         assertArrayEquals(pubKeyBytes,retrievedPubKeyBytes);
-    }
 
-    @Test
-    public void signTest(){
-
-        byte[] data = new byte[1024];
+        byte[] data = new byte[128];
         Random random = new Random();
         random.nextBytes(data);
-
-        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
-        AsymmetricKeyParameter privKey = keyPair.getPrivate();
-        byte[] privKeyBytes = RSAUtils.privKey2Bytes_RawKey((RSAPrivateCrtKeyParameters) privKey);
 
         byte[] signatureFromPrivKey = RSAUtils.sign(data, privKey);
         byte[] signatureFromPrivKeyBytes = RSAUtils.sign(data, privKeyBytes);
@@ -97,19 +102,6 @@ public class RSAUtilsTest {
         assertNotNull(signatureFromPrivKey);
         assertEquals(2048 / 8, signatureFromPrivKey.length);
         assertArrayEquals(signatureFromPrivKeyBytes,signatureFromPrivKey);
-    }
-
-    @Test
-    public void verifyTest(){
-
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
-
-        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
-        AsymmetricKeyParameter privKey = keyPair.getPrivate();
-        AsymmetricKeyParameter pubKey = keyPair.getPublic();
-        byte[] pubKeyBytes = RSAUtils.pubKey2Bytes_RawKey((RSAKeyParameters) pubKey);
 
         byte[] signature = RSAUtils.sign(data,privKey);
 
@@ -118,47 +110,23 @@ public class RSAUtilsTest {
 
         assertTrue(isValidFromPubKey);
         assertTrue(isValidFromPubKeyBytes);
-    }
-
-    @Test
-    public void encryptTest(){
-
-        byte[] data = new byte[246];
-        Random random = new Random();
-        random.nextBytes(data);
-
-        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
-        AsymmetricKeyParameter pubKey = keyPair.getPublic();
-        byte[] pubKeyBytes = RSAUtils.pubKey2Bytes_RawKey((RSAKeyParameters) pubKey);
 
         byte[] ciphertextFromPubKey = RSAUtils.encrypt(data,pubKey);
         byte[] ciphertextFromPubKeyBytes = RSAUtils.encrypt(data,pubKeyBytes);
 
-        assertEquals(512,ciphertextFromPubKey.length);
-        assertEquals(512,ciphertextFromPubKeyBytes.length);
-    }
+        assertEquals(256,ciphertextFromPubKey.length);
+        assertEquals(256,ciphertextFromPubKeyBytes.length);
 
-    @Test
-    public void decryptTest(){
 
-        AsymmetricCipherKeyPair keyPair = RSAUtils.generateKeyPair();
-        AsymmetricKeyParameter pubKey  = keyPair.getPublic();
-        AsymmetricKeyParameter privKey = keyPair.getPrivate();
-        byte[] privKeyBytes = RSAUtils.privKey2Bytes_RawKey((RSAPrivateCrtKeyParameters) privKey);
+        data = new byte[1024];
+        random.nextBytes(data);
+        byte[] ciphertext = RSAUtils.encrypt(data, pubKey);
 
-        byte[] data;
-        for (int i = 1; i < 1024; i++) {
-            data = new byte[i];
-            Random random = new Random();
-            random.nextBytes(data);
-            byte[] ciphertext = RSAUtils.encrypt(data, pubKey);
+        byte[] plaintextFromPrivKey = RSAUtils.decrypt(ciphertext, privKey);
+        byte[] plaintextFromPrivKeyBytes = RSAUtils.decrypt(ciphertext, privKeyBytes);
 
-            byte[] plaintextFromPrivKey = RSAUtils.decrypt(ciphertext, privKey);
-            byte[] plaintextFromPrivKeyBytes = RSAUtils.decrypt(ciphertext, privKeyBytes);
-
-            assertArrayEquals(data, plaintextFromPrivKey);
-            assertArrayEquals(data, plaintextFromPrivKeyBytes);
-        }
+        assertArrayEquals(data, plaintextFromPrivKey);
+        assertArrayEquals(data, plaintextFromPrivKeyBytes);
     }
 
 
