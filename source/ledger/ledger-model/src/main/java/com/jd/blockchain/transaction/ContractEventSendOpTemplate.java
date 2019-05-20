@@ -12,6 +12,8 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 	private Bytes contractAddress;
 	private byte[] args;
 	private String event;
+	//交易操作时间;
+	private Long txOpTime;
 
 	public ContractEventSendOpTemplate() {
 	}
@@ -20,6 +22,7 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 		this.contractAddress = contractAddress;
 		this.event = event;
 		this.args = args;
+		this.txOpTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -37,4 +40,8 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 		return args;
 	}
 
+	@Override
+	public Long getTxOpTime() {
+		return txOpTime;
+	}
 }
