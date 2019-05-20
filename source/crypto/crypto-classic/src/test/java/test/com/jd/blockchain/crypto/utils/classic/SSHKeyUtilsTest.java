@@ -1,5 +1,6 @@
 //package test.com.jd.blockchain.crypto.utils.classic;
 //
+//import com.jd.blockchain.crypto.utils.classic.SSHKeyParser;
 //import org.bouncycastle.asn1.ASN1Sequence;
 //import org.bouncycastle.crypto.params.RSAKeyParameters;
 //import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
@@ -16,6 +17,8 @@
 //import java.io.IOException;
 //import java.io.StringReader;
 //import java.math.BigInteger;
+//
+//import static org.junit.Assert.assertEquals;
 //
 ///**
 // * @author zhanglin33
@@ -34,26 +37,40 @@
 //                "e/9gMujAtDoolJ181a9P06bvEpIw5cLtUnsm5CtvBuiL7WBXxDJ/IASJrKNGBdK8xib1+Kb8tNLAT6" +
 //                "Dj25BwylqiRNhb5l1Ni4aKrE2FqSEc5Nx5+csQMEl9MBJ3pEsLHBNbohDL+jbwLguRVD6CJ";
 //
-//        byte[] pubKeyBytes = Base64.decode(pubKeyStr);
-//        System.out.println(Hex.toHexString(pubKeyBytes));
-//        OpenSSHPublicKeySpec pubKeySpec = new OpenSSHPublicKeySpec(pubKeyBytes);
+//        BigInteger exponent = new BigInteger("010001",16);
+//        BigInteger modulus  = new BigInteger("0098c0b378117cbb8345ee82fe2541fa2e8db0118b8f2" +
+//                "03d2c55ba9b46b12a06aac4b4d1ef6b03bbf4ab314a6bd6619f0d569230a711745800c88200962" +
+//                "433f98623c99bdea91c74d84659998f9e8a55f83e3a093141d78c9e47d9a3a0e3d7b38a635f7cc" +
+//                "6bde2b1e4dc7c8ef76815ec1b4c2b5d374c755d64e3353e5b5ea3ffe205e42c4344539b4bb1654" +
+//                "03aed0c13f35effd80cba302d0e8a25275f356bd3f4e9bbc4a48c3970bb549ec9b90adbc1ba22f" +
+//                "b5815f10c9fc801226b28d18174af3189bd7e29bf2d34b013e838f6e41c3296a8913616f997536" +
+//                "2e1a2ab13616a484739371e7e72c40c125f4c049de912c2c704d6e88432fe8dbc0b82e4550fa089",16);
+//        String pubKeyFormat = "OpenSSH";
+//        String pubKeyType = "ssh-rsa";
 //
-//        String pubKeyFormat = pubKeySpec.getFormat();
-//        String pubKeyType   = pubKeySpec.getType();
-//        System.out.println(pubKeyFormat);
-//        System.out.println(pubKeyType);
+//        SSHKeyParser parser = new SSHKeyParser();
 //
-//        RSAKeyParameters pubKey = (RSAKeyParameters) OpenSSHPublicKeyUtil.parsePublicKey(pubKeyBytes);
+//        RSAKeyParameters pubKey = (RSAKeyParameters) parser.pubKeyParse(pubKeyStr);
 //        BigInteger e = pubKey.getExponent();
 //        BigInteger n = pubKey.getModulus();
-//        System.out.println(Hex.toHexString(e.toByteArray()));
-//        System.out.println(Hex.toHexString(n.toByteArray()));
+//        assertEquals(exponent,e);
+//        assertEquals(modulus,n);
+//        assertEquals(pubKeyFormat,parser.getPubKeyFormat());
+//        assertEquals(pubKeyType,parser.getPubKeyType());
 //
-//        System.out.println();
-//        System.out.println("-------------------------------------------------------");
-//        System.out.println();
-//
-//
+//        String pubKeyStrWithHead = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYwLN4EXy7g0Xugv4lQfou" +
+//                "jbARi48gPSxVuptGsSoGqsS00e9rA7v0qzFKa9Zhnw1WkjCnEXRYAMiCAJYkM/mGI8mb3qkcdNhGWZm" +
+//                "PnopV+D46CTFB14yeR9mjoOPXs4pjX3zGveKx5Nx8jvdoFewbTCtdN0x1XWTjNT5bXqP/4gXkLENEU5" +
+//                "tLsWVAOu0ME/Ne/9gMujAtDoolJ181a9P06bvEpIw5cLtUnsm5CtvBuiL7WBXxDJ/IASJrKNGBdK8xi" +
+//                "b1+Kb8tNLAT6Dj25BwylqiRNhb5l1Ni4aKrE2FqSEc5Nx5+csQMEl9MBJ3pEsLHBNbohDL+jbwLguRV" +
+//                "D6CJ zhanglin33@zhanglin33.local\n";
+//        pubKey = (RSAKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+//        e = pubKey.getExponent();
+//        n = pubKey.getModulus();
+//        assertEquals(exponent,e);
+//        assertEquals(modulus,n);
+//        assertEquals(pubKeyFormat,parser.getPubKeyFormat());
+//        assertEquals(pubKeyType,parser.getPubKeyType());
 //    }
 //
 //    @Test
@@ -93,6 +110,7 @@
 //        } catch (IOException e1) {
 //            e1.printStackTrace();
 //        }
+//        assert Bytes2 != null;
 //        System.out.println(Hex.toHexString(Bytes2));
 //
 //        String str3 = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
@@ -129,6 +147,7 @@
 //        } catch (IOException e1) {
 //            e1.printStackTrace();
 //        }
+//        assert Bytes3 != null;
 //        System.out.println(Hex.toHexString(Bytes3));
 ////        System.out.println(Hex.toHexString(Base64.decode("oNE9iA4ZyuZLbpEL7B29NaxGi4puT2Y5RDaMoEkoAKI")));
 ////        String test = "1ac477fa";

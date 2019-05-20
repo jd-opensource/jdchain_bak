@@ -37,7 +37,7 @@ public class CertParser {
         try {
             issuerCert.checkValidity();
         } catch (CertificateExpiredException | CertificateNotYetValidException e) {
-            e.printStackTrace();
+            throw new CryptoException(e.getMessage(), e);
         }
         PublicKey issuerPubKey = issuerCert.getPublicKey();
         X500Principal issuerPrincipal = issuerCert.getSubjectX500Principal();

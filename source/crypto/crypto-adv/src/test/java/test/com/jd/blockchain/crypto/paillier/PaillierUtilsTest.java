@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PaillierUtilsTest {
     @Test
-    public void generateKeyPairTest() {
+    public void test() {
 
         AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
         PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
@@ -58,13 +58,6 @@ public class PaillierUtilsTest {
         assertEquals(pInverseConverted, pInverse);
         assertEquals(muPConverted, muP);
         assertEquals(muQConverted, muQ);
-    }
-
-    @Test
-    public void encryptTest() {
-
-        AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
-        PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
 
         byte[] pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
 
@@ -77,23 +70,15 @@ public class PaillierUtilsTest {
 
         assertEquals(512,ciphertextFromParams.length);
         assertEquals(512,ciphertextFromBytes.length);
-    }
 
-    @Test
-    public void decryptTest(){
 
-        AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
-        PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
-        PaillierPrivateKeyParameters privKeyParams = (PaillierPrivateKeyParameters) keyPair.getPrivate();
-
-        byte[] pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
         byte[] privKeyBytes = PaillierUtils.privKey2Bytes(privKeyParams);
 
         int input = 666;
-        byte[] data = intToByteArray(input);
+        byte[] inputBytes = intToByteArray(input);
 
-        byte[] ciphertextFromParams = PaillierUtils.encrypt(data,pubKeyParams);
-        byte[] ciphertextFromBytes  = PaillierUtils.encrypt(data,pubKeyBytes);
+        ciphertextFromParams = PaillierUtils.encrypt(inputBytes,pubKeyParams);
+        ciphertextFromBytes  = PaillierUtils.encrypt(inputBytes,pubKeyBytes);
 
         byte[] plaintextFromParams  = PaillierUtils.decrypt(ciphertextFromBytes,privKeyParams);
         byte[] plaintextFromBytes   = PaillierUtils.decrypt(ciphertextFromParams,privKeyBytes);
@@ -103,16 +88,9 @@ public class PaillierUtilsTest {
 
         assertEquals(input,outputFromParams);
         assertEquals(input,outputFromBytes);
-    }
 
-    @Test
-    public void addTest() {
 
-        AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
-        PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
-        PaillierPrivateKeyParameters privKeyParams = (PaillierPrivateKeyParameters) keyPair.getPrivate();
-
-        byte[] pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
+        pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
 
         int input1 = 600;
         int input2 = 60;
@@ -139,26 +117,19 @@ public class PaillierUtilsTest {
 
         output = byteArrayToInt(plaintext);
         assertEquals(sum,output);
-    }
 
-    @Test
-    public void scalarMultiplyTest() {
 
-        AsymmetricCipherKeyPair keyPair = PaillierUtils.generateKeyPair();
-        PaillierPublicKeyParameters pubKeyParams = (PaillierPublicKeyParameters) keyPair.getPublic();
-        PaillierPrivateKeyParameters privKeyParams = (PaillierPrivateKeyParameters) keyPair.getPrivate();
+        pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
 
-        byte[] pubKeyBytes = PaillierUtils.pubKey2Bytes(pubKeyParams);
-
-        int input = 111;
+        input = 111;
         int scalar = 6;
-        byte[] data = intToByteArray(input);
+        data = intToByteArray(input);
 
         byte[] ciphertext = PaillierUtils.encrypt(data,pubKeyParams);
         byte[] ciphertextPowered = PaillierUtils.scalarMultiply(pubKeyBytes,ciphertext,scalar);
         byte[] plaintextMultiplied = PaillierUtils.decrypt(ciphertextPowered,privKeyParams);
 
-        int output = byteArrayToInt(plaintextMultiplied);
+        output = byteArrayToInt(plaintextMultiplied);
         assertEquals(input * scalar, output);
     }
 

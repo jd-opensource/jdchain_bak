@@ -41,26 +41,21 @@ public class SHA1WITHRSA2048SignatureFunctionTest {
     }
 
     @Test
-    public void generateKeyPairTest() {
+    public void test() {
 
+        // generateKeyPairTest
         CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
         assertNotNull(algorithm);
-
         SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
         AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
         PubKey pubKey = keyPair.getPubKey();
         PrivKey privKey = keyPair.getPrivKey();
-
         assertEquals(PUBLIC.CODE, pubKey.getKeyType().CODE);
         assertTrue(pubKey.getRawKeyBytes().length > 259);
         assertEquals(PRIVATE.CODE, privKey.getKeyType().CODE);
         assertTrue(privKey.getRawKeyBytes().length > 1155);
-
         assertEquals(algorithm.code(), pubKey.getAlgorithm());
         assertEquals(algorithm.code(), privKey.getAlgorithm());
-
         byte[] algoBytes = CryptoAlgorithm.getCodeBytes(algorithm);
         byte[] pubKeyTypeBytes = new byte[] { PUBLIC.CODE };
         byte[] privKeyTypeBytes = new byte[] { PRIVATE.CODE };
@@ -68,200 +63,62 @@ public class SHA1WITHRSA2048SignatureFunctionTest {
         byte[] rawPrivKeyBytes = privKey.getRawKeyBytes();
         assertArrayEquals(BytesUtils.concat(algoBytes, pubKeyTypeBytes, rawPubKeyBytes), pubKey.toBytes());
         assertArrayEquals(BytesUtils.concat(algoBytes, privKeyTypeBytes, rawPrivKeyBytes), privKey.toBytes());
-    }
 
-    @Test
-    public void retrievePubKeyTest() {
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
-
+        // retrievePubKeyTest
         PubKey retrievedPubKey = signatureFunction.retrievePubKey(privKey);
-
         assertEquals(pubKey.getKeyType(), retrievedPubKey.getKeyType());
         assertEquals(pubKey.getRawKeyBytes().length, retrievedPubKey.getRawKeyBytes().length);
         assertEquals(pubKey.getAlgorithm(), retrievedPubKey.getAlgorithm());
         assertArrayEquals(pubKey.toBytes(), retrievedPubKey.toBytes());
-    }
 
-    @Test
-    public void signTest() {
-
+        // signTest
         byte[] data = new byte[1024];
         Random random = new Random();
         random.nextBytes(data);
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PrivKey privKey = keyPair.getPrivKey();
         SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
-
         byte[] signatureBytes = signatureDigest.toBytes();
-
         assertEquals(2 + 256, signatureBytes.length);
         assertEquals(algorithm.code(), signatureDigest.getAlgorithm());
-
         assertEquals(PKIAlgorithm.SHA1WITHRSA2048.code(), signatureDigest.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 31 & 0x00FF)),
                 signatureDigest.getAlgorithm());
 
-        byte[] algoBytes = BytesUtils.toBytes(signatureDigest.getAlgorithm());
         byte[] rawSinatureBytes = signatureDigest.getRawDigest();
         assertArrayEquals(BytesUtils.concat(algoBytes, rawSinatureBytes), signatureBytes);
-    }
 
-    @Test
-    public void verifyTest() {
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PubKey pubKey = keyPair.getPubKey();
-        PrivKey privKey = keyPair.getPrivKey();
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
-
+        // verifyTest
         assertTrue(signatureFunction.verify(signatureDigest, pubKey, data));
-    }
 
-    @Test
-    public void supportPrivKeyTest() {
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PrivKey privKey = keyPair.getPrivKey();
+        // supportPrivKeyTest
         byte[] privKeyBytes = privKey.toBytes();
-
         assertTrue(signatureFunction.supportPrivKey(privKeyBytes));
-    }
 
-    @Test
-    public void resolvePrivKeyTest() {
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PrivKey privKey = keyPair.getPrivKey();
-        byte[] privKeyBytes = privKey.toBytes();
-
+        // resolvePrivKeyTest
         PrivKey resolvedPrivKey = signatureFunction.resolvePrivKey(privKeyBytes);
-
         assertEquals(PRIVATE.CODE, resolvedPrivKey.getKeyType().CODE);
         assertEquals(PKIAlgorithm.SHA1WITHRSA2048.code(), resolvedPrivKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 31 & 0x00FF)),
                 resolvedPrivKey.getAlgorithm());
         assertArrayEquals(privKeyBytes, resolvedPrivKey.toBytes());
-    }
 
-    @Test
-    public void supportPubKeyTest() {
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PubKey pubKey = keyPair.getPubKey();
+        // supportPubKeyTest
         byte[] pubKeyBytes = pubKey.toBytes();
-
         assertTrue(signatureFunction.supportPubKey(pubKeyBytes));
-    }
 
-    @Test
-    public void resolvePubKeyTest() {
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PubKey pubKey = keyPair.getPubKey();
-        byte[] pubKeyBytes = pubKey.toBytes();
-
+        // resolvedPubKeyTest
         PubKey resolvedPubKey = signatureFunction.resolvePubKey(pubKeyBytes);
-
         assertEquals(PUBLIC.CODE, resolvedPubKey.getKeyType().CODE);
         assertEquals(PKIAlgorithm.SHA1WITHRSA2048.code(), resolvedPubKey.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 31 & 0x00FF)),
                 resolvedPubKey.getAlgorithm());
         assertArrayEquals(pubKeyBytes, resolvedPubKey.toBytes());
-    }
 
-    @Test
-    public void supportDigestTest() {
-
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PrivKey privKey = keyPair.getPrivKey();
-
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
-
+        //supportDigestTest
         byte[] signatureDigestBytes = signatureDigest.toBytes();
         assertTrue(signatureFunction.supportDigest(signatureDigestBytes));
-    }
 
-    @Test
-    public void resolveDigestTest() {
-
-        byte[] data = new byte[1024];
-        Random random = new Random();
-        random.nextBytes(data);
-
-        CryptoAlgorithm algorithm = Crypto.getAlgorithm("SHA1WITHRSA2048");
-        assertNotNull(algorithm);
-
-        SignatureFunction signatureFunction = Crypto.getSignatureFunction(algorithm);
-
-        AsymmetricKeypair keyPair = signatureFunction.generateKeypair();
-
-        PrivKey privKey = keyPair.getPrivKey();
-
-        SignatureDigest signatureDigest = signatureFunction.sign(privKey, data);
-
-        byte[] signatureDigestBytes = signatureDigest.toBytes();
-
+        // resolveDigestTest
         SignatureDigest resolvedSignatureDigest = signatureFunction.resolveDigest(signatureDigestBytes);
-
         assertEquals(256, resolvedSignatureDigest.getRawDigest().length);
         assertEquals(PKIAlgorithm.SHA1WITHRSA2048.code(), resolvedSignatureDigest.getAlgorithm());
         assertEquals((short) (SIGNATURE_ALGORITHM | ASYMMETRIC_KEY | ((byte) 31 & 0x00FF)),
