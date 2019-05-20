@@ -45,9 +45,11 @@ public class LedgerInitProperties {
 
 	// 共识服务提供者；必须；
 	public static final String CONSENSUS_SERVICE_PROVIDER = "consensus.service-provider";
-	
+
 	// 密码服务提供者列表，以英文逗点“,”分隔；必须；
-	public static final String CRYPTO_SERVICE_PROVIDER = "crypto.service-providers";
+	public static final String CRYPTO_SERVICE_PROVIDERS = "crypto.service-providers";
+
+	public static final String CRYPTO_SERVICE_PROVIDERS_SPLITTER = ",";
 
 	private byte[] ledgerSeed;
 
@@ -57,8 +59,10 @@ public class LedgerInitProperties {
 
 	private Properties consensusConfig;
 
+	private String[] cryptoProviders;
+
 	public byte[] getLedgerSeed() {
-		return ledgerSeed;
+		return ledgerSeed.clone();
 	}
 
 	public Properties getConsensusConfig() {
@@ -75,6 +79,14 @@ public class LedgerInitProperties {
 
 	public List<ConsensusParticipantConfig> getConsensusParticipants() {
 		return consensusParticipants;
+	}
+	
+	public String[] getCryptoProviders() {
+		return cryptoProviders.clone();
+	}
+	
+	public void setCryptoProviders(String[] cryptoProviders) {
+		this.cryptoProviders = cryptoProviders;
 	}
 
 	/**
@@ -130,6 +142,14 @@ public class LedgerInitProperties {
 			throw new IllegalArgumentException(
 					String.format("Consensus config file[%s] doesn't exist! ", consensusConfigFilePath), e);
 		}
+
+		// 解析密码提供者列表；
+		String cryptoProviderNames = PropertiesUtils.getProperty(props, CRYPTO_SERVICE_PROVIDERS, true);
+		String[] cryptoProviders = cryptoProviderNames.split(CRYPTO_SERVICE_PROVIDERS_SPLITTER);
+		for (int i = 0; i < cryptoProviders.length; i++) {
+			cryptoProviders[i] = cryptoProviders[i].trim();
+		}
+		initProps.cryptoProviders = cryptoProviders;
 
 		// 解析参与方节点列表；
 		int partCount = getInt(PropertiesUtils.getRequiredProperty(props, PART_COUNT));

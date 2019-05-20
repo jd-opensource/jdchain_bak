@@ -59,7 +59,6 @@ public class LedgerManagerTest {
 		DataContractRegistry.register(BlockBody.class);
 		DataContractRegistry.register(CryptoProvider.class);
 	}
-	
 
 	public static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };
@@ -185,9 +184,9 @@ public class LedgerManagerTest {
 		}
 
 		CryptoConfig defCryptoSetting = new CryptoConfig();
-		
+
 		defCryptoSetting.setSupportedProviders(supportedProviders);
-		
+
 		defCryptoSetting.setAutoVerifyHash(true);
 		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 

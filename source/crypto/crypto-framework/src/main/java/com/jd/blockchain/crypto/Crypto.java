@@ -139,7 +139,7 @@ public final class Crypto {
 	public static CryptoProvider getProvider(String providerFullName) {
 		Provider<CryptoService> pd = pm.getProvider(CryptoService.class, providerFullName);
 		if (pd == null) {
-			return null;
+			throw new CryptoException("Crypto service provider named [" + providerFullName + "] does not exist!");
 		}
 		return getProviderInfo(pd);
 	}
