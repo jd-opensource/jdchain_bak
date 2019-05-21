@@ -5,7 +5,7 @@ import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.serialize.binary.ContractSerializeUtils;
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
