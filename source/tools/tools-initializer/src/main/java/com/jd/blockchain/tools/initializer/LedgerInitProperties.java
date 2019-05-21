@@ -1,22 +1,22 @@
 package com.jd.blockchain.tools.initializer;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.util.ResourceUtils;
+
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
-
-import org.springframework.core.io.ClassPathResource;
 
 public class LedgerInitProperties {
 
@@ -32,12 +32,7 @@ public class LedgerInitProperties {
 	public static final String PART_PUBKEY_PATH = "pubkey-path";
 	// 参与方的公钥文件路径；
 	public static final String PART_PUBKEY = "pubkey";
-	// //共识参与方的共识服务的主机地址；
-	// public static final String PART_CONSENSUS_HOST = "consensus.host";
-	// // 共识参与方的共识服务的端口；
-	// public static final String PART_CONSENSUS_PORT = "consensus.port";
-	// // 共识参与方的共识服务是否开启安全连接；
-	// public static final String PART_CONSENSUS_SECURE = "consensus.secure";
+
 	// 共识参与方的账本初始服务的主机；
 	public static final String PART_INITIALIZER_HOST = "initializer.host";
 	// 共识参与方的账本初始服务的端口；
@@ -45,70 +40,37 @@ public class LedgerInitProperties {
 	// 共识参与方的账本初始服务是否开启安全连接；
 	public static final String PART_INITIALIZER_SECURE = "initializer.secure";
 
+	// 共识服务的参数配置；必须；
+	public static final String CONSENSUS_CONFIG = "consensus.conf";
+
+	// 共识服务提供者；必须；
+	public static final String CONSENSUS_SERVICE_PROVIDER = "consensus.service-provider";
+
+	// 密码服务提供者列表，以英文逗点“,”分隔；必须；
+	public static final String CRYPTO_SERVICE_PROVIDERS = "crypto.service-providers";
+
+	public static final String CRYPTO_SERVICE_PROVIDERS_SPLITTER = ",";
+
 	private byte[] ledgerSeed;
 
 	private List<ConsensusParticipantConfig> consensusParticipants = new ArrayList<>();
 
+	private String consensusProvider;
+
+	private Properties consensusConfig;
+
+	private String[] cryptoProviders;
+
 	public byte[] getLedgerSeed() {
-		return ledgerSeed;
+		return ledgerSeed.clone();
 	}
 
-	public static byte[] getHostSettingValue() throws Exception {
-		ClassPathResource hostConfigResource = new ClassPathResource("hosts.config");
-		InputStream fis = hostConfigResource.getInputStream();
-		ByteArrayOutputStream bos = null;
-		byte[] buffer = null;
-		try {
-			bos = new ByteArrayOutputStream(1000);
-			byte[] b = new byte[1000];
-			int n;
-			while ((n = fis.read(b)) != -1) {
-				bos.write(b, 0, n);
-			}
-			// host file to bytes
-			buffer = bos.toByteArray();
-		} catch (FileNotFoundException e) {
-			throw new Exception(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new Exception(e.getMessage(), e);
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-			if (bos != null) {
-				bos.close();
-			}
-		}
-		return buffer;
+	public Properties getConsensusConfig() {
+		return consensusConfig;
 	}
 
-	public static byte[] getSystemSettingValue() throws Exception {
-		ClassPathResource systemConfigResource = new ClassPathResource("bftsmart.config");
-		InputStream fis = systemConfigResource.getInputStream();
-		ByteArrayOutputStream bos = null;
-		byte[] buffer = null;
-		try {
-			bos = new ByteArrayOutputStream(1000);
-			byte[] b = new byte[1000];
-			int n;
-			while ((n = fis.read(b)) != -1) {
-				bos.write(b, 0, n);
-			}
-			// file to bytes
-			buffer = bos.toByteArray();
-		} catch (FileNotFoundException e) {
-			throw new Exception(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new Exception(e.getMessage(), e);
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-			if (bos != null) {
-				bos.close();
-			}
-		}
-		return buffer;
+	public String getConsensusProvider() {
+		return consensusProvider;
 	}
 
 	public int getConsensusParticipantCount() {
@@ -118,21 +80,24 @@ public class LedgerInitProperties {
 	public List<ConsensusParticipantConfig> getConsensusParticipants() {
 		return consensusParticipants;
 	}
-
-	public ConsensusParticipantConfig[] getConsensusParticipantArray() {
-		return consensusParticipants.toArray(new ConsensusParticipantConfig[consensusParticipants.size()]);
+	
+	public String[] getCryptoProviders() {
+		return cryptoProviders.clone();
+	}
+	
+	public void setCryptoProviders(String[] cryptoProviders) {
+		this.cryptoProviders = cryptoProviders;
 	}
 
 	/**
 	 * 返回参与者；
 	 * 
-	 * @param address
-	 *            从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
+	 * @param address 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
 	 * @return
 	 */
 	public ConsensusParticipantConfig getConsensusParticipant(int id) {
 		for (ConsensusParticipantConfig p : consensusParticipants) {
-			if (p.getId()== id) {
+			if (p.getId() == id) {
 				return p;
 			}
 		}
@@ -163,11 +128,31 @@ public class LedgerInitProperties {
 	}
 
 	private static LedgerInitProperties resolve(Properties props) {
-		String hexLedgerSeed = getProperty(props, LEDGER_SEED).replace("-", "");
+		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
-		LedgerInitProperties setting = new LedgerInitProperties(ledgerSeed);
+		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
 
-		int partCount = getInt(getProperty(props, PART_COUNT));
+		// 解析共识相关的属性；
+		initProps.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);
+		String consensusConfigFilePath = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONFIG);
+		try {
+			File consensusConfigFile = ResourceUtils.getFile(consensusConfigFilePath);
+			initProps.consensusConfig = FileUtils.readProperties(consensusConfigFile);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException(
+					String.format("Consensus config file[%s] doesn't exist! ", consensusConfigFilePath), e);
+		}
+
+		// 解析密码提供者列表；
+		String cryptoProviderNames = PropertiesUtils.getProperty(props, CRYPTO_SERVICE_PROVIDERS, true);
+		String[] cryptoProviders = cryptoProviderNames.split(CRYPTO_SERVICE_PROVIDERS_SPLITTER);
+		for (int i = 0; i < cryptoProviders.length; i++) {
+			cryptoProviders[i] = cryptoProviders[i].trim();
+		}
+		initProps.cryptoProviders = cryptoProviders;
+
+		// 解析参与方节点列表；
+		int partCount = getInt(PropertiesUtils.getRequiredProperty(props, PART_COUNT));
 		if (partCount < 0) {
 			throw new IllegalArgumentException(String.format("Property[%s] is negative!", PART_COUNT));
 		}
@@ -180,62 +165,40 @@ public class LedgerInitProperties {
 			parti.setId(i);
 
 			String nameKey = getKeyOfCsParti(i, PART_NAME);
-			parti.setName(getProperty(props, nameKey));
+			parti.setName(PropertiesUtils.getRequiredProperty(props, nameKey));
 
 			String pubkeyPathKey = getKeyOfCsParti(i, PART_PUBKEY_PATH);
-			parti.setPubKeyPath(getProperty(props, pubkeyPathKey));
+			String pubkeyPath = PropertiesUtils.getProperty(props, pubkeyPathKey, false);
 
 			String pubkeyKey = getKeyOfCsParti(i, PART_PUBKEY);
-			String base58PubKey = getProperty(props, pubkeyKey);
+			String base58PubKey = PropertiesUtils.getProperty(props, pubkeyKey, false);
 			if (base58PubKey != null) {
 				PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
 				parti.setPubKey(pubKey);
+			} else if (pubkeyPath != null) {
+				PubKey pubKey = KeyGenCommand.readPubKey(pubkeyPath);
+				parti.setPubKey(pubKey);
+			} else {
+				throw new IllegalArgumentException(
+						String.format("Property[%s] and property[%s] are all empty!", pubkeyKey, pubkeyPathKey));
 			}
 
-			// String consensusHostKey = getKeyOfCsParti(i, PART_CONSENSUS_HOST);
-			// String consensusHost = getProperty(props, consensusHostKey);
-			//
-			// String consensusPortKey = getKeyOfCsParti(i, PART_CONSENSUS_PORT);
-			// int consensusPort = getInt(getProperty(props, consensusPortKey));
-			//
-			// String consensusSecureKey = getKeyOfCsParti(i, PART_CONSENSUS_SECURE);
-			// boolean consensusSecure = Boolean.parseBoolean(getProperty(props,
-			// consensusSecureKey));
-			// NetworkAddress consensusAddress = new NetworkAddress(consensusHost,
-			// consensusPort, consensusSecure);
-			// parti.setConsensusAddress(consensusAddress);
-
 			String initializerHostKey = getKeyOfCsParti(i, PART_INITIALIZER_HOST);
-			String initializerHost = getProperty(props, initializerHostKey);
+			String initializerHost = PropertiesUtils.getRequiredProperty(props, initializerHostKey);
 
 			String initializerPortKey = getKeyOfCsParti(i, PART_INITIALIZER_PORT);
-			int initializerPort = getInt(getProperty(props, initializerPortKey));
+			int initializerPort = getInt(PropertiesUtils.getRequiredProperty(props, initializerPortKey));
 
 			String initializerSecureKey = getKeyOfCsParti(i, PART_INITIALIZER_SECURE);
-			boolean initializerSecure = Boolean.parseBoolean(getProperty(props, initializerSecureKey));
+			boolean initializerSecure = Boolean
+					.parseBoolean(PropertiesUtils.getRequiredProperty(props, initializerSecureKey));
 			NetworkAddress initializerAddress = new NetworkAddress(initializerHost, initializerPort, initializerSecure);
 			parti.setInitializerAddress(initializerAddress);
 
-			setting.addConsensusParticipant(parti);
+			initProps.addConsensusParticipant(parti);
 		}
 
-		return setting;
-	}
-
-	private static String getProperty(Properties props, String key) {
-		return getProperty(props, key, true);
-	}
-
-	private static String getProperty(Properties props, String key, boolean required) {
-		String value = props.getProperty(key);
-		if (value == null) {
-			if (required) {
-				throw new IllegalArgumentException("Miss property[" + key + "]!");
-			}
-			return null;
-		}
-		value = value.trim();
-		return value.length() == 0 ? null : value;
+		return initProps;
 	}
 
 	private static int getInt(String strInt) {
@@ -249,14 +212,14 @@ public class LedgerInitProperties {
 	 *
 	 */
 	public static class ConsensusParticipantConfig implements ParticipantNode {
-		
+
 		private int id;
-		
+
 		private String address;
 
 		private String name;
 
-		private String pubKeyPath;
+//		private String pubKeyPath;
 
 		private PubKey pubKey;
 
@@ -271,7 +234,7 @@ public class LedgerInitProperties {
 		public void setId(int id) {
 			this.id = id;
 		}
-		
+
 		@Override
 		public String getAddress() {
 			return address;
@@ -285,13 +248,13 @@ public class LedgerInitProperties {
 			this.name = name;
 		}
 
-		public String getPubKeyPath() {
-			return pubKeyPath;
-		}
-
-		public void setPubKeyPath(String pubKeyPath) {
-			this.pubKeyPath = pubKeyPath;
-		}
+//		public String getPubKeyPath() {
+//			return pubKeyPath;
+//		}
+//
+//		public void setPubKeyPath(String pubKeyPath) {
+//			this.pubKeyPath = pubKeyPath;
+//		}
 
 		public NetworkAddress getInitializerAddress() {
 			return initializerAddress;

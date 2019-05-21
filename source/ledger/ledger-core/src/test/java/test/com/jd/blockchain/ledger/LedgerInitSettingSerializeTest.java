@@ -12,7 +12,11 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -24,11 +28,14 @@ import com.jd.blockchain.transaction.LedgerInitSettingData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
-public class LedgerInitSettingTest {
+public class LedgerInitSettingSerializeTest {
 	byte[] seed = null;
 	byte[] csSysSettingBytes = null;
 	LedgerInitSettingData ledgerInitSettingData = new LedgerInitSettingData();
 	LedgerInitOpTemplate template = new LedgerInitOpTemplate();
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	@Before
 	public void initCfg() {
@@ -41,7 +48,13 @@ public class LedgerInitSettingTest {
 		csSysSettingBytes = new byte[64];
 		rand.nextBytes(csSysSettingBytes);
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setAutoVerifyHash(true);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
@@ -71,7 +84,7 @@ public class LedgerInitSettingTest {
 		ConsensusParticipantData[] parties1 = Arrays.copyOf(parties, 4);
 
 		ledgerInitSettingData.setConsensusParticipants(parties1);
-
+		
 		byte[] encode = BinaryProtocol.encode(ledgerInitSettingData, LedgerInitSetting.class);
 
 		LedgerInitSetting decode = BinaryProtocol.decode(encode);

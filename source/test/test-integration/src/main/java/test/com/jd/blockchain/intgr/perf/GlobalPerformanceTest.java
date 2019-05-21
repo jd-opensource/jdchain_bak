@@ -187,7 +187,7 @@ public class GlobalPerformanceTest {
 		Properties props = Utils.loadConsensusSetting();
 		ConsensusProvider csProvider = getConsensusProvider();
 		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
-		
+
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();
 		NodeInitContext nodeCtx0 = new NodeInitContext(0, initAddr0);
@@ -365,8 +365,8 @@ public class GlobalPerformanceTest {
 
 					// NodeWebContext.this.initProcess = ctx.getBean(LedgerInitProcess.class);
 					NodeInitContext.this.dbConnConfig = dbConnConfig;
-					HashDigest ledgerHash = NodeInitContext.this.initProcess.initialize(id, privKey, setting, csProps,
-							csProvider, dbConnConfig, prompter);
+					HashDigest ledgerHash = NodeInitContext.this.initProcess.initialize(id, privKey, setting,
+							dbConnConfig, prompter);
 
 					quitLatch.countDown();
 					return ledgerHash;
@@ -387,8 +387,8 @@ public class GlobalPerformanceTest {
 				@Override
 				protected HashDigest invoke() throws Exception {
 					LedgerInitCommand initCmd = new LedgerInitCommand();
-					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, csProps,
-							csProvider, dbConnConfig, prompter, conf, db);
+					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, dbConnConfig,
+							prompter, conf, db);
 					NodeInitContext.this.ledgerManager = initCmd.getLedgerManager();
 					quitLatch.countDown();
 					return ledgerHash;

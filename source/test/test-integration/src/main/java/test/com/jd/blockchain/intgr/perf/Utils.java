@@ -106,16 +106,14 @@ public class Utils {
 		}
 
 		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider consensusProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter) {
+				DBConnectionConfig dbConnConfig, Prompter prompter) {
 
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, csProps, consensusProvider, dbConnConfig,
-							prompter);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 
@@ -150,8 +148,7 @@ public class Utils {
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, csProps, consensusProvider, dbConnConfig,
-							prompter, cryptoSetting);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
 				}
 			};
 

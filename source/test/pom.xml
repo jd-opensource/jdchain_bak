@@ -15,7 +15,6 @@
 		<module>test-consensus-node</module>
 		<module>test-ledger-core</module>
 		<module>test-integration</module>
-        <module>test-stp-community</module>
     </modules>
 
 	<build>

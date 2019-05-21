@@ -1,20 +1,29 @@
 package com.jd.blockchain.peer.web;
 
+import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.core.ContractAccountSet;
+import com.jd.blockchain.ledger.core.DataAccount;
+import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.LedgerAdministration;
+import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.ParticipantCertData;
+import com.jd.blockchain.ledger.core.TransactionSet;
+import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/")
@@ -339,6 +348,63 @@ public class LedgerQueryController implements BlockchainQueryService {
 			}
 		}
 		
+		return entries;
+	}
+
+	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, path = "ledgers/{ledgerHash}/accounts/{address}/entries-version")
+	@Override
+	public KVDataEntry[] getDataEntries(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+										@PathVariable(name = "address") String address,
+										@RequestBody KVInfoVO kvInfoVO) {
+        //parse kvInfoVO;
+        List<String> keyList = new ArrayList<>();
+        List<Long> versionList = new ArrayList<>();
+        if(kvInfoVO != null){
+            for(KVDataVO kvDataVO : kvInfoVO.getData()){
+                for(Long version : kvDataVO.getVersion()){
+                    keyList.add(kvDataVO.getKey());
+                    versionList.add(version);
+                }
+            }
+        }
+        String[] keys = keyList.toArray(new String[keyList.size()]);
+        Long[] versions = versionList.toArray(new Long[versionList.size()]);
+
+		if (keys == null || keys.length == 0) {
+				return null;
+		}
+		if (versions == null || versions.length == 0) {
+			return null;
+		}
+		if(keys.length != versions.length){
+		    throw new ContractException("keys.length!=versions.length!");
+        }
+
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerBlock block = ledger.getLatestBlock();
+		DataAccountSet dataAccountSet = ledger.getDataAccountSet(block);
+		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+
+		KVDataEntry[] entries = new KVDataEntry[keys.length];
+		long ver = -1;
+		for (int i = 0; i < entries.length; i++) {
+//			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+            ver = versions[i];
+			if (ver < 0) {
+				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
+			}else {
+				if(dataAccount.getDataEntriesTotalCount()==0 ||
+						dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null){
+					//is the address is not exist; the result is null;
+					entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
+				} else {
+					byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+					BytesValue decodeData = BinaryProtocol.decode(value);
+					entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				}
+			}
+		}
+
 		return entries;
 	}
 

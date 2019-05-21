@@ -8,13 +8,11 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import com.jd.blockchain.storage.service.DbConnection;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.consensus.ConsensusProvider;
-import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
@@ -34,6 +32,7 @@ import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
@@ -50,7 +49,7 @@ import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsT
 
 public class IntegrationTestDataAccount {
 
-    LedgerInitConsensusConfig.ConsensusConfig config = LedgerInitConsensusConfig.mqConfig;
+	LedgerInitConsensusConfig.ConsensusConfig config = LedgerInitConsensusConfig.mqConfig;
 
 	public IntegratedContext context = initLedgers(config, LedgerInitConsensusConfig.memConnectionStrings);
 	public GatewayTestRunner gateway0;
@@ -173,8 +172,8 @@ public class IntegrationTestDataAccount {
 	}
 
 	// 通过调用SDK->GATEWAY,测试一个区块包含多个交易时的写入情况，并验证写入结果；
-	private void testAddKvOpToDataAccount(GatewayTestRunner gateway, AsymmetricKeypair adminKey, IntegratedContext context,
-			Bytes dataAddr) {
+	private void testAddKvOpToDataAccount(GatewayTestRunner gateway, AsymmetricKeypair adminKey,
+			IntegratedContext context, Bytes dataAddr) {
 
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService blockchainService = gwsrvFact.getBlockchainService();
@@ -182,7 +181,8 @@ public class IntegrationTestDataAccount {
 
 		LedgerManager ledgerManager = context.getNode(0).getLedgerManager();
 
-		DbConnection memoryBasedDb = context.getNode(0).getStorageDB().connect(LedgerInitConsensusConfig.memConnectionStrings[0]);
+		DbConnection memoryBasedDb = context.getNode(0).getStorageDB()
+				.connect(LedgerInitConsensusConfig.memConnectionStrings[0]);
 
 		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHashs[0], memoryBasedDb.getStorageService());
 
@@ -288,26 +288,26 @@ public class IntegrationTestDataAccount {
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(dbConns[0]);
 		LedgerBindingConfig bindingConfig0 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, csProps,
-				csProvider, testDb0, consolePrompter, bindingConfig0, quitLatch);
+		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, testDb0,
+				consolePrompter, bindingConfig0, quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(dbConns[1]);
 		LedgerBindingConfig bindingConfig1 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, csProps,
-				csProvider, testDb1, consolePrompter, bindingConfig1, quitLatch);
+		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, testDb1,
+				consolePrompter, bindingConfig1, quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(dbConns[2]);
 		LedgerBindingConfig bindingConfig2 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, csProps,
-				csProvider, testDb2, consolePrompter, bindingConfig2, quitLatch);
+		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, testDb2,
+				consolePrompter, bindingConfig2, quitLatch);
 
 		DBConnectionConfig testDb3 = new DBConnectionConfig();
 		testDb3.setConnectionUri(dbConns[3]);
 		LedgerBindingConfig bindingConfig3 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, csProps,
-				csProvider, testDb3, consolePrompter, bindingConfig3, quitLatch);
+		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, testDb3,
+				consolePrompter, bindingConfig3, quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();

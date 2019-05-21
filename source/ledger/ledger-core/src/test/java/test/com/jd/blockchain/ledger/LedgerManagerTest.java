@@ -13,9 +13,12 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -54,7 +57,11 @@ public class LedgerManagerTest {
 		DataContractRegistry.register(UserRegisterOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(BlockBody.class);
+		DataContractRegistry.register(CryptoProvider.class);
 	}
+
+	public static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	private SignatureFunction signatureFunction;
 
@@ -170,7 +177,16 @@ public class LedgerManagerTest {
 	}
 
 	private LedgerInitSetting createLedgerInitSetting() {
+
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig defCryptoSetting = new CryptoConfig();
+
+		defCryptoSetting.setSupportedProviders(supportedProviders);
+
 		defCryptoSetting.setAutoVerifyHash(true);
 		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 

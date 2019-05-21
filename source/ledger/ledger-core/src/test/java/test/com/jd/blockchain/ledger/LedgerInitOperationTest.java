@@ -12,7 +12,11 @@ import org.junit.Test;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerInitOperation;
@@ -26,6 +30,9 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class LedgerInitOperationTest {
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	byte[] seed = null;
 	byte[] csSysSettingBytes = null;
@@ -44,7 +51,12 @@ public class LedgerInitOperationTest {
 		csSysSettingBytes = new byte[64];
 		rand.nextBytes(csSysSettingBytes);
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setAutoVerifyHash(true);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 

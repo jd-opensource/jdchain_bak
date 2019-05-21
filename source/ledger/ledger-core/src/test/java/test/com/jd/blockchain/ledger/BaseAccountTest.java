@@ -5,7 +5,11 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.BaseAccount;
@@ -22,12 +26,21 @@ import com.jd.blockchain.utils.io.BytesUtils;
  */
 public class BaseAccountTest {
 
+	public static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
+
 	@Test
 	public void basicTest() {
 		String keyPrefix = "";
 		MemoryKVStorage testStorage = new MemoryKVStorage();
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoConf = new CryptoConfig();
+		cryptoConf.setSupportedProviders(supportedProviders);
 		cryptoConf.setAutoVerifyHash(true);
 		cryptoConf.setHashAlgorithm(ClassicAlgorithm.SHA256);
 

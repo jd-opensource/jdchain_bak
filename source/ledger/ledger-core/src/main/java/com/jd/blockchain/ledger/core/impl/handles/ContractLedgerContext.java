@@ -157,6 +157,11 @@ public class ContractLedgerContext implements LedgerContext {
 	}
 
 	@Override
+	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
+		return innerQueryService.getDataEntries(ledgerHash, address, kvInfoVO);
+	}
+
+	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
 		return innerQueryService.getDataEntries(ledgerHash, address, fromIndex, count);
 	}

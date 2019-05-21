@@ -34,7 +34,7 @@ public class LedgerInitSettings {
     /**
      * 共识协议
      */
-    private int consensusProtocol;
+    private String consensusProtocol;
 
     /**
      * 共识配置
@@ -70,11 +70,11 @@ public class LedgerInitSettings {
         this.cryptoSetting = cryptoSetting;
     }
 
-    public int getConsensusProtocol() {
+    public String getConsensusProtocol() {
         return consensusProtocol;
     }
 
-    public void setConsensusProtocol(int consensusProtocol) {
+    public void setConsensusProtocol(String consensusProtocol) {
         this.consensusProtocol = consensusProtocol;
     }
 
@@ -92,22 +92,5 @@ public class LedgerInitSettings {
 
     public void setParticipantNodes(ParticipantNode[] participantNodes) {
         this.participantNodes = participantNodes;
-    }
-
-    public enum CONSENSUS_PROTOCOL {
-        UNKNOWN(0),
-        BFTSMART(1),
-        MSGQUEUE(2),
-        ;
-
-        private int code;
-
-        CONSENSUS_PROTOCOL(int code) {
-            this.code = code;
-        }
-
-        public int code() {
-            return code;
-        }
     }
 }

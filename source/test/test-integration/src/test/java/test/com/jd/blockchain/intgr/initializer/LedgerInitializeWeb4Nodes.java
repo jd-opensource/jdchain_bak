@@ -94,23 +94,23 @@ public class LedgerInitializeWeb4Nodes {
 
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(dbConns[0]);
-		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, csProps, csProvider, testDb0,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback0 = node0.startInit(privkey0, initSetting, testDb0, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(dbConns[1]);
-		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, csProps, csProvider, testDb1,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback1 = node1.startInit(privkey1, initSetting, testDb1, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(dbConns[2]);
-		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, csProps, csProvider, testDb2,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback2 = node2.startInit(privkey2, initSetting, testDb2, consolePrompter,
+				quitLatch);
 
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri(dbConns[3]);
-		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, csProps, csProvider, testDb03,
-				consolePrompter, quitLatch);
+		AsyncCallback<HashDigest> callback3 = node3.startInit(privkey3, initSetting, testDb03, consolePrompter,
+				quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -230,8 +230,7 @@ public class LedgerInitializeWeb4Nodes {
 		}
 
 		public AsyncCallback<HashDigest> startInit(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter, CountDownLatch quitLatch) {
+				DBConnectionConfig dbConnConfig, Prompter prompter, CountDownLatch quitLatch) {
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -239,8 +238,8 @@ public class LedgerInitializeWeb4Nodes {
 					doStartServer();
 
 					NodeWebContext.this.dbConnConfig = dbConnConfig;
-					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting, csProps,
-							csProvider, dbConnConfig, prompter);
+					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting,
+							dbConnConfig, prompter);
 
 					System.out.printf("ledgerHash = %s \r\n", ledgerHash.toBase58());
 
@@ -251,7 +250,6 @@ public class LedgerInitializeWeb4Nodes {
 
 			return invoker.start();
 		}
-
 
 		public void doStartServer() {
 			String argServerAddress = String.format("--server.address=%s", serverAddress.getHost());

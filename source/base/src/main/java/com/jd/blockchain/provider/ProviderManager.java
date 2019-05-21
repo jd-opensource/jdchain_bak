@@ -4,6 +4,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,32 +49,45 @@ public final class ProviderManager {
 	 * @return
 	 */
 	public <S> S getService(Class<S> serviceClazz, String providerName) {
-		NamedProviders<S> providers = getServiceProvider(serviceClazz);
+		NamedProviders<S> providers = getNamedProviders(serviceClazz);
 		return providers.getService(providerName);
+	}
+	
+	public <S> Provider<S> getProvider(Class<S> serviceClazz, String providerName) {
+		@SuppressWarnings("unchecked")
+		NamedProviders<S> providers = (NamedProviders<S>) serviceProviders.get(serviceClazz);
+		if (providers == null) {
+			return null;
+		}
+		return providers.getProvider(providerName);
 	}
 
 	public <S> Collection<Provider<S>> getAllProviders(Class<S> serviceClazz) {
-		NamedProviders<S> providers = getServiceProvider(serviceClazz);
+		@SuppressWarnings("unchecked")
+		NamedProviders<S> providers = (NamedProviders<S>) serviceProviders.get(serviceClazz);
+		if (providers == null) {
+			return Collections.emptyList();
+		}
 		return providers.getProviders();
 	}
 
 	public <S> S installProvider(Class<S> serviceClazz, String providerFullName) {
-		NamedProviders<S> providers = getServiceProvider(serviceClazz);
+		NamedProviders<S> providers = getNamedProviders(serviceClazz);
 		return providers.install(providerFullName);
 	}
 
 	public <S> S installProvider(Class<S> service, String providerFullName, ClassLoader classLoader) {
-		NamedProviders<S> providers = getServiceProvider(service);
+		NamedProviders<S> providers = getNamedProviders(service);
 		return providers.install(providerFullName, classLoader);
 	}
 
 	public <S> void installAllProviders(Class<S> serviceClazz, ClassLoader classLoader) {
-		NamedProviders<S> providers = getServiceProvider(serviceClazz);
+		NamedProviders<S> providers = getNamedProviders(serviceClazz);
 		providers.installAll(classLoader);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <S> NamedProviders<S> getServiceProvider(Class<S> serviceClazz) {
+	private <S> NamedProviders<S> getNamedProviders(Class<S> serviceClazz) {
 		NamedProviders<S> providers = (NamedProviders<S>) serviceProviders.get(serviceClazz);
 		if (providers == null) {
 			synchronized (mutex) {
@@ -188,6 +202,11 @@ public final class ProviderManager {
 
 		public Collection<Provider<S>> getProviders() {
 			return namedProviders.values();
+		}
+		
+
+		public Provider<S> getProvider(String providerFullName) {
+			return namedProviders.get(providerFullName);
 		}
 
 		public S getService(String name) {

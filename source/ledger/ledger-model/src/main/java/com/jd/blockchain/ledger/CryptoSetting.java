@@ -4,6 +4,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
+import com.jd.blockchain.crypto.CryptoProvider;
 
 /**
  * 默克尔树算法相关的配置；
@@ -13,6 +14,16 @@ import com.jd.blockchain.consts.DataCodes;
  */
 @DataContract(code = DataCodes.METADATA_CRYPTO_SETTING)
 public interface CryptoSetting {
+
+	/**
+	 * 系统支持的密码服务提供者；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 0, refContract = true, list = true)
+	public CryptoProvider[] getSupportedProviders();
+	
+	
 
 	/**
 	 * 系统中使用的 Hash 算法； <br>
@@ -27,7 +38,7 @@ public interface CryptoSetting {
 	public short getHashAlgorithm();
 
 	/**
-	 * 当有完整性证明的数据被从持久化介质中加载时，是否对其进行完整性校验（重新计算 hash 比对是否一致）； <br>
+	 * 当有加载附带哈希摘要的数据时，是否重新计算哈希摘要进行完整性校验； <br>
 	 * 
 	 * 如果为 true ，则自动进行校验，如果校验失败，会引发异常； <br>
 	 * 
@@ -37,5 +48,6 @@ public interface CryptoSetting {
 	 */
 	@DataField(order = 2, primitiveType = PrimitiveType.BOOLEAN)
 	public boolean getAutoVerifyHash();
+	
 
 }
