@@ -157,6 +157,9 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @return return total count;
 	 */
 	public long getDataEntriesTotalCount() {
+		if(baseAccount == null){
+			return 0;
+		}
 		return baseAccount.dataset.getDataCount();
 	}
 

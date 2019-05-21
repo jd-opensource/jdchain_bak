@@ -10,17 +10,39 @@ import com.jd.blockchain.utils.Bytes;
  * @author huanghaiquan
  *
  */
-@DataContract(code= DataCodes.TX_OP_CONTRACT_EVENT_SEND)
+@DataContract(code = DataCodes.TX_OP_CONTRACT_EVENT_SEND)
 public interface ContractEventSendOperation extends Operation {
-	
-	@DataField(order=2, primitiveType=PrimitiveType.BYTES)
+
+	/**
+	 * 响应事件的合约地址；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 2, primitiveType = PrimitiveType.BYTES)
 	Bytes getContractAddress();
-	
-	@DataField(order=3, primitiveType=PrimitiveType.TEXT)
+
+	/**
+	 * 事件名；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 3, primitiveType = PrimitiveType.TEXT)
 	String getEvent();
-	
-	
-	@DataField(order=4, primitiveType=PrimitiveType.BYTES)
+
+	/**
+	 * 事件参数；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 4, primitiveType = PrimitiveType.BYTES)
 	byte[] getArgs();
-	
+
+	/**
+	 * 时间戳；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 5, primitiveType = PrimitiveType.INT64)
+	long getTs();
+
 }

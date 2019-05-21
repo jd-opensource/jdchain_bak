@@ -37,9 +37,10 @@ public abstract class PropertiesUtils {
 
 	/**
 	 * 创建配置对象的实例，并且从指定的属性表中初始化对应的实例字段；
+	 * 
 	 * @param configClass configClass
-	 * @param properties properties
-	 * @param <T> T
+	 * @param properties  properties
+	 * @param <T>         T
 	 * @return T
 	 */
 	@SuppressWarnings("unchecked")
@@ -56,13 +57,10 @@ public abstract class PropertiesUtils {
 	/**
 	 * 创建配置对象的实例，并且从指定的属性表中初始化对应的实例字段；
 	 * 
-	 * @param configClass
-	 *            配置对象的类型；
-	 * @param properties
-	 *            属性表；
-	 * @param propsPrefix
-	 *            在属性表中与配置对象相关的属性的key的前缀；
-	 * @param <T> T
+	 * @param configClass 配置对象的类型；
+	 * @param properties  属性表；
+	 * @param propsPrefix 在属性表中与配置对象相关的属性的key的前缀；
+	 * @param <T>         T
 	 * @return T
 	 */
 	public static <T> T createInstance(Class<T> configClass, Properties properties, String propsPrefix) {
@@ -77,12 +75,9 @@ public abstract class PropertiesUtils {
 	/**
 	 * 设置配置值；
 	 * 
-	 * @param obj
-	 *            配置对象；配置值将设置到此对象匹配的属性；
-	 * @param configValues
-	 *            配置值；
-	 * @param propPrefix
-	 *            自动加入的属性前缀；
+	 * @param obj          配置对象；配置值将设置到此对象匹配的属性；
+	 * @param configValues 配置值；
+	 * @param propPrefix   自动加入的属性前缀；
 	 */
 	public static void setValues(Object obj, Properties configValues, String propPrefix) {
 		Properties values = new Properties();
@@ -93,10 +88,8 @@ public abstract class PropertiesUtils {
 	/**
 	 * 设置配置值；
 	 * 
-	 * @param obj
-	 *            配置对象；配置值将设置到此对象匹配的属性；
-	 * @param configValues
-	 *            配置值；
+	 * @param obj          配置对象；配置值将设置到此对象匹配的属性；
+	 * @param configValues 配置值；
 	 */
 	public static void setValues(Object obj, Properties configValues) {
 		BeanWrapper confBean = new BeanWrapperImpl(obj);
@@ -109,13 +102,10 @@ public abstract class PropertiesUtils {
 	/**
 	 * 从指定的路径加载配置；
 	 * 
-	 * @param configClass
-	 *            配置对象的类型；
-	 * @param configFilePathPattern
-	 *            properties配置文件的路径；可以指定 spring 资源路径表达式；
-	 * @param charset
-	 *            字符集；
-	 * @param <T> class
+	 * @param configClass           配置对象的类型；
+	 * @param configFilePathPattern properties配置文件的路径；可以指定 spring 资源路径表达式；
+	 * @param charset               字符集；
+	 * @param <T>                   class
 	 * @return T
 	 * @throws IOException exception
 	 */
@@ -127,12 +117,9 @@ public abstract class PropertiesUtils {
 	/**
 	 * 从指定的路径加载配置；
 	 * 
-	 * @param obj
-	 *            配置对象；配置文件的值将设置到此对象匹配的属性；
-	 * @param configFilePathPattern
-	 *            properties配置文件的路径；可以指定 spring 资源路径表达式；
-	 * @param charset
-	 *            字符集；
+	 * @param obj                   配置对象；配置文件的值将设置到此对象匹配的属性；
+	 * @param configFilePathPattern properties配置文件的路径；可以指定 spring 资源路径表达式；
+	 * @param charset               字符集；
 	 * @throws IOException exception
 	 */
 	public static void load(Object obj, String configFilePathPattern, String charset) throws IOException {
@@ -180,10 +167,8 @@ public abstract class PropertiesUtils {
 	/**
 	 * 合并两个 properties ；
 	 * 
-	 * @param props
-	 *            要将其它值合并进来的属性集合；操作将对其产生修改；
-	 * @param from
-	 *            属性值将要合并进入其它属性集合；操作不对其产生修改；
+	 * @param props 要将其它值合并进来的属性集合；操作将对其产生修改；
+	 * @param from  属性值将要合并进入其它属性集合；操作不对其产生修改；
 	 */
 	public static void mergeFrom(Properties props, Properties from) {
 		mergeFrom(props, from, null);
@@ -192,12 +177,9 @@ public abstract class PropertiesUtils {
 	/**
 	 * 合并两个 properties ；
 	 * 
-	 * @param props
-	 *            要将其它值合并进来的属性集合；操作将对其产生修改；
-	 * @param from
-	 *            属性值将要合并进入其它属性集合；操作不对其产生修改；
-	 * @param propertyNamePrefix
-	 *            属性名称前缀；
+	 * @param props              要将其它值合并进来的属性集合；操作将对其产生修改；
+	 * @param from               属性值将要合并进入其它属性集合；操作不对其产生修改；
+	 * @param propertyNamePrefix 属性名称前缀；
 	 */
 	public static void mergeFrom(Properties props, Properties from, String propertyNamePrefix) {
 		if (propertyNamePrefix == null || propertyNamePrefix.length() == 0) {
@@ -214,12 +196,9 @@ public abstract class PropertiesUtils {
 	/**
 	 * 获取指定 properties 中以指定的前缀开头的子集；
 	 * 
-	 * @param props
-	 *            要抽取的属性集合；
-	 * @param propertyNamePrefix
-	 *            属性名称前缀；
-	 * @param trimPrefix
-	 *            是否在复制的新的属性集合去掉指定的前缀；
+	 * @param props              要抽取的属性集合；
+	 * @param propertyNamePrefix 属性名称前缀；
+	 * @param trimPrefix         是否在复制的新的属性集合去掉指定的前缀；
 	 * @return properties
 	 */
 	public static Properties subset(Properties props, String propertyNamePrefix, boolean trimPrefix) {
@@ -278,13 +257,22 @@ public abstract class PropertiesUtils {
 	 * 如果不存在，或者返回值为空（null 或 空白字符），则抛出 {@link IllegalArgumentException} 异常；
 	 * 
 	 * @param props props
-	 * @param key key
+	 * @param key   key
 	 * @return String
 	 */
 	public static String getRequiredProperty(Properties props, String key) {
 		return getProperty(props, key, true);
 	}
 
+	/**
+	 * 返回指定的属性； <br>
+	 * 
+	 * @param props    属性表；
+	 * @param key      要查找的 key；
+	 * @param required 值为 false 时，如果不存在则返回 null；值为 true 时，如果不存在，或者返回值为空（null 或
+	 *                 空白字符），则抛出 {@link IllegalArgumentException} 异常；
+	 * @return
+	 */
 	public static String getProperty(Properties props, String key, boolean required) {
 		String value = props.getProperty(key);
 		if (value == null) {
@@ -319,7 +307,7 @@ public abstract class PropertiesUtils {
 		setValues(props, propValues);
 		return props;
 	}
-	
+
 	public static Properties setValues(Properties props, Property[] propValues) {
 		for (Property p : propValues) {
 			props.setProperty(p.getName(), p.getValue());

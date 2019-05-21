@@ -2,8 +2,6 @@ package com.jd.blockchain.tools.initializer;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Path;
 import java.util.Properties;
 
 import com.jd.blockchain.utils.PathUtils;
@@ -30,17 +28,11 @@ public class LocalConfig {
 	// 账本数据库的连接口令；
 	public static final String LEDGER_DB_PWD = "ledger.db.pwd";
 
-	// 账本消息队列的地址
-//	public static final String LEDGER_MQ_SERVER = "ledger.mq.server";
-//
-//	// 账本消息队列的主题
-//	public static final String LEDGER_MQ_TOPIC = "ledger.mq.topic";
-
-	// 共识系统的参数配置；必须参数；
-	public static final String CONSENSUS_CONF = "consensus.conf";
-	
-	// 共识系统的参数配置；必须参数；
-	public static final String CONSENSUS_SERVICE_PROVIDER = "consensus.service-provider";
+//	// 共识系统的参数配置；必须参数；
+//	public static final String CONSENSUS_CONF = "consensus.conf";
+//	
+//	// 共识系统的参数配置；必须参数；
+//	public static final String CONSENSUS_SERVICE_PROVIDER = "consensus.service-provider";
 
 	private LocalParticipantConfig local = new LocalParticipantConfig();
 
@@ -48,10 +40,9 @@ public class LocalConfig {
 
 	private DBConnectionConfig storagedDb = new DBConnectionConfig();
 
-//	private MQConnectionConfig handleMq = new MQConnectionConfig();
 
-	private String consensusConfig;
-	private String consensusProvider;
+//	private String consensusConfig;
+//	private String consensusProvider;
 
 	public LocalParticipantConfig getLocal() {
 		return local;
@@ -75,22 +66,6 @@ public class LocalConfig {
 
 	public void setStoragedDb(DBConnectionConfig storagedDb) {
 		this.storagedDb = storagedDb;
-	}
-
-//	public MQConnectionConfig getHandleMq() {
-//		return handleMq;
-//	}
-//
-//	public void setHandleMq(MQConnectionConfig handleMq) {
-//		this.handleMq = handleMq;
-//	}
-
-	public String getConsensusConfig() {
-		return consensusConfig;
-	}
-
-	public void setConsensusConfig(String consensusConfig) {
-		this.consensusConfig = consensusConfig;
 	}
 
 	public static LocalConfig resolve(String initSettingFile) {
@@ -118,16 +93,11 @@ public class LocalConfig {
 
 		if (initSettingFile == null) {
 			conf.bindingOutDir = PropertiesUtils.getRequiredProperty(props, LEDGER_BINDING_OUT);
-			conf.consensusConfig = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONF);
 		} else {
 			String bindingOutDir = PropertiesUtils.getRequiredProperty(props, LEDGER_BINDING_OUT);
-			String consensusConfig = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONF);
 			String initSettingDir = PathUtils.concatPaths(initSettingFile, "../");
 			conf.bindingOutDir = absolutePath(initSettingDir, bindingOutDir);
-			conf.consensusConfig = absolutePath(initSettingDir, consensusConfig);
 		}
-
-		conf.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);
 
 		return conf;
 	}
@@ -139,18 +109,6 @@ public class LocalConfig {
             absolutePath = PathUtils.concatPaths(currPath, settingPath);
 		}
 		return absolutePath;
-	}
-
-	private static int getInt(String strInt) {
-		return Integer.parseInt(strInt.trim());
-	}
-
-	public String getConsensusProvider() {
-		return consensusProvider;
-	}
-
-	public void setConsensusProvider(String consensusProvider) {
-		this.consensusProvider = consensusProvider;
 	}
 
 	/**
@@ -192,12 +150,4 @@ public class LocalConfig {
 
 	}
 
-	public static void main(String[] args) {
-		String currPath = "/Users/zhanglin33/Ddisk/20mintest/0/config/init/local.conf";
-//		String settingPath = "../";
-		String settingPath = "bftsmart.config";
-		String path = absolutePath(PathUtils.concatPaths(currPath, "../"), settingPath);
-		System.out.println(path);
-
-	}
 }

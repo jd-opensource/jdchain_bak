@@ -340,8 +340,7 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		}
 
 		public AsyncCallback<HashDigest> startInit(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
-				Prompter prompter, CountDownLatch quitLatch) {
+				DBConnectionConfig dbConnConfig, Prompter prompter, CountDownLatch quitLatch) {
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -350,8 +349,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 
 					// NodeWebContext.this.initProcess = ctx.getBean(LedgerInitProcess.class);
 					NodeWebContext.this.dbConnConfig = dbConnConfig;
-					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting, csProps,
-							csProvider, dbConnConfig, prompter);
+					HashDigest ledgerHash = NodeWebContext.this.initProcess.initialize(id, privKey, setting,
+							dbConnConfig, prompter);
 
 					quitLatch.countDown();
 					return ledgerHash;
@@ -362,9 +361,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		}
 
 		public AsyncCallback<HashDigest> startInitCommand(PrivKey privKey, String base58Pwd,
-				LedgerInitProperties ledgerSetting, ConsensusSettings csProps, ConsensusProvider csProvider,
-				DBConnectionConfig dbConnConfig, Prompter prompter, LedgerBindingConfig conf,
-				CountDownLatch quitLatch) {
+				LedgerInitProperties ledgerSetting, DBConnectionConfig dbConnConfig, Prompter prompter,
+				LedgerBindingConfig conf, CountDownLatch quitLatch) {
 			this.db = new CompositeConnectionFactory();
 			this.dbConnConfig = dbConnConfig;
 
@@ -372,8 +370,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 				@Override
 				protected HashDigest invoke() throws Exception {
 					LedgerInitCommand initCmd = new LedgerInitCommand();
-					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, csProps,
-							csProvider, dbConnConfig, prompter, conf, db);
+					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, dbConnConfig,
+							prompter, conf, db);
 					NodeWebContext.this.ledgerManager = initCmd.getLedgerManager();
 					quitLatch.countDown();
 					return ledgerHash;

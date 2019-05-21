@@ -81,7 +81,7 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
         ledgerInitSettings.setSeed(initSeed(ledgerMetadata.getSeed()));
 
         // 设置共识协议
-        ledgerInitSettings.setConsensusProtocol(consensusProtocol(ledgerMetadata.getSetting().getConsensusProvider()));
+        ledgerInitSettings.setConsensusProtocol(ledgerMetadata.getSetting().getConsensusProvider());
 
         return ledgerInitSettings;
     }
@@ -108,24 +108,6 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
         }
 
         return seed.toString();
-    }
-
-    /**
-     * 生成共识协议
-     *
-     * @param consensusProvider
-     *    共识协议提提供者
-     * @return
-     */
-    private int consensusProtocol(String consensusProvider) {
-
-        if (consensusProvider.equals(BftsmartConsensusProvider.NAME)) {
-            return LedgerInitSettings.CONSENSUS_PROTOCOL.BFTSMART.code();
-        } else if (consensusProvider.equals(MsgQueueConsensusProvider.NAME)) {
-            return LedgerInitSettings.CONSENSUS_PROTOCOL.MSGQUEUE.code();
-        }
-
-        return LedgerInitSettings.CONSENSUS_PROTOCOL.UNKNOWN.code();
     }
 
     /**

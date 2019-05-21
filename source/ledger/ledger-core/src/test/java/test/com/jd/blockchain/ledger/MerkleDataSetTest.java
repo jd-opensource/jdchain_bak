@@ -14,8 +14,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
 import com.jd.blockchain.ledger.core.MerkleProof;
@@ -26,13 +30,23 @@ import com.jd.blockchain.utils.io.BytesUtils;
 
 public class MerkleDataSetTest {
 
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
+
 	/**
 	 * 测试存储的增长；
 	 */
 	@Test
 	public void testStorageIncreasement() {
+
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		String keyPrefix = "";
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 
@@ -116,7 +130,13 @@ public class MerkleDataSetTest {
 		String keyPrefix = "";
 		Random rand = new Random();
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 
@@ -281,7 +301,13 @@ public class MerkleDataSetTest {
 		String keyPrefix = "";
 		Random rand = new Random();
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 		cryptoConfig.setAutoVerifyHash(true);
 

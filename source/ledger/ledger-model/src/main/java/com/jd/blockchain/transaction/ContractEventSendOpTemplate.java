@@ -12,6 +12,8 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 	private Bytes contractAddress;
 	private byte[] args;
 	private String event;
+	
+	private long ts;
 
 	public ContractEventSendOpTemplate() {
 	}
@@ -37,4 +39,12 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 		return args;
 	}
 
+	@Override
+	public long getTs() {
+		return ts;
+	}
+
+	public void setTs(long ts) {
+		this.ts = ts;
+	}
 }

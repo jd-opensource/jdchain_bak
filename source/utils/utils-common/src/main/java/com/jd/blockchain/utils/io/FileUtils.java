@@ -1,8 +1,22 @@
 package com.jd.blockchain.utils.io;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author haiq
@@ -41,7 +55,7 @@ public class FileUtils {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * 返回父目录的路径；
 	 * 
@@ -67,9 +81,8 @@ public class FileUtils {
 	/**
 	 * 读取指定文件的首行；
 	 * 
-	 * @param file file
-	 * @param charset
-	 *            字符集；
+	 * @param file    file
+	 * @param charset 字符集；
 	 * @return 返回首行非空行；返回结果不会自动截取两头的空字符串；
 	 * @throws IOException exception
 	 */
@@ -90,9 +103,8 @@ public class FileUtils {
 	/**
 	 * 返回指定文件的所有行；
 	 * 
-	 * @param file file
-	 * @param charset
-	 *            字符集；
+	 * @param file    file
+	 * @param charset 字符集；
 	 * @return 返回首行非空行；返回结果不会自动截取两头的空字符串；
 	 */
 	public static String[] readLines(File file, String charset) {
@@ -155,10 +167,8 @@ public class FileUtils {
 	/**
 	 * 以默认字符集（UTF-8）将指定的文本保存到指定的文件中；
 	 * 
-	 * @param file
-	 *            要保存的文件；
-	 * @param text
-	 *            文本内容；
+	 * @param file 要保存的文件；
+	 * @param text 文本内容；
 	 */
 	public static void writeText(String text, File file) {
 		writeText(text, file, DEFAULT_CHARSET);
@@ -166,12 +176,10 @@ public class FileUtils {
 
 	/**
 	 * 将指定的文本保存到指定的文件中；
-	 * @param text
-	 *            文本内容；
-	 * @param file
-	 *            要保存的文件；
-	 * @param charset
-	 *            字符集；
+	 * 
+	 * @param text    文本内容；
+	 * @param file    要保存的文件；
+	 * @param charset 字符集；
 	 */
 	public static void writeText(String text, File file, String charset) {
 		try (FileOutputStream out = new FileOutputStream(file, false)) {
@@ -181,7 +189,7 @@ public class FileUtils {
 			throw new RuntimeIOException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static void writeBytes(byte[] content, File file) {
 		try (FileOutputStream out = new FileOutputStream(file, false)) {
 			out.write(content);
@@ -190,7 +198,7 @@ public class FileUtils {
 			throw new RuntimeIOException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static void appendBytes(byte[] content, File file) {
 		try (FileOutputStream out = new FileOutputStream(file, true)) {
 			out.write(content);
@@ -224,16 +232,23 @@ public class FileUtils {
 
 	/**
 	 * 以默认字符集（UTF-8）从文件读取文本；
+	 * 
 	 * @param file file
 	 * @return String
 	 */
-	public static String readText(String file) {
-		return readText(new File(file), DEFAULT_CHARSET);
+	public static String readText(String filePath) {
+		try {
+			File file = ResourceUtils.getFile(filePath);
+			return readText(file, DEFAULT_CHARSET);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeIOException(e.getMessage(), e);
+		}
 	}
 
 	/**
 	 * 从文件读取文本；
-	 * @param file file
+	 * 
+	 * @param file    file
 	 * @param charset charset
 	 * @return String
 	 */
@@ -254,7 +269,7 @@ public class FileUtils {
 	/**
 	 * 从文件读取文本；
 	 * 
-	 * @param file file
+	 * @param file    file
 	 * @param charset charset
 	 * @return String
 	 */
@@ -278,7 +293,7 @@ public class FileUtils {
 	/**
 	 * 从流读取文本；
 	 * 
-	 * @param in in
+	 * @param in      in
 	 * @param charset charset
 	 * @return String
 	 * @throws IOException exception
@@ -310,7 +325,7 @@ public class FileUtils {
 			throw new RuntimeIOException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static byte[] readBytes(File file) {
 		try {
 			FileInputStream in = new FileInputStream(file);
@@ -324,8 +339,12 @@ public class FileUtils {
 		}
 	}
 
-	public static Properties readProperties(String systemConfig) {
-		return readProperties(systemConfig, DEFAULT_CHARSET);
+	public static Properties readProperties(String file) {
+		return readProperties(file, DEFAULT_CHARSET);
+	}
+
+	public static Properties readProperties(File file) {
+		return readProperties(file, DEFAULT_CHARSET);
 	}
 
 	public static Properties readProperties(String file, String charset) {
@@ -417,11 +436,11 @@ public class FileUtils {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static void deleteFile(String dir) {
 		deleteFile(dir, false);
 	}
-	
+
 	public static void deleteFile(File file) {
 		deleteFile(file, false);
 	}
@@ -435,8 +454,7 @@ public class FileUtils {
 	 * 删除文件；
 	 * 
 	 * @param file
-	 * @param silent
-	 *            是否静默删除；如果为 true ，则吞噬删除过程中的异常，意味着方法即便正常返回时也有可能删除不完全；
+	 * @param silent 是否静默删除；如果为 true ，则吞噬删除过程中的异常，意味着方法即便正常返回时也有可能删除不完全；
 	 */
 	public static void deleteFile(File file, boolean silent) {
 		if (file.isFile()) {

@@ -68,6 +68,8 @@ public interface DataCodes {
 	// public static final int METADATA_PARTICIPANT_INFO = 0x640;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
+	
+	public static final int METADATA_CRYPTO_SETTING_PROVIDER = 0x643;
 
 	// public static final int ACCOUNT = 0x700;
 

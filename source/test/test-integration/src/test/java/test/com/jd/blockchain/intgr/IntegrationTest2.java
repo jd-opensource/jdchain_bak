@@ -41,7 +41,6 @@ import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
-import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest.NodeWebContext;
 
@@ -51,14 +50,14 @@ import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsT
 public class IntegrationTest2 {
 	// 合约测试使用的初始化数据;
 	BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-	private String contractZipName = "contract.jar";
+	private String contractZipName = "AssetContract3.contract";
 	private String eventName = "issue-asset";
 
 	@Test
 	public void test() {
 		// init ledgers of all nodes ;
 		IntegratedContext context = initLedgers(LedgerInitConsensusConfig.mqConfig,
-                LedgerInitConsensusConfig.memConnectionStrings);
+				LedgerInitConsensusConfig.memConnectionStrings);
 		Node node0 = context.getNode(0);
 		Node node1 = context.getNode(1);
 		Node node2 = context.getNode(2);
@@ -71,10 +70,10 @@ public class IntegrationTest2 {
 		PeerTestRunner peer1 = new PeerTestRunner(peerSrvAddr1, node1.getBindingConfig(), node1.getStorageDB());
 
 		NetworkAddress peerSrvAddr2 = new NetworkAddress("127.0.0.1", 13220);
-		PeerTestRunner peer2 = new PeerTestRunner(peerSrvAddr2,node2.getBindingConfig(),  node2.getStorageDB());
+		PeerTestRunner peer2 = new PeerTestRunner(peerSrvAddr2, node2.getBindingConfig(), node2.getStorageDB());
 
 		NetworkAddress peerSrvAddr3 = new NetworkAddress("127.0.0.1", 13230);
-		PeerTestRunner peer3 = new PeerTestRunner(peerSrvAddr3,node3.getBindingConfig(),  node3.getStorageDB());
+		PeerTestRunner peer3 = new PeerTestRunner(peerSrvAddr3, node3.getBindingConfig(), node3.getStorageDB());
 
 		AsyncCallback<Object> peerStarting0 = peer0.start();
 		AsyncCallback<Object> peerStarting1 = peer1.start();
@@ -193,26 +192,26 @@ public class IntegrationTest2 {
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(dbConns[0]);
 		LedgerBindingConfig bindingConfig0 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, csProps, csProvider,
-				testDb0, consolePrompter, bindingConfig0, quitLatch);
+		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, testDb0,
+				consolePrompter, bindingConfig0, quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(dbConns[1]);
 		LedgerBindingConfig bindingConfig1 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, csProps,csProvider,
-				testDb1, consolePrompter, bindingConfig1, quitLatch);
+		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, testDb1,
+				consolePrompter, bindingConfig1, quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(dbConns[2]);
 		LedgerBindingConfig bindingConfig2 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, csProps,csProvider,
-				testDb2, consolePrompter, bindingConfig2, quitLatch);
+		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, testDb2,
+				consolePrompter, bindingConfig2, quitLatch);
 
 		DBConnectionConfig testDb3 = new DBConnectionConfig();
 		testDb3.setConnectionUri(dbConns[3]);
 		LedgerBindingConfig bindingConfig3 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, csProps,csProvider,
-				testDb3, consolePrompter, bindingConfig3, quitLatch);
+		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, testDb3,
+				consolePrompter, bindingConfig3, quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -287,7 +286,7 @@ public class IntegrationTest2 {
 	}
 
 	private void testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-										 BlockchainService blockchainService, IntegratedContext context) {
+			BlockchainService blockchainService, IntegratedContext context) {
 		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 
 		// 定义交易；
@@ -305,18 +304,18 @@ public class IntegrationTest2 {
 		assertTrue(txResp.isSuccess());
 
 		// execute the contract;
-		testContractExe(adminKey, ledgerHash, userKey,  blockchainService, context);
+		testContractExe(adminKey, ledgerHash, userKey, blockchainService, context);
 	}
 
 	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
-								 BlockchainService blockchainService, IntegratedContext context) {
+			BlockchainService blockchainService, IntegratedContext context) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
-		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight()-1);
+		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		txTpl.contract(contractDeployKey.getAddress(), AssetContract.class).issue(10,"abc");
+		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName, ("888##999##abc").getBytes());
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -326,7 +325,6 @@ public class IntegrationTest2 {
 		TransactionResponse txResp = ptx.commit();
 		assertTrue(txResp.isSuccess());
 	}
-
 
 	/**
 	 * 根据合约构建字节数组;

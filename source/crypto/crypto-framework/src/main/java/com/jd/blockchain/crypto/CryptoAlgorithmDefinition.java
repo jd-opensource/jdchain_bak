@@ -23,16 +23,14 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 
 	@Override
 	public String toString() {
-		return name + "[" + (code & 0xFFFF) + "]";
+		return CryptoAlgorithm.getString(this);
 	}
 
 	/**
 	 * 声明一项哈希算法；
 	 * 
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm defineHash(String name, byte uid) {
@@ -43,10 +41,8 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 	/**
 	 * 声明一项非对称密码算法；
 	 * 
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm defineSignature(String name, boolean encryptable, byte uid) {
@@ -62,10 +58,8 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 	/**
 	 * 声明一项非对称加密算法；
 	 *
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm defineAsymmetricEncryption(String name, byte uid) {
@@ -76,10 +70,8 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 	/**
 	 * 声明一项对称密码算法；
 	 * 
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm defineSymmetricEncryption(String name, byte uid) {
@@ -90,10 +82,8 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 	/**
 	 * 声明一项随机数算法；
 	 * 
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm defineRandom(String name, byte uid) {
@@ -104,10 +94,8 @@ public final class CryptoAlgorithmDefinition implements CryptoAlgorithm {
 	/**
 	 * 声明一项扩展的密码算法；
 	 * 
-	 * @param name
-	 *            算法名称；
-	 * @param uid
-	 *            算法ID；需要在同类算法中保持唯一性；
+	 * @param name 算法名称；
+	 * @param uid  算法ID；需要在同类算法中保持唯一性；
 	 * @return
 	 */
 	public static CryptoAlgorithm definExt(String name, byte uid) {

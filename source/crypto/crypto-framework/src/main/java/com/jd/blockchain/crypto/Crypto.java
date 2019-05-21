@@ -106,6 +106,44 @@ public final class Crypto {
 	private Crypto() {
 	}
 
+	public static CryptoProvider[] getProviders() {
+		Collection<Provider<CryptoService>> providers = pm.getAllProviders(CryptoService.class);
+		CryptoProvider[] infos = new CryptoProvider[providers.size()];
+
+		int i = 0;
+		for (Provider<CryptoService> pd : providers) {
+			CryptoProviderInfo info = getProviderInfo(pd);
+			infos[i] = info;
+		}
+
+		return infos;
+	}
+
+	private static CryptoProviderInfo getProviderInfo(Provider<CryptoService> pd) {
+		Collection<CryptoFunction> functions = pd.getService().getFunctions();
+		CryptoAlgorithm[] algorithms = new CryptoAlgorithm[functions.size()];
+		int i = 0;
+		for (CryptoFunction function : functions) {
+			algorithms[i] = function.getAlgorithm();
+			i++;
+		}
+		return new CryptoProviderInfo(pd.getFullName(), algorithms);
+	}
+
+	/**
+	 * 返回指定名称的密码服务提供者；如果不存在，则返回 null ；
+	 * 
+	 * @param providerFullName
+	 * @return
+	 */
+	public static CryptoProvider getProvider(String providerFullName) {
+		Provider<CryptoService> pd = pm.getProvider(CryptoService.class, providerFullName);
+		if (pd == null) {
+			throw new CryptoException("Crypto service provider named [" + providerFullName + "] does not exist!");
+		}
+		return getProviderInfo(pd);
+	}
+
 	public static Collection<CryptoAlgorithm> getAllAlgorithms() {
 		return algorithms.values();
 	}

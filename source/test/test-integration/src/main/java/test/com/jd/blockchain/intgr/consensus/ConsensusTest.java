@@ -215,26 +215,26 @@ public class ConsensusTest {
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri("memory://local/0");
 		LedgerBindingConfig bindingConfig0 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, csProps,csProvider,
-				testDb0, consolePrompter, bindingConfig0, quitLatch);
+		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, csProps,
+				csProvider, testDb0, consolePrompter, bindingConfig0, quitLatch);
 
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri("memory://local/1");
 		LedgerBindingConfig bindingConfig1 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, csProps,csProvider,
-				testDb1, consolePrompter, bindingConfig1, quitLatch);
+		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, csProps,
+				csProvider, testDb1, consolePrompter, bindingConfig1, quitLatch);
 
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri("memory://local/2");
 		LedgerBindingConfig bindingConfig2 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, csProps,csProvider,
-				testDb2, consolePrompter, bindingConfig2, quitLatch);
+		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, csProps,
+				csProvider, testDb2, consolePrompter, bindingConfig2, quitLatch);
 
 		DBConnectionConfig testDb3 = new DBConnectionConfig();
 		testDb3.setConnectionUri("memory://local/3");
 		LedgerBindingConfig bindingConfig3 = new LedgerBindingConfig();
-		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, csProps,csProvider,
-				testDb3, consolePrompter, bindingConfig3, quitLatch);
+		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, csProps,
+				csProvider, testDb3, consolePrompter, bindingConfig3, quitLatch);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -354,8 +354,8 @@ public class ConsensusTest {
 		}
 
 		public AsyncCallback<HashDigest> startInit(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig, Prompter prompter,
-				CountDownLatch quitLatch) {
+				ConsensusSettings csProps, ConsensusProvider csProvider, DBConnectionConfig dbConnConfig,
+				Prompter prompter, CountDownLatch quitLatch) {
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -364,7 +364,7 @@ public class ConsensusTest {
 
 					// NodeWebContext.this.initProcess = ctx.getBean(LedgerInitProcess.class);
 					NodeInitContext.this.dbConnConfig = dbConnConfig;
-					HashDigest ledgerHash = NodeInitContext.this.initProcess.initialize(id, privKey, setting, csProps, csProvider,
+					HashDigest ledgerHash = NodeInitContext.this.initProcess.initialize(id, privKey, setting,
 							dbConnConfig, prompter);
 
 					quitLatch.countDown();
@@ -386,8 +386,7 @@ public class ConsensusTest {
 				@Override
 				protected HashDigest invoke() throws Exception {
 					LedgerInitCommand initCmd = new LedgerInitCommand();
-					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, csProps,
-							csProvider, dbConnConfig, prompter, conf, db);
+					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, dbConnConfig, prompter, conf, db);
 					NodeInitContext.this.ledgerManager = initCmd.getLedgerManager();
 					quitLatch.countDown();
 					return ledgerHash;

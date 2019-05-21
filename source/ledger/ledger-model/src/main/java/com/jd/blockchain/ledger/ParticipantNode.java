@@ -22,6 +22,7 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
+	@DataField(order = 0, primitiveType = PrimitiveType.INT32)
 	int getId();
 
 	/**

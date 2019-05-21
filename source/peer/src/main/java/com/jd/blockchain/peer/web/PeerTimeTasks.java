@@ -15,11 +15,11 @@ import com.jd.blockchain.peer.ConsensusManage;
 import com.jd.blockchain.peer.LedgerBindingConfigAware;
 import com.jd.blockchain.peer.PeerServerBooter;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.utils.ArgumentSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
@@ -38,8 +38,10 @@ import java.util.*;
  * @since 1.0.0
  */
 @Component
-//@EnableScheduling
+@EnableScheduling
 public class PeerTimeTasks implements ApplicationContextAware {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(PeerTimeTasks.class);
 
     private ApplicationContext applicationContext;
 
@@ -51,7 +53,9 @@ public class PeerTimeTasks implements ApplicationContextAware {
     //每1分钟执行一次
     @Scheduled(cron = "0 */5 * * * * ")
     public void updateLedger(){
-        System.out.println ("Update Ledger Tasks Start " + new Date());
+
+        LOGGER.debug("Time Task Update Ledger Tasks Start {}", new Date());
+
         try {
             LedgerBindingConfig ledgerBindingConfig = loadLedgerBindingConfig();
 
@@ -78,7 +82,8 @@ public class PeerTimeTasks implements ApplicationContextAware {
                 Map<String, LedgerBindingConfigAware> bindingConfigAwares = applicationContext.getBeansOfType(LedgerBindingConfigAware.class);
                 List<NodeServer> nodeServers = new ArrayList<>();
                 for (HashDigest ledgerHash : newAddHashs) {
-                    System.out.printf("newLedger[%s] \r\n", ledgerHash.toBase58());
+
+                    LOGGER.info("New Ledger [{}] Need To Be Init !!!", ledgerHash.toBase58());
                     for (LedgerBindingConfigAware aware : bindingConfigAwares.values()) {
                         nodeServers.add(aware.setConfig(ledgerBindingConfig, ledgerHash));
                     }
@@ -89,10 +94,10 @@ public class PeerTimeTasks implements ApplicationContextAware {
                     consensusManage.runRealm(nodeServer);
                 }
             } else {
-                System.out.println("All Ledgers is newest!!!");
+                LOGGER.debug("All Ledgers is newest!!!");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -104,7 +109,8 @@ public class PeerTimeTasks implements ApplicationContextAware {
     private LedgerBindingConfig loadLedgerBindingConfig() throws Exception {
         LedgerBindingConfig ledgerBindingConfig;
         ledgerBindConfigFile = PeerServerBooter.ledgerBindConfigFile;
-        System.out.printf("load ledgerBindConfigFile = %s \r\n", ledgerBindConfigFile);
+        LOGGER.debug("Load LedgerBindConfigFile path = {}",
+                ledgerBindConfigFile == null ? "Default" : ledgerBindConfigFile);
         if (ledgerBindConfigFile == null) {
             ClassPathResource configResource = new ClassPathResource("ledger-binding.conf");
             InputStream in = configResource.getInputStream();

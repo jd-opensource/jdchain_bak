@@ -1,14 +1,7 @@
 package com.jd.blockchain.utils;
 
 import java.lang.reflect.Array;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author haiq
@@ -83,5 +76,4 @@ public abstract class ArrayUtils {
 		}
 		return new ReadonlyArrayListWrapper<T>(array, fromIndex, toIndex);
 	}
-
 }
