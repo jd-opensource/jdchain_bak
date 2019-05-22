@@ -1,12 +1,14 @@
 package com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.CryptoException;
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
-import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.crypto.util.OpenSSHPrivateKeyUtil;
 import org.bouncycastle.crypto.util.OpenSSHPublicKeyUtil;
 import org.bouncycastle.jce.spec.OpenSSHPrivateKeySpec;
 import org.bouncycastle.jce.spec.OpenSSHPublicKeySpec;
+import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 import org.bouncycastle.util.Strings;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -131,10 +133,27 @@ public class SSHKeyParser {
                 }
 
                 case "ssh-dss": {
+                    BigInteger p = new BigInteger(1, privKeyReader.readBytes());
+                    BigInteger q = new BigInteger(1, privKeyReader.readBytes());
+                    BigInteger g = new BigInteger(1, privKeyReader.readBytes());
+                    privKeyReader.readBytes(); // y
+                    BigInteger x = new BigInteger(1, privKeyReader.readBytes());
+
+                    result = new DSAPrivateKeyParameters(x, new DSAParameters(p, q, g));
                     break;
                 }
 
                 case "ecdsa-sha2-nistp256": {
+                    privKeyReader.readBytes(); // nistp256
+                    privKeyReader.readBytes(); // Q
+                    BigInteger d = new BigInteger(1, privKeyReader.readBytes());
+                    X9ECParameters x9Params = SECNamedCurves.getByName("secp256r1");
+                    result = new ECPrivateKeyParameters(d, new ECDomainParameters(
+                                    x9Params.getCurve(),
+                                    x9Params.getG(),
+                                    x9Params.getN(),
+                                    x9Params.getH(),
+                                    x9Params.getSeed()));
                     break;
                 }
 

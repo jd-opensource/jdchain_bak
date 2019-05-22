@@ -1,10 +1,17 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.SSHKeyParser;
-import org.bouncycastle.crypto.params.RSAKeyParameters;
-import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.Strings;
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -68,7 +75,7 @@ public class SSHKeyUtilsTest {
     @Test
     public void parseRSAPrivateKeyTest() {
 
-        String privKeyStr = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
                 "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\n" +
                 "NhAAAAAwEAAQAAAQEAmMCzeBF8u4NF7oL+JUH6Lo2wEYuPID0sVbqbRrEqBqrEtNHvawO7\n" +
                 "9KsxSmvWYZ8NVpIwpxF0WADIggCWJDP5hiPJm96pHHTYRlmZj56KVfg+OgkxQdeMnkfZo6\n" +
@@ -138,7 +145,7 @@ public class SSHKeyUtilsTest {
 
 
         SSHKeyParser parser = new SSHKeyParser();
-        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) parser.privKeyParse(privKeyStr);
+        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) parser.privKeyParse(privKeyStrWithHead);
         assertEquals(pubExponent,privKey.getPublicExponent());
         assertEquals(modulus,privKey.getModulus());
         assertEquals(privExponent,privKey.getExponent());
@@ -151,5 +158,227 @@ public class SSHKeyUtilsTest {
         assertEquals(privKeyFormat,parser.getKeyFormat());
         assertEquals(privKeyType,parser.getKeyType());
         assertEquals(id,parser.getIdentity());
+    }
+
+    @Test
+    public void parseDSAPublicKeyTest() {
+
+        String pubKeyStrWithHead = "ssh-dss AAAAB3NzaC1kc3MAAACBAIOpp3qEY9zVOxQFgLS+2sOqXT+lnJVc" +
+                "Nr68eAE/iYG02kYKs/BrJYBbr0nb10ERdQv6Yte9tQilpJTMKPhNuTVIHTK2xbV0nfChN4wePY+XJyb" +
+                "Ima/m41FnIlfp2ov54ePLsNgY41qYWxuKzxURV67DgPxbMqMZmBV2Ccpb5+t/AAAAFQCcyJjOhDH3Ck" +
+                "Lbs9dHx/gUtmsh0wAAAIB3MyVR817NTbaRA4pO0AVnk4jC7JKVeKDlZaBBLt1CzyMKY7OzNgioqZmBX" +
+                "tffkHXBXxd75AdiBLeurmAPLKsZ50O+lRQI8QwGL5ne0dkGP+sRFdqTEA2BMjWyvlx6xwJD14/cKpgg" +
+                "fLt+FBt5nhwmbewxt9uWXENfzD/84Z7aOQAAAIA0DOAIv6SqSEPOyzPMHVWGGiqNFFgQ0gOH7BhrLD/" +
+                "hNqFz5vuKQd5rhKCVXxzANTQ8WrINMIk3aYIRgp96oxI3xsL1w7rYODoQmkx4JFHfvU/Sls40r1h09D" +
+                "OWSbqE99mo41RIZMauVFlYlhYnusziX1QyGAabHMcz73Y19vrKCg== zhanglin33@JRMVP10WHTD5";
+
+        BigInteger p = new BigInteger("83a9a77a8463dcd53b140580b4bedac3aa5d3fa59c955c36bebc" +
+                "78013f8981b4da460ab3f06b25805baf49dbd74111750bfa62d7bdb508a5a494cc28f84db93548" +
+                "1d32b6c5b5749df0a1378c1e3d8f972726c899afe6e351672257e9da8bf9e1e3cbb0d818e35a98" +
+                "5b1b8acf151157aec380fc5b32a31998157609ca5be7eb7f", 16);
+        BigInteger q = new BigInteger("9cc898ce8431f70a42dbb3d747c7f814b66b21d3", 16);
+        BigInteger g = new BigInteger("77332551f35ecd4db691038a4ed005679388c2ec929578a0e565" +
+                "a0412edd42cf230a63b3b33608a8a999815ed7df9075c15f177be4076204b7aeae600f2cab19e7" +
+                "43be951408f10c062f99ded1d9063feb1115da93100d813235b2be5c7ac70243d78fdc2a98207c" +
+                "bb7e141b799e1c266dec31b7db965c435fcc3ffce19eda39", 16);
+        BigInteger y = new BigInteger("340ce008bfa4aa4843cecb33cc1d55861a2a8d145810d20387ec" +
+                "186b2c3fe136a173e6fb8a41de6b84a0955f1cc035343c5ab20d308937698211829f7aa31237c6" +
+                "c2f5c3bad8383a109a4c782451dfbd4fd296ce34af5874f4339649ba84f7d9a8e3544864c6ae54" +
+                "5958961627bacce25f543218069b1cc733ef7635f6faca0a", 16);
+
+        String pubKeyFormat = "OpenSSH";
+        String pubKeyType = "ssh-dss";
+        String id = "zhanglin33@JRMVP10WHTD5";
+
+        SSHKeyParser parser = new SSHKeyParser();
+
+        DSAPublicKeyParameters pubKey = (DSAPublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        DSAParameters parameters = pubKey.getParameters();
+        assertEquals(p, parameters.getP());
+        assertEquals(q, parameters.getQ());
+        assertEquals(g, parameters.getG());
+        assertEquals(y, pubKey.getY());
+
+        assertEquals(pubKeyFormat,parser.getKeyFormat());
+        assertEquals(pubKeyType,parser.getKeyType());
+        assertEquals(id, parser.getIdentity());
+    }
+
+    @Test
+    public void parseDSAPrivateKeyTest() {
+
+        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABsQAAAAdzc2gtZH\n" +
+                "NzAAAAgQCDqad6hGPc1TsUBYC0vtrDql0/pZyVXDa+vHgBP4mBtNpGCrPwayWAW69J29dB\n" +
+                "EXUL+mLXvbUIpaSUzCj4Tbk1SB0ytsW1dJ3woTeMHj2PlycmyJmv5uNRZyJX6dqL+eHjy7\n" +
+                "DYGONamFsbis8VEVeuw4D8WzKjGZgVdgnKW+frfwAAABUAnMiYzoQx9wpC27PXR8f4FLZr\n" +
+                "IdMAAACAdzMlUfNezU22kQOKTtAFZ5OIwuySlXig5WWgQS7dQs8jCmOzszYIqKmZgV7X35\n" +
+                "B1wV8Xe+QHYgS3rq5gDyyrGedDvpUUCPEMBi+Z3tHZBj/rERXakxANgTI1sr5cescCQ9eP\n" +
+                "3CqYIHy7fhQbeZ4cJm3sMbfbllxDX8w//OGe2jkAAACANAzgCL+kqkhDzsszzB1VhhoqjR\n" +
+                "RYENIDh+wYayw/4Tahc+b7ikHea4SglV8cwDU0PFqyDTCJN2mCEYKfeqMSN8bC9cO62Dg6\n" +
+                "EJpMeCRR371P0pbONK9YdPQzlkm6hPfZqONUSGTGrlRZWJYWJ7rM4l9UMhgGmxzHM+92Nf\n" +
+                "b6ygoAAAHwI0abUyNGm1MAAAAHc3NoLWRzcwAAAIEAg6mneoRj3NU7FAWAtL7aw6pdP6Wc\n" +
+                "lVw2vrx4AT+JgbTaRgqz8GslgFuvSdvXQRF1C/pi1721CKWklMwo+E25NUgdMrbFtXSd8K\n" +
+                "E3jB49j5cnJsiZr+bjUWciV+nai/nh48uw2BjjWphbG4rPFRFXrsOA/FsyoxmYFXYJylvn\n" +
+                "638AAAAVAJzImM6EMfcKQtuz10fH+BS2ayHTAAAAgHczJVHzXs1NtpEDik7QBWeTiMLskp\n" +
+                "V4oOVloEEu3ULPIwpjs7M2CKipmYFe19+QdcFfF3vkB2IEt66uYA8sqxnnQ76VFAjxDAYv\n" +
+                "md7R2QY/6xEV2pMQDYEyNbK+XHrHAkPXj9wqmCB8u34UG3meHCZt7DG325ZcQ1/MP/zhnt\n" +
+                "o5AAAAgDQM4Ai/pKpIQ87LM8wdVYYaKo0UWBDSA4fsGGssP+E2oXPm+4pB3muEoJVfHMA1\n" +
+                "NDxasg0wiTdpghGCn3qjEjfGwvXDutg4OhCaTHgkUd+9T9KWzjSvWHT0M5ZJuoT32ajjVE\n" +
+                "hkxq5UWViWFie6zOJfVDIYBpscxzPvdjX2+soKAAAAFEJXzZu8UDkISU8DCj/KY7Fq31R8\n" +
+                "AAAAF3poYW5nbGluMzNASlJNVlAxMFdIVEQ1AQIDBA==\n" +
+                "-----END OPENSSH PRIVATE KEY-----\n";
+
+        BigInteger p = new BigInteger("83a9a77a8463dcd53b140580b4bedac3aa5d3fa59c955c36bebc" +
+                "78013f8981b4da460ab3f06b25805baf49dbd74111750bfa62d7bdb508a5a494cc28f84db93548" +
+                "1d32b6c5b5749df0a1378c1e3d8f972726c899afe6e351672257e9da8bf9e1e3cbb0d818e35a98" +
+                "5b1b8acf151157aec380fc5b32a31998157609ca5be7eb7f", 16);
+        BigInteger q = new BigInteger("9cc898ce8431f70a42dbb3d747c7f814b66b21d3", 16);
+        BigInteger g = new BigInteger("77332551f35ecd4db691038a4ed005679388c2ec929578a0e565" +
+                "a0412edd42cf230a63b3b33608a8a999815ed7df9075c15f177be4076204b7aeae600f2cab19e7" +
+                "43be951408f10c062f99ded1d9063feb1115da93100d813235b2be5c7ac70243d78fdc2a98207c" +
+                "bb7e141b799e1c266dec31b7db965c435fcc3ffce19eda39", 16);
+        BigInteger y = new BigInteger("340ce008bfa4aa4843cecb33cc1d55861a2a8d145810d20387ec" +
+                "186b2c3fe136a173e6fb8a41de6b84a0955f1cc035343c5ab20d308937698211829f7aa31237c6" +
+                "c2f5c3bad8383a109a4c782451dfbd4fd296ce34af5874f4339649ba84f7d9a8e3544864c6ae54" +
+                "5958961627bacce25f543218069b1cc733ef7635f6faca0a", 16);
+
+        BigInteger x = new BigInteger("4257cd9bbc503908494f030a3fca63b16adf547c", 16);
+
+        String privKeyFormat = "OpenSSH";
+        String privKeyType = "ssh-dss";
+        String id = "zhanglin33@JRMVP10WHTD5";
+//        byte[] privKeyBytes = new byte[0];
+//        try {
+//            privKeyBytes = new PemReader(new StringReader(privKeyStrWithHead)).readPemObject().getContent();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(Hex.toHexString(privKeyBytes));
+
+        SSHKeyParser parser = new SSHKeyParser();
+        DSAPrivateKeyParameters privKey = (DSAPrivateKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+        assertEquals(x,privKey.getX());
+        assertEquals(y,g.modPow(x,p));
+
+        DSAParameters parameters = privKey.getParameters();
+        assertEquals(p, parameters.getP());
+        assertEquals(q, parameters.getQ());
+        assertEquals(g, parameters.getG());
+        assertEquals(x, privKey.getX());
+
+        assertEquals(privKeyFormat,parser.getKeyFormat());
+        assertEquals(privKeyType,parser.getKeyType());
+        assertEquals(id, parser.getIdentity());
+    }
+
+    @Test
+    public void parseECDSAPublicKeyTest() {
+
+        String pubKeyStrWithHead = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbml" +
+                "zdHAyNTYAAABBBEi5T13AMBMBthe7a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVK" +
+                "ct+Kcc6vtNKuUhn8fVqEZU= zhanglin33@JRMVP10WHTD5";
+
+        BigInteger gX = new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16);
+        BigInteger gY = new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16);
+
+        BigInteger QX = new BigInteger("48b94f5dc0301301b617bb6ba1b04a82b924af26544317ced200ea450646e35e",16);
+        BigInteger QY = new BigInteger("7e846d63494fc779267885b818615529cb7e29c73abed34ab94867f1f56a1195",16);
+
+        String pubKeyFormat = "OpenSSH";
+        String pubKeyType = "ecdsa-sha2-nistp256";
+        String id = "zhanglin33@JRMVP10WHTD5";
+
+        SSHKeyParser parser = new SSHKeyParser();
+        ECPublicKeyParameters pubKey = (ECPublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        SecP256R1Curve curve = new SecP256R1Curve();
+        ECPoint g = curve.createPoint(gX,gY);
+        ECPoint Q = curve.createPoint(QX,QY);
+        assertEquals(g,pubKey.getParameters().getG());
+        assertEquals(Q,pubKey.getQ());
+
+        assertEquals(pubKeyFormat,parser.getKeyFormat());
+        assertEquals(pubKeyType,parser.getKeyType());
+        assertEquals(id, parser.getIdentity());
+    }
+
+    @Test
+    public void parseECDSAPrivateKeyTest() {
+
+        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS\n" +
+                "1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQRIuU9dwDATAbYXu2uhsEqCuSSvJlRD\n" +
+                "F87SAOpFBkbjXn6EbWNJT8d5JniFuBhhVSnLfinHOr7TSrlIZ/H1ahGVAAAAsGEuQiRhLk\n" +
+                "IkAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEi5T13AMBMBthe7\n" +
+                "a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVKct+Kcc6vtNKuUhn8fVqEZ\n" +
+                "UAAAAhAPEgd42vUGT8APac9sNgj7zIkE4m9/r8+7tATePBXucRAAAAF3poYW5nbGluMzNA\n" +
+                "SlJNVlAxMFdIVEQ1\n" +
+                "-----END OPENSSH PRIVATE KEY-----";
+
+        BigInteger gX = new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16);
+        BigInteger gY = new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16);
+
+        BigInteger QX = new BigInteger("48b94f5dc0301301b617bb6ba1b04a82b924af26544317ced200ea450646e35e",16);
+        BigInteger QY = new BigInteger("7e846d63494fc779267885b818615529cb7e29c73abed34ab94867f1f56a1195",16);
+        BigInteger d = new BigInteger("00f120778daf5064fc00f69cf6c3608fbcc8904e26f7fafcfbbb404de3c15ee711",16);
+
+        String privKeyFormat = "OpenSSH";
+        String privKeyType = "ecdsa-sha2-nistp256";
+        String id = "zhanglin33@JRMVP10WHTD5";
+        byte[] privKeyBytes = new byte[0];
+        try {
+            privKeyBytes = new PemReader(new StringReader(privKeyStrWithHead)).readPemObject().getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Hex.toHexString(privKeyBytes));
+
+        SSHKeyParser parser = new SSHKeyParser();
+        ECPrivateKeyParameters privKey = (ECPrivateKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+
+        SecP256R1Curve curve = new SecP256R1Curve();
+        ECPoint g = curve.createPoint(gX,gY);
+        ECPoint Q = curve.createPoint(QX,QY);
+        assertEquals(g,privKey.getParameters().getG());
+        assertEquals(d,privKey.getD());
+        assertEquals(Q,g.multiply(d));
+
+        assertEquals(privKeyFormat,parser.getKeyFormat());
+        assertEquals(privKeyType,parser.getKeyType());
+        assertEquals(id, parser.getIdentity());
+    }
+
+
+    @Test
+    public void parseED25519PublicKeyTest() {
+
+        String pubKeyStrWithHead = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWVU6JcJ3k/ZM9FxKY5h" +
+                "kxWSi1EEZaYwCChiJ00wwps zhanglin33@JRMVP10WHTD5";
+
+        BigInteger gX = new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16);
+        BigInteger gY = new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16);
+
+        byte[] A = Hex.decode()
+
+
+        String pubKeyFormat = "OpenSSH";
+        String pubKeyType = "ssh-ed25519";
+        String id = "zhanglin33@JRMVP10WHTD5";
+
+        SSHKeyParser parser = new SSHKeyParser();
+        parser.pubKeyParse(pubKeyStrWithHead);
+        String str = "AAAAC3NzaC1lZDI1NTE5AAAAICWVU6JcJ3k/ZM9FxKY5hkxWSi1EEZaYwCChiJ00wwps";
+        System.out.println(Hex.toHexString(Base64.decode(str)));
+        Ed25519PublicKeyParameters pubKey = (Ed25519PublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        pubKey.getEncoded()
+//        SecP256R1Curve curve = new SecP256R1Curve();
+//        ECPoint g = curve.createPoint(gX,gY);
+//        ECPoint Q = curve.createPoint(QX,QY);
+//        assertEquals(g,pubKey.getParameters().getG());
+//        assertEquals(Q,pubKey.getQ());
+
+        assertEquals(pubKeyFormat,parser.getKeyFormat());
+        assertEquals(pubKeyType,parser.getKeyType());
+        assertEquals(id, parser.getIdentity());
     }
 }

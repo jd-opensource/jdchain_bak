@@ -65,8 +65,7 @@ public class ECDSAUtils {
      * @return publicKey
      */
     public static byte[] retrievePublicKey(byte[] privateKey) {
-        ECMultiplier createBasePointMultiplier = new FixedPointCombMultiplier();
-        ECPoint publicKeyPoint = createBasePointMultiplier.multiply(DOMAIN_PARAMS.getG(), new BigInteger(1,privateKey)).normalize();
+        ECPoint publicKeyPoint = DOMAIN_PARAMS.getG().multiply(new BigInteger(1,privateKey)).normalize();
         return publicKeyPoint.getEncoded(false);
     }
 
