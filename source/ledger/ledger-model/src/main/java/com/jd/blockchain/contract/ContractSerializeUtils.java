@@ -6,8 +6,10 @@ import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.ArrayUtils;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.io.BytesUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.SerializationUtils;
 
 import java.lang.annotation.Annotation;
@@ -92,7 +94,7 @@ public class ContractSerializeUtils {
             byteBuffer.putInt(curResult.length);
         }
         for(int k=0; k<result.length; k++){
-            byteBuffer.put(result[k],0, result[k].length);
+            byteBuffer.put(result[k]);
         }
         return byteBuffer.array();
     }
@@ -113,21 +115,50 @@ public class ContractSerializeUtils {
         Object result[] = new Object[classTypes.length];
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(params.length);
+        byteBuffer.put(params);
         int paramNums = byteBuffer.getInt(0);
 
         if(paramNums != classTypes.length){
             throw new IllegalArgumentException("deserializeMethodparm. params'length in byte[] != method's param length");
         }
+
+        Annotation [][] annotations = method.getParameterAnnotations();
+        int offsetPosition = (1 + classTypes.length)*4; //start position of real data;
         for(int i=0; i<classTypes.length; i++){
             Class<?> classType = classTypes[i];
-            int curParamLength = byteBuffer.get(i+1);
+            int curParamLength = byteBuffer.getInt((i+1)*4);
             DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
             if(dataContract == null){
-                throw new IllegalArgumentException("must set annotation in each param of contract.");
+                boolean canPass = false;
+                //check by annotation;
+                Annotation[] annotationArr = annotations[i];
+                for(Annotation annotation : annotationArr){
+                    if(annotation.annotationType().equals(DataContract.class)){
+                        dataContract = (DataContract) annotation;
+                        canPass = true;
+                    }
+                }
+                if(!canPass){
+                    throw new IllegalArgumentException("must set annotation in each param of contract.");
+                }
             }
-            result [i] = BinaryProtocol.decodeAs(
-                    byteBuffer.get(params,(i + 1 + classTypes.length)*4,curParamLength).array(),
+            ByteBuffer byteBuffer1 = ByteBuffer.allocate(curParamLength);
+            byteBuffer1.put(params,offsetPosition,curParamLength);
+            offsetPosition += curParamLength;
+            //if dataContract=primitive type(byte/short/int/long/String),only use its getValues();
+            Object object = BinaryProtocol.decodeAs(byteBuffer1.array(),
                     getDataIntf().get(dataContract.code()));
+            if(isPrimitiveType(dataContract.code())){
+                Class<?> classObj = getDataIntf().get(dataContract.code());
+                try {
+                    result[i] = ReflectionUtils.invokeMethod(classObj.getMethod("getValue"),object);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalStateException("no getValue(). detail="+e.getMessage());
+                }
+            }else {
+                result[i] = object;
+            }
+            byteBuffer1.clear();
         }
 
         return result;
@@ -146,19 +177,28 @@ public class ContractSerializeUtils {
         return dataContractMap;
     }
 
+    public static boolean isPrimitiveType(int dataContractCode){
+        return (dataContractCode == DataCodes.CONTRACT_INT8 ||
+                dataContractCode == DataCodes.CONTRACT_INT16 ||
+                dataContractCode == DataCodes.CONTRACT_INT32 ||
+                dataContractCode == DataCodes.CONTRACT_INT64 ||
+                dataContractCode == DataCodes.CONTRACT_TEXT
+        );
+    }
+
     private static Object regenObj(DataContract dataContract, Object object){
         if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT8.class)){
             return new CONTRACT_INT8() {
                 @Override
-                public int getValue() {
-                    return Integer.parseInt(object.toString());
+                public Byte getValue() {
+                    return Byte.parseByte(object.toString());
                 }
             };
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT16.class)){
             return new CONTRACT_INT16() {
                 @Override
-                public int getValue() {
-                    return Integer.parseInt(object.toString());
+                public short getValue() {
+                    return Short.parseShort(object.toString());
                 }
             };
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT32.class)){
@@ -185,8 +225,8 @@ public class ContractSerializeUtils {
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BINARY.class)){
             return new CONTRACT_BINARY() {
                 @Override
-                public Byte getValue() {
-                    return (Byte) object;
+                public Bytes getValue() {
+                    return (Bytes) object;
                 }
             };
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BIG_INT.class)){

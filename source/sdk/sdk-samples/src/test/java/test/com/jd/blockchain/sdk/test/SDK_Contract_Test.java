@@ -46,7 +46,7 @@ public class SDK_Contract_Test {
 
 	@Before
 	public void init(){
-		ledgerAddress = "j5rpuGWVxSuUbU3gK7MDREfui797AjfdHzvAMiSaSzydu7";
+		ledgerAddress = "j5qHcS8jG6XwpE5wXv9HYMeGTb5Fs2gQao3TPQ3irqFpQL";
 		ledgerHash = getLedgerHash();
 		pubKey = SDK_GateWay_KeyPair_Para.pubKey0;
 		privKey = SDK_GateWay_KeyPair_Para.privkey0;
@@ -68,7 +68,7 @@ public class SDK_Contract_Test {
 	public void demoContract1() {
 		// 发起交易；
 		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
-		String contractAddress = "LdeNfBcbQWqVge1sVyLq3EHBJhMMjwQY3uJJE";
+		String contractAddress = "LdeNm31KhQ4e76bVjCyhPc7QoTejU6Pig9mHW";
 		AssetContract2 assetContract = txTemp.contract(contractAddress, AssetContract2.class);
 		TransactionContentBody transactionContentBody = new TransactionContentBody() {
 			@Override

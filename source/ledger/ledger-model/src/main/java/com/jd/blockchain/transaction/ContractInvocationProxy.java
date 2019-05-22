@@ -1,8 +1,7 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.serialize.binary.ContractSerializeUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -46,7 +45,7 @@ public class ContractInvocationProxy implements InvocationHandler {
 		return null;
 	}
 
-	private byte[] serializeArgs(Object[] args, Method method) throws Exception {
+	private byte[] serializeArgs(Object[] args, Method method) {
 		// TODO 根据方法参数的定义序列化参数；
 		return ContractSerializeUtils.serializeMethodParam(args,method);
 	}

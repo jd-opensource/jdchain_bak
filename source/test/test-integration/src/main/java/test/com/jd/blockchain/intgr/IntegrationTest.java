@@ -1,38 +1,13 @@
 package test.com.jd.blockchain.intgr;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-
-import org.springframework.core.io.ClassPathResource;
-
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
@@ -48,9 +23,17 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
-
+import org.springframework.core.io.ClassPathResource;
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
 import test.com.jd.blockchain.intgr.perf.LedgerInitializeWebTest;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 public class IntegrationTest {
 	// 合约测试使用的初始化数据;

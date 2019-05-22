@@ -14,5 +14,5 @@ import com.jd.blockchain.consts.DataCodes;
 public interface CONTRACT_INT8 {
 
     @DataField(order=2, primitiveType= PrimitiveType.INT8)
-    int getValue();
+    Byte getValue();
 }

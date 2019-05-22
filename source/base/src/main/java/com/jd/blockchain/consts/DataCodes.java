@@ -79,7 +79,15 @@ public interface DataCodes {
 
 	public static final int DATA = 0x900;
 
+	//contract related;
 	public static final int CONTRACT = 0xA00;
+	public static final int CONTRACT_INT8 = 0xA01;
+	public static final int CONTRACT_INT16 = 0xA02;
+	public static final int CONTRACT_INT32 = 0xA03;
+	public static final int CONTRACT_INT64 = 0xA04;
+	public static final int CONTRACT_TEXT = 0xA05;
+	public static final int CONTRACT_BINARY = 0xA06;
+	public static final int CONTRACT_BIG_INT = 0xA07;
 
 	public static final int HASH = 0xB00;
 

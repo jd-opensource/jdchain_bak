@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @author zhaogw
  * date 2019-05-17 15:32
  */
-@DataContract(code = DataCodes.CONTRACT_BINARY)
+@DataContract(code = DataCodes.CONTRACT_BIG_INT)
 public interface CONTRACT_BIG_INT {
 
     @DataField(order=2, primitiveType= PrimitiveType.BIG_INT)

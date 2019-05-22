@@ -4,6 +4,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * contract args for Binary;
@@ -14,5 +15,5 @@ import com.jd.blockchain.consts.DataCodes;
 public interface CONTRACT_BINARY {
 
     @DataField(order=2, primitiveType= PrimitiveType.BYTES)
-    Byte getValue();
+    Bytes getValue();
 }
