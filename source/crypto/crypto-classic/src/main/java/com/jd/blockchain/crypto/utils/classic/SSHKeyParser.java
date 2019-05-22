@@ -8,7 +8,6 @@ import org.bouncycastle.crypto.util.OpenSSHPrivateKeyUtil;
 import org.bouncycastle.crypto.util.OpenSSHPublicKeyUtil;
 import org.bouncycastle.jce.spec.OpenSSHPrivateKeySpec;
 import org.bouncycastle.jce.spec.OpenSSHPublicKeySpec;
-import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 import org.bouncycastle.util.Strings;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -164,9 +163,7 @@ public class SSHKeyParser {
                     break;
                 }
             }
-
             identity = Strings.fromByteArray(privKeyReader.readBytes());
-
             return result;
         }
     }

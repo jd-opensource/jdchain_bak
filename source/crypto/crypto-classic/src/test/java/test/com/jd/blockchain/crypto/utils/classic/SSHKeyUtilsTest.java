@@ -1,16 +1,20 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
+import com.jd.blockchain.crypto.utils.classic.RSAUtils;
 import com.jd.blockchain.crypto.utils.classic.SSHKeyParser;
 import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.crypto.signers.DSASigner;
+import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author zhanglin33
@@ -20,13 +24,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class SSHKeyUtilsTest {
 
+    private static SecureRandom secureRandom = new SecureRandom();
+    private static SSHKeyParser parser = new SSHKeyParser();
+
     private static final String rsaPubKeyWithHead = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYwLN4EXy7g0Xugv4lQfou" +
             "jbARi48gPSxVuptGsSoGqsS00e9rA7v0qzFKa9Zhnw1WkjCnEXRYAMiCAJYkM/mGI8mb3qkcdNhGWZm" +
             "PnopV+D46CTFB14yeR9mjoOPXs4pjX3zGveKx5Nx8jvdoFewbTCtdN0x1XWTjNT5bXqP/4gXkLENEU5" +
             "tLsWVAOu0ME/Ne/9gMujAtDoolJ181a9P06bvEpIw5cLtUnsm5CtvBuiL7WBXxDJ/IASJrKNGBdK8xi" +
             "b1+Kb8tNLAT6Dj25BwylqiRNhb5l1Ni4aKrE2FqSEc5Nx5+csQMEl9MBJ3pEsLHBNbohDL+jbwLguRV" +
             "D6CJ zhanglin33@zhanglin33.local\n";
-
     private static final String rsaPrivKeyWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
             "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\n" +
             "NhAAAAAwEAAQAAAQEAmMCzeBF8u4NF7oL+JUH6Lo2wEYuPID0sVbqbRrEqBqrEtNHvawO7\n" +
@@ -63,8 +69,51 @@ public class SSHKeyUtilsTest {
             "fLt+FBt5nhwmbewxt9uWXENfzD/84Z7aOQAAAIA0DOAIv6SqSEPOyzPMHVWGGiqNFFgQ0gOH7BhrLD/" +
             "hNqFz5vuKQd5rhKCVXxzANTQ8WrINMIk3aYIRgp96oxI3xsL1w7rYODoQmkx4JFHfvU/Sls40r1h09D" +
             "OWSbqE99mo41RIZMauVFlYlhYnusziX1QyGAabHMcz73Y19vrKCg== zhanglin33@JRMVP10WHTD5";
+    private static final String dsaPrivKeyWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+            "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABsQAAAAdzc2gtZH\n" +
+            "NzAAAAgQCDqad6hGPc1TsUBYC0vtrDql0/pZyVXDa+vHgBP4mBtNpGCrPwayWAW69J29dB\n" +
+            "EXUL+mLXvbUIpaSUzCj4Tbk1SB0ytsW1dJ3woTeMHj2PlycmyJmv5uNRZyJX6dqL+eHjy7\n" +
+            "DYGONamFsbis8VEVeuw4D8WzKjGZgVdgnKW+frfwAAABUAnMiYzoQx9wpC27PXR8f4FLZr\n" +
+            "IdMAAACAdzMlUfNezU22kQOKTtAFZ5OIwuySlXig5WWgQS7dQs8jCmOzszYIqKmZgV7X35\n" +
+            "B1wV8Xe+QHYgS3rq5gDyyrGedDvpUUCPEMBi+Z3tHZBj/rERXakxANgTI1sr5cescCQ9eP\n" +
+            "3CqYIHy7fhQbeZ4cJm3sMbfbllxDX8w//OGe2jkAAACANAzgCL+kqkhDzsszzB1VhhoqjR\n" +
+            "RYENIDh+wYayw/4Tahc+b7ikHea4SglV8cwDU0PFqyDTCJN2mCEYKfeqMSN8bC9cO62Dg6\n" +
+            "EJpMeCRR371P0pbONK9YdPQzlkm6hPfZqONUSGTGrlRZWJYWJ7rM4l9UMhgGmxzHM+92Nf\n" +
+            "b6ygoAAAHwI0abUyNGm1MAAAAHc3NoLWRzcwAAAIEAg6mneoRj3NU7FAWAtL7aw6pdP6Wc\n" +
+            "lVw2vrx4AT+JgbTaRgqz8GslgFuvSdvXQRF1C/pi1721CKWklMwo+E25NUgdMrbFtXSd8K\n" +
+            "E3jB49j5cnJsiZr+bjUWciV+nai/nh48uw2BjjWphbG4rPFRFXrsOA/FsyoxmYFXYJylvn\n" +
+            "638AAAAVAJzImM6EMfcKQtuz10fH+BS2ayHTAAAAgHczJVHzXs1NtpEDik7QBWeTiMLskp\n" +
+            "V4oOVloEEu3ULPIwpjs7M2CKipmYFe19+QdcFfF3vkB2IEt66uYA8sqxnnQ76VFAjxDAYv\n" +
+            "md7R2QY/6xEV2pMQDYEyNbK+XHrHAkPXj9wqmCB8u34UG3meHCZt7DG325ZcQ1/MP/zhnt\n" +
+            "o5AAAAgDQM4Ai/pKpIQ87LM8wdVYYaKo0UWBDSA4fsGGssP+E2oXPm+4pB3muEoJVfHMA1\n" +
+            "NDxasg0wiTdpghGCn3qjEjfGwvXDutg4OhCaTHgkUd+9T9KWzjSvWHT0M5ZJuoT32ajjVE\n" +
+            "hkxq5UWViWFie6zOJfVDIYBpscxzPvdjX2+soKAAAAFEJXzZu8UDkISU8DCj/KY7Fq31R8\n" +
+            "AAAAF3poYW5nbGluMzNASlJNVlAxMFdIVEQ1AQIDBA==\n" +
+            "-----END OPENSSH PRIVATE KEY-----\n";
 
-    private static final String dsaPrivKeyWithHead
+    private static final String ecdsaPubKeyWithHead = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbml" +
+            "zdHAyNTYAAABBBEi5T13AMBMBthe7a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVK" +
+            "ct+Kcc6vtNKuUhn8fVqEZU= zhanglin33@JRMVP10WHTD5";
+    private static final String ecdsaPrivKeyWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+            "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS\n" +
+            "1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQRIuU9dwDATAbYXu2uhsEqCuSSvJlRD\n" +
+            "F87SAOpFBkbjXn6EbWNJT8d5JniFuBhhVSnLfinHOr7TSrlIZ/H1ahGVAAAAsGEuQiRhLk\n" +
+            "IkAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEi5T13AMBMBthe7\n" +
+            "a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVKct+Kcc6vtNKuUhn8fVqEZ\n" +
+            "UAAAAhAPEgd42vUGT8APac9sNgj7zIkE4m9/r8+7tATePBXucRAAAAF3poYW5nbGluMzNA\n" +
+            "SlJNVlAxMFdIVEQ1\n" +
+            "-----END OPENSSH PRIVATE KEY-----";
+
+    private static final String ed25519PubKeyWithHead = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWVU6JcJ3k/ZM9FxKY5h" +
+            "kxWSi1EEZaYwCChiJ00wwps zhanglin33@JRMVP10WHTD5";
+    private static final String ed25519PrivKeyWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
+            "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\n" +
+            "QyNTUxOQAAACAllVOiXCd5P2TPRcSmOYZMVkotRBGWmMAgoYidNMMKbAAAAKB9rg8cfa4P\n" +
+            "HAAAAAtzc2gtZWQyNTUxOQAAACAllVOiXCd5P2TPRcSmOYZMVkotRBGWmMAgoYidNMMKbA\n" +
+            "AAAEBK22Wm3Hb4mV3qKkAZ/eG2y7go3Wc0xMbCFrqfvZJghiWVU6JcJ3k/ZM9FxKY5hkxW\n" +
+            "Si1EEZaYwCChiJ00wwpsAAAAF3poYW5nbGluMzNASlJNVlAxMFdIVEQ1AQIDBAUG\n" +
+            "-----END OPENSSH PRIVATE KEY-----";
+
 
     @Test
     public void parseRSAPublicKeyTest() {
@@ -81,55 +130,19 @@ public class SSHKeyUtilsTest {
         String pubKeyType = "ssh-rsa";
         String id = "zhanglin33@zhanglin33.local";
 
-        SSHKeyParser parser = new SSHKeyParser();
-
-        String pubKeyStrWithHead = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYwLN4EXy7g0Xugv4lQfou" +
-                "jbARi48gPSxVuptGsSoGqsS00e9rA7v0qzFKa9Zhnw1WkjCnEXRYAMiCAJYkM/mGI8mb3qkcdNhGWZm" +
-                "PnopV+D46CTFB14yeR9mjoOPXs4pjX3zGveKx5Nx8jvdoFewbTCtdN0x1XWTjNT5bXqP/4gXkLENEU5" +
-                "tLsWVAOu0ME/Ne/9gMujAtDoolJ181a9P06bvEpIw5cLtUnsm5CtvBuiL7WBXxDJ/IASJrKNGBdK8xi" +
-                "b1+Kb8tNLAT6Dj25BwylqiRNhb5l1Ni4aKrE2FqSEc5Nx5+csQMEl9MBJ3pEsLHBNbohDL+jbwLguRV" +
-                "D6CJ zhanglin33@zhanglin33.local\n";
-        RSAKeyParameters pubKey = (RSAKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        RSAKeyParameters pubKey = (RSAKeyParameters) parser.pubKeyParse(rsaPubKeyWithHead);
         BigInteger e = pubKey.getExponent();
         BigInteger n = pubKey.getModulus();
         assertEquals(exponent,e);
         assertEquals(modulus,n);
+
         assertEquals(pubKeyFormat,parser.getKeyFormat());
         assertEquals(pubKeyType,parser.getKeyType());
-
         assertEquals(id, parser.getIdentity());
     }
 
     @Test
     public void parseRSAPrivateKeyTest() {
-
-        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
-                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\n" +
-                "NhAAAAAwEAAQAAAQEAmMCzeBF8u4NF7oL+JUH6Lo2wEYuPID0sVbqbRrEqBqrEtNHvawO7\n" +
-                "9KsxSmvWYZ8NVpIwpxF0WADIggCWJDP5hiPJm96pHHTYRlmZj56KVfg+OgkxQdeMnkfZo6\n" +
-                "Dj17OKY198xr3iseTcfI73aBXsG0wrXTdMdV1k4zU+W16j/+IF5CxDRFObS7FlQDrtDBPz\n" +
-                "Xv/YDLowLQ6KJSdfNWvT9Om7xKSMOXC7VJ7JuQrbwboi+1gV8QyfyAEiayjRgXSvMYm9fi\n" +
-                "m/LTSwE+g49uQcMpaokTYW+ZdTYuGiqxNhakhHOTcefnLEDBJfTASd6RLCxwTW6IQy/o28\n" +
-                "C4LkVQ+giQAAA9AaxHf6GsR3+gAAAAdzc2gtcnNhAAABAQCYwLN4EXy7g0Xugv4lQfoujb\n" +
-                "ARi48gPSxVuptGsSoGqsS00e9rA7v0qzFKa9Zhnw1WkjCnEXRYAMiCAJYkM/mGI8mb3qkc\n" +
-                "dNhGWZmPnopV+D46CTFB14yeR9mjoOPXs4pjX3zGveKx5Nx8jvdoFewbTCtdN0x1XWTjNT\n" +
-                "5bXqP/4gXkLENEU5tLsWVAOu0ME/Ne/9gMujAtDoolJ181a9P06bvEpIw5cLtUnsm5CtvB\n" +
-                "uiL7WBXxDJ/IASJrKNGBdK8xib1+Kb8tNLAT6Dj25BwylqiRNhb5l1Ni4aKrE2FqSEc5Nx\n" +
-                "5+csQMEl9MBJ3pEsLHBNbohDL+jbwLguRVD6CJAAAAAwEAAQAAAQARfhfPSylei9TpUGTs\n" +
-                "PVb6F82u5K16QqceFiWL/ePTKaEnF9d0CNRwW15kqF6/hShQ3qLlrvEE1uofQRPwh2cuvl\n" +
-                "BrIh95m8PcoowcT0qGN8xgdwcGBDodMhsxSs5suCnD4X53f+1C8/Nv7CtW5xPHuHxKy3dd\n" +
-                "BVn1TvaaHgdn2PwJVKtZp+WVG3/UHr25nFHd8mYgpeHZqK9AW16N0UEMXMM1u8ZCubVOoS\n" +
-                "IGuMAXpTug0xA+BXHo17FcDGKSzcXFzh+urIz5glRp5zFioHBqxNmkKfQkG6C7UxnPGyS/\n" +
-                "/J+3lL2lvl0G8kO/5EDFMBhTMEy1NeR2b629S4G1qUxVAAAAgHDwE9kPiVETcxSzI4wotT\n" +
-                "1Ee9nKVVD3oGdRqefvX7EUR8bvdv4nCqHPNBx8C6l8zo7fsQD81YL85F4eWbtrdxEijRHX\n" +
-                "5m7J/muh/laY1Hq43WCkZGboO4fZ2HHi7oN096FqrKRpvbQGQi1FLbcISUdsitwrs6ywn3\n" +
-                "fNx3q+X3V6AAAAgQDJRo9v+0QvldI33cpJKPKiaop5QvfIDzMatD3vLA1qqycgIi4KOtb5\n" +
-                "+LP/jgIpCYah/sk+JpKNz/vsZmZmrfaVu9D3Le2LLBgMpEoSO8jOe9WGI4Ew75C7w7AZCa\n" +
-                "SyUnHIVX/9D8Y5tx4cKx6Im9AGbNF35XZoKO4KCk5VMTXhnwAAAIEAwkjKIpTYdeAQVTRf\n" +
-                "C13kg84Bu5n4WkiLnp1WOCg2GN5RekqprINtpjIMZoB9Fv292Np99La8yvmRoy5qzNHGdm\n" +
-                "Q6AMku8jP123jF2J+wDvF714VtZHNvdCYBGJS+rZ81xtJfHhKtZqRAVtbPertOWZeuRm9V\n" +
-                "o+/rEuEzgGYGXNcAAAAbemhhbmdsaW4zM0B6aGFuZ2xpbjMzLmxvY2Fs\n" +
-                "-----END OPENSSH PRIVATE KEY-----";
 
         BigInteger pubExponent = new BigInteger("010001",16);
         BigInteger modulus  = new BigInteger("0098c0b378117cbb8345ee82fe2541fa2e8db0118b8f2" +
@@ -171,8 +184,7 @@ public class SSHKeyUtilsTest {
         String privKeyType = "ssh-rsa";
         String id = "zhanglin33@zhanglin33.local";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+        RSAPrivateCrtKeyParameters privKey = (RSAPrivateCrtKeyParameters) parser.privKeyParse(rsaPrivKeyWithHead);
         assertEquals(pubExponent,privKey.getPublicExponent());
         assertEquals(modulus,privKey.getModulus());
         assertEquals(privExponent,privKey.getExponent());
@@ -189,15 +201,6 @@ public class SSHKeyUtilsTest {
 
     @Test
     public void parseDSAPublicKeyTest() {
-
-        String pubKeyStrWithHead = "ssh-dss AAAAB3NzaC1kc3MAAACBAIOpp3qEY9zVOxQFgLS+2sOqXT+lnJVc" +
-                "Nr68eAE/iYG02kYKs/BrJYBbr0nb10ERdQv6Yte9tQilpJTMKPhNuTVIHTK2xbV0nfChN4wePY+XJyb" +
-                "Ima/m41FnIlfp2ov54ePLsNgY41qYWxuKzxURV67DgPxbMqMZmBV2Ccpb5+t/AAAAFQCcyJjOhDH3Ck" +
-                "Lbs9dHx/gUtmsh0wAAAIB3MyVR817NTbaRA4pO0AVnk4jC7JKVeKDlZaBBLt1CzyMKY7OzNgioqZmBX" +
-                "tffkHXBXxd75AdiBLeurmAPLKsZ50O+lRQI8QwGL5ne0dkGP+sRFdqTEA2BMjWyvlx6xwJD14/cKpgg" +
-                "fLt+FBt5nhwmbewxt9uWXENfzD/84Z7aOQAAAIA0DOAIv6SqSEPOyzPMHVWGGiqNFFgQ0gOH7BhrLD/" +
-                "hNqFz5vuKQd5rhKCVXxzANTQ8WrINMIk3aYIRgp96oxI3xsL1w7rYODoQmkx4JFHfvU/Sls40r1h09D" +
-                "OWSbqE99mo41RIZMauVFlYlhYnusziX1QyGAabHMcz73Y19vrKCg== zhanglin33@JRMVP10WHTD5";
 
         BigInteger p = new BigInteger("83a9a77a8463dcd53b140580b4bedac3aa5d3fa59c955c36bebc" +
                 "78013f8981b4da460ab3f06b25805baf49dbd74111750bfa62d7bdb508a5a494cc28f84db93548" +
@@ -217,9 +220,7 @@ public class SSHKeyUtilsTest {
         String pubKeyType = "ssh-dss";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-
-        DSAPublicKeyParameters pubKey = (DSAPublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        DSAPublicKeyParameters pubKey = (DSAPublicKeyParameters) parser.pubKeyParse(dsaPubKeyWithHead);
         DSAParameters parameters = pubKey.getParameters();
         assertEquals(p, parameters.getP());
         assertEquals(q, parameters.getQ());
@@ -233,28 +234,6 @@ public class SSHKeyUtilsTest {
 
     @Test
     public void parseDSAPrivateKeyTest() {
-
-        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
-                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABsQAAAAdzc2gtZH\n" +
-                "NzAAAAgQCDqad6hGPc1TsUBYC0vtrDql0/pZyVXDa+vHgBP4mBtNpGCrPwayWAW69J29dB\n" +
-                "EXUL+mLXvbUIpaSUzCj4Tbk1SB0ytsW1dJ3woTeMHj2PlycmyJmv5uNRZyJX6dqL+eHjy7\n" +
-                "DYGONamFsbis8VEVeuw4D8WzKjGZgVdgnKW+frfwAAABUAnMiYzoQx9wpC27PXR8f4FLZr\n" +
-                "IdMAAACAdzMlUfNezU22kQOKTtAFZ5OIwuySlXig5WWgQS7dQs8jCmOzszYIqKmZgV7X35\n" +
-                "B1wV8Xe+QHYgS3rq5gDyyrGedDvpUUCPEMBi+Z3tHZBj/rERXakxANgTI1sr5cescCQ9eP\n" +
-                "3CqYIHy7fhQbeZ4cJm3sMbfbllxDX8w//OGe2jkAAACANAzgCL+kqkhDzsszzB1VhhoqjR\n" +
-                "RYENIDh+wYayw/4Tahc+b7ikHea4SglV8cwDU0PFqyDTCJN2mCEYKfeqMSN8bC9cO62Dg6\n" +
-                "EJpMeCRR371P0pbONK9YdPQzlkm6hPfZqONUSGTGrlRZWJYWJ7rM4l9UMhgGmxzHM+92Nf\n" +
-                "b6ygoAAAHwI0abUyNGm1MAAAAHc3NoLWRzcwAAAIEAg6mneoRj3NU7FAWAtL7aw6pdP6Wc\n" +
-                "lVw2vrx4AT+JgbTaRgqz8GslgFuvSdvXQRF1C/pi1721CKWklMwo+E25NUgdMrbFtXSd8K\n" +
-                "E3jB49j5cnJsiZr+bjUWciV+nai/nh48uw2BjjWphbG4rPFRFXrsOA/FsyoxmYFXYJylvn\n" +
-                "638AAAAVAJzImM6EMfcKQtuz10fH+BS2ayHTAAAAgHczJVHzXs1NtpEDik7QBWeTiMLskp\n" +
-                "V4oOVloEEu3ULPIwpjs7M2CKipmYFe19+QdcFfF3vkB2IEt66uYA8sqxnnQ76VFAjxDAYv\n" +
-                "md7R2QY/6xEV2pMQDYEyNbK+XHrHAkPXj9wqmCB8u34UG3meHCZt7DG325ZcQ1/MP/zhnt\n" +
-                "o5AAAAgDQM4Ai/pKpIQ87LM8wdVYYaKo0UWBDSA4fsGGssP+E2oXPm+4pB3muEoJVfHMA1\n" +
-                "NDxasg0wiTdpghGCn3qjEjfGwvXDutg4OhCaTHgkUd+9T9KWzjSvWHT0M5ZJuoT32ajjVE\n" +
-                "hkxq5UWViWFie6zOJfVDIYBpscxzPvdjX2+soKAAAAFEJXzZu8UDkISU8DCj/KY7Fq31R8\n" +
-                "AAAAF3poYW5nbGluMzNASlJNVlAxMFdIVEQ1AQIDBA==\n" +
-                "-----END OPENSSH PRIVATE KEY-----\n";
 
         BigInteger p = new BigInteger("83a9a77a8463dcd53b140580b4bedac3aa5d3fa59c955c36bebc" +
                 "78013f8981b4da460ab3f06b25805baf49dbd74111750bfa62d7bdb508a5a494cc28f84db93548" +
@@ -276,8 +255,7 @@ public class SSHKeyUtilsTest {
         String privKeyType = "ssh-dss";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        DSAPrivateKeyParameters privKey = (DSAPrivateKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+        DSAPrivateKeyParameters privKey = (DSAPrivateKeyParameters) parser.privKeyParse(dsaPrivKeyWithHead);
         assertEquals(x,privKey.getX());
         assertEquals(y,g.modPow(x,p));
 
@@ -295,10 +273,6 @@ public class SSHKeyUtilsTest {
     @Test
     public void parseECDSAPublicKeyTest() {
 
-        String pubKeyStrWithHead = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbml" +
-                "zdHAyNTYAAABBBEi5T13AMBMBthe7a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVK" +
-                "ct+Kcc6vtNKuUhn8fVqEZU= zhanglin33@JRMVP10WHTD5";
-
         BigInteger gX = new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16);
         BigInteger gY = new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16);
 
@@ -309,8 +283,7 @@ public class SSHKeyUtilsTest {
         String pubKeyType = "ecdsa-sha2-nistp256";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        ECPublicKeyParameters pubKey = (ECPublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        ECPublicKeyParameters pubKey = (ECPublicKeyParameters) parser.pubKeyParse(ecdsaPubKeyWithHead);
         SecP256R1Curve curve = new SecP256R1Curve();
         ECPoint g = curve.createPoint(gX,gY);
         ECPoint Q = curve.createPoint(QX,QY);
@@ -325,16 +298,6 @@ public class SSHKeyUtilsTest {
     @Test
     public void parseECDSAPrivateKeyTest() {
 
-        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
-                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS\n" +
-                "1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQRIuU9dwDATAbYXu2uhsEqCuSSvJlRD\n" +
-                "F87SAOpFBkbjXn6EbWNJT8d5JniFuBhhVSnLfinHOr7TSrlIZ/H1ahGVAAAAsGEuQiRhLk\n" +
-                "IkAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEi5T13AMBMBthe7\n" +
-                "a6GwSoK5JK8mVEMXztIA6kUGRuNefoRtY0lPx3kmeIW4GGFVKct+Kcc6vtNKuUhn8fVqEZ\n" +
-                "UAAAAhAPEgd42vUGT8APac9sNgj7zIkE4m9/r8+7tATePBXucRAAAAF3poYW5nbGluMzNA\n" +
-                "SlJNVlAxMFdIVEQ1\n" +
-                "-----END OPENSSH PRIVATE KEY-----";
-
         BigInteger gX = new BigInteger("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",16);
         BigInteger gY = new BigInteger("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",16);
 
@@ -346,8 +309,7 @@ public class SSHKeyUtilsTest {
         String privKeyType = "ecdsa-sha2-nistp256";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        ECPrivateKeyParameters privKey = (ECPrivateKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+        ECPrivateKeyParameters privKey = (ECPrivateKeyParameters) parser.privKeyParse(ecdsaPrivKeyWithHead);
 
         SecP256R1Curve curve = new SecP256R1Curve();
         ECPoint g = curve.createPoint(gX,gY);
@@ -365,18 +327,13 @@ public class SSHKeyUtilsTest {
     @Test
     public void parseED25519PublicKeyTest() {
 
-        String pubKeyStrWithHead = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICWVU6JcJ3k/ZM9FxKY5h" +
-                "kxWSi1EEZaYwCChiJ00wwps zhanglin33@JRMVP10WHTD5";
-
         byte[] A = Hex.decode("259553a25c27793f64cf45c4a639864c564a2d44119698c020a1889d34c30a6c");
 
         String pubKeyFormat = "OpenSSH";
         String pubKeyType = "ssh-ed25519";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        parser.pubKeyParse(pubKeyStrWithHead);
-        Ed25519PublicKeyParameters pubKey = (Ed25519PublicKeyParameters) parser.pubKeyParse(pubKeyStrWithHead);
+        Ed25519PublicKeyParameters pubKey = (Ed25519PublicKeyParameters) parser.pubKeyParse(ed25519PubKeyWithHead);
         assertArrayEquals(A,pubKey.getEncoded());
 
         assertEquals(pubKeyFormat,parser.getKeyFormat());
@@ -387,14 +344,6 @@ public class SSHKeyUtilsTest {
     @Test
     public void parseED25519PrivateKeyTest() {
 
-        String privKeyStrWithHead = "-----BEGIN OPENSSH PRIVATE KEY-----\n" +
-                "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\n" +
-                "QyNTUxOQAAACAllVOiXCd5P2TPRcSmOYZMVkotRBGWmMAgoYidNMMKbAAAAKB9rg8cfa4P\n" +
-                "HAAAAAtzc2gtZWQyNTUxOQAAACAllVOiXCd5P2TPRcSmOYZMVkotRBGWmMAgoYidNMMKbA\n" +
-                "AAAEBK22Wm3Hb4mV3qKkAZ/eG2y7go3Wc0xMbCFrqfvZJghiWVU6JcJ3k/ZM9FxKY5hkxW\n" +
-                "Si1EEZaYwCChiJ00wwpsAAAAF3poYW5nbGluMzNASlJNVlAxMFdIVEQ1AQIDBAUG\n" +
-                "-----END OPENSSH PRIVATE KEY-----";
-
         byte[] A = Hex.decode("259553a25c27793f64cf45c4a639864c564a2d44119698c020a1889d34c30a6c");
 
         byte[] s = Hex.decode("4adb65a6dc76f8995dea2a4019fde1b6cbb828dd6734c4c6c216ba9fbd926086");
@@ -403,13 +352,71 @@ public class SSHKeyUtilsTest {
         String privKeyType = "ssh-ed25519";
         String id = "zhanglin33@JRMVP10WHTD5";
 
-        SSHKeyParser parser = new SSHKeyParser();
-        Ed25519PrivateKeyParameters privKey = (Ed25519PrivateKeyParameters) parser.privKeyParse(privKeyStrWithHead);
+        Ed25519PrivateKeyParameters privKey = (Ed25519PrivateKeyParameters) parser.privKeyParse(ed25519PrivKeyWithHead);
         assertArrayEquals(s, privKey.getEncoded());
         assertArrayEquals(A, privKey.generatePublicKey().getEncoded());
 
         assertEquals(privKeyFormat,parser.getKeyFormat());
         assertEquals(privKeyType,parser.getKeyType());
         assertEquals(id, parser.getIdentity());
+    }
+
+    @Test
+    public void rsaTest() {
+
+        byte[] msg = new byte[128];
+        secureRandom.nextBytes(msg);
+
+        byte[] signature = RSAUtils.sign(msg,parser.privKeyParse(rsaPrivKeyWithHead));
+        boolean isValid = RSAUtils.verify(msg,parser.pubKeyParse(rsaPubKeyWithHead),signature);
+        assertTrue(isValid);
+    }
+
+    @Test
+    public void dsaTest() {
+
+        byte[] msg = new byte[128];
+        secureRandom.nextBytes(msg);
+
+        DSASigner signer = new DSASigner();
+        signer.init(true, parser.privKeyParse(dsaPrivKeyWithHead));
+        BigInteger[] signature = signer.generateSignature(msg);
+
+        signer.init(false, parser.pubKeyParse(dsaPubKeyWithHead));
+        boolean isValid = signer.verifySignature(msg, signature[0], signature[1]);
+        assertTrue(isValid);
+    }
+
+    @Test
+    public void ecdsaTest() {
+
+        byte[] msg = new byte[128];
+        secureRandom.nextBytes(msg);
+
+        ECDSASigner signer = new ECDSASigner();
+        signer.init(true, parser.privKeyParse(ecdsaPrivKeyWithHead));
+        BigInteger[] signature = signer.generateSignature(msg);
+
+        signer.init(false, parser.pubKeyParse(ecdsaPubKeyWithHead));
+        boolean isValid = signer.verifySignature(msg, signature[0], signature[1]);
+        assertTrue(isValid);
+    }
+
+    @Test
+    public void ed25519Test() {
+
+        byte[] msg = new byte[128];
+        secureRandom.nextBytes(msg);
+
+        Ed25519Signer signer = new Ed25519Signer();
+        signer.init(true, parser.privKeyParse(ed25519PrivKeyWithHead));
+        signer.update(msg, 0, msg.length);
+        byte[] signature = signer.generateSignature();
+
+        signer.init(false, parser.pubKeyParse(ed25519PubKeyWithHead));
+        signer.update(msg, 0, msg.length);
+
+        boolean isValid = signer.verifySignature(signature);
+        assertTrue(isValid);
     }
 }
