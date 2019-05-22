@@ -158,6 +158,9 @@ public class SSHKeyParser {
                 }
 
                 case "ssh-ed25519": {
+                    privKeyReader.readBytes(); // A
+                    byte[] key = privKeyReader.readBytes();
+                    result = new Ed25519PrivateKeyParameters(key, 0);
                     break;
                 }
             }
