@@ -2,24 +2,17 @@ package com.jd.blockchain.contract;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContract;
-import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.utils.ArrayUtils;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.ByteArray;
-import com.jd.blockchain.utils.io.BytesUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.SerializationUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,9 +20,9 @@ import java.util.Map;
  * date 2019/5/16 18:05
  */
 public class ContractSerializeUtils {
-    public static Map<Integer, Class<?>> dataContractMap = new HashMap<>();
-    public static final Class[] confirmedType = {CONTRACT_INT8.class,CONTRACT_INT16.class,CONTRACT_INT32.class,CONTRACT_INT64.class,
-            CONTRACT_TEXT.class,CONTRACT_BINARY.class,CONTRACT_BIG_INT.class};
+    public static Map<Integer, Class<?>> DATA_CONTRACT_MAP = new HashMap<>();
+    public static final Integer[] PRIMITIVE_TYPES = {DataCodes.CONTRACT_INT8, DataCodes.CONTRACT_INT16, DataCodes.CONTRACT_INT32,
+            DataCodes.CONTRACT_INT64, DataCodes.CONTRACT_BIG_INT,DataCodes.CONTRACT_TEXT, DataCodes.CONTRACT_BINARY };
 
     /**
      * valid then parse the Object by Method params;
@@ -38,6 +31,7 @@ public class ContractSerializeUtils {
      * @return
      */
     public static byte[] serializeMethodParam(Object object,Method method)  {
+
         if (object == null) {
             return null;
         }
@@ -60,7 +54,7 @@ public class ContractSerializeUtils {
                 //check by annotation;
                 Annotation[] annotationArr = annotations[i];
                 for(Annotation annotation : annotationArr){
-                    if(annotation.annotationType().equals(DataContract.class)){
+                    if(annotation instanceof DataContract){
                         dataContract = (DataContract) annotation;
                         objArr[i] = regenObj(dataContract,objArr[i]);
                         canPass = true;
@@ -75,18 +69,17 @@ public class ContractSerializeUtils {
             sum += result[i].length;
         }
         /**
-         * //return is byte[], but now is byte[][], so we should reduct dimension, use the header info to the first byte(length=classTypes.length);
-         format:result[][]={{1,2,3},{4,5},{6,7}};  newResult[]=classTypes.length/first length/second length/3 length/result[0]/result[1]/result[2];
-         rtnBytes[0]: 4 bytes(classTypes.length, <255);
-         rtnBytes[1]: 4 bytes(each param's length, )
-         rtnBytes[2]: 4 bytes(each param's length, )
-         rtnBytes[3]: 4 bytes(each param's length, )
-         rtnBytes[4...]: result[0][] bytes(each param's length)
-         rtnBytes[5...]: result[1][] bytes(each param's length)
-         rtnBytes[6...]: result[2][] bytes(each param's length)
+         return is byte[], but now is byte[][], so we should reduct dimension by adding the header info to the rtnBytes[];
+         rtnBytes[]=classTypes.length/first length/second length/third length/result[0]/result[1]/result[2];
+         rtnBytes[0]: 4 bytes(classTypes.length);
+         rtnBytes[1]: 4 bytes(1 param's length);
+         rtnBytes[2]: 4 bytes(2 param's length);
+         rtnBytes[3]: 4 bytes(3 param's length);
+         rtnBytes[...]: result[0][] bytes(1 param's length);
+         rtnBytes[...]: result[1][] bytes(2 param's length);
+         rtnBytes[...]: result[2][] bytes(3 param's length);
          */
-
-        int bodyFirstPosition = 4 + 4*(classTypes.length);
+        int bodyFirstPosition = 4 + 4 * (classTypes.length);
         ByteBuffer byteBuffer = ByteBuffer.allocate(bodyFirstPosition + sum);
         byteBuffer.putInt(classTypes.length);
         for(int j=0; j<result.length; j++) {
@@ -119,7 +112,7 @@ public class ContractSerializeUtils {
         int paramNums = byteBuffer.getInt(0);
 
         if(paramNums != classTypes.length){
-            throw new IllegalArgumentException("deserializeMethodparm. params'length in byte[] != method's param length");
+            throw new IllegalArgumentException("deserialize Method param. params'length in byte[] != method's param length");
         }
 
         Annotation [][] annotations = method.getParameterAnnotations();
@@ -166,76 +159,36 @@ public class ContractSerializeUtils {
 
 
     public static <T> Map<Integer, Class<?> > getDataIntf(){
-        dataContractMap.put(DataCodes.CONTRACT_INT8, CONTRACT_INT8.class);
-        dataContractMap.put(DataCodes.CONTRACT_INT16, CONTRACT_INT16.class);
-        dataContractMap.put(DataCodes.CONTRACT_INT32, CONTRACT_INT32.class);
-        dataContractMap.put(DataCodes.CONTRACT_INT64, CONTRACT_INT64.class);
-        dataContractMap.put(DataCodes.CONTRACT_TEXT, CONTRACT_TEXT.class);
-        dataContractMap.put(DataCodes.CONTRACT_BINARY, CONTRACT_BINARY.class);
-        dataContractMap.put(DataCodes.CONTRACT_BIG_INT, CONTRACT_BIG_INT.class);
-        dataContractMap.put(DataCodes.TX_CONTENT_BODY, TransactionContentBody.class);
-        return dataContractMap;
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT8, CONTRACT_INT8.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT16, CONTRACT_INT16.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT32, CONTRACT_INT32.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT64, CONTRACT_INT64.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_TEXT, CONTRACT_TEXT.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BINARY, CONTRACT_BINARY.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BIG_INT, CONTRACT_BIG_INT.class);
+        DATA_CONTRACT_MAP.put(DataCodes.TX_CONTENT_BODY, TransactionContentBody.class);
+        return DATA_CONTRACT_MAP;
     }
 
     public static boolean isPrimitiveType(int dataContractCode){
-        return (dataContractCode == DataCodes.CONTRACT_INT8 ||
-                dataContractCode == DataCodes.CONTRACT_INT16 ||
-                dataContractCode == DataCodes.CONTRACT_INT32 ||
-                dataContractCode == DataCodes.CONTRACT_INT64 ||
-                dataContractCode == DataCodes.CONTRACT_TEXT
-        );
+        return  Arrays.asList(PRIMITIVE_TYPES).contains(dataContractCode);
     }
 
     private static Object regenObj(DataContract dataContract, Object object){
         if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT8.class)){
-            return new CONTRACT_INT8() {
-                @Override
-                public Byte getValue() {
-                    return Byte.parseByte(object.toString());
-                }
-            };
+            return (CONTRACT_INT8) () -> Byte.parseByte(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT16.class)){
-            return new CONTRACT_INT16() {
-                @Override
-                public short getValue() {
-                    return Short.parseShort(object.toString());
-                }
-            };
+            return (CONTRACT_INT16) () -> Short.parseShort(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT32.class)){
-            return new CONTRACT_INT32() {
-                @Override
-                public int getValue() {
-                    return Integer.parseInt(object.toString());
-                }
-            };
+            return (CONTRACT_INT32) () -> Integer.parseInt(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT64.class)){
-            return new CONTRACT_INT64() {
-                @Override
-                public long getValue() {
-                    return Long.parseLong(object.toString());
-                }
-            };
+            return (CONTRACT_INT64) () -> Long.parseLong(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_TEXT.class)){
-            return new CONTRACT_TEXT() {
-                @Override
-                public String getValue() {
-                    return object.toString();
-                }
-            };
+            return (CONTRACT_TEXT) () -> object.toString();
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BINARY.class)){
-            return new CONTRACT_BINARY() {
-                @Override
-                public Bytes getValue() {
-                    return (Bytes) object;
-                }
-            };
+            return (CONTRACT_BINARY) () -> (Bytes) object;
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BIG_INT.class)){
-            return new CONTRACT_BIG_INT() {
-                @Override
-                public BigDecimal getValue() {
-                    return new BigDecimal(object.toString());
-                }
-            };
+            return (CONTRACT_BIG_INT) () -> new BigDecimal(object.toString());
         }
         return null;
     }

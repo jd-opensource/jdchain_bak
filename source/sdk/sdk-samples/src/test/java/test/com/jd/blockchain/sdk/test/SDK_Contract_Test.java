@@ -68,7 +68,7 @@ public class SDK_Contract_Test {
 	public void demoContract1() {
 		// 发起交易；
 		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
-		String contractAddress = "LdeNm31KhQ4e76bVjCyhPc7QoTejU6Pig9mHW";
+		String contractAddress = "LdeP3W9d3xy9bLktWqEhkFWv2Zru7YmQyuu6M";
 		AssetContract2 assetContract = txTemp.contract(contractAddress, AssetContract2.class);
 		TransactionContentBody transactionContentBody = new TransactionContentBody() {
 			@Override
