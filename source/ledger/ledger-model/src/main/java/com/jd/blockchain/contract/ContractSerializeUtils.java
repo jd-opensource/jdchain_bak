@@ -49,6 +49,7 @@ public class ContractSerializeUtils {
         for(int i=0;i<classTypes.length;i++){
             Class <?> classType = classTypes[i];
             DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
+            //if the param's class Type don't contain @DataContract, then check parameterAnnotations of this method.
             if(dataContract == null){
                 boolean canPass = false;
                 //check by annotation;
@@ -60,15 +61,21 @@ public class ContractSerializeUtils {
                         canPass = true;
                     }
                 }
+                //if parameterAnnotations don't contain @DataContract, we will say goodbye.
                 if(!canPass){
-                    throw new IllegalArgumentException("must set annotation in each param of contract.");
+                    throw new IllegalArgumentException("must set @DataContract for each param of contract.");
                 }
+            }
+            if(!getDataIntf().containsKey(dataContract.code())){
+                throw new IllegalArgumentException(String.format(
+                        "for now, this @dataContract(code=%s) is forbidden in the param list.",dataContract.code()));
             }
             //get data interface;
             result[i] = BinaryProtocol.encode(objArr[i],getDataIntf().get(dataContract.code()));
             sum += result[i].length;
         }
         /**
+         * return byte[] format:
          return is byte[], but now is byte[][], so we should reduct dimension by adding the header info to the rtnBytes[];
          rtnBytes[]=classTypes.length/first length/second length/third length/result[0]/result[1]/result[2];
          rtnBytes[0]: 4 bytes(classTypes.length);
@@ -138,6 +145,11 @@ public class ContractSerializeUtils {
             ByteBuffer byteBuffer1 = ByteBuffer.allocate(curParamLength);
             byteBuffer1.put(params,offsetPosition,curParamLength);
             offsetPosition += curParamLength;
+
+            if(!getDataIntf().containsKey(dataContract.code())){
+                throw new IllegalArgumentException(String.format(
+                        "for now, this @dataContract(code=%s) is forbidden in the param list.",dataContract.code()));
+            }
             //if dataContract=primitive type(byte/short/int/long/String),only use its getValues();
             Object object = BinaryProtocol.decodeAs(byteBuffer1.array(),
                     getDataIntf().get(dataContract.code()));
@@ -166,7 +178,7 @@ public class ContractSerializeUtils {
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_TEXT, CONTRACT_TEXT.class);
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BINARY, CONTRACT_BINARY.class);
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BIG_INT, CONTRACT_BIG_INT.class);
-        DATA_CONTRACT_MAP.put(DataCodes.TX_CONTENT_BODY, TransactionContentBody.class);
+//        DATA_CONTRACT_MAP.put(DataCodes.TX_CONTENT_BODY, TransactionContentBody.class);
         return DATA_CONTRACT_MAP;
     }
 

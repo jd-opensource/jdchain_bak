@@ -1,5 +1,8 @@
 package com.jd.blockchain.contract.samples;
 
+import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.consts.DataCodes;
+import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAwire;
@@ -8,6 +11,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 import java.util.HashMap;
@@ -30,6 +34,19 @@ public class AssetContractImpl2 implements EventProcessingAwire, AssetContract2 
 	@Override
 	public void issue(TransactionContentBody transactionContentBody, String assetHolderAddress) {
 		System.out.println(transactionContentBody.toString());
+	}
+
+	@Override
+	@ContractEvent(name = "issue-asset")
+	public void issue(@DataContract(code = DataCodes.TX_CONTENT_BODY) TransactionContentBody transactionContentBody,
+					  @DataContract(code = DataCodes.CONTRACT_TEXT) String assetHolderAddress,
+					  @DataContract(code = DataCodes.CONTRACT_INT64) long cashNumber) {
+		System.out.println(transactionContentBody.toString()+",address="+assetHolderAddress+",cashNumber="+cashNumber);
+	}
+
+	@Override
+	public void issue(Bytes bytes, String assetHolderAddress, long cashNumber) {
+
 	}
 
 	/*
