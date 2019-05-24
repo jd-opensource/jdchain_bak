@@ -4,7 +4,6 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
-import com.jd.blockchain.ledger.CONTRACT_TEXT;
 import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.utils.Bytes;
 
@@ -37,8 +36,18 @@ public interface AssetContract2 {
 					  @DataContract(code = DataCodes.CONTRACT_TEXT) String assetHolderAddress,
 					  @DataContract(code = DataCodes.CONTRACT_INT64) long cashNumber);
 
+	/**
+	 * Bytes can bring the byte[];
+	 * @param bytes
+	 * @param assetHolderAddress
+	 * @param cashNumber
+	 */
 	@ContractEvent(name = "issue-asset-2")
-	void issue(@DataContract(code = DataCodes.CONTRACT_BINARY) Bytes bytes,
-			   @DataContract(code = DataCodes.CONTRACT_TEXT) String assetHolderAddress,
-			   @DataContract(code = DataCodes.CONTRACT_INT64) long cashNumber);
+	void issue(Bytes bytes,String assetHolderAddress, long cashNumber);
+
+	@ContractEvent(name = "issue-asset-3")
+	void issue(Byte bytes, String assetHolderAddress, long cashNumber);
+
+	@ContractEvent(name = "issue-asset-4")
+	void issue1(byte[] bytes, String assetHolderAddress, long cashNumber);
 }

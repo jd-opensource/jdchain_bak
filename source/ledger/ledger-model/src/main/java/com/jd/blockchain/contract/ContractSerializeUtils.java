@@ -21,8 +21,9 @@ import java.util.Map;
  */
 public class ContractSerializeUtils {
     public static Map<Integer, Class<?>> DATA_CONTRACT_MAP = new HashMap<>();
-    public static final Integer[] PRIMITIVE_TYPES = {DataCodes.CONTRACT_INT8, DataCodes.CONTRACT_INT16, DataCodes.CONTRACT_INT32,
+    public static final Integer[] PRIMITIVE_DATA_CODES = {DataCodes.CONTRACT_INT8, DataCodes.CONTRACT_INT16, DataCodes.CONTRACT_INT32,
             DataCodes.CONTRACT_INT64, DataCodes.CONTRACT_BIG_INT,DataCodes.CONTRACT_TEXT, DataCodes.CONTRACT_BINARY };
+
 
     /**
      * valid then parse the Object by Method params;
@@ -31,7 +32,6 @@ public class ContractSerializeUtils {
      * @return
      */
     public static byte[] serializeMethodParam(Object object,Method method)  {
-
         if (object == null) {
             return null;
         }
@@ -53,15 +53,21 @@ public class ContractSerializeUtils {
             if(dataContract == null){
                 boolean canPass = false;
                 //check by annotation;
-                Annotation[] annotationArr = annotations[i];
-                for(Annotation annotation : annotationArr){
-                    if(annotation instanceof DataContract){
-                        dataContract = (DataContract) annotation;
-                        objArr[i] = regenObj(dataContract,objArr[i]);
-                        canPass = true;
-                    }
+//                Annotation[] annotationArr = annotations[i];
+//                for(Annotation annotation : annotationArr){
+//                    if(annotation instanceof DataContract){
+//                        dataContract = (DataContract) annotation;
+//                        objArr[i] = regenObj(dataContract,objArr[i]);
+//                        canPass = true;
+//                    }
+//                }
+                //if parameterAnnotations don't contain @DataContract, is it primitive type?
+                Class<?> contractType = getContractTypeByPrimitiveType(classType);
+                dataContract = contractType.getDeclaredAnnotation(DataContract.class);
+                if(dataContract != null){
+                    objArr[i] = regenObj(dataContract,objArr[i]);
+                    canPass = true;
                 }
-                //if parameterAnnotations don't contain @DataContract, we will say goodbye.
                 if(!canPass){
                     throw new IllegalArgumentException("must set @DataContract for each param of contract.");
                 }
@@ -131,12 +137,18 @@ public class ContractSerializeUtils {
             if(dataContract == null){
                 boolean canPass = false;
                 //check by annotation;
-                Annotation[] annotationArr = annotations[i];
-                for(Annotation annotation : annotationArr){
-                    if(annotation.annotationType().equals(DataContract.class)){
-                        dataContract = (DataContract) annotation;
-                        canPass = true;
-                    }
+//                Annotation[] annotationArr = annotations[i];
+//                for(Annotation annotation : annotationArr){
+//                    if(annotation.annotationType().equals(DataContract.class)){
+//                        dataContract = (DataContract) annotation;
+//                        canPass = true;
+//                    }
+//                }
+                //if parameterAnnotations don't contain @DataContract, is it primitive type?
+                Class<?> contractType = getContractTypeByPrimitiveType(classType);
+                dataContract = contractType.getDeclaredAnnotation(DataContract.class);
+                if(dataContract != null){
+                    canPass = true;
                 }
                 if(!canPass){
                     throw new IllegalArgumentException("must set annotation in each param of contract.");
@@ -183,7 +195,7 @@ public class ContractSerializeUtils {
     }
 
     public static boolean isPrimitiveType(int dataContractCode){
-        return  Arrays.asList(PRIMITIVE_TYPES).contains(dataContractCode);
+        return  Arrays.asList(PRIMITIVE_DATA_CODES).contains(dataContractCode);
     }
 
     private static Object regenObj(DataContract dataContract, Object object){
@@ -201,6 +213,30 @@ public class ContractSerializeUtils {
             return (CONTRACT_BINARY) () -> (Bytes) object;
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BIG_INT.class)){
             return (CONTRACT_BIG_INT) () -> new BigDecimal(object.toString());
+        }
+        return null;
+    }
+
+    /**
+     * get contractType(contain @DataContract) by primitive class type;
+     * some class type can be supported default (byte/char/int/long/String/Bytes, and so on).
+     * in other words, need not contain the @DataContract in its class for contract param's serialization or deserialization.
+     * @param classType
+     * @return
+     */
+    private static Class<?> getContractTypeByPrimitiveType(Class<?> classType) {
+        if(classType.equals(byte.class) || classType.equals(Byte.class)){
+            return CONTRACT_INT8.class;
+        }else if(classType.equals(char.class) || classType.equals(Character.class)){
+            return CONTRACT_INT16.class;
+        }else if(classType.equals(int.class) || classType.equals(Integer.class)){
+            return CONTRACT_INT32.class;
+        }else if(classType.equals(long.class) || classType.equals(Long.class)){
+            return CONTRACT_INT64.class;
+        }else if(classType.equals(String.class)){
+            return CONTRACT_TEXT.class;
+        }else if(classType.equals(Bytes.class)){
+            return CONTRACT_BINARY.class;
         }
         return null;
     }

@@ -68,7 +68,7 @@ public class SDK_Contract_Test {
 	public void demoContract1() {
 		// 发起交易；
 		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
-		String contractAddress = "LdeNvwqrHKCDtEVv5m3nQSpJ66ahds2E7FtnV";
+		String contractAddress = "LdeNmSdtUqVfURfcVxmJda252HC4FYHYfGTQv";
 		AssetContract2 assetContract = txTemp.contract(contractAddress, AssetContract2.class);
 		TransactionContentBody transactionContentBody = new TransactionContentBody() {
 			@Override
@@ -83,7 +83,10 @@ public class SDK_Contract_Test {
 		};
 //		assetContract.issue(transactionContentBody,contractAddress);
 //        assetContract.issue(transactionContentBody,contractAddress,888888);
-        assetContract.issue(Bytes.fromString("zhaogw, contract based interface is OK!"),contractAddress,999999);
+//        assetContract.issue(Bytes.fromString("zhaogw, contract based interface is OK!"),contractAddress,77777);
+//		assetContract.issue(Bytes.fromString("zhaogw, contract based interface is OK!"),contractAddress,77777);
+		Byte byteObj = Byte.parseByte("127");
+		assetContract.issue(byteObj,contractAddress,321123);
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();

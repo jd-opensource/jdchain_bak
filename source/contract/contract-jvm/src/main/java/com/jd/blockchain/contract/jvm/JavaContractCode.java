@@ -1,11 +1,12 @@
 package com.jd.blockchain.contract.jvm;
 
 import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.utils.IllegalDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -73,6 +74,9 @@ public class JavaContractCode implements ContractCode {
 
 				// 反序列化参数；
 				Method handleMethod = ContractType.resolve(myClass).getHandleMethod(contractEventContext.getEvent());
+				if (handleMethod == null){
+					throw new IllegalDataException("don't get this method by it's @ContractEvent.");
+				}
 				Object args = resolveArgs(contractEventContext.getArgs(), handleMethod);
 
 				Object[] params = null;
@@ -88,9 +92,9 @@ public class JavaContractCode implements ContractCode {
 				ReflectionUtils.invokeMethod(mth2, contractMainClassObj);
 				LOGGER.info("postEvent,耗时:" + (System.currentTimeMillis() - startTime));
 			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new IllegalDataException(e.getMessage());
 			}
 		}
 
