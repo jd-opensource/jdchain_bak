@@ -34,20 +34,6 @@ import com.jd.blockchain.utils.io.BytesUtils;
  */
 public class ED25519SignatureFunctionTest {
 
-	public static void main(String[] args) {
-		// Generate and output some public keys for test;
-		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
-		
-		AsymmetricKeypair kp1 = signFunc.generateKeypair();
-		System.out.println("kp1.pubKey=[" + kp1.getPubKey().toBase58() + "]");
-		System.out.println("kp1.privKey=[" + kp1.getPrivKey().toBase58() + "]");
-		
-		AsymmetricKeypair kp2 = signFunc.generateKeypair();
-		System.out.println("kp1.pubKey=[" + kp2.getPubKey().toBase58() + "]");
-		System.out.println("kp1.privKey=[" + kp2.getPrivKey().toBase58() + "]");
-
-	}
-
 	@Test
 	public void getAlgorithmTest() {
 
