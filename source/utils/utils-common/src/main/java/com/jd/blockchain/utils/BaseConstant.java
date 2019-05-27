@@ -22,7 +22,7 @@ public class BaseConstant {
     public static final String SYS_CONTRACT_PROPS_NAME = "sys-contract.properties";
     public static final String CONTRACT_MAIN_CLASS_KEY = "contract";
 
-    public static final String CONTRACT_EVENT_PREFIX="@com.jd.blockchain.contract.ContractEvent(name=";
+//    public static final String CONTRACT_EVENT_PREFIX="@com.jd.blockchain.contract.ContractEvent(name=";
 
     // 编译时引用包黑名单
     public static final String PACKAGE_BLACKLIST = "BLACKLIST";

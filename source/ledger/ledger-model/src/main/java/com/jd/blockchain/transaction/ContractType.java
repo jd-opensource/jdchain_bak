@@ -2,16 +2,17 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.utils.BaseConstant;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ContractType {
 
 	private String name;
 
-	private SortedMap<String, Method> events = Collections.synchronizedSortedMap(new TreeMap<>());
+	private Map<String, Method> events = new HashMap<>();
 
 	private Map<Method, String> handleMethods = new HashMap<>();;
 
@@ -57,12 +58,9 @@ public class ContractType {
 		Method[] classMethods = contractIntf.getDeclaredMethods();
 		for (Method method : classMethods) {
 			// if current method contains @ContractEvent，then put it in this map;
-			if (method.isAnnotationPresent(ContractEvent.class)) {
-				Object obj = method.getAnnotation(ContractEvent.class);
-				String annoAllName = obj.toString();
-				// format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
-				String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),
-						annoAllName.length() - 1);
+			ContractEvent contractEvent = method.getAnnotation(ContractEvent.class);
+			if (contractEvent != null) {
+				String eventName_ = contractEvent.name();
 				//if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
 				if(contractType.events.containsKey(eventName_)){
 					throw new ContractException("too many same eventNames exists in the contract, check it.");

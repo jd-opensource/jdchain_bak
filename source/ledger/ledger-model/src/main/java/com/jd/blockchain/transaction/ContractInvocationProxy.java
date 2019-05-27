@@ -2,6 +2,8 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.IllegalDataException;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -18,17 +20,15 @@ public class ContractInvocationProxy implements InvocationHandler {
 	public ContractInvocationProxy(Bytes contractAddress, ContractType contractType,
 			ContractEventSendOperationBuilder sendOpBuilder) {
 		this.contractAddress = contractAddress;
+		if(contractType == null){
+			throw new IllegalDataException("contractType == null, no invoke really.");
+		}
 		this.contractType = contractType;
 		this.sendOpBuilder = sendOpBuilder;
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-		if(contractType == null){
-			return "contractType == null, no invoke really.";
-		}
-
 		String event = contractType.getEvent(method);
 		if (event == null) {
 			// 适配 Object 对象的方法；

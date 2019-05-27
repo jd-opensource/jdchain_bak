@@ -42,7 +42,6 @@ public class ContractSerializeUtils {
         }
 
         Class<?>[] classTypes = method.getParameterTypes();
-        Annotation [][] annotations = method.getParameterAnnotations();
         byte[][] result = new byte[classTypes.length][];
         //将method中形参转换为实体对象，每个形参都必须为@DataContract类型;每个形参使用系统的BinaryProtocol来进行序列化,如果有5个参数，则使用5次序列化;
         int sum = 0;
