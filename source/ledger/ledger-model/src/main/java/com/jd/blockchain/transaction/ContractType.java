@@ -1,20 +1,22 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.contract.ContractException;
+import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.utils.IllegalDataException;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ContractType {
 
 	private String name;
-
 	private Map<String, Method> events = new HashMap<>();
-
-	private Map<Method, String> handleMethods = new HashMap<>();;
+	private Map<Method, String> handleMethods = new HashMap<>();
+	private Map<Method, List<DataContract>> dataContractMap = new HashMap<>();
 
 	/**
 	 * 返回声明的所有事件；
@@ -23,6 +25,10 @@ public class ContractType {
 	 */
 	public Set<String> getEvents() {
 		return events.keySet();
+	}
+
+	public Map<Method, List<DataContract>> getDataContractMap() {
+		return dataContractMap;
 	}
 
 	/**
@@ -54,6 +60,15 @@ public class ContractType {
 
 	public static ContractType resolve(Class<?> contractIntf){
 		ContractType contractType = new ContractType();
+
+		Annotation annotation = contractIntf.getDeclaredAnnotation(Contract.class);
+
+		//contains: @Contract?
+		boolean isContractType = annotation != null ? true : false;
+		if(!isContractType){
+			throw new IllegalDataException("is not Contract Type, becaust there is not @Contract.");
+		}
+
 		//contractIntf contains @Contract and @ContractEvent;
 		Method[] classMethods = contractIntf.getDeclaredMethods();
 		for (Method method : classMethods) {
@@ -63,8 +78,19 @@ public class ContractType {
 				String eventName_ = contractEvent.name();
 				//if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
 				if(contractType.events.containsKey(eventName_)){
-					throw new ContractException("too many same eventNames exists in the contract, check it.");
+					throw new ContractException("there is repeat definition of contractEvent to @ContractEvent.");
 				}
+				//check param's type is fit for need.
+				Class<?>[] paramTypes = method.getParameterTypes();
+				List dataContractList = new ArrayList();
+				for(Class<?> curParamType : paramTypes){
+					DataContract dataContract = ContractSerializeUtils.parseDataContract(curParamType);
+					dataContractList.add(dataContract);
+				}
+				if(dataContractList.size()>0){
+					contractType.dataContractMap.put(method,dataContractList);
+				}
+
 				contractType.events.put(eventName_, method);
 				contractType.handleMethods.put(method,eventName_);
 			}

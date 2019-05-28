@@ -47,6 +47,9 @@ public class ContractInvocationProxy implements InvocationHandler {
 
 	private byte[] serializeArgs(Object[] args, Method method) {
 		// TODO 根据方法参数的定义序列化参数；
-		return ContractSerializeUtils.serializeMethodParam(args,method);
+		if(args == null || args.length==0){
+			return null;
+		}
+		return ContractSerializeUtils.serializeMethodParam(args,contractType.getDataContractMap().get(method));
 	}
 }

@@ -6,13 +6,11 @@ import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
 import org.springframework.util.ReflectionUtils;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,57 +22,20 @@ public class ContractSerializeUtils {
     public static final Integer[] PRIMITIVE_DATA_CODES = {DataCodes.CONTRACT_INT8, DataCodes.CONTRACT_INT16, DataCodes.CONTRACT_INT32,
             DataCodes.CONTRACT_INT64, DataCodes.CONTRACT_BIG_INT,DataCodes.CONTRACT_TEXT, DataCodes.CONTRACT_BINARY };
 
-
     /**
-     * valid then parse the Object by Method params;
-     * @param object
-     * @param method
+     * serialize the Object[] by List<DataContract> list;
+     * @param objArr
+     * @param dataContractList
      * @return
      */
-    public static byte[] serializeMethodParam(Object object,Method method)  {
-        if (object == null) {
-            return null;
-        }
-
-        Object[] objArr = null;
-        if(object.getClass().isArray()){
-            objArr = (Object[]) object;
-        }
-
-        Class<?>[] classTypes = method.getParameterTypes();
-        byte[][] result = new byte[classTypes.length][];
+    public static byte[] serializeMethodParam(Object[] objArr,List<DataContract> dataContractList)  {
+        byte[][] result = new byte[objArr.length][];
         //将method中形参转换为实体对象，每个形参都必须为@DataContract类型;每个形参使用系统的BinaryProtocol来进行序列化,如果有5个参数，则使用5次序列化;
         int sum = 0;
-        for(int i=0;i<classTypes.length;i++){
-            Class <?> classType = classTypes[i];
-            DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
-            //if the param's class Type don't contain @DataContract, then check parameterAnnotations of this method.
-            if(dataContract == null){
-                boolean canPass = false;
-                //check by annotation;
-//                Annotation[] annotationArr = annotations[i];
-//                for(Annotation annotation : annotationArr){
-//                    if(annotation instanceof DataContract){
-//                        dataContract = (DataContract) annotation;
-//                        objArr[i] = regenObj(dataContract,objArr[i]);
-//                        canPass = true;
-//                    }
-//                }
-                //if parameterAnnotations don't contain @DataContract, is it primitive type?
-                Class<?> contractType = getContractTypeByPrimitiveType(classType);
-                dataContract = contractType.getDeclaredAnnotation(DataContract.class);
-                if(dataContract != null){
-                    objArr[i] = regenObj(dataContract,objArr[i]);
-                    canPass = true;
-                }
-                if(!canPass){
-                    throw new IllegalArgumentException("must set @DataContract for each param of contract.");
-                }
-            }
-            if(!getDataIntf().containsKey(dataContract.code())){
-                throw new IllegalArgumentException(String.format(
-                        "for now, this @dataContract(code=%s) is forbidden in the param list.",dataContract.code()));
-            }
+
+        for(int i=0;i<objArr.length;i++){
+            DataContract dataContract = dataContractList.get(i);
+            objArr[i] = regenObj(dataContract,objArr[i]);
             //get data interface;
             result[i] = BinaryProtocol.encode(objArr[i],getDataIntf().get(dataContract.code()));
             sum += result[i].length;
@@ -91,9 +52,9 @@ public class ContractSerializeUtils {
          rtnBytes[...]: result[1][] bytes(2 param's length);
          rtnBytes[...]: result[2][] bytes(3 param's length);
          */
-        int bodyFirstPosition = 4 + 4 * (classTypes.length);
+        int bodyFirstPosition = 4 + 4 * (objArr.length);
         ByteBuffer byteBuffer = ByteBuffer.allocate(bodyFirstPosition + sum);
-        byteBuffer.putInt(classTypes.length);
+        byteBuffer.putInt(objArr.length);
         for(int j=0; j<result.length; j++) {
             byte[] curResult = result[j];
             byteBuffer.putInt(curResult.length);
@@ -108,59 +69,26 @@ public class ContractSerializeUtils {
      * deserialize the params bytes[];
      * params format: nums|first length| second length| third length| ... |bytes[0]| byte[1] | bytes[2]| ...
      * @param params
-     * @param method
+     * @param dataContractList
      * @return
      */
-    public static Object[] deserializeMethodParam(byte[] params, Method method)  {
-        if (params == null) {
-            return null;
-        }
-
-        Class<?>[] classTypes = method.getParameterTypes();
-        Object result[] = new Object[classTypes.length];
-
+    public static Object[] deserializeMethodParam(byte[] params, List<DataContract> dataContractList)  {
+        Object result[] = new Object[dataContractList.size()];
         ByteBuffer byteBuffer = ByteBuffer.allocate(params.length);
         byteBuffer.put(params);
         int paramNums = byteBuffer.getInt(0);
 
-        if(paramNums != classTypes.length){
+        if(paramNums != dataContractList.size()){
             throw new IllegalArgumentException("deserialize Method param. params'length in byte[] != method's param length");
         }
 
-        Annotation [][] annotations = method.getParameterAnnotations();
-        int offsetPosition = (1 + classTypes.length)*4; //start position of real data;
-        for(int i=0; i<classTypes.length; i++){
-            Class<?> classType = classTypes[i];
+        int offsetPosition = (1 + dataContractList.size())*4; //start position of real data;
+        for(int i=0; i<dataContractList.size(); i++){
+            DataContract dataContract = dataContractList.get(i);
             int curParamLength = byteBuffer.getInt((i+1)*4);
-            DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
-            if(dataContract == null){
-                boolean canPass = false;
-                //check by annotation;
-//                Annotation[] annotationArr = annotations[i];
-//                for(Annotation annotation : annotationArr){
-//                    if(annotation.annotationType().equals(DataContract.class)){
-//                        dataContract = (DataContract) annotation;
-//                        canPass = true;
-//                    }
-//                }
-                //if parameterAnnotations don't contain @DataContract, is it primitive type?
-                Class<?> contractType = getContractTypeByPrimitiveType(classType);
-                dataContract = contractType.getDeclaredAnnotation(DataContract.class);
-                if(dataContract != null){
-                    canPass = true;
-                }
-                if(!canPass){
-                    throw new IllegalArgumentException("must set annotation in each param of contract.");
-                }
-            }
             ByteBuffer byteBuffer1 = ByteBuffer.allocate(curParamLength);
             byteBuffer1.put(params,offsetPosition,curParamLength);
             offsetPosition += curParamLength;
-
-            if(!getDataIntf().containsKey(dataContract.code())){
-                throw new IllegalArgumentException(String.format(
-                        "for now, this @dataContract(code=%s) is forbidden in the param list.",dataContract.code()));
-            }
             //if dataContract=primitive type(byte/short/int/long/String),only use its getValues();
             Object object = BinaryProtocol.decodeAs(byteBuffer1.array(),
                     getDataIntf().get(dataContract.code()));
@@ -238,5 +166,27 @@ public class ContractSerializeUtils {
             return CONTRACT_BINARY.class;
         }
         return null;
+    }
+
+    public static DataContract parseDataContract(Class<?> classType){
+        DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
+        //if the param's class Type don't contain @DataContract, then check parameterAnnotations of this method.
+        if(dataContract == null){
+            boolean canPass = false;
+            //if parameterAnnotations don't contain @DataContract, is it primitive type?
+            Class<?> contractType = getContractTypeByPrimitiveType(classType);
+            dataContract = contractType.getDeclaredAnnotation(DataContract.class);
+            if(dataContract != null){
+                canPass = true;
+            }
+            if(!canPass){
+                throw new IllegalArgumentException("must set @DataContract for each param of contract.");
+            }
+        }
+        if(!getDataIntf().containsKey(dataContract.code())){
+            throw new IllegalArgumentException(String.format(
+                    "for now, this @dataContract(code=%s) is forbidden in the param list.",dataContract.code()));
+        }
+        return dataContract;
     }
 }

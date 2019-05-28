@@ -1,5 +1,6 @@
 package com.jd.blockchain.contract.jvm;
 
+import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.engine.ContractCode;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * contract code based jvm
@@ -25,7 +27,7 @@ public class JavaContractCode implements ContractCode {
 	private long version;
 	private ContractEventContext contractEventContext;
 
-	private ContractType contractType ;
+	private ContractType contractType;
 
 	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
@@ -49,8 +51,11 @@ public class JavaContractCode implements ContractCode {
 		codeModule.execute(new ContractExecution());
 	}
 
-	private Object resolveArgs(byte[] args, Method method) {
-		return ContractSerializeUtils.deserializeMethodParam(args,method);
+	private Object resolveArgs(byte[] args, List<DataContract> dataContractList) {
+		if(args == null || args.length == 0){
+			return null;
+		}
+		return ContractSerializeUtils.deserializeMethodParam(args,dataContractList);
 	}
 
 	class ContractExecution implements Runnable {
@@ -73,11 +78,13 @@ public class JavaContractCode implements ContractCode {
 				startTime = System.currentTimeMillis();
 
 				// 反序列化参数；
-				Method handleMethod = ContractType.resolve(myClass).getHandleMethod(contractEventContext.getEvent());
+				contractType = ContractType.resolve(myClass);
+				Method handleMethod = contractType.getHandleMethod(contractEventContext.getEvent());
 				if (handleMethod == null){
 					throw new IllegalDataException("don't get this method by it's @ContractEvent.");
 				}
-				Object args = resolveArgs(contractEventContext.getArgs(), handleMethod);
+				Object args = resolveArgs(contractEventContext.getArgs(),
+						contractType.getDataContractMap().get(handleMethod));
 
 				Object[] params = null;
 				if(args.getClass().isArray()){
@@ -97,42 +104,6 @@ public class JavaContractCode implements ContractCode {
 				throw new IllegalDataException(e.getMessage());
 			}
 		}
-
-		// 得到当前类中相关方法和注解对应关系;
-//		Method getMethodByAnno(Object classObj, String eventName) {
-//			Class<?> c = classObj.getClass();
-//			Class<ContractEvent> contractEventClass = null;
-//			try {
-//				contractEventClass = (Class<ContractEvent>) c.getClassLoader().loadClass(ContractEvent.class.getName());
-//			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//			Method[] classMethods = c.getMethods();
-//			Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
-//			Map<String, Method> annoMethodMap = new HashMap<String, Method>();
-//			for (int i = 0; i < classMethods.length; i++) {
-//				Annotation[] a = classMethods[i].getDeclaredAnnotations();
-//				methodAnnoMap.put(classMethods[i], a);
-//				// 如果当前方法中包含@ContractEvent注解，则将其放入Map;
-//				for (Annotation annotation_ : a) {
-//					// 如果是合同事件类型，则放入map;
-//					if (classMethods[i].isAnnotationPresent(contractEventClass)) {
-//						Object obj = classMethods[i].getAnnotation(contractEventClass);
-//						String annoAllName = obj.toString();
-//						// format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
-//						String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),
-//								annoAllName.length() - 1);
-//						annoMethodMap.put(eventName_, classMethods[i]);
-//						break;
-//					}
-//				}
-//			}
-//			if (annoMethodMap.containsKey(eventName)) {
-//				return annoMethodMap.get(eventName);
-//			} else {
-//				return null;
-//			}
-//		}
 	}
 
 }

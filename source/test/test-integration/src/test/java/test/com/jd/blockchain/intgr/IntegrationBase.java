@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.springframework.core.io.ClassPathResource;
 import test.com.jd.blockchain.intgr.contract.AssetContract;
+import test.com.jd.blockchain.intgr.contract.AssetContract2;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -431,17 +432,13 @@ public class IntegrationBase {
     }
 
     // 合约测试使用的初始化数据;
-    BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
-    BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
+    static BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
+    static BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
     // 保存资产总数的键；
-    private static final String KEY_TOTAL = "TOTAL";
     // 第二个参数;
-    private static final String KEY_ABC = "abc";
-    private String contractZipName = "Example1.jar";
-    HashDigest txContentHash;
-    String pubKeyVal = "jd.com"+System.currentTimeMillis();
-    private String eventName = "issue-asset";
-    public LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+    private static String contractZipName = "contract.jar";
+    static HashDigest txContentHash;
+    public static LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
                                         BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         System.out.println("adminKey="+ AddressEncoding.generateAddress(adminKey.getPubKey()));
         BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
@@ -476,7 +473,7 @@ public class IntegrationBase {
         return block;
     }
 
-    private <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
+    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
                                  BlockchainService blockchainService,LedgerRepository ledgerRepository,Class<T> contractIntf) {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
         LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
@@ -484,7 +481,9 @@ public class IntegrationBase {
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-        txTpl.contract(contractDeployKey.getAddress(),AssetContract.class).issue(10,"abc");
+        Byte byteObj = Byte.parseByte("127");
+        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
+                contractDeployKey.getAddress().toBase58(),321123);
 
         // 签名；
         PreparedTransaction ptx = txTpl.prepare();
@@ -503,7 +502,7 @@ public class IntegrationBase {
      *
      * @return
      */
-    private byte[] getChainCodeBytes() {
+    private static byte[] getChainCodeBytes() {
         // 构建合约的字节数组;
         byte[] contractCode = null;
         File file = null;

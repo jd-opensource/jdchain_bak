@@ -88,6 +88,8 @@ public interface DataCodes {
 	public static final int CONTRACT_TEXT = 0xA05;
 	public static final int CONTRACT_BINARY = 0xA06;
 	public static final int CONTRACT_BIG_INT = 0xA07;
+	//...0xA19
+	public static final int CONTRACT_BIZ_CONTENT = 0xA20;
 
 	public static final int HASH = 0xB00;
 

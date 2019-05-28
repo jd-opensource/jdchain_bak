@@ -38,19 +38,6 @@ public class ContractInvocationProxyBuilder {
 		if (contractType != null) {
 			return contractType;
 		}
-		
-		// 判断是否是标注了合约的接口类型；
-		if (!isContractType(contractIntf)){
-			throw new IllegalDataException("is not Contract Type, becaust there is not @Contract.");
-		}
-
-		// 解析合约事件处理方法，检查是否有重名；
-		if(!isUniqueEvent(contractIntf)){
-			throw new IllegalDataException("there is repeat definition of contractEvent to @ContractEvent.");
-		}
-
-		// TODO 检查是否不支持的参数类型；
-
 		// TODO 检查返回值类型；
 
 		ContractType contractType1 =  ContractType.resolve(contractIntf);
@@ -58,33 +45,6 @@ public class ContractInvocationProxyBuilder {
 		return contractType1;
 	}
 
-
-	private boolean isUniqueEvent(Class<?> contractIntf) {
-		boolean isUnique = true;
-		Method[] classMethods = contractIntf.getMethods();
-		Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
-		Map<String, Method> annoMethodMap = new HashMap<String, Method>();
-		for (int i = 0; i < classMethods.length; i++) {
-			Annotation[] annotations = classMethods[i].getDeclaredAnnotations();
-			methodAnnoMap.put(classMethods[i], annotations);
-			// if current method contains @ContractEvent，then put it in this map;
-			Method curMethod = classMethods[i];
-			ContractEvent contractEvent = curMethod.getAnnotation(ContractEvent.class);
-			if (contractEvent != null) {
-				Object obj = classMethods[i].getAnnotation(ContractEvent.class);
-				String annoAllName = obj.toString();
-				// format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
-				String eventName_ = contractEvent.name();
-				//if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
-				if(annoMethodMap.containsKey(eventName_)){
-					isUnique = false;
-				}
-				annoMethodMap.put(eventName_, classMethods[i]);
-			}
-		}
-
-		return isUnique;
-	}
 
 	/**
 	 * is contractType really?  identified by @Contract;
