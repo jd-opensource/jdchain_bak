@@ -6,10 +6,10 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class DataAccount implements AccountHeader, MerkleProvable {
 
@@ -41,9 +41,22 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	public MerkleProof getProof(Bytes key) {
 		return baseAccount.getProof(key);
 	}
+	
+
+	public long setBytes(Bytes key, BytesValue value, long version) {
+		byte[] bytesValue = BinaryProtocol.encode(value, BytesValue.class);
+		return baseAccount.setBytes(key, bytesValue, version);
+	}
+
+	
+	public long setBytes(Bytes key, String value, long version) {
+		BytesValue bv = BytesValueEntry.fromText(value);
+		return setBytes(key, bv, version);
+	}
 
 	public long setBytes(Bytes key, byte[] value, long version) {
-		return baseAccount.setBytes(key, value, version);
+		BytesValue bv = BytesValueEntry.fromBytes(value);
+		return setBytes(key, bv, version);
 	}
 	
 	/**
@@ -119,7 +132,6 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 */
 
 	public KVDataEntry[] getDataEntries(int fromIndex, int count) {
-
 		if (getDataEntriesTotalCount() == 0 || count == 0) {
 			return null;
 		}
@@ -162,5 +174,4 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 		}
 		return baseAccount.dataset.getDataCount();
 	}
-
 }

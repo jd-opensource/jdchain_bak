@@ -23,8 +23,6 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 
 	protected MerkleDataSet dataset;
 
-	private AccountAccessPolicy accessPolicy;
-
 	/**
 	 * Create a new Account with the specified address and pubkey; <br>
 	 *
@@ -38,8 +36,8 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param pubKey
 	 */
 	public BaseAccount(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
-			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		this(address, pubKey, null, cryptoSetting, keyPrefix, exStorage, verStorage, false, accessPolicy);
+			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
+		this(address, pubKey, null, cryptoSetting, keyPrefix, exStorage, verStorage, false);
 	}
 
 	/**
@@ -58,8 +56,8 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param accessPolicy
 	 */
 	public BaseAccount(BlockchainIdentity bcid, CryptoSetting cryptoSetting, String keyPrefix,
-			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		this(bcid, null, cryptoSetting, keyPrefix, exStorage, verStorage, false, accessPolicy);
+			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
+		this(bcid, null, cryptoSetting, keyPrefix, exStorage, verStorage, false);
 	}
 
 	/**
@@ -69,9 +67,8 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 *
 	 * @param address
 	 * @param pubKey
-	 * @param dataRootHash
-	 *            merkle root hash of account's data; if null be set, create a new
-	 *            empty merkle dataset;
+	 * @param dataRootHash  merkle root hash of account's data; if null be set,
+	 *                      create a new empty merkle dataset;
 	 * @param cryptoSetting
 	 * @param exStorage
 	 * @param verStorage
@@ -79,18 +76,15 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param accessPolicy
 	 */
 	public BaseAccount(Bytes address, PubKey pubKey, HashDigest dataRootHash, CryptoSetting cryptoSetting,
-			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
-			AccountAccessPolicy accessPolicy) {
+			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
 		this(new BlockchainIdentityData(address, pubKey), dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage,
-				readonly, accessPolicy);
+				readonly);
 	}
 
 	public BaseAccount(BlockchainIdentity bcid, HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
-			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
-			AccountAccessPolicy accessPolicy) {
+			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
 		this.bcid = bcid;
 		this.dataset = new MerkleDataSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
-		this.accessPolicy = accessPolicy;
 	}
 
 	/*
@@ -151,12 +145,9 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * If updating is performed, the version of the key increase by 1. <br>
 	 * If creating is performed, the version of the key initialize by 0. <br>
 	 * 
-	 * @param key
-	 *            The key of data;
-	 * @param value
-	 *            The value of data;
-	 * @param version
-	 *            The expected version of the key.
+	 * @param key     The key of data;
+	 * @param value   The value of data;
+	 * @param version The expected version of the key.
 	 * @return The new version of the key. <br>
 	 *         If the key is new created success, then return 0; <br>
 	 *         If the key is updated success, then return the new version;<br>
@@ -164,7 +155,6 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 *         return -1;
 	 */
 	public long setBytes(Bytes key, byte[] value, long version) {
-		// TODO: 支持多种数据类型；
 		return dataset.setValue(key, value, version);
 	}
 
@@ -207,10 +197,6 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 
 	@Override
 	public void commit() {
-		if (!accessPolicy.checkCommitting(this)) {
-			throw new LedgerException("Account Committing was rejected for the access policy!");
-		}
-
 		dataset.commit();
 	}
 

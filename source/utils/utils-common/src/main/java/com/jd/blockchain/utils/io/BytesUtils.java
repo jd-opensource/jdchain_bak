@@ -19,6 +19,10 @@ public class BytesUtils {
 	public static final int MAX_BUFFER_SIZE = 1024 * 1024 * 1024;
 	public static final int BUFFER_SIZE = 64;
 
+	public static final byte TRUE_BYTE = 1;
+
+	public static final byte FALSE_BYTE = 0;
+
 	private BytesUtils() {
 	}
 
@@ -28,10 +32,8 @@ public class BytesUtils {
 	 * 
 	 * 此方法不处理两者其中之一为 null 的情形，因为无法定义相等性，所以将引发 {@link NullPointerException} 异常；
 	 * 
-	 * @param bytes1
-	 *            bytes1
-	 * @param bytes2
-	 *            bytes2
+	 * @param bytes1 bytes1
+	 * @param bytes2 bytes2
 	 * @return boolean
 	 */
 	public static boolean equals(byte[] bytes1, byte[] bytes2) {
@@ -64,8 +66,7 @@ public class BytesUtils {
 	 * 将输入流的所有内容都读入到字节数组返回； 如果输入流的长度超出 MAX_BUFFER_SIZE 定义的值，则抛出
 	 * IllegalArgumentException ;
 	 * 
-	 * @param in
-	 *            in
+	 * @param in in
 	 * @return byte[]
 	 */
 	public static byte[] copyToBytes(InputStream in) {
@@ -95,15 +96,11 @@ public class BytesUtils {
 	/**
 	 * 将输入流复制到输出流；
 	 * 
-	 * @param in
-	 *            输入流；
-	 * @param out
-	 *            输出流；
-	 * @param maxSize
-	 *            最大字节大小；
+	 * @param in      输入流；
+	 * @param out     输出流；
+	 * @param maxSize 最大字节大小；
 	 * @return 返回实际复制的字节数；
-	 * @throws IOException
-	 *             exception
+	 * @throws IOException exception
 	 */
 	public static int copy(InputStream in, OutputStream out, int maxSize) throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
@@ -126,8 +123,7 @@ public class BytesUtils {
 	/**
 	 * 将 int 值转为4字节的二进制数组；
 	 * 
-	 * @param value
-	 *            value
+	 * @param value value
 	 * @return 转换后的二进制数组，高位在前，低位在后；
 	 */
 	public static byte[] toBytes(int value) {
@@ -142,11 +138,14 @@ public class BytesUtils {
 		return bytes;
 	}
 
+	public static byte[] toBytes(boolean value) {
+		return new byte[] { value ? TRUE_BYTE : FALSE_BYTE };
+	}
+
 	/**
 	 * 将 long 值转为8字节的二进制数组；
 	 * 
-	 * @param value
-	 *            value
+	 * @param value value
 	 * @return 转换后的二进制数组，高位在前，低位在后；
 	 */
 	public static byte[] toBytes(long value) {
@@ -158,10 +157,8 @@ public class BytesUtils {
 	/**
 	 * 将 int 值转为4字节的二进制数组；
 	 * 
-	 * @param value
-	 *            要转换的int整数；
-	 * @param bytes
-	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 0 开始的4个元素；
+	 * @param value 要转换的int整数；
+	 * @param bytes 要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 0 开始的4个元素；
 	 */
 	public static void toBytes(short value, byte[] bytes) {
 		toBytes(value, bytes, 0);
@@ -176,12 +173,9 @@ public class BytesUtils {
 	 * <p>
 	 * 以“高位在前”的方式转换，即：数值的高位保存在数组地址的低位；
 	 * 
-	 * @param value
-	 *            要转换的int整数；
-	 * @param bytes
-	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
-	 * @param offset
-	 *            写入转换结果的起始位置；
+	 * @param value  要转换的int整数；
+	 * @param bytes  要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
+	 * @param offset 写入转换结果的起始位置；
 	 * @return 返回写入的长度；
 	 */
 	public static int toBytes(int value, byte[] bytes, int offset) {
@@ -197,12 +191,9 @@ public class BytesUtils {
 	 * <p>
 	 * 以“高位在后”的方式转换，即：数值的高位保存在数组地址的高位；
 	 * 
-	 * @param value
-	 *            要转换的int整数；
-	 * @param bytes
-	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
-	 * @param offset
-	 *            写入转换结果的起始位置；
+	 * @param value  要转换的int整数；
+	 * @param bytes  要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
+	 * @param offset 写入转换结果的起始位置；
 	 * @return 返回写入的长度；
 	 */
 	public static int toBytesInReverse(int value, byte[] bytes, int offset) {
@@ -218,14 +209,10 @@ public class BytesUtils {
 	 * <p>
 	 * 以“高位在后”的方式转换，即：数值的高位保存在数组地址的高位；
 	 * 
-	 * @param value
-	 *            要转换的int整数；
-	 * @param bytes
-	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
-	 * @param offset
-	 *            写入转换结果的起始位置；
-	 * @param len
-	 *            写入长度；必须大于 0 ，小于等于 4；
+	 * @param value  要转换的int整数；
+	 * @param bytes  要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的4个元素；
+	 * @param offset 写入转换结果的起始位置；
+	 * @param len    写入长度；必须大于 0 ，小于等于 4；
 	 * @return 返回写入的长度；
 	 */
 	public static int toBytesInReverse(int value, byte[] bytes, int offset, int len) {
@@ -263,12 +250,9 @@ public class BytesUtils {
 	/**
 	 * 将 long 值转为8字节的二进制数组；
 	 * 
-	 * @param value
-	 *            要转换的long整数；
-	 * @param bytes
-	 *            要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的8个元素；
-	 * @param offset
-	 *            写入转换结果的起始位置；
+	 * @param value  要转换的long整数；
+	 * @param bytes  要保存转换结果的二进制数组；转换结果将从高位至低位的顺序写入数组从 offset 指定位置开始的8个元素；
+	 * @param offset 写入转换结果的起始位置；
 	 * @return 返回写入的长度；
 	 */
 	public static int toBytes(long value, byte[] bytes, int offset) {
@@ -345,8 +329,7 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从位置 0 开始的 4 个字节转换为 int 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
+	 * @param bytes 要转换的二进制数组；
 	 * @return 转换后的 int 整数；
 	 */
 	public static int toInt(byte[] bytes) {
@@ -362,10 +345,8 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 2 个字节转换为 short 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
-	 * @param offset
-	 *            要读取数据的开始位置
+	 * @param bytes  要转换的二进制数组；
+	 * @param offset 要读取数据的开始位置
 	 * @return 转换后的 short 整数；
 	 */
 	public static short toShort(byte[] bytes, int offset) {
@@ -387,10 +368,8 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 4 个字节转换为 int 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
-	 * @param offset
-	 *            要读取数据的开始位置
+	 * @param bytes  要转换的二进制数组；
+	 * @param offset 要读取数据的开始位置
 	 * @return 转换后的 int 整数；
 	 */
 	public static int toInt(byte[] bytes, int offset) {
@@ -407,14 +386,11 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 4 个字节转换为 int 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
-	 * @param offset
-	 *            要读取数据的开始位置
+	 * @param bytes  要转换的二进制数组；
+	 * @param offset 要读取数据的开始位置
 	 * @return 转换后的 int 整数；
 	 * 
-	 * @param len
-	 *            长度；len 必须满足： len 大于等于 1 且小于等于4；
+	 * @param len 长度；len 必须满足： len 大于等于 1 且小于等于4；
 	 * @return 转换后的 int 整数；
 	 */
 	public static int toInt(byte[] bytes, int offset, int len) {
@@ -433,18 +409,14 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 4 个字节转换为 int 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
-	 * @param offset
-	 *            要读取数据的开始位置
+	 * @param bytes  要转换的二进制数组；
+	 * @param offset 要读取数据的开始位置
 	 * @return 转换后的 int 整数；
 	 * 
-	 * @param len
-	 *            长度；len 必须满足： len 大于等于 1 且小于等于4；
-	 * @param highAlign
-	 *            是否高位对齐；<br>
-	 *            true 表示参数 bytes 的首个字节对应为整数的最高8位；<br>
-	 *            false 表示参数 bytes 的最后字节对应为整数的最低8位；
+	 * @param len       长度；len 必须满足： len 大于等于 1 且小于等于4；
+	 * @param highAlign 是否高位对齐；<br>
+	 *                  true 表示参数 bytes 的首个字节对应为整数的最高8位；<br>
+	 *                  false 表示参数 bytes 的最后字节对应为整数的最低8位；
 	 * @return 转换后的 int 整数；
 	 */
 	public static int toInt(byte[] bytes, int offset, int len, boolean highAlign) {
@@ -472,10 +444,8 @@ public class BytesUtils {
 	/**
 	 * 按从高位到低位的顺序将指定二进制数组从 offset 参数指定的位置开始的 8个字节转换为 long 整数；
 	 * 
-	 * @param bytes
-	 *            要转换的二进制数组；
-	 * @param offset
-	 *            要读取数据的开始位置
+	 * @param bytes  要转换的二进制数组；
+	 * @param offset 要读取数据的开始位置
 	 * @return 转换后的 long 整数；
 	 */
 	public static long toLong(byte[] bytes, int offset) {
@@ -495,8 +465,7 @@ public class BytesUtils {
 	/**
 	 * 从指定的输入流中读入2个字节，由前到后按由高位到低位的方式转为 short 整数；
 	 * 
-	 * @param in
-	 *            in
+	 * @param in in
 	 * @return short
 	 */
 	public static short readShort(InputStream in) {
@@ -531,8 +500,7 @@ public class BytesUtils {
 	/**
 	 * 从指定的输入流中读入4个字节，由前到后按由高位到低位的方式转为 int 整数；
 	 * 
-	 * @param in
-	 *            in
+	 * @param in in
 	 * @return int
 	 */
 	public static int readInt(InputStream in) {
@@ -658,11 +626,9 @@ public class BytesUtils {
 	/**
 	 * 从字节数组获取对象
 	 * 
-	 * @param objBytes
-	 *            objBytes
+	 * @param objBytes objBytes
 	 * @return object
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	// public static Object getObjectFromBytes(byte[] objBytes) throws Exception {
 	// if (objBytes == null || objBytes.length == 0) {
@@ -676,11 +642,9 @@ public class BytesUtils {
 	/**
 	 * 从对象获取一个字节数组;
 	 * 
-	 * @param obj
-	 *            obj
+	 * @param obj obj
 	 * @return byte array
-	 * @throws Exception
-	 *             exception
+	 * @throws Exception exception
 	 */
 	public static byte[] getBytesFromObject(Object obj) throws Exception {
 		if (obj == null) {

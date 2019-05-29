@@ -24,8 +24,7 @@ public class DataAccountKVSetOperationHandle implements OperationHandle{
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
 		KVWriteEntry[] writeset = kvWriteOp.getWriteSet();
 		for (KVWriteEntry kvw : writeset) {
-			byte[] value = BinaryProtocol.encode(kvw.getValue(), BytesValue.class);
-			account.setBytes(Bytes.fromString(kvw.getKey()), value, kvw.getExpectedVersion());
+			account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
 		}
 	}
 

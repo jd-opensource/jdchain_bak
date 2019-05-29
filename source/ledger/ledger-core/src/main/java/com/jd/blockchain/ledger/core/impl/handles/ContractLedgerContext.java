@@ -3,10 +3,25 @@ package com.jd.blockchain.ledger.core.impl.handles;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.KVInfoVO;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.DataAccountKVSetOperationBuilder;
@@ -16,7 +31,6 @@ import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.transaction.UserRegisterOperationBuilder;
 import com.jd.blockchain.transaction.UserRegisterOperationBuilderImpl;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.BytesUtils;
 
 public class ContractLedgerContext implements LedgerContext {
 
@@ -250,17 +264,6 @@ public class ContractLedgerContext implements LedgerContext {
 			this.accountAddress = accountAddress;
 		}
 
-		public boolean isJson(String str) {
-			boolean result = false;
-			try {
-				Object obj=JSON.parse(str);
-				result = true;
-			} catch (Exception e) {
-				result=false;
-			}
-			return result;
-		}
-
 		@Override
 		public DataAccountKVSetOperation getOperation() {
 			return op;
@@ -268,41 +271,88 @@ public class ContractLedgerContext implements LedgerContext {
 
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-			BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value);
+			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
-			generatedOpList.add(op);
-			opHandleContext.handle(op);
+			handle(op);
 			return this;
 		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromText(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setBytes(String key, Bytes value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setInt64(String key, long value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromInt64(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+		
+		@Deprecated
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-			BytesValue bytesValue;
-			if (isJson(value)) {
-				bytesValue = new BytesValueEntry(BytesValueType.JSON, value.getBytes());
-			}
-			else {
-				bytesValue = new BytesValueEntry(BytesValueType.TEXT, value.getBytes());
-			}
+			BytesValue bytesValue = BytesValueEntry.fromText(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
-			generatedOpList.add(op);
-			opHandleContext.handle(op);
+			handle(op);
 			return this;
 		}
+		
 		@Override
-		public DataAccountKVSetOperationBuilder set(String key, Bytes value, long expVersion) {
-			BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value.toBytes());
+		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromJSON(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
-			generatedOpList.add(op);
-			opHandleContext.handle(op);
+			handle(op);
 			return this;
 		}
+		
 		@Override
-		public DataAccountKVSetOperationBuilder set(String key, long value, long expVersion) {
-			BytesValue bytesValue = new BytesValueEntry(BytesValueType.INT64, BytesUtils.toBytes(value));
+		public DataAccountKVSetOperationBuilder setXML(String key, String value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromXML(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+		
+		@Override
+		public DataAccountKVSetOperationBuilder setBytes(String key, byte[] value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+		
+		@Override
+		public DataAccountKVSetOperationBuilder setImage(String key, byte[] value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromImage(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+		
+		@Override
+		public DataAccountKVSetOperationBuilder setTimestamp(String key, long value, long expVersion) {
+			BytesValue bytesValue = BytesValueEntry.fromTimestamp(value);
+			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+			handle(op);
+			return this;
+		}
+		
+		private void handle(Operation op) {
 			generatedOpList.add(op);
 			opHandleContext.handle(op);
-			return this;
 		}
 
 		/**

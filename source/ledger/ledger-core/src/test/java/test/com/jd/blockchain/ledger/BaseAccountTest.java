@@ -14,7 +14,6 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.core.BaseAccount;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.impl.OpeningAccessPolicy;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -44,13 +43,12 @@ public class BaseAccountTest {
 		cryptoConf.setAutoVerifyHash(true);
 		cryptoConf.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
-		OpeningAccessPolicy accPlc = new OpeningAccessPolicy();
+//		OpeningAccessPolicy accPlc = new OpeningAccessPolicy();
 
 		BlockchainKeypair bck = BlockchainKeyGenerator.getInstance().generate();
 
 		// 新建账户；
-		BaseAccount baseAccount = new BaseAccount(bck.getIdentity(), cryptoConf, keyPrefix, testStorage, testStorage,
-				accPlc);
+		BaseAccount baseAccount = new BaseAccount(bck.getIdentity(), cryptoConf, keyPrefix, testStorage, testStorage);
 		assertFalse(baseAccount.isUpdated());// 空的账户；
 		assertFalse(baseAccount.isReadonly());
 

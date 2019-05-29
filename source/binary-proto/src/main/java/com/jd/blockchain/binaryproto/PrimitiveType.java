@@ -30,9 +30,9 @@ public enum PrimitiveType {
 	INT64((byte) (DataType.NUMERIC | 0x04)),
 
 	/**
-	 * 日期时间；
+	 * 时间戳；
 	 */
-	DATETIME((byte) (DataType.NUMERIC | 0x08)),
+	TIMESTAMP((byte) (DataType.NUMERIC | 0x08)),
 
 	/**
 	 * 文本数据；

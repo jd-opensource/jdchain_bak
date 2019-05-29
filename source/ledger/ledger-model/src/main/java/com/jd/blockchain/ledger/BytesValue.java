@@ -4,7 +4,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
-import com.jd.blockchain.utils.io.BytesSlice;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * BytesValue is the base structure of Value in Blockchain Account;
@@ -29,6 +29,6 @@ public interface BytesValue {
 	 * @return
 	 */
 	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
-	BytesSlice getValue();
+	Bytes getValue();
 	
 }

@@ -31,7 +31,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
 
-	
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
 	private UserRegisterOperationBuilder userRegOpBuilder = new UserRegisterOperationBuilderFilter();
@@ -78,7 +77,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	public ContractEventSendOperationBuilder contractEvents() {
 		return contractEventSendOpBuilder;
 	}
-	
+
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
 		// TODO Auto-generated method stub
@@ -144,40 +143,80 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			return innerBuilder.getOperation();
 		}
 
+		private void addOperation() {
+			if (op == null) {
+				op = innerBuilder.getOperation();
+				operationList.add(op);
+			}
+		}
+
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
 			innerBuilder.set(key, value, expVersion);
-			if (op == null) {
-				op = innerBuilder.getOperation();
-				operationList.add(op);
-			}
+			addOperation();
 			return this;
 		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
+			innerBuilder.setText(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setInt64(String key, long value, long expVersion) {
+			innerBuilder.setInt64(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setBytes(String key, Bytes value, long expVersion) {
+			innerBuilder.setBytes(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setBytes(String key, byte[] value, long expVersion) {
+			innerBuilder.setBytes(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setImage(String key, byte[] value, long expVersion) {
+			innerBuilder.setImage(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
 		@Override
 		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-			innerBuilder.set(key, value, expVersion);
-			if (op == null) {
-				op = innerBuilder.getOperation();
-				operationList.add(op);
-			}
+			innerBuilder.setText(key, value, expVersion);
+			addOperation();
 			return this;
 		}
+
 		@Override
-		public DataAccountKVSetOperationBuilder set(String key, long value, long expVersion) {
-			innerBuilder.set(key, value, expVersion);
-			if (op == null) {
-				op = innerBuilder.getOperation();
-				operationList.add(op);
-			}
+		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {
+			innerBuilder.setJSON(key, value, expVersion);
+			addOperation();
 			return this;
 		}
+
 		@Override
-		public DataAccountKVSetOperationBuilder set(String key, Bytes value, long expVersion) {
-			innerBuilder.set(key, value, expVersion);
-			if (op == null) {
-				op = innerBuilder.getOperation();
-				operationList.add(op);
-			}
+		public DataAccountKVSetOperationBuilder setXML(String key, String value, long expVersion) {
+			innerBuilder.setXML(key, value, expVersion);
+			addOperation();
+			return this;
+		}
+
+		@Override
+		public DataAccountKVSetOperationBuilder setTimestamp(String key, long value, long expVersion) {
+			innerBuilder.setTimestamp(key, value, expVersion);
+			addOperation();
 			return this;
 		}
 

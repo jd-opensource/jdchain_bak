@@ -228,7 +228,7 @@ public class KVDataObject implements KVDataEntry {
 	 * 返回日期时间值；
 	 * <p>
 	 * 
-	 * 仅当数据类型 {@link #getType()} 为 {@link PrimitiveType#DATETIME} 有效；
+	 * 仅当数据类型 {@link #getType()} 为 {@link PrimitiveType#TIMESTAMP} 有效；
 	 * <p>
 	 * 
 	 * 无效类型将引发 {@link IllegalStateException} 异常；
@@ -236,11 +236,11 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public Date datetimeValue() {
-		if (PrimitiveType.DATETIME == type) {
+		if (PrimitiveType.TIMESTAMP == type) {
 			long ts = BytesUtils.toLong(bytesValue);
 			return new Date(ts);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", PrimitiveType.DATETIME, type));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", PrimitiveType.TIMESTAMP, type));
 	}
 
 	/**
