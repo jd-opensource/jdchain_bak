@@ -5,6 +5,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.IllegalDataException;
 import org.springframework.util.ReflectionUtils;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -117,7 +118,7 @@ public class ContractSerializeUtils {
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_TEXT, CONTRACT_TEXT.class);
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BINARY, CONTRACT_BINARY.class);
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BIG_INT, CONTRACT_BIG_INT.class);
-//        DATA_CONTRACT_MAP.put(DataCodes.TX_CONTENT_BODY, TransactionContentBody.class);
+        DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_BIZ_CONTENT, ContractBizContent.class);
         return DATA_CONTRACT_MAP;
     }
 
@@ -140,8 +141,12 @@ public class ContractSerializeUtils {
             return (CONTRACT_BINARY) () -> (Bytes) object;
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BIG_INT.class)){
             return (CONTRACT_BIG_INT) () -> new BigDecimal(object.toString());
+        }else if(getDataIntf().get(dataContract.code()).equals(ContractBizContent.class)){
+            ContractBizContent contractBizContent = (ContractBizContent)object;
+            return contractBizContent;
+        }else {
+            throw new IllegalDataException("cann't get new Object by dataContract and object.");
         }
-        return null;
     }
 
     /**
@@ -164,6 +169,8 @@ public class ContractSerializeUtils {
             return CONTRACT_TEXT.class;
         }else if(classType.equals(Bytes.class)){
             return CONTRACT_BINARY.class;
+        }else if(classType.equals(BigDecimal.class)){
+            return CONTRACT_BIG_INT.class;
         }
         return null;
     }

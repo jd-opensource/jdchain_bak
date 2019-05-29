@@ -22,9 +22,16 @@ public interface ContractBizContent {
 	HashDigest getLedgerHash();
 
 	/**
-	 * 操作列表；
+	 * 地址；
 	 * @return
 	 */
-	@DataField(order = 2, list = true, refContract = true, genericContract = true)
-	Operation[] getOperations();
+	@DataField(order = 2, primitiveType = PrimitiveType.TEXT)
+	String getAddr();
+
+	/**
+	 * 年龄；
+	 * @return
+	 */
+	@DataField(order = 3, primitiveType = PrimitiveType.INT32)
+	int getAge();
 }

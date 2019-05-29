@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ import static org.junit.Assert.*;
  */
 
 public class IntegrationBase {
+    public static String KEY_TOTAL = "total";
 
     static {
         DataContractRegistry.register(LedgerInitOperation.class);
@@ -107,6 +109,7 @@ public class IntegrationBase {
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
         txTpl.dataAccounts().register(dataAccount.getIdentity());
+        txTpl.dataAccount(dataAccount.getAddress()).set("total", 200, -1);
 
         // 签名；
         PreparedTransaction ptx = txTpl.prepare();
@@ -440,6 +443,8 @@ public class IntegrationBase {
     static HashDigest txContentHash;
     public static LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
                                         BlockchainService blockchainService,LedgerRepository ledgerRepository) {
+        KeyPairResponse keyPairResponse = testSDK_RegisterDataAccount(adminKey,ledgerHash,blockchainService);
+
         System.out.println("adminKey="+ AddressEncoding.generateAddress(adminKey.getPubKey()));
         BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
         System.out.println("userKey="+userKey.getAddress());
@@ -458,32 +463,34 @@ public class IntegrationBase {
         TransactionResponse txResp = ptx.commit();
         assertTrue(txResp.isSuccess());
 
-        // 验证结果；
-        txResp.getContentHash();
+        // 验证结果hash；请求的hash=相应的内容hash;
+        assertEquals(ptx.getHash(),txResp.getContentHash());
 
         LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
         byte[] contractCodeInDb = ledgerRepository.getContractAccountSet(block).getContract(contractDeployKey.getAddress())
                 .getChainCode();
         assertArrayEquals(contractCode, contractCodeInDb);
-        txContentHash = ptx.getHash();
 
         // execute the contract;
-        testContractExe(adminKey, ledgerHash, userKey,  blockchainService, ledgerRepository, AssetContract.class);
+        testContractExe(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
 
         return block;
     }
 
-    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
-                                 BlockchainService blockchainService,LedgerRepository ledgerRepository,Class<T> contractIntf) {
+    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
+                                 BlockchainService blockchainService,LedgerRepository ledgerRepository) {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
         LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
 
         // 定义交易；
         TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-        Byte byteObj = Byte.parseByte("127");
+        Byte byteObj = Byte.parseByte("123");
+//        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
+//                contractDeployKey.getAddress().toBase58(),321123);
         txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
-                contractDeployKey.getAddress().toBase58(),321123);
+                dataKey.getAddress().toBase58(),Bytes.fromString("123321"));
+//        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,dataKey.getAddress().toBase58(),123456);
 
         // 签名；
         PreparedTransaction ptx = txTpl.prepare();
@@ -493,8 +500,11 @@ public class IntegrationBase {
         TransactionResponse txResp = ptx.commit();
 
         // 验证结果；
-        txResp.getContentHash();
         Assert.assertTrue(txResp.isSuccess());
+        assertEquals(ptx.getHash(),txResp.getContentHash());
+        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
+        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(0,1);
+        assertEquals("100",kvDataEntries[0].getValue().toString());
     }
 
     /**
