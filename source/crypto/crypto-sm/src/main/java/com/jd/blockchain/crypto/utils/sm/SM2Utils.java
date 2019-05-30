@@ -1,5 +1,6 @@
 package com.jd.blockchain.crypto.utils.sm;
 
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -99,7 +100,7 @@ public class SM2Utils {
     public static byte[] sign(byte[] data, byte[] privateKey, SecureRandom random, String ID){
 
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(new BigInteger(1,privateKey), DOMAIN_PARAMS);
-        CipherParameters params = new ParametersWithID(new ParametersWithRandom(privKey,random),ID.getBytes());
+        CipherParameters params = new ParametersWithID(new ParametersWithRandom(privKey,random), BytesUtils.toBytes(ID));
 
         return sign(data,params);
     }
@@ -153,8 +154,7 @@ public class SM2Utils {
 
         ECPoint pubKeyPoint = resolvePubKeyBytes(publicKey);
         ECPublicKeyParameters pubKey = new ECPublicKeyParameters(pubKeyPoint, DOMAIN_PARAMS);
-        ParametersWithID params = new ParametersWithID(pubKey,ID.getBytes());
-
+        ParametersWithID params = new ParametersWithID(pubKey, BytesUtils.toBytes(ID));
         return verify(data,params,signature);
     }
 

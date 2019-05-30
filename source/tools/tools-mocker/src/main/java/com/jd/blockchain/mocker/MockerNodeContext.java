@@ -30,6 +30,7 @@ import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.transaction.*;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
 
 import java.util.*;
@@ -210,7 +211,7 @@ public class MockerNodeContext implements BlockchainQueryService {
         // 合约发布
         // 注意此处只是将其放入内存中，而不需要真正编译为字节码
         TxBuilder txBuilder = txBuilder();
-        txBuilder.contracts().deploy(contractIdentity, contract.getClass().getName().getBytes());
+        txBuilder.contracts().deploy(contractIdentity, BytesUtils.toBytes(contract.getClass().getName()));
         // 执行
         txProcess(txRequest(txBuilder));
         return contractIdentity;

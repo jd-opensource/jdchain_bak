@@ -253,10 +253,10 @@ public class ContractLedgerContext implements LedgerContext {
 		public boolean isJson(String str) {
 			boolean result = false;
 			try {
-				Object obj=JSON.parse(str);
+				Object obj = JSON.parse(str);
 				result = true;
 			} catch (Exception e) {
-				result=false;
+				result = false;
 			}
 			return result;
 		}
@@ -278,10 +278,11 @@ public class ContractLedgerContext implements LedgerContext {
 		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
 			BytesValue bytesValue;
 			if (isJson(value)) {
-				bytesValue = new BytesValueEntry(BytesValueType.JSON, value.getBytes());
+
+				bytesValue = new BytesValueEntry(BytesValueType.JSON, BytesUtils.toBytes(value));
 			}
 			else {
-				bytesValue = new BytesValueEntry(BytesValueType.TEXT, value.getBytes());
+				bytesValue = new BytesValueEntry(BytesValueType.TEXT, BytesUtils.toBytes(value));
 			}
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			generatedOpList.add(op);

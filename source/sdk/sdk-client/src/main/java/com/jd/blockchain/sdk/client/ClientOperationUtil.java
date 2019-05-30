@@ -18,6 +18,7 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.BytesSlice;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.apache.commons.codec.binary.Base64;
 
 import java.lang.reflect.Field;
@@ -120,7 +121,7 @@ public class ClientOperationUtil {
         String ledgerSeedStr = legerInitObj.getString("ledgerSeed");
 
         // 种子需要做Base64转换
-        ledgerInitSettingData.setLedgerSeed(Base64.decodeBase64(ledgerSeedStr.getBytes()));
+        ledgerInitSettingData.setLedgerSeed(Base64.decodeBase64(BytesUtils.toBytes(ledgerSeedStr)));
 
         String consensusProvider = legerInitObj.getString("consensusProvider");
 
@@ -175,7 +176,7 @@ public class ClientOperationUtil {
         BlockchainIdentityData blockchainIdentity = blockchainIdentity(contract);
 
         String chainCodeStr = jsonObject.getString("chainCode");
-        ContractCodeDeployOpTemplate contractCodeDeployOpTemplate = new ContractCodeDeployOpTemplate(blockchainIdentity, chainCodeStr.getBytes());
+        ContractCodeDeployOpTemplate contractCodeDeployOpTemplate = new ContractCodeDeployOpTemplate(blockchainIdentity, BytesUtils.toBytes(chainCodeStr));
         return contractCodeDeployOpTemplate;
     }
 
@@ -184,7 +185,7 @@ public class ClientOperationUtil {
         String contractAddress = contractAddressObj.getString("value");
         String argsStr = jsonObject.getString("args");
         String event = jsonObject.getString("event");
-        return new ContractEventSendOpTemplate(Bytes.fromBase58(contractAddress), event, argsStr.getBytes());
+        return new ContractEventSendOpTemplate(Bytes.fromBase58(contractAddress), event, BytesUtils.toBytes(argsStr));
     }
 
     private static BlockchainIdentityData blockchainIdentity(JSONObject jsonObject) {

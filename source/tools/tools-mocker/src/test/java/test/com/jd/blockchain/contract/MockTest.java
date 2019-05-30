@@ -1,4 +1,4 @@
-package com.jd.blockchain.test;
+package test.com.jd.blockchain.contract;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;

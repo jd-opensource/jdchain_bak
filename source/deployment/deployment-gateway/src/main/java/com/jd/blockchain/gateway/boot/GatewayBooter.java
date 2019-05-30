@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +50,7 @@ public class GatewayBooter {
 		bootInfos.add(String.format("GW_BOOT_PID = [%s] \r\n", pid));
 		try (FileOutputStream outputStream = new FileOutputStream(pidFile)) {
 			for (String bootInfo : bootInfos) {
-				outputStream.write(bootInfo.getBytes());
+				outputStream.write(bootInfo.getBytes(StandardCharsets.UTF_8));
 			}
 			outputStream.flush();
 		}
