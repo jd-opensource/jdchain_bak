@@ -1,6 +1,7 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.SHA256Utils;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
@@ -17,9 +18,9 @@ public class SHA256UtilsTest {
     @Test
     public void hashTest() {
 
-        byte[] data1 = "abc".getBytes();
-        byte[] data2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".getBytes();
-        byte[] data3 = "aaaaaaaaaa".getBytes();
+        byte[] data1 = BytesUtils.toBytes("abc");
+        byte[] data2 = BytesUtils.toBytes("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
+        byte[] data3 = BytesUtils.toBytes("aaaaaaaaaa");
 
         byte[] result1 = SHA256Utils.hash(data1);
         byte[] result2 = SHA256Utils.hash(data2);
