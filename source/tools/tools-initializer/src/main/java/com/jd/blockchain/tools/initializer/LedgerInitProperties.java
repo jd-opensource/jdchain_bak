@@ -127,7 +127,7 @@ public class LedgerInitProperties {
 		return resolve(props);
 	}
 
-	private static LedgerInitProperties resolve(Properties props) {
+	public static LedgerInitProperties resolve(Properties props) {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
