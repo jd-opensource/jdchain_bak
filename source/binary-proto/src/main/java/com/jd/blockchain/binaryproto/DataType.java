@@ -7,7 +7,7 @@ public interface DataType {
 	 */
 	public static final byte NIL = (byte) 0x00;
 
-	/**
+	/**LdeNhjPGzHcHL6rLcJ7whHxUbn9Tv7qSKRfEA
 	 * 布尔；
 	 */
 	public static final byte BOOLEAN = (byte) 0x01;

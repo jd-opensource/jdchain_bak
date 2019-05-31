@@ -1,24 +1,24 @@
 package com.jd.blockchain.contract.jvm;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.runtime.Module;
+import com.jd.blockchain.transaction.ContractType;
+import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.IllegalDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.jd.blockchain.contract.ContractEvent;
-import com.jd.blockchain.contract.ContractEventContext;
-import com.jd.blockchain.contract.engine.ContractCode;
-import com.jd.blockchain.runtime.Module;
-import com.jd.blockchain.utils.BaseConstant;
-import com.jd.blockchain.utils.Bytes;
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * contract code based jvm
- *  @author zhaogw
+ * 
+ * @author zhaogw
  */
 public class JavaContractCode implements ContractCode {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaContractCode.class);
@@ -26,7 +26,9 @@ public class JavaContractCode implements ContractCode {
 	private Bytes address;
 	private long version;
 	private ContractEventContext contractEventContext;
-	
+
+	private ContractType contractType;
+
 	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
 		this.version = version;
@@ -37,7 +39,7 @@ public class JavaContractCode implements ContractCode {
 	public Bytes getAddress() {
 		return address;
 	}
-	
+
 	@Override
 	public long getVersion() {
 		return version;
@@ -46,75 +48,62 @@ public class JavaContractCode implements ContractCode {
 	@Override
 	public void processEvent(ContractEventContext eventContext) {
 		this.contractEventContext = eventContext;
-		codeModule.execute(new ContractThread());
+		codeModule.execute(new ContractExecution());
 	}
 
-	class ContractThread implements Runnable{
-		public void run(){
+	private Object resolveArgs(byte[] args, List<DataContract> dataContractList) {
+		if(args == null || args.length == 0){
+			return null;
+		}
+		return ContractSerializeUtils.deserializeMethodParam(args,dataContractList);
+	}
+
+	class ContractExecution implements Runnable {
+		public void run() {
 			LOGGER.info("ContractThread execute().");
 			try {
-				//执行预处理;
+				// 执行预处理;
 				long startTime = System.currentTimeMillis();
 
 				String contractClassName = codeModule.getMainClass();
 				Class myClass = codeModule.loadClass(contractClassName);
-				Object contractMainClassObj = myClass.newInstance();//合约主类生成的类实例;
+				Object contractMainClassObj = myClass.newInstance();// 合约主类生成的类实例;
 
-				Method beforeMth_ = myClass.getMethod("beforeEvent",codeModule.loadClass(ContractEventContext.class.getName()));
-				ReflectionUtils.invokeMethod(beforeMth_,contractMainClassObj,contractEventContext);
-				LOGGER.info("beforeEvent,耗时:"+(System.currentTimeMillis()-startTime));
+				Method beforeMth_ = myClass.getMethod("beforeEvent",
+						codeModule.loadClass(ContractEventContext.class.getName()));
+				ReflectionUtils.invokeMethod(beforeMth_, contractMainClassObj, contractEventContext);
+				LOGGER.info("beforeEvent,耗时:" + (System.currentTimeMillis() - startTime));
 
-				Method eventMethod = this.getMethodByAnno(contractMainClassObj,contractEventContext.getEvent());
+//				Method eventMethod = this.getMethodByAnno(contractMainClassObj, contractEventContext.getEvent());
 				startTime = System.currentTimeMillis();
 
-				ReflectionUtils.invokeMethod(eventMethod,contractMainClassObj,contractEventContext);
+				// 反序列化参数；
+				contractType = ContractType.resolve(myClass);
+				Method handleMethod = contractType.getHandleMethod(contractEventContext.getEvent());
+				if (handleMethod == null){
+					throw new IllegalDataException("don't get this method by it's @ContractEvent.");
+				}
+				Object args = resolveArgs(contractEventContext.getArgs(),
+						contractType.getDataContractMap().get(handleMethod));
 
-				LOGGER.info("合约执行,耗时:"+(System.currentTimeMillis()-startTime));
+				Object[] params = null;
+				if(args.getClass().isArray()){
+					params = (Object[])args;
+				}
+				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, params);
+
+				LOGGER.info("合约执行,耗时:" + (System.currentTimeMillis() - startTime));
 
 				Method mth2 = myClass.getMethod("postEvent");
 				startTime = System.currentTimeMillis();
-				ReflectionUtils.invokeMethod(mth2,contractMainClassObj);
-				LOGGER.info("postEvent,耗时:"+(System.currentTimeMillis()-startTime));
+				ReflectionUtils.invokeMethod(mth2, contractMainClassObj);
+				LOGGER.info("postEvent,耗时:" + (System.currentTimeMillis() - startTime));
 			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				throw new IllegalArgumentException(e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		//得到当前类中相关方法和注解对应关系;
-		Method getMethodByAnno(Object classObj, String eventName){
-			Class<?> c = classObj.getClass();
-			Class <ContractEvent> contractEventClass = null;
-			try {
-				contractEventClass = (Class <ContractEvent>)c.getClassLoader().loadClass(ContractEvent.class.getName());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			Method[] classMethods = c.getMethods();
-			Map<Method, Annotation[]> methodAnnoMap = new HashMap<Method, Annotation[]>();
-			Map<String,Method> annoMethodMap = new HashMap<String,Method>();
-			for(int i = 0;i<classMethods.length;i++){
-				Annotation[] a = classMethods[i].getDeclaredAnnotations();
-				methodAnnoMap.put(classMethods[i], a);
-				//如果当前方法中包含@ContractEvent注解，则将其放入Map;
-				for(Annotation annotation_ : a){
-					//如果是合同事件类型，则放入map;
-					if(classMethods[i].isAnnotationPresent(contractEventClass)){
-						Object obj = classMethods[i].getAnnotation(contractEventClass);
-						String annoAllName = obj.toString();
-						//format:@com.jd.blockchain.contract.model.ContractEvent(name=transfer-asset)
-						String eventName_ = obj.toString().substring(BaseConstant.CONTRACT_EVENT_PREFIX.length(),annoAllName.length()-1);
-						annoMethodMap.put(eventName_,classMethods[i]);
-						break;
-					}
-				}
-			}
-			if(annoMethodMap.containsKey(eventName)){
-				return annoMethodMap.get(eventName);
-			}else {
-				return null;
+				throw new IllegalDataException(e.getMessage());
 			}
 		}
 	}
+
 }

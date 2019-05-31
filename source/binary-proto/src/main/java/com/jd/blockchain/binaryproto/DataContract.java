@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * @author huanghaiquan
  *
  */
-@Target({ ElementType.TYPE })
+@Target({ ElementType.TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataContract {
 
