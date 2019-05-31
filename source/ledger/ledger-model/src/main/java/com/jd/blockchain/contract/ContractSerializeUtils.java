@@ -7,7 +7,7 @@ import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
 import org.springframework.util.ReflectionUtils;
-import java.math.BigDecimal;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -110,6 +110,11 @@ public class ContractSerializeUtils {
     }
 
 
+    /**
+     * the param types that we can support;
+     * @param <T>
+     * @return
+     */
     public static <T> Map<Integer, Class<?> > getDataIntf(){
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT8, CONTRACT_INT8.class);
         DATA_CONTRACT_MAP.put(DataCodes.CONTRACT_INT16, CONTRACT_INT16.class);
@@ -128,6 +133,7 @@ public class ContractSerializeUtils {
 
     private static Object regenObj(DataContract dataContract, Object object){
         if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT8.class)){
+
             return (CONTRACT_INT8) () -> Byte.parseByte(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_INT16.class)){
             return (CONTRACT_INT16) () -> Short.parseShort(object.toString());
@@ -139,8 +145,6 @@ public class ContractSerializeUtils {
             return (CONTRACT_TEXT) () -> object.toString();
         }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BINARY.class)){
             return (CONTRACT_BINARY) () -> (Bytes) object;
-        }else if(getDataIntf().get(dataContract.code()).equals(CONTRACT_BIG_INT.class)){
-            return (CONTRACT_BIG_INT) () -> new BigDecimal(object.toString());
         }else if(getDataIntf().get(dataContract.code()).equals(ContractBizContent.class)){
             ContractBizContent contractBizContent = (ContractBizContent)object;
             return contractBizContent;
@@ -169,26 +173,19 @@ public class ContractSerializeUtils {
             return CONTRACT_TEXT.class;
         }else if(classType.equals(Bytes.class)){
             return CONTRACT_BINARY.class;
-        }else if(classType.equals(BigDecimal.class)){
-            return CONTRACT_BIG_INT.class;
+        }else {
+            throw new IllegalDataException(String.format("no support the classType=%s, please check @DataContract.",classType.toString()));
         }
-        return null;
     }
 
     public static DataContract parseDataContract(Class<?> classType){
-        DataContract dataContract = classType.getDeclaredAnnotation(DataContract.class);
+        DataContract dataContract = classType.getAnnotation(DataContract.class);
         //if the param's class Type don't contain @DataContract, then check parameterAnnotations of this method.
         if(dataContract == null){
             boolean canPass = false;
             //if parameterAnnotations don't contain @DataContract, is it primitive type?
             Class<?> contractType = getContractTypeByPrimitiveType(classType);
-            dataContract = contractType.getDeclaredAnnotation(DataContract.class);
-            if(dataContract != null){
-                canPass = true;
-            }
-            if(!canPass){
-                throw new IllegalArgumentException("must set @DataContract for each param of contract.");
-            }
+            dataContract = contractType.getAnnotation(DataContract.class);
         }
         if(!getDataIntf().containsKey(dataContract.code())){
             throw new IllegalArgumentException(String.format(

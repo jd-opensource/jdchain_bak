@@ -1,12 +1,11 @@
 package test.com.jd.blockchain.sdk.test;
 
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.contract.samples.AssetContract;
 import com.jd.blockchain.contract.samples.AssetContract2;
 import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
-import com.jd.blockchain.sdk.BlockchainServiceFactory;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.sdk.samples.SDKDemo_Contract;
 import com.jd.blockchain.utils.Bytes;
@@ -23,7 +22,6 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -66,36 +64,20 @@ public class SDK_Contract_Test {
 	/**
 	 * 演示合约执行的过程；
 	 */
-//	@Test
+	@Test
 	public void demoContract1() {
         String dataAddress = registerData4Contract();
 		// 发起交易；
 		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
 		String contractAddress = "LdeNg8JHFCKABJt6AaRNVCZPgY4ofGPd8MgcR";
 		AssetContract2 assetContract = txTemp.contract(contractAddress, AssetContract2.class);
-		ContractBizContent contractBizContent =  new ContractBizContent() {
-			@Override
-			public HashDigest getLedgerHash() {
-				return new HashDigest(ClassicAlgorithm.SHA256, "zhaogw".getBytes());
-			}
-
-			@Override
-			public String getAddr() {
-				return "jinghailu street.";
-			}
-
-			@Override
-			public int getAge() {
-				return 100;
-			}
-		};
 //		assetContract.issue(transactionContentBody,contractAddress);
 //        assetContract.issue(transactionContentBody,contractAddress,888888);
 //        assetContract.issue(Bytes.fromString("zhaogw, contract based interface is OK!"),contractAddress,77777);
 //		assetContract.issue(Bytes.fromString("zhaogw, contract based interface is OK!"),contractAddress,77777);
 		Byte byteObj = Byte.parseByte("127");
 		assetContract.issue(byteObj,dataAddress,321123);
-		assetContract.issue(contractBizContent,dataAddress);
+//		assetContract.issue(contractBizContent,dataAddress);
 		assetContract.issue(Byte.parseByte("126"),dataAddress,Bytes.fromString("100.234"));
 
 		// TX 准备就绪；
@@ -107,6 +89,34 @@ public class SDK_Contract_Test {
 		//check;
         KVDataEntry[] dataEntries = bcsrv.getDataEntries(ledgerHash,dataAddress,"total");
         assertEquals("100",dataEntries[0].getValue().toString());
+	}
+
+	/**
+	 * 演示合约执行的过程；
+	 */
+	@Test
+	public void demoContract2() throws IOException {
+		String contractAddress = deploy();
+		String dataAddress = registerData4Contract();
+		System.out.println("dataAddress="+dataAddress);
+		// 发起交易；
+		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
+
+		AssetContract2 assetContract = txTemp.contract(contractAddress, AssetContract2.class);
+		ContractBizContent contractBizContent = () -> new String[]{"param1","param2"};
+		assetContract.issue(contractBizContent,dataAddress,123456);
+
+		// TX 准备就绪；
+		PreparedTransaction prepTx = txTemp.prepare();
+		prepTx.sign(signKeyPair);
+		// 提交交易；
+		TransactionResponse transactionResponse = prepTx.commit();
+
+		//check;
+		assertTrue(transactionResponse.isSuccess());
+		KVDataEntry[] dataEntries = bcsrv.getDataEntries(ledgerHash,dataAddress,contractBizContent.getAttrs()[0],contractBizContent.getAttrs()[1]);
+		assertEquals("value1",dataEntries[0].getValue().toString());
+		assertEquals(888,dataEntries[1].getValue());
 	}
 
 	@Test
@@ -146,6 +156,8 @@ public class SDK_Contract_Test {
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
         txTemp.dataAccounts().register(dataAccount.getIdentity());
         txTemp.dataAccount(dataAccount.getAddress()).set("total", 200, -1);
+		txTemp.dataAccount(dataAccount.getAddress()).set("param1", "v", -1);
+		txTemp.dataAccount(dataAccount.getAddress()).set("param2", 123, -1);
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
         prepTx.sign(signKeyPair);
@@ -173,8 +185,7 @@ public class SDK_Contract_Test {
 		assertTrue(transactionResponse.isSuccess());
 	}
 
-	@Test
-	public void deploy() throws IOException {
+	private String deploy() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("contract.jar");
 		byte[] chainCode = this.getChainCode(classPathResource.getURL().getPath());
 		TransactionTemplate txTpl = this.bcsrv.newTransaction(ledgerHash);
@@ -186,6 +197,7 @@ public class SDK_Contract_Test {
 		System.out.println("contract's address=" + contractIdentity.getAddress());
 		String contractAddr = contractIdentity.getAddress().toBase58();
 		log.info("contractAddr="+contractAddr);
+		return contractAddr;
 	}
 
 	public byte[] getChainCode(String path) {
@@ -333,4 +345,17 @@ public class SDK_Contract_Test {
 
 	}
 
+	@Test
+	public void testStringArr(){
+		String[] strArr = {"1","2","you are welcome!"};
+		ContractBizContent contractBizContent = new ContractBizContent() {
+			@Override
+			public String[] getAttrs() {
+				return strArr;
+			}
+		};
+		byte[] bizBytes = BinaryProtocol.encode(contractBizContent,ContractBizContent.class);
+		ContractBizContent actualObj = BinaryProtocol.decodeAs(bizBytes,ContractBizContent.class);
+		assertEquals(contractBizContent,actualObj);
+	}
 }
