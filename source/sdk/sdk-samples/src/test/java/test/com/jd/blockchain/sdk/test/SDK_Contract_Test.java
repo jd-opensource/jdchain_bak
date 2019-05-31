@@ -23,8 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * 演示合约执行的过程；
@@ -64,7 +63,7 @@ public class SDK_Contract_Test {
 	/**
 	 * 演示合约执行的过程；
 	 */
-	@Test
+//	@Test
 	public void demoContract1() {
         String dataAddress = registerData4Contract();
 		// 发起交易；
@@ -94,7 +93,7 @@ public class SDK_Contract_Test {
 	/**
 	 * 演示合约执行的过程；
 	 */
-	@Test
+//	@Test
 	public void demoContract2() throws IOException {
 		String contractAddress = deploy();
 		String dataAddress = registerData4Contract();
@@ -119,7 +118,7 @@ public class SDK_Contract_Test {
 		assertEquals(888,dataEntries[1].getValue());
 	}
 
-	@Test
+//	@Test
 	public void registerData(){
 		// 在本地定义 TX 模板
 		TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
@@ -347,15 +346,9 @@ public class SDK_Contract_Test {
 
 	@Test
 	public void testStringArr(){
-		String[] strArr = {"1","2","you are welcome!"};
-		ContractBizContent contractBizContent = new ContractBizContent() {
-			@Override
-			public String[] getAttrs() {
-				return strArr;
-			}
-		};
+		ContractBizContent contractBizContent = () -> new String[]{"1","2","you are welcome!"};
 		byte[] bizBytes = BinaryProtocol.encode(contractBizContent,ContractBizContent.class);
 		ContractBizContent actualObj = BinaryProtocol.decodeAs(bizBytes,ContractBizContent.class);
-		assertEquals(contractBizContent,actualObj);
+		assertArrayEquals(contractBizContent.getAttrs(),actualObj.getAttrs());
 	}
 }
