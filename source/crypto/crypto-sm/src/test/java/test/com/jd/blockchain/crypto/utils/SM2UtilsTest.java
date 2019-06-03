@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -62,7 +63,7 @@ public class SM2UtilsTest {
         String expectedS          = "cc8d096578f7dd2669ac1ac42f7e722bcfa42b9e0be0b1b5df7ca0b53fdd5750";
 
         byte[] privKeyBytes = Hex.decode(expectedPrivateKey);
-        byte[] messageBytes = expectedMessage.getBytes();
+        byte[] messageBytes = BytesUtils.toBytes(expectedMessage);
 
         byte[] signature = SM2Utils.sign(messageBytes,privKeyBytes,new TestRandomBigInteger(expectedRandomness, 16),expectedIdentifier);
         assertArrayEquals(Hex.decode(expectedR+expectedS),signature);
@@ -78,7 +79,7 @@ public class SM2UtilsTest {
         String expectedS          = "cc8d096578f7dd2669ac1ac42f7e722bcfa42b9e0be0b1b5df7ca0b53fdd5750";
 
         byte[] pubKeyBytes = Hex.decode(expectedPublicKey);
-        byte[] messageBytes = expectedMessage.getBytes();
+        byte[] messageBytes = BytesUtils.toBytes(expectedMessage);
         byte[] signatureBytes = Hex.decode(expectedR + expectedS);
 
         boolean isVerified = SM2Utils.verify(messageBytes,pubKeyBytes,signatureBytes,expectedIdentifier);
@@ -96,7 +97,7 @@ public class SM2UtilsTest {
         String expectedC3         = "59983c18f809e262923c53aec295d30383b54e39d609d160afcb1908d0bd8766";
 
         byte[] pubKeyBytes = Hex.decode(expectedPublicKey);
-        byte[] messageBytes = expectedMessage.getBytes();
+        byte[] messageBytes = BytesUtils.toBytes(expectedMessage);
 
         byte[] ciphertext = SM2Utils.encrypt(messageBytes,pubKeyBytes,new TestRandomBigInteger(expectedRandomness, 16));
         assertArrayEquals(Hex.decode(expectedC1 + expectedC3 + expectedC2),ciphertext);
@@ -117,7 +118,7 @@ public class SM2UtilsTest {
         byte[] ciphertext = Hex.decode(expectedC1 + expectedC3 + expectedC2);
 
         byte[] plaintext = SM2Utils.decrypt(ciphertext,privKeyBytes);
-        assertArrayEquals(expectedMessage.getBytes(),plaintext);
+        assertArrayEquals(BytesUtils.toBytes(expectedMessage),plaintext);
     }
 
 //    @Test

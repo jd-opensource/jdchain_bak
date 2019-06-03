@@ -23,7 +23,7 @@ public class CryptoKeySerializationTest {
 		CryptoAlgorithm algorithm = CryptoAlgorithmDefinition.defineSignature("TEST", false, (byte) 123);
 
 		// Simulate a public key with a random number;
-		byte[] rawBytes = UUID.randomUUID().toString().getBytes();
+		byte[] rawBytes = BytesUtils.toBytes(UUID.randomUUID().toString());
 
 		PubKey pubKey = new PubKey(algorithm, rawBytes);
 
@@ -51,7 +51,7 @@ public class CryptoKeySerializationTest {
 		CryptoAlgorithm algorithm = CryptoAlgorithmDefinition.defineSignature("TEST", false, (byte) 123);
 		
 		// Simulate a public key with a random number;
-		byte[] rawBytes = UUID.randomUUID().toString().getBytes();
+		byte[] rawBytes = BytesUtils.toBytes(UUID.randomUUID().toString());
 		
 		PrivKey privKey = new PrivKey(algorithm, rawBytes);
 		

@@ -3,6 +3,7 @@ package test.com.jd.blockchain.crypto.utils;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
@@ -20,12 +21,12 @@ public class SM3UtilsTest {
         String expectedResult1="66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0" ;
         String expectedResult2="debe9ff92275b8a138604889c18e5a4d6fdb70e5387e5765293dcba39c0c5732";
 
-        byte[] testString1Bytes = testString1.getBytes();
-        byte[] testString2Bytes = testString2.getBytes();
+        byte[] testString1Bytes = BytesUtils.toBytes(testString1);
+        byte[] testString2Bytes = BytesUtils.toBytes(testString2);
         byte[] hash1 = SM3Utils.hash(testString1Bytes);
         byte[] hash2 = SM3Utils.hash(testString2Bytes);
-        byte[] expectedResult1Bytes = expectedResult1.getBytes();
-        byte[] expectedResult2Bytes = expectedResult2.getBytes();
+        byte[] expectedResult1Bytes = BytesUtils.toBytes(expectedResult1);
+        byte[] expectedResult2Bytes = BytesUtils.toBytes(expectedResult2);
         assertEquals(hash1.length, SM3DIGEST_LENGTH);
         assertEquals(hash2.length, SM3DIGEST_LENGTH);
         assertArrayEquals(hash1, Hex.decode(expectedResult1Bytes));

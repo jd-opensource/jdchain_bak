@@ -1,6 +1,7 @@
 package test.com.jd.blockchain.crypto.utils.classic;
 
 import com.jd.blockchain.crypto.utils.classic.RIPEMD160Utils;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
@@ -17,8 +18,8 @@ public class RIPEMD160UtilsTest {
     @Test
     public void hashTest() {
 
-        byte[] data1 = "a".getBytes();
-        byte[] data2 = "abc".getBytes();
+        byte[] data1 = BytesUtils.toBytes("a");
+        byte[] data2 = BytesUtils.toBytes("abc");
 
         byte[] result1 = RIPEMD160Utils.hash(data1);
         byte[] result2 = RIPEMD160Utils.hash(data2);

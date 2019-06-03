@@ -2,6 +2,7 @@ package test.com.jd.blockchain.crypto.ecvrf;
 
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.ecvrf.VRF;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -13,7 +14,7 @@ public class VRFTest {
     @Test
     public void testVRF() {
 
-        byte[] msg = "你好".getBytes();
+        byte[] msg = BytesUtils.toBytes("你好");
 
         //初始化一个异常
         Exception actualEx = null;

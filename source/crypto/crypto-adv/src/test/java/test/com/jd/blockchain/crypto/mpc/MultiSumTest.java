@@ -4,6 +4,7 @@ import com.jd.blockchain.crypto.mpc.MultiSum;
 import com.jd.blockchain.crypto.paillier.PaillierPrivateKeyParameters;
 import com.jd.blockchain.crypto.paillier.PaillierPublicKeyParameters;
 import com.jd.blockchain.crypto.paillier.PaillierUtils;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.junit.Test;
 
@@ -26,9 +27,9 @@ public class MultiSumTest {
         int int3 = 600;
         int sum  = 666;
 
-        byte[] id1 = "1".getBytes();
-        byte[] id2 = "2".getBytes();
-        byte[] id3 = "3".getBytes();
+        byte[] id1 = BytesUtils.toBytes("1");
+        byte[] id2 = BytesUtils.toBytes("2");
+        byte[] id3 = BytesUtils.toBytes("3");
 
         MultiSum.generateEphemeralKeyPair();
         byte[] ePubKey1  = MultiSum.getEPubKey();
