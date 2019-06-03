@@ -19,7 +19,7 @@ public class TxBuilder implements TransactionBuilder {
 	private BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
 
 	private static final String DEFAULT_HASH_ALGORITHM = "SHA256";
-	
+
 	private HashDigest ledgerHash;
 
 	public TxBuilder(HashDigest ledgerHash) {
@@ -36,16 +36,16 @@ public class TxBuilder implements TransactionBuilder {
 		TransactionContent txContent = prepareContent();
 		return new TxRequestBuilder(txContent);
 	}
-	
+
 	@Override
 	public TransactionContent prepareContent() {
 		TxContentBlob txContent = new TxContentBlob(ledgerHash);
 		txContent.addOperations(opFactory.getOperations());
-		
+
 		byte[] contentBodyBytes = BinaryProtocol.encode(txContent, TransactionContentBody.class);
 		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
 		txContent.setHash(contentHash);
-		
+
 		return txContent;
 	}
 
@@ -53,7 +53,7 @@ public class TxBuilder implements TransactionBuilder {
 	public LedgerInitOperationBuilder ledgers() {
 		return opFactory.ledgers();
 	}
-	
+
 	@Override
 	public UserRegisterOperationBuilder users() {
 		return opFactory.users();
@@ -63,7 +63,7 @@ public class TxBuilder implements TransactionBuilder {
 	public DataAccountRegisterOperationBuilder dataAccounts() {
 		return opFactory.dataAccounts();
 	}
-	
+
 	@Override
 	public DataAccountKVSetOperationBuilder dataAccount(String accountAddress) {
 		return opFactory.dataAccount(accountAddress);
@@ -79,15 +79,18 @@ public class TxBuilder implements TransactionBuilder {
 		return opFactory.contracts();
 	}
 
-	@Override
 	public ContractEventSendOperationBuilder contractEvents() {
 		return opFactory.contractEvents();
 	}
-	
+
+	@Override
+	public <T> T contract(Bytes address, Class<T> contractIntf) {
+		return opFactory.contract(address, contractIntf);
+	}
+
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException("Not implemented.");
+		return opFactory.contract(address, contractIntf);
 	}
 
 }

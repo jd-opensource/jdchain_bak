@@ -78,7 +78,7 @@ public class LocalConfig {
 		return resolve(props, null);
 	}
 
-	private static LocalConfig resolve(Properties props, String initSettingFile) {
+	public static LocalConfig resolve(Properties props, String initSettingFile) {
 
 		LocalConfig conf = new LocalConfig();
 

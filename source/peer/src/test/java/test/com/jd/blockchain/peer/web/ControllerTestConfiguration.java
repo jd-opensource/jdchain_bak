@@ -1,6 +1,6 @@
 //package test.com.jd.blockchain.peer.web;
 //
-//import org.springframework.boot.test.mock.mockito.MockBean;
+//import org.springframework.boot.test.mocker.mockito.MockBean;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //

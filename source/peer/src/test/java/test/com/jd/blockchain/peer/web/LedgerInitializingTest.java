@@ -2,7 +2,7 @@
 //
 //import static org.mockito.Matchers.any;
 //import static org.mockito.Matchers.anyInt;
-//import static org.mockito.Mockito.mock;
+//import static org.mockito.Mockito.mocker;
 //import static org.mockito.Mockito.spy;
 //import static org.mockito.Mockito.when;
 //
@@ -211,7 +211,7 @@
 //			//when(keystoreService.getBlockchainKey(key.getAddress())).thenReturn(keyInfo);
 //			//when(keystoreService.sign(any(), key.getAddress())).then(answerSignature(key));
 //
-//			msgBroadcaster = mock(MessageBroadcaster.class);
+//			msgBroadcaster = mocker(MessageBroadcaster.class);
 //
 //			LedgerInitializingController ctrl = new LedgerInitializingController(peerSettings, keystoreService,
 //					ledgerService, msgBroadcaster);

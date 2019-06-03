@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +71,7 @@ public class PeerBooter {
 		bootInfos.add(String.format("PEER_BOOT_PID = [%s] \r\n", pid));
 		try (FileOutputStream outputStream = new FileOutputStream(pidFile)) {
 			for (String bootInfo : bootInfos) {
-				outputStream.write(bootInfo.getBytes());
+				outputStream.write(bootInfo.getBytes(StandardCharsets.UTF_8));
 			}
 			outputStream.flush();
 		}

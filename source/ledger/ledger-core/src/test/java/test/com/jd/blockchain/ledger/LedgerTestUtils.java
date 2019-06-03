@@ -49,22 +49,22 @@ public class LedgerTestUtils {
 		return txHandle.txRequest;
 	}
 
-	public static TransactionRequest createContractEventTxRequest(HashDigest ledgerHash,
-			SignatureFunction signatureFunction, String contractAddress, String event, byte[] args) {
-		TxHandle txHandle = new TxHandle();
-
-		TxTemplate txTemp = new TxTemplate(ledgerHash, txHandle);
-
-		txTemp.contractEvents().send(contractAddress, event, args);
-
-		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
-		PubKey pubKey = cryptoKeyPair.getPubKey();
-		txTemp.users().register(new BlockchainIdentityData(pubKey));
-		PreparedTransaction ptx = txTemp.prepare();
-		ptx.sign(cryptoKeyPair);
-		ptx.commit();
-		return txHandle.txRequest;
-	}
+//	public static TransactionRequest createContractEventTxRequest(HashDigest ledgerHash,
+//			SignatureFunction signatureFunction, String contractAddress, String event, byte[] args) {
+//		TxHandle txHandle = new TxHandle();
+//
+//		TxTemplate txTemp = new TxTemplate(ledgerHash, txHandle);
+//
+//		txTemp.contractEvents().send(contractAddress, event, args);
+//
+//		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
+//		PubKey pubKey = cryptoKeyPair.getPubKey();
+//		txTemp.users().register(new BlockchainIdentityData(pubKey));
+//		PreparedTransaction ptx = txTemp.prepare();
+//		ptx.sign(cryptoKeyPair);
+//		ptx.commit();
+//		return txHandle.txRequest;
+//	}
 
 	public static TransactionStagedSnapshot generateRandomSnapshot() {
 		TransactionStagedSnapshot txDataSnapshot = new TransactionStagedSnapshot();

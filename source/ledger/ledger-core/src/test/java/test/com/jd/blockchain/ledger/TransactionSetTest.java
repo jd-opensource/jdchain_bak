@@ -6,14 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.KeyFactory;
 import java.util.Random;
-
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.HashDigest;
 
 import org.junit.Test;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
@@ -25,7 +23,6 @@ import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionState;
@@ -62,7 +59,7 @@ public class TransactionSetTest {
 
 		// Build transaction request;
 		HashDigest ledgerHash = LedgerTestUtils.generateRandomHash();
-		TransactionBuilder txBuilder = new TxBuilder(ledgerHash);
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 
 		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		UserRegisterOperation userRegOp = txBuilder.users().register(userKey.getIdentity());

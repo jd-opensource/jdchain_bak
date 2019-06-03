@@ -1,5 +1,7 @@
 package com.jd.blockchain.utils.security;
 
+import com.jd.blockchain.utils.io.BytesUtils;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -32,7 +34,7 @@ public class DESUtils {
 		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);
 		SecretKey secretKey = keyFactory.generateSecret(keySpec);
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		return cipher.doFinal(code.getBytes());
+		return cipher.doFinal(BytesUtils.toBytes(code));
 	}
 
 	/** DES解密 */

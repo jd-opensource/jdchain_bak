@@ -12,7 +12,6 @@ import com.jd.blockchain.ledger.ParticipantNode;
 public class ParticipantCertData implements ParticipantNode {
 	
 	private int id;
-	
 	private String address;
 	private String name;
 	private PubKey pubKey;
@@ -21,6 +20,7 @@ public class ParticipantCertData implements ParticipantNode {
 	}
 
 	public ParticipantCertData(ParticipantNode participantNode) {
+		this.id = participantNode.getId();
 		this.address = participantNode.getAddress();
 		this.name = participantNode.getName();
 		this.pubKey = participantNode.getPubKey();
@@ -31,8 +31,6 @@ public class ParticipantCertData implements ParticipantNode {
 		this.name = name;
 		this.pubKey = pubKey;
 	}
-	
-	
 
 	@Override
 	public String getAddress() {
@@ -49,16 +47,11 @@ public class ParticipantCertData implements ParticipantNode {
 		return pubKey;
 	}
 
-
-
 	public int getId() {
 		return id;
 	}
 
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
 }

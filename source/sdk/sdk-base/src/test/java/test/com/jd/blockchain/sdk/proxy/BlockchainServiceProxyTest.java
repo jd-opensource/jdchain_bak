@@ -35,8 +35,8 @@ public class BlockchainServiceProxyTest {
 //
 //		ArgCaptorMatcher<TransactionRequest> txReqCaptor = new ArgCaptorMatcher<>();
 //
-//		TransactionService consensusService = Mockito.mock(TransactionService.class);
-//		BlockchainQueryService queryService = Mockito.mock(BlockchainQueryService.class);
+//		TransactionService consensusService = Mockito.mocker(TransactionService.class);
+//		BlockchainQueryService queryService = Mockito.mocker(BlockchainQueryService.class);
 //
 //		HashDigest txContentHash =CryptoUtils.hash(CryptoAlgorithm.SHA_256).hash(UUID.randomUUID().toString().getBytes("UTF-8"));
 //		TxResponseMessage expectedResponse = new TxResponseMessage(txContentHash);
