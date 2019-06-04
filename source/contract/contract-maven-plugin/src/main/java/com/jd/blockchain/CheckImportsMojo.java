@@ -49,6 +49,7 @@ public class CheckImportsMojo extends AbstractMojo {
                         }
                     }
                 }
+
             }
         } catch (IOException exception) {
             logger.error(exception.getMessage());
