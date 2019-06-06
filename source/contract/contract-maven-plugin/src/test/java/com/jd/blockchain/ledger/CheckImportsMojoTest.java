@@ -13,7 +13,7 @@ import java.io.File;
  * @Date 2019/3/1 21:27
  */
 public class CheckImportsMojoTest extends AbstractMojoTestCase {
-    Logger logger = LoggerFactory.getLogger(CheckImportsMojo.class);
+    Logger logger = LoggerFactory.getLogger(CheckImportsMojoTest.class);
 
     @Test
     public void test1() throws Exception {
