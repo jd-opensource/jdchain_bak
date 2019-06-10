@@ -16,19 +16,19 @@ public interface DataAccountKVSetOperationBuilder {
 	 */
 	DataAccountKVSetOperation getOperation();
 
-	/**
-	 * 写入字节数组；
-	 * 
-	 * @param key
-	 *            键；
-	 * @param value
-	 *            值；byte[]格式
-	 * @param expVersion
-	 *            预期的当前版本；如果版本不匹配，则写入失败；
-	 * @return
-	 */
-	@Deprecated
-	DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion);
+//	/**
+//	 * 写入字节数组；
+//	 * 
+//	 * @param key
+//	 *            键；
+//	 * @param value
+//	 *            值；byte[]格式
+//	 * @param expVersion
+//	 *            预期的当前版本；如果版本不匹配，则写入失败；
+//	 * @return
+//	 */
+//	@Deprecated
+//	DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion);
 	
 	/**
 	 * 写入字节数组；
@@ -69,19 +69,19 @@ public interface DataAccountKVSetOperationBuilder {
 	 */
 	DataAccountKVSetOperationBuilder setImage(String key, byte[] value, long expVersion);
 	
-	/**
-	 * 写入文本键值；
-	 *
-	 * @param key
-	 *            键；
-	 * @param value
-	 *            值；String格式
-	 * @param expVersion
-	 *            预期的当前版本；如果版本不匹配，则写入失败；
-	 * @return
-	 */
-	@Deprecated
-	DataAccountKVSetOperationBuilder set(String key, String value, long expVersion);
+//	/**
+//	 * 写入文本键值；
+//	 *
+//	 * @param key
+//	 *            键；
+//	 * @param value
+//	 *            值；String格式
+//	 * @param expVersion
+//	 *            预期的当前版本；如果版本不匹配，则写入失败；
+//	 * @return
+//	 */
+//	@Deprecated
+//	DataAccountKVSetOperationBuilder set(String key, String value, long expVersion);
 	
 	/**
 	 * 写入文本键值；

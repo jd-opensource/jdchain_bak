@@ -1,6 +1,11 @@
 package com.jd.blockchain.utils.io;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import com.jd.blockchain.utils.IllegalDataException;
 
@@ -296,6 +301,10 @@ public class BytesUtils {
 		}
 	}
 
+	/**
+	 * @param bytes
+	 * @return
+	 */
 	public static String toString(byte[] bytes) {
 		return toString(bytes, DEFAULT_CHARSET);
 	}
@@ -324,6 +333,10 @@ public class BytesUtils {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeIOException(e.getMessage(), e);
 		}
+	}
+
+	public static boolean toBoolean(byte value) {
+		return value != FALSE_BYTE;
 	}
 
 	/**

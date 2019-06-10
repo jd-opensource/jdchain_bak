@@ -59,7 +59,7 @@ public class SDKDemo_InsertData {
 		// 对象将被序列化为 JSON 形式存储，并基于 JSON 结构建立查询索引；
 		String commodityDataAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
 		Commodity commodity1 = new Commodity();
-		txTemp.dataAccount(commodityDataAccount).set("ASSET_CODE", commodity1.getCode().getBytes(), -1);
+		txTemp.dataAccount(commodityDataAccount).setText("ASSET_CODE", commodity1.getCode(), -1);
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();

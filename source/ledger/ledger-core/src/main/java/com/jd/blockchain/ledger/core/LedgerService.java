@@ -1,6 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.LedgerException;
 
 /**
  * 账本管理器；

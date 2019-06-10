@@ -269,13 +269,13 @@ public class ContractLedgerContext implements LedgerContext {
 			return op;
 		}
 
-		@Override
-		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
-			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
-			handle(op);
-			return this;
-		}
+//		@Override
+//		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
+//			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+//			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+//			handle(op);
+//			return this;
+//		}
 
 		@Override
 		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
@@ -301,14 +301,14 @@ public class ContractLedgerContext implements LedgerContext {
 			return this;
 		}
 		
-		@Deprecated
-		@Override
-		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromText(value);
-			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
-			handle(op);
-			return this;
-		}
+//		@Deprecated
+//		@Override
+//		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
+//			BytesValue bytesValue = BytesValueEntry.fromText(value);
+//			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
+//			handle(op);
+//			return this;
+//		}
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {

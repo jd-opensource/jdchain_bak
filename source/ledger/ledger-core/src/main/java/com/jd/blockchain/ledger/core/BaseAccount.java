@@ -1,10 +1,12 @@
 package com.jd.blockchain.ledger.core;
 
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
@@ -154,8 +156,9 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 *         If this operation fail by version checking or other reason, then
 	 *         return -1;
 	 */
-	public long setBytes(Bytes key, byte[] value, long version) {
-		return dataset.setValue(key, value, version);
+	public long setBytes(Bytes key, BytesValue value, long version) {
+		byte[] bytesValue = BinaryProtocol.encode(value, BytesValue.class);
+		return dataset.setValue(key, bytesValue, version);
 	}
 
 	/**
@@ -175,8 +178,12 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param key
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(Bytes key) {
-		return dataset.getValue(key);
+	public BytesValue getBytes(Bytes key) {
+		byte[] bytesValue = dataset.getValue(key);
+		if (bytesValue == null) {
+			return null;
+		}
+		return BinaryProtocol.decodeAs(bytesValue, BytesValue.class);
 	}
 
 	/**
@@ -186,8 +193,12 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param version
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(Bytes key, long version) {
-		return dataset.getValue(key, version);
+	public BytesValue getBytes(Bytes key, long version) {
+		byte[] bytesValue = dataset.getValue(key, version);
+		if (bytesValue == null) {
+			return null;
+		}
+		return BinaryProtocol.decodeAs(bytesValue, BytesValue.class);
 	}
 
 	@Override

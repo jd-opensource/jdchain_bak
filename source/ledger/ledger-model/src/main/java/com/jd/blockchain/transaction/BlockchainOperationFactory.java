@@ -150,12 +150,12 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			}
 		}
 
-		@Override
-		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-			innerBuilder.set(key, value, expVersion);
-			addOperation();
-			return this;
-		}
+//		@Override
+//		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
+//			innerBuilder.set(key, value, expVersion);
+//			addOperation();
+//			return this;
+//		}
 
 		@Override
 		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
@@ -192,12 +192,12 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			return this;
 		}
 
-		@Override
-		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-			innerBuilder.setText(key, value, expVersion);
-			addOperation();
-			return this;
-		}
+//		@Override
+//		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
+//			innerBuilder.setText(key, value, expVersion);
+//			addOperation();
+//			return this;
+//		}
 
 		@Override
 		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {

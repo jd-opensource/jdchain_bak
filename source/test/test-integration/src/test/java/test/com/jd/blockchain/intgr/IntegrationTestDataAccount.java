@@ -196,7 +196,7 @@ public class IntegrationTestDataAccount {
 		JsonTest jsonTest = new JsonTest("Jack");
 		//
 		// //add kv ops for data account: Bytes, string, long, json string
-		DataAccountKVSetOperation dataKvsetOP = txTpl.dataAccount(dataAddr).set("A", "Value_A_0".getBytes(), -1)
+		DataAccountKVSetOperation dataKvsetOP = txTpl.dataAccount(dataAddr).setText("A", "Value_A_0", -1)
 				.setText("B", "Value_B_0", -1).setInt64("C", currentTime, -1).setText("D", JSON.toJSONString(jsonTest), -1)
 				.getOperation();
 

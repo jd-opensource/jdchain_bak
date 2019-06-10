@@ -23,6 +23,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -219,9 +220,9 @@ public class IntegrationTestAll4Redis {
 		txTpl.dataAccounts().register(dataKey.getIdentity());
 
 		// add kv ops for data account
-		DataAccountKVSetOperation dataKvsetOP = txTpl.dataAccount(dataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1)
-				.set("C", "Value_C_0".getBytes(), -1).set("D", "Value_D_0".getBytes(), -1).getOperation();
+		DataAccountKVSetOperation dataKvsetOP = txTpl.dataAccount(dataKey.getAddress()).setText("A", "Value_A_0", -1)
+				.setText("B", "Value_B_0", -1).setText("C", "Value_C_0", -1).setText("D", "Value_D_0", -1)
+				.getOperation();
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -233,18 +234,14 @@ public class IntegrationTestAll4Redis {
 		assertTrue(txResp.isSuccess());
 		assertEquals(ledgerRepository.retrieveLatestBlockHeight(), txResp.getBlockHeight());
 
-		assertArrayEquals("Value_A_0".getBytes(),
-				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-						.getDataAccount(dataKey.getAddress()).getBytes("A"));
-		assertArrayEquals("Value_B_0".getBytes(),
-				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-						.getDataAccount(dataKey.getAddress()).getBytes("B"));
-		assertArrayEquals("Value_C_0".getBytes(),
-				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-						.getDataAccount(dataKey.getAddress()).getBytes("C"));
-		assertArrayEquals("Value_D_0".getBytes(),
-				ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-						.getDataAccount(dataKey.getAddress()).getBytes("D"));
+		assertEquals("Value_A_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getBytes("A").getValue().toUTF8String());
+		assertEquals("Value_B_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getBytes("B").getValue().toUTF8String());
+		assertEquals("Value_C_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getBytes("C").getValue().toUTF8String());
+		assertEquals("Value_D_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
+				.getDataAccount(dataKey.getAddress()).getBytes("D").getValue().toUTF8String());
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
 				.getDataAccount(dataKey.getAddress()).getDataVersion("A"));
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
@@ -271,8 +268,8 @@ public class IntegrationTestAll4Redis {
 
 	}
 
-	private void testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
-			Bytes dataAccountAddress, LedgerRepository ledgerRepository) {
+	private void testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+			BlockchainService blockchainService, Bytes dataAccountAddress, LedgerRepository ledgerRepository) {
 
 		// 在本地定义注册账号的 TX；
 		TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
@@ -283,9 +280,9 @@ public class IntegrationTestAll4Redis {
 		Bytes dataAccount = dataAccountAddress;
 
 		String dataKey = "jingdong" + new Random().nextInt(100000);
-		byte[] dataVal = "www.jd.com".getBytes();
+		String dataVal = "www.jd.com";
 
-		txTemp.dataAccount(dataAccount).set(dataKey, dataVal, -1);
+		txTemp.dataAccount(dataAccount).setText(dataKey, dataVal, -1);
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
@@ -410,11 +407,10 @@ public class IntegrationTestAll4Redis {
 				.getDataAccount(contractDataKey.getAddress());
 
 		DataAccountKVSetOperation kvsetOP = txTpl.dataAccount(contractDataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1)
-				.set(KEY_TOTAL, "total value,dataAccount".getBytes(), -1)
-				.set(KEY_ABC, "abc value,dataAccount".getBytes(), -1)
+				.setText("A", "Value_A_0", -1).setText("B", "Value_B_0", -1)
+				.setText(KEY_TOTAL, "total value,dataAccount", -1).setText(KEY_ABC, "abc value,dataAccount", -1)
 				// 所有的模拟数据都在这个dataAccount中填充;
-				.set("ledgerHash", ledgerHash.getRawDigest(), -1).getOperation();
+				.setBytes("ledgerHash", ledgerHash.getRawDigest(), -1).getOperation();
 
 		byte[] contractCode = getChainCodeBytes();
 		txTpl.contracts().deploy(contractDeployKey.getIdentity(), contractCode);
@@ -478,7 +474,8 @@ public class IntegrationTestAll4Redis {
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 		assertEquals(dataAddress, dataAccountSet.getDataAccount(dataAddress).getAddress());
-		assertEquals("hello", new String(dataAccountSet.getDataAccount(dataAddress).getBytes(KEY_TOTAL, -1)));
+		assertEquals("hello",
+				dataAccountSet.getDataAccount(dataAddress).getBytes(KEY_TOTAL, -1).getValue().toUTF8String());
 
 		// 验证userAccount，从合约内部赋值，然后外部验证;内部定义动态key，外部不便于得到，临时屏蔽;
 		// UserAccountSet userAccountSet =
@@ -489,8 +486,8 @@ public class IntegrationTestAll4Redis {
 		// assertEquals(userAddress, userAccountSet.getUser(userAddress).getAddress());
 	}
 
-	private void prepareContractData(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService,
-			LedgerRepository ledgerRepository) {
+	private void prepareContractData(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
@@ -505,12 +502,12 @@ public class IntegrationTestAll4Redis {
 
 		// 验证结果；
 		LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
-		byte[] val1InDb = ledgerRepository.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val1InDb = ledgerRepository.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes("A");
-		byte[] val2InDb = ledgerRepository.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val2InDb = ledgerRepository.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes(KEY_TOTAL);
-		assertArrayEquals("Value_A_0".getBytes(), val1InDb);
-		assertArrayEquals("total value,dataAccount".getBytes(), val2InDb);
+		assertEquals("Value_A_0", val1InDb.getValue().toUTF8String());
+		assertEquals("total value,dataAccount", val2InDb.getValue().toUTF8String());
 	}
 
 	/**

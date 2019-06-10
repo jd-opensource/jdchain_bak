@@ -9,7 +9,9 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -420,7 +422,7 @@ public class AccountSet implements Transactional, MerkleProvable {
 		// }
 
 		@Override
-		public long setBytes(Bytes key, byte[] value, long version) {
+		public long setBytes(Bytes key, BytesValue value, long version) {
 			long v = super.setBytes(key, value, version);
 			if (v > -1) {
 				updated = true;

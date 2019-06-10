@@ -37,7 +37,6 @@ import com.jd.blockchain.transaction.BlockchainOperationFactory;
 import com.jd.blockchain.transaction.DigitalSignatureBlob;
 import com.jd.blockchain.transaction.TxContentBlob;
 import com.jd.blockchain.transaction.TxRequestMessage;
-import com.jd.blockchain.utils.io.ByteArray;
 
 /**
  *
@@ -204,7 +203,7 @@ public class TxRequestMessageTest {
 		// contentBlob.setSubjectAccount(id.getAddress());
 		// contentBlob.setSequenceNumber(1);
 		DataAccountKVSetOperation kvsetOP = opFactory.dataAccount(id.getAddress())
-				.set("Name", ByteArray.fromString("AAA", "UTF-8"), -1).getOperation();
+				.setText("Name","AAA", -1).getOperation();
 		contentBlob.addOperation(kvsetOP);
 		return contentBlob;
 	}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.LedgerException;
 
 public class CryptoConfig implements CryptoSetting {
 

@@ -87,13 +87,13 @@ public class SDK_GateWay_BatchInsertData_Test_ {
         String dataAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
 
         String key1 = "jd_key1";
-        byte[] val1 = "www.jd.com".getBytes();
+        String val1 = "www.jd.com";
 
         String key2 = "jd_key2";
-        byte[] val2 = "www.jd.com".getBytes();
+        String val2 = "www.jd.com";
 
-        txTemp.dataAccount(dataAccount).set(key1, val1, -1);
-        txTemp.dataAccount(dataAccount).set(key2, val2, -1);
+        txTemp.dataAccount(dataAccount).setText(key1, val1, -1);
+        txTemp.dataAccount(dataAccount).setText(key2, val2, -1);
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

@@ -84,9 +84,9 @@ public class SDK_GateWay_InsertData_Test_ {
         String dataAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
 
         String dataKey = "jd_code";
-        byte[] dataVal = "www.jd.com".getBytes();
+        String dataVal = "www.jd.com";
 
-        txTemp.dataAccount(dataAccount).set(dataKey, dataVal, -1);
+        txTemp.dataAccount(dataAccount).setText(dataKey, dataVal, -1);
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

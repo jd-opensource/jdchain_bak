@@ -18,11 +18,11 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 		return operation;
 	}
 
-	@Deprecated
-	@Override
-	public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-		return setBytes(key, value, expVersion);
-	}
+//	@Deprecated
+//	@Override
+//	public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
+//		return setBytes(key, value, expVersion);
+//	}
 
 	@Override
 	public DataAccountKVSetOperationBuilder setBytes(String key, byte[] value, long expVersion) {
@@ -38,10 +38,10 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 		return this;
 	}
 
-	@Override
-	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-		return setText(key, value, expVersion);
-	}
+//	@Override
+//	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
+//		return setText(key, value, expVersion);
+//	}
 
 	@Override
 	public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {

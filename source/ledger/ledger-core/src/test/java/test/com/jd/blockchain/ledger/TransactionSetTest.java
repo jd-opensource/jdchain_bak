@@ -6,14 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.KeyFactory;
 import java.util.Random;
-
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.HashDigest;
 
 import org.junit.Test;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
@@ -71,7 +69,7 @@ public class TransactionSetTest {
 		DataAccountRegisterOperation dataAccRegOp = txBuilder.dataAccounts().register(dataKey.getIdentity());
 
 		DataAccountKVSetOperation kvsetOP = txBuilder.dataAccount(dataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1).getOperation();
+				.setText("A", "Value_A_0", -1).setText("B", "Value_B_0", -1).getOperation();
 
 		byte[] chainCode = new byte[128];
 		rand.nextBytes(chainCode);

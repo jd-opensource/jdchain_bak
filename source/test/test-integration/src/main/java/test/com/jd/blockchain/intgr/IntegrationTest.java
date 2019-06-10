@@ -23,6 +23,7 @@ import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -196,9 +197,9 @@ public class IntegrationTest {
 		String dataAccount = dataAccountAddress;
 
 		String dataKey = "jingdong" + new Random().nextInt(100000);
-		byte[] dataVal = "www.jd.com".getBytes();
+		String dataVal = "www.jd.com";
 
-		txTemp.dataAccount(dataAccount).set(dataKey, dataVal, -1);
+		txTemp.dataAccount(dataAccount).setText(dataKey, dataVal, -1);
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
@@ -637,11 +638,11 @@ public class IntegrationTest {
 		// 注册数据账户，并验证最终写入；
 		txTpl.dataAccounts().register(contractDataKey.getIdentity());
 		DataAccountKVSetOperation kvsetOP = txTpl.dataAccount(contractDataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1)
-				.set(KEY_TOTAL, "total value,dataAccount".getBytes(), -1)
-				.set(KEY_ABC, "abc value,dataAccount".getBytes(), -1)
+				.setText("A", "Value_A_0", -1).setText("B", "Value_B_0", -1)
+				.setText(KEY_TOTAL, "total value,dataAccount", -1)
+				.setText(KEY_ABC, "abc value,dataAccount", -1)
 				// 所有的模拟数据都在这个dataAccount中填充;
-				.set("ledgerHash", ledgerHash.getRawDigest(), -1).getOperation();
+				.setBytes("ledgerHash", ledgerHash.getRawDigest(), -1).getOperation();
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
@@ -655,9 +656,9 @@ public class IntegrationTest {
 
 		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
-		byte[] val1InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes("A");
-		byte[] val2InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val2InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes(KEY_TOTAL);
 	}
 
