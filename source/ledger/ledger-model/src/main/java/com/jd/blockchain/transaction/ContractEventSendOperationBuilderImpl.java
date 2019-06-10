@@ -9,14 +9,12 @@ class ContractEventSendOperationBuilderImpl implements ContractEventSendOperatio
 	@Override
 	public ContractEventSendOperation send(String address, String event, byte[] args) {
 		ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(Bytes.fromBase58(address), event, args);
-		op.setTs(System.currentTimeMillis());
 		return op;
 	}
 
 	@Override
 	public ContractEventSendOperation send(Bytes address, String event, byte[] args) {
 		ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(address, event, args);
-		op.setTs(System.currentTimeMillis());
 		return op;
 	}
 

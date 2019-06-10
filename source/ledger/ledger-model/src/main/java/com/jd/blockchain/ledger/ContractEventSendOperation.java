@@ -38,11 +38,11 @@ public interface ContractEventSendOperation extends Operation {
 	byte[] getArgs();
 
 	/**
-	 * 时间戳；
+	 * 获得交易操作时间;
 	 * 
 	 * @return
 	 */
 	@DataField(order = 5, primitiveType = PrimitiveType.INT64)
-	long getTs();
+	long getTxOpTime();
 
 }
