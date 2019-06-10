@@ -1,6 +1,6 @@
 package com.jd.blockchain.tools.initializer;
 
-import com.jd.blockchain.ledger.core.LedgerException;
+import com.jd.blockchain.ledger.LedgerException;
 
 public class LedgerInitException extends LedgerException{
 	

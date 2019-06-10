@@ -22,7 +22,6 @@ import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.transaction.BlockchainOperationFactory;
 import com.jd.blockchain.transaction.TxContentBlob;
-import com.jd.blockchain.utils.io.ByteArray;
 
 public class TxContentBlobTest {
 
@@ -48,7 +47,7 @@ public class TxContentBlobTest {
 		contentBlob.setHash(contentHash);
 
 		DataAccountKVSetOperation kvsetOP = opFactory.dataAccount(id.getAddress())
-				.set("Name", ByteArray.fromString("AAA", "UTF-8"), -1).getOperation();
+				.setText("Name", "AAA", -1).getOperation();
 		contentBlob.addOperation(kvsetOP);
 	}
 

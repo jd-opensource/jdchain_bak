@@ -19,7 +19,7 @@ public interface AccountAccessPolicy {
 	 * @param account
 	 * @return Return true if it satisfies this policy, or false if it doesn't;
 	 */
-	boolean checkCommitting(AccountHeader account);
+	boolean checkDataWriting(AccountHeader account);
 
 	boolean checkRegistering(Bytes address, PubKey pubKey);
 

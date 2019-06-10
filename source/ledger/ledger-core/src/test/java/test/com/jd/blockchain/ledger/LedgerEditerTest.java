@@ -1,10 +1,10 @@
 package test.com.jd.blockchain.ledger;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
@@ -17,6 +17,8 @@ import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueType;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -37,10 +39,9 @@ import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class LedgerEditerTest {
-	
+
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };
-
 
 	static {
 		DataContractRegistry.register(com.jd.blockchain.ledger.TransactionContent.class);
@@ -48,56 +49,89 @@ public class LedgerEditerTest {
 		DataContractRegistry.register(com.jd.blockchain.ledger.BlockBody.class);
 	}
 
-	String ledgerKeyPrefix = "LDG://";
-	SignatureFunction signatureFunction = Crypto.getSignatureFunction("ED25519");
+	private static final String LEDGER_KEY_PREFIX = "LDG://";
+	private SignatureFunction signatureFunction;
 
-	// 存储；
-	MemoryKVStorage storage = new MemoryKVStorage();
+	/**
+	 * 初始化一个;
+	 */
+	@Before
+	public void beforeTest() {
+		signatureFunction = Crypto.getSignatureFunction("ED25519");
+	}
 
-	TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest(null, signatureFunction);
+	/**
+	 * @return
+	 */
+	private LedgerEditor createLedgerInitEditor() {
+		// 存储；
+		MemoryKVStorage storage = new MemoryKVStorage();
 
-	// 创建初始化配置；
-	LedgerInitSetting initSetting = createLedgerInitSetting();
+		// 创建初始化配置；
+		LedgerInitSetting initSetting = createLedgerInitSetting();
 
-	// 创建账本；
-	LedgerEditor ldgEdt = LedgerTransactionalEditor.createEditor(initSetting, ledgerKeyPrefix, storage, storage);
-	LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
-	LedgerDataSet ldgDS = txCtx.getDataSet();
+		// 创建账本；
+		return LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
+	}
 
-	AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
+	private LedgerTransactionContext createGenisisTx(LedgerEditor ldgEdt) {
+		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest(null, signatureFunction);
+
+		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
+		
+		return txCtx;
+	}
 
 	@SuppressWarnings("unused")
 	@Test
 	public void testWriteDataAccoutKvOp() {
-
+		LedgerEditor ldgEdt = createLedgerInitEditor();
+		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt);
+		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
+		
+		
+		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeypair dataKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 
 		DataAccount dataAccount = ldgDS.getDataAccountSet().register(dataKP.getAddress(), dataKP.getPubKey(), null);
 
-		dataAccount.setBytes(Bytes.fromString("A"), "abc".getBytes(), -1);
+		dataAccount.setBytes(Bytes.fromString("A"), "abc", -1);
 
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
+		LedgerTransaction tx = genisisTxCtx.commit(TransactionState.SUCCESS);
 		LedgerBlock block = ldgEdt.prepare();
 		// 提交数据，写入存储；
 		ldgEdt.commit();
 
-		byte[] bytes = dataAccount.getBytes("A");
-		assertArrayEquals("abc".getBytes(), bytes);
+		// 预期这是第1个区块；
+		assertNotNull(block);
+		assertNotNull(block.getHash());
+		assertEquals(0, block.getHeight());
+
+		// 验证数据读写的一致性；
+		BytesValue bytes = dataAccount.getBytes("A");
+		assertEquals(BytesValueType.TEXT, bytes.getType());
+		String textValue = bytes.getValue().toUTF8String();
+		assertEquals("abc", textValue);
 	}
 
 	/**
 	 * 测试创建账本；
 	 */
 	@Test
-	public void testLedgerEditorCreation() {
+	public void testGennesisBlockCreation() {
+		LedgerEditor ldgEdt = createLedgerInitEditor();
+		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt);
+		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 
+		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeypair userKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);
 
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
+		LedgerTransaction tx = genisisTxCtx.commit(TransactionState.SUCCESS);
 
+		TransactionRequest genesisTxReq = genisisTxCtx.getRequestTX();
 		assertEquals(genesisTxReq.getTransactionContent().getHash(), tx.getTransactionContent().getHash());
 		assertEquals(0, tx.getBlockHeight());
 
@@ -116,7 +150,7 @@ public class LedgerEditerTest {
 
 	private LedgerInitSetting createLedgerInitSetting() {
 		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
-		
+
 		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
 		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
 			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);

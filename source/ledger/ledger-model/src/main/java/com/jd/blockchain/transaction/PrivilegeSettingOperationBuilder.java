@@ -1,6 +1,6 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.ledger.PrivilegeType;
+import com.jd.blockchain.ledger.PermissionType;
 
 /**
  * 账户权限设置操作；
@@ -16,10 +16,10 @@ import com.jd.blockchain.ledger.PrivilegeType;
  */
 public interface PrivilegeSettingOperationBuilder {
 	
-	PrivilegeSettingOperationBuilder setThreshhold(PrivilegeType privilege, long threshhold);
+	PrivilegeSettingOperationBuilder setThreshhold(PermissionType privilege, long threshhold);
 
-	PrivilegeSettingOperationBuilder enable(PrivilegeType privilege, String address, int weight);
+	PrivilegeSettingOperationBuilder enable(PermissionType privilege, String address, int weight);
 
-	PrivilegeSettingOperationBuilder disable(PrivilegeType privilege, String address);
+	PrivilegeSettingOperationBuilder disable(PermissionType privilege, String address);
 
 }

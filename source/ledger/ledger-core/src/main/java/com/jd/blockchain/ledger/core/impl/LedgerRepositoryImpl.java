@@ -13,7 +13,6 @@ import com.jd.blockchain.ledger.core.LedgerAdministration;
 import com.jd.blockchain.ledger.core.LedgerConsts;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
-import com.jd.blockchain.ledger.core.LedgerException;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.TransactionSet;

@@ -11,7 +11,6 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
-import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
  * 示例：一个“资产管理”智能合约的实现；
@@ -53,14 +52,14 @@ public class AssetContractImpl implements EventProcessingAwire, AssetContract {
 		// 计算资产的发行总数；
 		KVDataObject currTotal = (KVDataObject) kvEntries[0];
 		long newTotal = currTotal.longValue() + amount;
-		eventContext.getLedger().dataAccount(ASSET_ADDRESS).set(KEY_TOTAL, BytesUtils.toBytes(newTotal),
+		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(KEY_TOTAL, newTotal,
 				currTotal.getVersion());
 
 		// 分配到持有者账户；
 		KVDataObject holderAmount = (KVDataObject) kvEntries[1];
 		long newHodlerAmount = holderAmount.longValue() + amount;
-		eventContext.getLedger().dataAccount(ASSET_ADDRESS).set(assetHolderAddress, BytesUtils.toBytes(newHodlerAmount),
-				holderAmount.getVersion()).set("K2", (byte[])null, -1).set("k3", (byte[])null, 3);
+		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(assetHolderAddress, newHodlerAmount,
+				holderAmount.getVersion()).setText("K2", "info2", -1).setText("k3", "info3", 3);
 		
 	}
 

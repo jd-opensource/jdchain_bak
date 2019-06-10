@@ -1,10 +1,23 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.binaryproto.PrimitiveType;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.KVDataVO;
+import com.jd.blockchain.ledger.KVInfoVO;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountSet;
@@ -16,16 +29,12 @@ import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.QueryUtil;
-import com.jd.blockchain.utils.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LedgerQueryService implements BlockchainQueryService {
-	
-    private LedgerService ledgerService;
 
-    public LedgerQueryService(LedgerService ledgerService) {
+	private LedgerService ledgerService;
+
+	public LedgerQueryService(LedgerService ledgerService) {
 		this.ledgerService = ledgerService;
 	}
 
@@ -37,7 +46,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	@Override
 	public LedgerInfo getLedger(HashDigest ledgerHash) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
-		LedgerInfo ledgerInfo =new LedgerInfo();
+		LedgerInfo ledgerInfo = new LedgerInfo();
 		ledgerInfo.setHash(ledger.getHash());
 		ledgerInfo.setLatestBlockHash(ledger.getLatestBlockHash());
 		ledgerInfo.setLatestBlockHeight(ledger.getLatestBlockHeight());
@@ -173,8 +182,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 			lastHeightTxTotalNums = (int) ledger.getTransactionSet(ledger.getBlock(height - 1)).getTotalCount();
 		}
 
-		int currentHeightTxTotalNums = (int)ledger.getTransactionSet(ledger.getBlock(height)).getTotalCount();
-		//取当前高度的增量交易数，在增量交易里进行查找
+		int currentHeightTxTotalNums = (int) ledger.getTransactionSet(ledger.getBlock(height)).getTotalCount();
+		// 取当前高度的增量交易数，在增量交易里进行查找
 		int currentHeightTxNums = currentHeightTxTotalNums - lastHeightTxTotalNums;
 //
 //		if (fromIndex < 0 || fromIndex >= currentHeightTxNums) {
@@ -187,8 +196,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 //		if (count > currentHeightTxNums) {
 //			count = currentHeightTxNums - fromIndex;
 //		}
-		int indexAndCount [] = QueryUtil.calFromIndexAndCount(fromIndex,count,currentHeightTxNums);
-		return transactionSet.getTxs(lastHeightTxTotalNums + indexAndCount[0] , indexAndCount[1]);
+		int indexAndCount[] = QueryUtil.calFromIndexAndCount(fromIndex, count, currentHeightTxNums);
+		return transactionSet.getTxs(lastHeightTxTotalNums + indexAndCount[0], indexAndCount[1]);
 	}
 
 	@Override
@@ -203,8 +212,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 			lastHeightTxTotalNums = (int) ledger.getTransactionSet(ledger.getBlock(height - 1)).getTotalCount();
 		}
 
-		int currentHeightTxTotalNums = (int)ledger.getTransactionSet(ledger.getBlock(height)).getTotalCount();
-		//取当前块hash的增量交易数，在增量交易里进行查找
+		int currentHeightTxTotalNums = (int) ledger.getTransactionSet(ledger.getBlock(height)).getTotalCount();
+		// 取当前块hash的增量交易数，在增量交易里进行查找
 		int currentHeightTxNums = currentHeightTxTotalNums - lastHeightTxTotalNums;
 
 //		if (fromIndex < 0 || fromIndex >= currentHeightTxNums) {
@@ -217,8 +226,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 //		if (count > currentHeightTxNums) {
 //			count = currentHeightTxNums - fromIndex;
 //		}
-		int indexAndCount [] = QueryUtil.calFromIndexAndCount(fromIndex,count,currentHeightTxNums);
-		return transactionSet.getTxs(lastHeightTxTotalNums + indexAndCount[0] , indexAndCount[1]);
+		int indexAndCount[] = QueryUtil.calFromIndexAndCount(fromIndex, count, currentHeightTxNums);
+		return transactionSet.getTxs(lastHeightTxTotalNums + indexAndCount[0], indexAndCount[1]);
 	}
 
 	@Override
@@ -228,7 +237,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		TransactionSet txset = ledger.getTransactionSet(block);
 		return txset.get(contentHash);
 	}
-	
+
 	@Override
 	public TransactionState getTransactionStateByContentHash(HashDigest ledgerHash, HashDigest contentHash) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
@@ -243,7 +252,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		LedgerBlock block = ledger.getLatestBlock();
 		UserAccountSet userAccountSet = ledger.getUserAccountSet(block);
 		return userAccountSet.getUser(address);
-		
+
 	}
 
 	@Override
@@ -263,33 +272,32 @@ public class LedgerQueryService implements BlockchainQueryService {
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountSet dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
-		
+
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
 			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 
-			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
+			dataAccount.getBytes(Bytes.fromString(keys[i]), 1);
 
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
-			}else {
-				byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				BytesValue decodeData = BinaryProtocol.decode(value);
-				entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+				entries[i] = new KVDataObject(keys[i], -1, null);
+			} else {
+				BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+				entries[i] = new KVDataObject(keys[i], ver, value);
 			}
 		}
-		
+
 		return entries;
 	}
 
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
-		//parse kvInfoVO;
+		// parse kvInfoVO;
 		List<String> keyList = new ArrayList<>();
 		List<Long> versionList = new ArrayList<>();
-		if(kvInfoVO != null){
-			for(KVDataVO kvDataVO : kvInfoVO.getData()){
-				for(Long version : kvDataVO.getVersion()){
+		if (kvInfoVO != null) {
+			for (KVDataVO kvDataVO : kvInfoVO.getData()) {
+				for (Long version : kvDataVO.getVersion()) {
 					keyList.add(kvDataVO.getKey());
 					versionList.add(version);
 				}
@@ -301,12 +309,12 @@ public class LedgerQueryService implements BlockchainQueryService {
 		if (keys == null || keys.length == 0) {
 			return null;
 		}
-        if (versions == null || versions.length == 0) {
-            return null;
-        }
-        if(keys.length != versions.length){
-            throw new ContractException("keys.length!=versions.length!");
-        }
+		if (versions == null || versions.length == 0) {
+			return null;
+		}
+		if (keys.length != versions.length) {
+			throw new ContractException("keys.length!=versions.length!");
+		}
 
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
@@ -314,22 +322,21 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
 
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
-        long ver = -1;
+		long ver = -1;
 		for (int i = 0; i < entries.length; i++) {
 //			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 //			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
 			ver = versions[i];
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
-			}else {
-				if(dataAccount.getDataEntriesTotalCount()==0 ||
-						dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null){
-					//is the address is not exist; the result is null;
-					entries[i] = new KVDataObject(keys[i], -1, PrimitiveType.NIL, null);
+				entries[i] = new KVDataObject(keys[i], -1, null);
+			} else {
+				if (dataAccount.getDataEntriesTotalCount() == 0
+						|| dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null) {
+					// is the address is not exist; the result is null;
+					entries[i] = new KVDataObject(keys[i], -1, null);
 				} else {
-					byte[] value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-					BytesValue decodeData = BinaryProtocol.decode(value);
-					entries[i] = new KVDataObject(keys[i], ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+					BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+					entries[i] = new KVDataObject(keys[i], ver, value);
 				}
 			}
 		}
@@ -381,8 +388,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountSet dataAccountSet = ledger.getDataAccountSet(block);
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex,count,(int)dataAccountSet.getTotalCount());
-		return dataAccountSet.getAccounts(pages[0],pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccountSet.getTotalCount());
+		return dataAccountSet.getAccounts(pages[0], pages[1]);
 	}
 
 	@Override
@@ -390,8 +397,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		ContractAccountSet contractAccountSet = ledger.getContractAccountSet(block);
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex,count,(int)contractAccountSet.getTotalCount());
-		return contractAccountSet.getAccounts(pages[0],pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) contractAccountSet.getTotalCount());
+		return contractAccountSet.getAccounts(pages[0], pages[1]);
 	}
 
 	private LedgerAdministration ledgerAdministration(HashDigest ledgerHash) {

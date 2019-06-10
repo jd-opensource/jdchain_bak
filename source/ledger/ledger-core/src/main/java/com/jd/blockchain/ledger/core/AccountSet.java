@@ -9,7 +9,9 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -160,10 +162,8 @@ public class AccountSet implements Transactional, MerkleProvable {
 	 * 
 	 * 只有最新版本的账户才能可写的，其它都是只读；
 	 * 
-	 * @param address
-	 *            账户地址；
-	 * @param version
-	 *            账户版本；如果指定为 -1，则返回最新版本；
+	 * @param address 账户地址；
+	 * @param version 账户版本；如果指定为 -1，则返回最新版本；
 	 * @return
 	 */
 	public BaseAccount getAccount(Bytes address, long version) {
@@ -226,10 +226,8 @@ public class AccountSet implements Transactional, MerkleProvable {
 	 * 
 	 * 如果指定的地址和公钥不匹配，则会引发 {@link LedgerException} 异常；
 	 * 
-	 * @param address
-	 *            区块链地址；
-	 * @param pubKey
-	 *            公钥；
+	 * @param address 区块链地址；
+	 * @param pubKey  公钥；
 	 * @return 注册成功的账户对象；
 	 */
 	public BaseAccount register(Bytes address, PubKey pubKey) {
@@ -283,15 +281,14 @@ public class AccountSet implements Transactional, MerkleProvable {
 
 	private VersioningAccount createInstance(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting,
 			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
-		return new VersioningAccount(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, accessPolicy,
-				version);
+		return new VersioningAccount(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, version);
 	}
 
 	private VersioningAccount deserialize(byte[] bytes, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly, long version) {
 		AccountHeader accInfo = BinaryProtocol.decode(bytes);
 		return new VersioningAccount(accInfo.getAddress(), accInfo.getPubKey(), accInfo.getRootHash(), cryptoSetting,
-				keyPrefix, exStorage, verStorage, readonly, accessPolicy, version);
+				keyPrefix, exStorage, verStorage, readonly, version);
 	}
 
 	private byte[] serialize(AccountHeader account) {
@@ -388,15 +385,14 @@ public class AccountSet implements Transactional, MerkleProvable {
 
 		public VersioningAccount(Bytes address, PubKey pubKey, HashDigest rootHash, CryptoSetting cryptoSetting,
 				String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
-				AccountAccessPolicy accessPolicy, long version) {
-			super(address, pubKey, rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly, accessPolicy);
+				long version) {
+			super(address, pubKey, rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
 			this.version = version;
 		}
 
 		public VersioningAccount(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
-				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy,
-				long version) {
-			super(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, accessPolicy);
+				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
+			super(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage);
 			this.version = version;
 		}
 
@@ -426,7 +422,7 @@ public class AccountSet implements Transactional, MerkleProvable {
 		// }
 
 		@Override
-		public long setBytes(Bytes key, byte[] value, long version) {
+		public long setBytes(Bytes key, BytesValue value, long version) {
 			long v = super.setBytes(key, value, version);
 			if (v > -1) {
 				updated = true;

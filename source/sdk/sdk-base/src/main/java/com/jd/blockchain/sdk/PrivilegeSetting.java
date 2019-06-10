@@ -1,6 +1,6 @@
 package com.jd.blockchain.sdk;
 
-import com.jd.blockchain.ledger.PrivilegeType;
+import com.jd.blockchain.ledger.PermissionType;
 
 /**
  * 权限设置；<br>
@@ -16,6 +16,6 @@ public interface PrivilegeSetting {
 	
 	long getMask(String address);
 	
-	boolean isEnable(String address, PrivilegeType privilege);
+	boolean isEnable(String address, PermissionType privilege);
 	
 }

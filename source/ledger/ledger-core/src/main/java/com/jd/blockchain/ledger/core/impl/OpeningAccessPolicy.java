@@ -16,7 +16,7 @@ import com.jd.blockchain.utils.Bytes;
 public class OpeningAccessPolicy implements AccountAccessPolicy {
 
 	@Override
-	public boolean checkCommitting(AccountHeader account) {
+	public boolean checkDataWriting(AccountHeader account) {
 		return true;
 	}
 

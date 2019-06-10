@@ -68,7 +68,7 @@ public class TransactionSetTest {
 		DataAccountRegisterOperation dataAccRegOp = txBuilder.dataAccounts().register(dataKey.getIdentity());
 
 		DataAccountKVSetOperation kvsetOP = txBuilder.dataAccount(dataKey.getAddress())
-				.set("A", "Value_A_0".getBytes(), -1).set("B", "Value_B_0".getBytes(), -1).getOperation();
+				.setText("A", "Value_A_0", -1).setText("B", "Value_B_0", -1).getOperation();
 
 		byte[] chainCode = new byte[128];
 		rand.nextBytes(chainCode);

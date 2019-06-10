@@ -8,19 +8,18 @@
  */
 package test.com.jd.blockchain.ledger.data;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesValueEntry;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.BytesValueType;
-import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
-import com.jd.blockchain.transaction.KVData;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.KVData;
 
 /**
  *
@@ -30,26 +29,26 @@ import static org.junit.Assert.assertEquals;
  */
 
 public class KVDataTest {
-    private KVData kvData;
+	private KVData kvData;
 
-    @Before
-    public void initKVData() throws Exception {
-        DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
-        String key = "test-key";
-        byte[] value = "test-value".getBytes();
-        long expectedVersion = 9999L;
+	@Before
+	public void initKVData() throws Exception {
+		DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
+		String key = "test-key";
+		byte[] value = "test-value".getBytes();
+		long expectedVersion = 9999L;
 
-        kvData = new KVData(key, new BytesValueEntry(BytesValueType.BYTES, value), expectedVersion);
-    }
+		kvData = new KVData(key, BytesValueEntry.fromBytes(value), expectedVersion);
+	}
 
-    @Test
-    public void testSerialize_KVEntry() throws Exception {
-        byte[] serialBytes = BinaryProtocol.encode(kvData, DataAccountKVSetOperation.KVWriteEntry.class);
-        DataAccountKVSetOpTemplate.KVWriteEntry resolvedKvData = BinaryProtocol.decode(serialBytes);
-        System.out.println("------Assert start ------");
-        assertEquals(resolvedKvData.getKey(), kvData.getKey());
-        assertEquals(resolvedKvData.getExpectedVersion(), kvData.getExpectedVersion());
-        assertArrayEquals(resolvedKvData.getValue().getValue().toBytes(), kvData.getValue().getValue().toBytes());
-        System.out.println("------Assert OK ------");
-    }
+	@Test
+	public void testSerialize_KVEntry() throws Exception {
+		byte[] serialBytes = BinaryProtocol.encode(kvData, DataAccountKVSetOperation.KVWriteEntry.class);
+		DataAccountKVSetOpTemplate.KVWriteEntry resolvedKvData = BinaryProtocol.decode(serialBytes);
+		System.out.println("------Assert start ------");
+		assertEquals(resolvedKvData.getKey(), kvData.getKey());
+		assertEquals(resolvedKvData.getExpectedVersion(), kvData.getExpectedVersion());
+		assertArrayEquals(resolvedKvData.getValue().getValue().toBytes(), kvData.getValue().getValue().toBytes());
+		System.out.println("------Assert OK ------");
+	}
 }

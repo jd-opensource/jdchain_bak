@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
 public class LedgerException extends RuntimeException {
 
