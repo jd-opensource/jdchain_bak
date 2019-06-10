@@ -18,10 +18,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
@@ -350,5 +352,25 @@ public class SDK_Contract_Test {
 		byte[] bizBytes = BinaryProtocol.encode(contractBizContent,ContractBizContent.class);
 		ContractBizContent actualObj = BinaryProtocol.decodeAs(bizBytes,ContractBizContent.class);
 		assertArrayEquals(contractBizContent.getAttrs(),actualObj.getAttrs());
+	}
+
+	@Test
+	public void testContractArgs(){
+		ContractBizContent contractBizContent = () -> new String[]{"param1"};
+		Method method = ReflectionUtils.findMethod(AssetContract2.class,"issue",ContractBizContent.class,String.class);
+		ContractArgs contractArgs = new ContractArgs() {
+			@Override
+			public Method getMethod() {
+				return method;
+			}
+
+			@Override
+			public Object[] getArgs() {
+				return new Object[]{contractBizContent,"hello"};
+			}
+		};
+
+		//add the annotation;
+
 	}
 }

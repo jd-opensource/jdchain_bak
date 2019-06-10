@@ -32,10 +32,10 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
 		BytesValue bytesValue;
 		if (JSONSerializeUtils.isJSON(value)) {
-			bytesValue = new BytesValueEntry(BytesValueType.JSON, value.getBytes());
+			bytesValue = new BytesValueEntry(BytesValueType.JSON, BytesUtils.toBytes(value));
 		}
 		else {
-			bytesValue = new BytesValueEntry(BytesValueType.TEXT, value.getBytes());
+			bytesValue = new BytesValueEntry(BytesValueType.TEXT, BytesUtils.toBytes(value));
 		}
 		operation.set(key, bytesValue, expVersion);
 		return this;

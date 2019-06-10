@@ -1,10 +1,8 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.ContractDeployMojo;
-import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * for contract deploy and exe;
@@ -14,8 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ContractDeployMojoTest {
     private ContractDeployMojo contractDeployMojo = new ContractDeployMojo();
 
-    private void fieldHandle(String fieldName,Object objValue) throws NoSuchFieldException,
-            IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+    private void fieldHandle(String fieldName,Object objValue) throws NoSuchFieldException, IllegalAccessException {
         Field field = contractDeployMojo.getClass().getDeclaredField(fieldName);//name为类Instance中的private属性
         field.setAccessible(true);//=true,可访问私有变量。
         Class<?> typeClass = field.getType();
