@@ -307,6 +307,11 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 			public boolean isSuccess() {
 				return this.txResp.isSuccess();
 			}
+
+			@Override
+			public String[] getContractReturn() {
+				return txResp.getContractReturn();
+			}
 		}
 
 		private final class BlockStateSnapshot implements StateSnapshot {

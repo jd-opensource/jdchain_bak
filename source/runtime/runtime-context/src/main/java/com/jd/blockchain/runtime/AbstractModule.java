@@ -50,15 +50,12 @@ public abstract class AbstractModule implements Module {
 		if (origClassLoader != moduleClassLoader) {
 			Thread.currentThread().setContextClassLoader(moduleClassLoader);
 		}
-		return CompletableAsyncFuture.runAsync(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} finally {
-					if (origClassLoader != Thread.currentThread().getContextClassLoader()) {
-						Thread.currentThread().setContextClassLoader(origClassLoader);
-					}
+		return CompletableAsyncFuture.runAsync(() -> {
+			try {
+				runnable.run();
+			} finally {
+				if (origClassLoader != Thread.currentThread().getContextClassLoader()) {
+					Thread.currentThread().setContextClassLoader(origClassLoader);
 				}
 			}
 		});

@@ -40,6 +40,13 @@
 			<artifactId>sdk-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>contract-samples</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>io.nats</groupId>
 			<artifactId>jnats</artifactId>

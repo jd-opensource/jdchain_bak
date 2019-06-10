@@ -15,9 +15,11 @@ import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4Nodes;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -85,6 +87,20 @@ public class IntegrationTest4Contract {
         BlockchainService blockchainService = gwsrvFact.getBlockchainService();
 
         if(isContractDeployAndExe){
+            // 合约测试需要runtime路径
+            try {
+                ClassPathResource contractPath = new ClassPathResource("");
+                File file = new File(contractPath.getURI());
+                String runTimePath = file.getParentFile().getParent() + File.separator + "runtime";
+                File runTime = new File(runTimePath);
+                if (!runTime.exists()) {
+                    runTime.mkdir();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
             IntegrationBase.testSDK_Contract(adminKey,ledgerHash,blockchainService,ledgerRepository);
         }
 
