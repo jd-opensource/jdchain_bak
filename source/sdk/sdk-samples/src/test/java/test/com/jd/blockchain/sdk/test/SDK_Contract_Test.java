@@ -132,8 +132,8 @@ public class SDK_Contract_Test {
 		String key2 = "jd_key2";
 		String val2 = "www.jd2.com";
 		// 定义交易,传输最简单的数字、字符串、提取合约中的地址;
-		txTemp.dataAccount(dataAccount.getAddress()).set(key1, val1, -1);
-		txTemp.dataAccount(dataAccount.getAddress()).set(key2, val2, -1);
+		txTemp.dataAccount(dataAccount.getAddress()).setText(key1, val1, -1);
+		txTemp.dataAccount(dataAccount.getAddress()).setText(key2, val2, -1);
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
@@ -156,9 +156,9 @@ public class SDK_Contract_Test {
         TransactionTemplate txTemp = bcsrv.newTransaction(ledgerHash);
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
         txTemp.dataAccounts().register(dataAccount.getIdentity());
-        txTemp.dataAccount(dataAccount.getAddress()).set("total", 200, -1);
-		txTemp.dataAccount(dataAccount.getAddress()).set("param1", "v", -1);
-		txTemp.dataAccount(dataAccount.getAddress()).set("param2", 123, -1);
+        txTemp.dataAccount(dataAccount.getAddress()).setInt64("total", 200, -1);
+		txTemp.dataAccount(dataAccount.getAddress()).setText("param1", "v", -1);
+		txTemp.dataAccount(dataAccount.getAddress()).setInt64("param2", 123, -1);
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
         prepTx.sign(signKeyPair);
@@ -175,7 +175,7 @@ public class SDK_Contract_Test {
 		BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
 		for(int i=0; i<keys.length; i++){
-			txTemp.dataAccount(dataAddress).set(keys[i], values[i], version);
+			txTemp.dataAccount(dataAddress).setText(keys[i], values[i], version);
 		}
 
 		// TX 准备就绪；

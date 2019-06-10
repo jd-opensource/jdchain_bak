@@ -16,7 +16,7 @@ public class WriteContractImpl implements EventProcessingAwire, WriteContract {
 
     @Override
     public void writeKv(String address, String key, String value) {
-        eventContext.getLedger().dataAccount(address).set(key, value, -1);
+        eventContext.getLedger().dataAccount(address).setText(key, value, -1);
     }
 
     @Override

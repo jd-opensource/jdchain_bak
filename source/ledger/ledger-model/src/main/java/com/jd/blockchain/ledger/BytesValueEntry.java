@@ -21,6 +21,10 @@ public class BytesValueEntry implements BytesValue {
 		this.type = type;
 		this.value = bytes;
 	}
+	
+	public static BytesValue fromType(BytesValueType type, byte[] value) {
+		return new BytesValueEntry(type, value);
+	}
 
 	public static BytesValue fromBytes(byte[] value) {
 		return new BytesValueEntry(BytesValueType.BYTES, value);

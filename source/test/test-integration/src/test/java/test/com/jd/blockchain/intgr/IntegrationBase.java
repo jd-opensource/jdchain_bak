@@ -110,7 +110,7 @@ public class IntegrationBase {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		txTpl.dataAccounts().register(dataAccount.getIdentity());
-        txTpl.dataAccount(dataAccount.getAddress()).set("total", 200, -1);
+        txTpl.dataAccount(dataAccount.getAddress()).setInt64("total", 200, -1);
 //        txTpl.dataAccount(dataAccount.getAddress()).set("param1", "v", -1);
 //        txTpl.dataAccount(dataAccount.getAddress()).set("param2", 200, -1);
 

@@ -594,11 +594,11 @@ public class IntegrationTest {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
-				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
-						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
-						+ "##SOME-VALUE").getBytes());
-
+//		txTpl.contractEvents().send(contractDeployKey.getAddress(), eventName,
+//				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
+//						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
+//						+ "##SOME-VALUE").getBytes());
+		
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
 		ptx.sign(adminKey);

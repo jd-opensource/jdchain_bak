@@ -136,7 +136,7 @@ public class MockerServiceHandler {
 
         TransactionTemplate txTemplate = newTxTemplate();
 
-        txTemplate.dataAccount(dataAccount).set(key, value, version);
+        txTemplate.dataAccount(dataAccount).setBytes(key, value, version);
 
         TransactionResponse txResponse = txPrepareAndCommit(txTemplate);
 

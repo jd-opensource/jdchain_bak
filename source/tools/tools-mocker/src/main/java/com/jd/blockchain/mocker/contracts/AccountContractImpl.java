@@ -15,7 +15,7 @@ public class AccountContractImpl implements EventProcessingAwire, AccountContrac
     @Override
     public void create(String address, String account, long money) {
         // 暂不处理该账户已经存在的问题
-        eventContext.getLedger().dataAccount(address).set(account, money, -1);
+        eventContext.getLedger().dataAccount(address).setInt64(account, money, -1);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class AccountContractImpl implements EventProcessingAwire, AccountContrac
         currentFromMoney -= money;
         currentToMoney += money;
         // 重新设置结果
-        eventContext.getLedger().dataAccount(address).set(from, currentFromMoney, currentFromVer)
-                .set(to, currentToMoney, currentToVer);
+        eventContext.getLedger().dataAccount(address).setInt64(from, currentFromMoney, currentFromVer)
+                .setInt64(to, currentToMoney, currentToVer);
     }
 
     @Override
