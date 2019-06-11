@@ -58,8 +58,8 @@ public class KVDataObject implements KVDataEntry {
 	 * @see com.jd.blockchain.ledger.KVDataEntry#getType()
 	 */
 	@Override
-	public BytesValueType getType() {
-		return bytesValue == null ? BytesValueType.NIL : bytesValue.getType();
+	public DataType getType() {
+		return bytesValue == null ? DataType.NIL : bytesValue.getType();
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public boolean isNil() {
-		return bytesValue == null || BytesValueType.NIL == bytesValue.getType();
+		return bytesValue == null || DataType.NIL == bytesValue.getType();
 	}
 
 	/**
@@ -119,10 +119,10 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public byte tinyValue() {
-		if (BytesValueType.INT8 == getType()) {
+		if (DataType.INT8 == getType()) {
 			return bytesValue.getValue().toBytes()[0];
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", BytesValueType.INT8, getType()));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT8, getType()));
 	}
 
 	/**
@@ -137,10 +137,10 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public short shortValue() {
-		if (BytesValueType.INT16 == getType()) {
+		if (DataType.INT16 == getType()) {
 			return BytesUtils.toShort(bytesValue.getValue().toBytes(), 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", BytesValueType.INT16, getType()));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT16, getType()));
 	}
 
 	/**
@@ -155,10 +155,10 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public int intValue() {
-		if (BytesValueType.INT32 == getType()) {
+		if (DataType.INT32 == getType()) {
 			return BytesUtils.toInt(bytesValue.getValue().toBytes(), 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", BytesValueType.INT32, getType()));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT32, getType()));
 	}
 
 	/**
@@ -173,10 +173,10 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public long longValue() {
-		if (BytesValueType.INT64 == getType()) {
+		if (DataType.INT64 == getType()) {
 			return BytesUtils.toLong(bytesValue.getValue().toBytes(), 0);
 		}
-		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", BytesValueType.INT64, getType()));
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT64, getType()));
 
 	}
 
@@ -192,11 +192,11 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public BigInteger bigIntValue() {
-		if (BytesValueType.BIG_INT == getType()) {
+		if (DataType.BIG_INT == getType()) {
 			return new BigInteger(bytesValue.getValue().toBytes());
 		}
 		throw new IllegalStateException(
-				String.format("Expected type [%s], but [%s]", BytesValueType.BIG_INT, getType()));
+				String.format("Expected type [%s], but [%s]", DataType.BIG_INT, getType()));
 	}
 
 	/**
@@ -211,11 +211,11 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public boolean boolValue() {
-		if (BytesValueType.BOOLEAN == getType()) {
+		if (DataType.BOOLEAN == getType()) {
 			return BytesUtils.toBoolean(bytesValue.getValue().toBytes()[0]);
 		}
 		throw new IllegalStateException(
-				String.format("Expected type [%s], but [%s]", BytesValueType.BOOLEAN, getType()));
+				String.format("Expected type [%s], but [%s]", DataType.BOOLEAN, getType()));
 	}
 
 	/**
@@ -230,12 +230,12 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public Date datetimeValue() {
-		if (BytesValueType.TIMESTAMP == getType()) {
+		if (DataType.TIMESTAMP == getType()) {
 			long ts = BytesUtils.toLong(bytesValue.getValue().toBytes());
 			return new Date(ts);
 		}
 		throw new IllegalStateException(
-				String.format("Expected type [%s], but [%s]", BytesValueType.TIMESTAMP, getType()));
+				String.format("Expected type [%s], but [%s]", DataType.TIMESTAMP, getType()));
 	}
 
 	/**
@@ -251,12 +251,12 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	public String stringValue() {
-		BytesValueType type = getType();
-		if (BytesValueType.TEXT == type || BytesValueType.JSON == type || BytesValueType.XML == type) {
+		DataType type = getType();
+		if (DataType.TEXT == type || DataType.JSON == type || DataType.XML == type) {
 			return bytesValue.getValue().toUTF8String();
 		}
 		throw new IllegalStateException(String.format("Expected type [%s] or [%s] or [%s] , but [%s]",
-				PrimitiveType.TEXT, BytesValueType.JSON, BytesValueType.XML, type));
+				PrimitiveType.TEXT, DataType.JSON, DataType.XML, type));
 	}
 
 //	// ----------------

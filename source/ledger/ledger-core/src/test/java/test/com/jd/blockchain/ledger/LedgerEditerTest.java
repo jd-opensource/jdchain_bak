@@ -18,7 +18,7 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueType;
+import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -109,7 +109,7 @@ public class LedgerEditerTest {
 
 		// 验证数据读写的一致性；
 		BytesValue bytes = dataAccount.getBytes("A");
-		assertEquals(BytesValueType.TEXT, bytes.getType());
+		assertEquals(DataType.TEXT, bytes.getType());
 		String textValue = bytes.getValue().toUTF8String();
 		assertEquals("abc", textValue);
 	}

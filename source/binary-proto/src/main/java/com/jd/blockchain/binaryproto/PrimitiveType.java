@@ -19,80 +19,34 @@ public enum PrimitiveType {
 	BOOLEAN(BaseType.BOOLEAN),
 
 	/**
-	 * 数值型：
+	 * 8位的整数：
 	 */
-	INT8((byte) (BaseType.NUMERIC | 0x01)),
-
-	INT16((byte) (BaseType.NUMERIC | 0x02)),
-
-	INT32((byte) (BaseType.NUMERIC | 0x03)),
-
-	INT64((byte) (BaseType.NUMERIC | 0x04)),
+	INT8(BaseType.INT8),
 
 	/**
-	 * 时间戳；
+	 * 16位整数；
 	 */
-	TIMESTAMP((byte) (BaseType.NUMERIC | 0x08)),
+	INT16(BaseType.INT16),
 
 	/**
-	 * 文本数据；
+	 * 32位整数；
+	 */
+	INT32(BaseType.INT32),
+
+	/**
+	 * 64位整数；
+	 */
+	INT64(BaseType.INT64),
+
+	/**
+	 * 文本；
 	 */
 	TEXT(BaseType.TEXT),
 
 	/**
-	 * 文本数据；
-	 */
-	JSON((byte) (BaseType.TEXT | 0x01)),
-
-	/**
-	 * 文本数据；
-	 */
-	XML((byte) (BaseType.TEXT | 0x02)),
-
-	/**
 	 * 二进制数据；
 	 */
-	BYTES(BaseType.BYTES),
-
-	/**
-	 * 大整数；
-	 */
-	BIG_INT((byte) (BaseType.BYTES | 0x01)),
-
-	/**
-	 * 图片；
-	 */
-	IMG((byte) (BaseType.BYTES | 0x02)),
-
-	/**
-	 * 视频；
-	 */
-	VIDEO((byte) (BaseType.BYTES | 0x03)),
-
-	/**
-	 * 位置坐标；
-	 */
-	LOCATION((byte) (BaseType.BYTES | 0x04)),
-	
-	/**
-	 * 公钥；
-	 */
-	PUB_KEY((byte) (BaseType.BYTES | 0x05)),
-	
-	/**
-	 * 签名摘要；
-	 */
-	SIGNATURE_DIGEST((byte) (BaseType.BYTES | 0x06)),
-	
-	/**
-	 * 哈希摘要；
-	 */
-	HASH_DIGEST((byte) (BaseType.BYTES | 0x07)),
-	
-	/**
-	 * 加密数据；
-	 */
-	ENCRYPTED_DATA((byte) (BaseType.BYTES | 0x08));
+	BYTES(BaseType.BYTES);
 
 	public final byte CODE;
 

@@ -9,37 +9,37 @@ import com.jd.blockchain.utils.io.BytesUtils;
  *
  */
 public class BytesValueEntry implements BytesValue {
-	BytesValueType type;
+	DataType type;
 	Bytes value;
 
-	private BytesValueEntry(BytesValueType type, byte[] bytes) {
+	private BytesValueEntry(DataType type, byte[] bytes) {
 		this.type = type;
 		this.value = new Bytes(bytes);
 	}
 
-	private BytesValueEntry(BytesValueType type, Bytes bytes) {
+	private BytesValueEntry(DataType type, Bytes bytes) {
 		this.type = type;
 		this.value = bytes;
 	}
 	
-	public static BytesValue fromType(BytesValueType type, byte[] value) {
+	public static BytesValue fromType(DataType type, byte[] value) {
 		return new BytesValueEntry(type, value);
 	}
 
 	public static BytesValue fromBytes(byte[] value) {
-		return new BytesValueEntry(BytesValueType.BYTES, value);
+		return new BytesValueEntry(DataType.BYTES, value);
 	}
 
 	public static BytesValue fromBytes(Bytes value) {
-		return new BytesValueEntry(BytesValueType.BYTES, value);
+		return new BytesValueEntry(DataType.BYTES, value);
 	}
 
 	public static BytesValue fromImage(byte[] value) {
-		return new BytesValueEntry(BytesValueType.IMG, value);
+		return new BytesValueEntry(DataType.IMG, value);
 	}
 
 	public static BytesValue fromImage(Bytes value) {
-		return new BytesValueEntry(BytesValueType.IMG, value);
+		return new BytesValueEntry(DataType.IMG, value);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class BytesValueEntry implements BytesValue {
 	 * @return
 	 */
 	public static BytesValue fromText(String value) {
-		return new BytesValueEntry(BytesValueType.TEXT, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.TEXT, BytesUtils.toBytes(value));
 	}
 
 	/**
@@ -62,51 +62,51 @@ public class BytesValueEntry implements BytesValue {
 		if (bytesValue == null) {
 			return null;
 		}
-		if (bytesValue.getType() != BytesValueType.TEXT) {
-			throw new ValueTypeCastException("The expected value type is " + BytesValueType.TEXT.toString()
+		if (bytesValue.getType() != DataType.TEXT) {
+			throw new ValueTypeCastException("The expected value type is " + DataType.TEXT.toString()
 					+ ", but it is actually " + bytesValue.getType().toString() + "!");
 		}
 		return bytesValue.getValue().toUTF8String();
 	}
 
 	public static BytesValue fromJSON(String value) {
-		return new BytesValueEntry(BytesValueType.JSON, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.JSON, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromXML(String value) {
-		return new BytesValueEntry(BytesValueType.XML, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.XML, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt32(int value) {
-		return new BytesValueEntry(BytesValueType.INT32, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.INT32, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt64(long value) {
-		return new BytesValueEntry(BytesValueType.INT64, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.INT64, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt16(short value) {
-		return new BytesValueEntry(BytesValueType.INT16, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.INT16, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt8(byte value) {
-		return new BytesValueEntry(BytesValueType.INT8, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.INT8, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromTimestamp(long value) {
-		return new BytesValueEntry(BytesValueType.TIMESTAMP, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.TIMESTAMP, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromBoolean(boolean value) {
-		return new BytesValueEntry(BytesValueType.BOOLEAN, BytesUtils.toBytes(value));
+		return new BytesValueEntry(DataType.BOOLEAN, BytesUtils.toBytes(value));
 	}
 
 	@Override
-	public BytesValueType getType() {
+	public DataType getType() {
 		return this.type;
 	}
 
-	public void setType(BytesValueType type) {
+	public void setType(DataType type) {
 		this.type = type;
 	}
 

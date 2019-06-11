@@ -1,7 +1,7 @@
 package com.jd.blockchain.binaryproto;
 
 /**
- * 基础类型；
+ * 基础类型标志；
  * 
  * @author huanghaiquan
  *
@@ -19,9 +19,29 @@ public interface BaseType {
 	public static final byte BOOLEAN = (byte) 0x01;
 
 	/**
-	 * 数值；
+	 * 整数；
 	 */
-	public static final byte NUMERIC = (byte) 0x10;
+	public static final byte INTEGER = (byte) 0x10;
+
+	/**
+	 * 8位整数；
+	 */
+	public static final byte INT8 = (byte) (INTEGER | 0x01);
+
+	/**
+	 * 16位整数；
+	 */
+	public static final byte INT16 = (byte) (INTEGER | 0x02);
+
+	/**
+	 * 32位整数；
+	 */
+	public static final byte INT32 = (byte) (INTEGER | 0x03);
+
+	/**
+	 * 64位整数；
+	 */
+	public static final byte INT64 = (byte) (INTEGER | 0x04);
 
 	/**
 	 * 文本
