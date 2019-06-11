@@ -37,9 +37,9 @@ public enum BytesValueType {
 	INT64(PrimitiveType.INT64.CODE),
 
 	/**
-	 * 日期时间；
+	 * 时间戳；
 	 */
-	DATETIME(PrimitiveType.DATETIME.CODE),
+	TIMESTAMP(PrimitiveType.TIMESTAMP.CODE),
 
 	/**
 	 * 文本数据；
@@ -80,7 +80,6 @@ public enum BytesValueType {
 	 * 位置；
 	 */
 	LOCATION(PrimitiveType.LOCATION.CODE);
-
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;

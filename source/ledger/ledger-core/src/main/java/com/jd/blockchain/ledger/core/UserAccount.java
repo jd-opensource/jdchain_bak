@@ -2,9 +2,10 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
  * 用户账户；
@@ -40,21 +41,21 @@ public class UserAccount implements UserInfo {
 	}
 
 	public PubKey getDataPubKey() {
-		byte[] pkBytes = baseAccount.getBytes(DATA_PUB_KEY);
+		BytesValue pkBytes = baseAccount.getBytes(DATA_PUB_KEY);
 		if (pkBytes == null) {
 			return null;
 		}
-		return new PubKey(pkBytes);
+		return new PubKey(pkBytes.getValue().toBytes());
 	}
 
 	public long setDataPubKey(PubKey pubKey) {
 		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, pkBytes, -1);
+		return baseAccount.setBytes(DATA_PUB_KEY, BytesValueEntry.fromBytes(pkBytes), -1);
 	}
 
 	public long setDataPubKey(PubKey pubKey, long version) {
 		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, pkBytes, version);
+		return baseAccount.setBytes(DATA_PUB_KEY, BytesValueEntry.fromBytes(pkBytes), version);
 	}
 
 	public long setProperty(String key, String value, long version) {
@@ -62,15 +63,17 @@ public class UserAccount implements UserInfo {
 	}
 
 	public long setProperty(Bytes key, String value, long version) {
-		return baseAccount.setBytes(encodePropertyKey(key), BytesUtils.toBytes(value), version);
+		return baseAccount.setBytes(encodePropertyKey(key), BytesValueEntry.fromText(value), version);
 	}
 
 	public String getProperty(Bytes key) {
-		return BytesUtils.toString(baseAccount.getBytes(encodePropertyKey(key)));
+		BytesValue value = baseAccount.getBytes(encodePropertyKey(key));
+		return value == null ? null : value.getValue().toUTF8String();
 	}
 
 	public String getProperty(Bytes key, long version) {
-		return BytesUtils.toString(baseAccount.getBytes(encodePropertyKey(key), version));
+		BytesValue value = baseAccount.getBytes(encodePropertyKey(key), version);
+		return value == null ? null : value.getValue().toUTF8String();
 	}
 
 	private Bytes encodePropertyKey(Bytes key) {

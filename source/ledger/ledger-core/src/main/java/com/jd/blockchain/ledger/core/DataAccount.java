@@ -6,10 +6,10 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 
 public class DataAccount implements AccountHeader, MerkleProvable {
 
@@ -41,9 +41,21 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	public MerkleProof getProof(Bytes key) {
 		return baseAccount.getProof(key);
 	}
+	
+
+	public long setBytes(Bytes key, BytesValue value, long version) {
+		return baseAccount.setBytes(key, value, version);
+	}
+
+	
+	public long setBytes(Bytes key, String value, long version) {
+		BytesValue bytesValue = BytesValueEntry.fromText(value);
+		return baseAccount.setBytes(key, bytesValue, version);
+	}
 
 	public long setBytes(Bytes key, byte[] value, long version) {
-		return baseAccount.setBytes(key, value, version);
+		BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+		return baseAccount.setBytes(key, bytesValue, version);
 	}
 	
 	/**
@@ -74,7 +86,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @param key
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(String key) {
+	public BytesValue getBytes(String key) {
 		return baseAccount.getBytes(Bytes.fromString(key));
 	}
 
@@ -84,7 +96,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @param key
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(Bytes key) {
+	public BytesValue getBytes(Bytes key) {
 		return baseAccount.getBytes(key);
 	}
 
@@ -95,7 +107,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @param version
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(String key, long version) {
+	public BytesValue getBytes(String key, long version) {
 		return baseAccount.getBytes(Bytes.fromString(key), version);
 	}
 
@@ -106,7 +118,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @param version
 	 * @return return null if not exist;
 	 */
-	public byte[] getBytes(Bytes key, long version) {
+	public BytesValue getBytes(Bytes key, long version) {
 		return baseAccount.getBytes(key, version);
 	}
 
@@ -119,7 +131,6 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 */
 
 	public KVDataEntry[] getDataEntries(int fromIndex, int count) {
-
 		if (getDataEntriesTotalCount() == 0 || count == 0) {
 			return null;
 		}
@@ -142,7 +153,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 			key = baseAccount.dataset.getKeyAtIndex(fromIndex);
 			ver = baseAccount.dataset.getVersion(key);
 			BytesValue decodeData = BinaryProtocol.decode(value);
-			kvDataEntries[i] = new KVDataObject(key, ver, PrimitiveType.valueOf(decodeData.getType().CODE), decodeData.getValue().toBytes());
+			kvDataEntries[i] = new KVDataObject(key, ver,  decodeData);
 			fromIndex++;
 		}
 
@@ -162,5 +173,4 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 		}
 		return baseAccount.dataset.getDataCount();
 	}
-
 }

@@ -16,9 +16,9 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
@@ -54,7 +54,6 @@ import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.ArgumentSet;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
-import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
@@ -408,8 +407,8 @@ public class LedgerPerformanceTest {
 			// BlockchainKeyPair dataAccountKey =
 			// BlockchainKeyGenerator.getInstance().generate();
 			BlockchainIdentity targetAccount = dataAccounts[count % dataAccounts.length];
-			txbuilder.dataAccount(targetAccount.getAddress()).set("key-" + startTs + "-" + i,
-					BytesUtils.toBytes("value-" + i), -1L);
+			txbuilder.dataAccount(targetAccount.getAddress()).setText("key-" + startTs + "-" + i,
+					"value-" + i, -1L);
 			TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
 			reqBuilder.signAsEndpoint(adminKey);
 			txList.add(reqBuilder.buildRequest());

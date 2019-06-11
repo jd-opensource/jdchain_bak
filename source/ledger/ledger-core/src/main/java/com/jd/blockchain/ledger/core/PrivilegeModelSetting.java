@@ -4,6 +4,6 @@ public interface PrivilegeModelSetting {
 	
 	long getLatestVersion();
 	
-	Privilege getPrivilege(long version);
+	PermissionService getPrivilege(long version);
 	
 }

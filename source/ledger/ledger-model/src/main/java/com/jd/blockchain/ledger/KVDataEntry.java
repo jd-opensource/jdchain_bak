@@ -1,7 +1,5 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.PrimitiveType;
-
 public interface KVDataEntry {
 
 	/**
@@ -27,11 +25,12 @@ public interface KVDataEntry {
 	 * 
 	 * @return
 	 */
-	PrimitiveType getType();
+	BytesValueType getType();
 	
 	/**
 	 * 值；
 	 * @return
 	 */
 	Object getValue();
+	
 }

@@ -8,20 +8,39 @@
  */
 package com.jd.blockchain.sdk.client;
 
+import java.lang.reflect.Field;
+
+import org.apache.commons.codec.binary.Base64;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.transaction.*;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.BytesValueType;
+import com.jd.blockchain.ledger.ContractCodeDeployOperation;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
+import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
+import com.jd.blockchain.transaction.KVData;
+import com.jd.blockchain.transaction.LedgerInitOpTemplate;
+import com.jd.blockchain.transaction.LedgerInitSettingData;
+import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.codec.HexUtils;
-import com.jd.blockchain.utils.io.BytesSlice;
 import com.jd.blockchain.utils.io.BytesUtils;
-import org.apache.commons.codec.binary.Base64;
-
-import java.lang.reflect.Field;
 
 /**
  *
@@ -65,22 +84,22 @@ public class ClientOperationUtil {
 
     public static Object readValueByBytesValue(BytesValue bytesValue) {
         BytesValueType dataType = bytesValue.getType();
-        BytesSlice saveVal = bytesValue.getValue();
+        Bytes saveVal = bytesValue.getValue();
         Object showVal;
         switch (dataType) {
             case BYTES:
                 // return hex
-                showVal = HexUtils.encode(saveVal.getBytesCopy());
+                showVal = HexUtils.encode(saveVal.toBytes());
                 break;
             case TEXT:
             case JSON:
-                showVal = saveVal.getString();
+                showVal = saveVal.toUTF8String();
                 break;
             case INT64:
-                showVal = saveVal.getLong();
+                showVal = BytesUtils.toLong(saveVal.toBytes());
                 break;
             default:
-                showVal = HexUtils.encode(saveVal.getBytesCopy());
+                showVal = HexUtils.encode(saveVal.toBytes());
                 break;
         }
         return showVal;
@@ -107,7 +126,7 @@ public class ClientOperationUtil {
             String realValBase58 = valueObj.getString("value");
             String key = currWriteSetObj.getString("key");
             BytesValueType dataType = BytesValueType.valueOf(typeStr);
-            BytesValue bytesValue = new BytesValueEntry(dataType, Base58Utils.decode(realValBase58));
+            BytesValue bytesValue =BytesValueEntry.fromType(dataType, Base58Utils.decode(realValBase58));
             KVData kvData = new KVData(key, bytesValue, expectedVersion);
             kvOperation.set(kvData);
         }

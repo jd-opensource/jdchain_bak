@@ -3,15 +3,12 @@ package com.jd.blockchain.transaction;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.BytesValueEntry;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.BytesValueType;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.BytesUtils;
-import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
-public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOperationBuilder{
-	
+public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOperationBuilder {
+
 	private DataAccountKVSetOpTemplate operation;
-	
+
 	public DataAccountKVSetOperationBuilderImpl(Bytes accountAddress) {
 		operation = new DataAccountKVSetOpTemplate(accountAddress);
 	}
@@ -21,35 +18,69 @@ public class DataAccountKVSetOperationBuilderImpl implements DataAccountKVSetOpe
 		return operation;
 	}
 
+//	@Deprecated
+//	@Override
+//	public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
+//		return setBytes(key, value, expVersion);
+//	}
+
 	@Override
-	public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-		BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value);
+	public DataAccountKVSetOperationBuilder setBytes(String key, byte[] value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromBytes(value);
 		operation.set(key, bytesValue, expVersion);
 		return this;
 	}
 
 	@Override
-	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-		BytesValue bytesValue;
-		if (JSONSerializeUtils.isJSON(value)) {
-			bytesValue = new BytesValueEntry(BytesValueType.JSON, BytesUtils.toBytes(value));
-		}
-		else {
-			bytesValue = new BytesValueEntry(BytesValueType.TEXT, BytesUtils.toBytes(value));
-		}
+	public DataAccountKVSetOperationBuilder setImage(String key, byte[] value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromImage(value);
+		operation.set(key, bytesValue, expVersion);
+		return this;
+	}
+
+//	@Override
+//	public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
+//		return setText(key, value, expVersion);
+//	}
+
+	@Override
+	public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromText(value);
 		operation.set(key, bytesValue, expVersion);
 		return this;
 	}
 
 	@Override
-	public DataAccountKVSetOperationBuilder set(String key, Bytes value, long expVersion) {
-		BytesValue bytesValue = new BytesValueEntry(BytesValueType.BYTES, value.toBytes());
+	public DataAccountKVSetOperationBuilder setBytes(String key, Bytes value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromBytes(value);
 		operation.set(key, bytesValue, expVersion);
 		return this;
 	}
+
 	@Override
-	public DataAccountKVSetOperationBuilder set(String key, long value, long expVersion) {
-		BytesValue bytesValue = new BytesValueEntry(BytesValueType.INT64, BytesUtils.toBytes(value));
+	public DataAccountKVSetOperationBuilder setInt64(String key, long value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromInt64(value);
+		operation.set(key, bytesValue, expVersion);
+		return this;
+	}
+
+	@Override
+	public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromJSON(value);
+		operation.set(key, bytesValue, expVersion);
+		return this;
+	}
+
+	@Override
+	public DataAccountKVSetOperationBuilder setXML(String key, String value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromXML(value);
+		operation.set(key, bytesValue, expVersion);
+		return this;
+	}
+
+	@Override
+	public DataAccountKVSetOperationBuilder setTimestamp(String key, long value, long expVersion) {
+		BytesValue bytesValue = BytesValueEntry.fromTimestamp(value);
 		operation.set(key, bytesValue, expVersion);
 		return this;
 	}

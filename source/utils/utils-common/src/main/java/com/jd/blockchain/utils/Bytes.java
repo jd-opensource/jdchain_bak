@@ -235,6 +235,10 @@ public class Bytes implements BytesSerializable {
 		}
 		return new Bytes(BytesUtils.toBytes(value));
 	}
+	
+	public String toUTF8String() {
+		return BytesUtils.toString(toBytes());
+	}
 
 	public static Bytes fromLong(long value) {
 		if (value > -1 && value < MAX_CACHE) {

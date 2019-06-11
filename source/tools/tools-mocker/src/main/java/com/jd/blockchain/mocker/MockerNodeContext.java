@@ -1,15 +1,50 @@
 package com.jd.blockchain.mocker;
 
+import static java.lang.reflect.Proxy.newProxyInstance;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ClientIdentifications;
 import com.jd.blockchain.consensus.action.ActionRequest;
 import com.jd.blockchain.consensus.action.ActionResponse;
-import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.ContractCodeDeployOperation;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.EndpointRequest;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.KVInfoVO;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.NodeRequest;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionRequestBuilder;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
@@ -28,14 +63,11 @@ import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
-import com.jd.blockchain.transaction.*;
+import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.web.serializes.ByteArrayObjectUtil;
-
-import java.util.*;
-
-import static java.lang.reflect.Proxy.newProxyInstance;
 
 public class MockerNodeContext implements BlockchainQueryService {
 
@@ -171,25 +203,25 @@ public class MockerNodeContext implements BlockchainQueryService {
 
     public void writeKv(String address, String key, String value, long version) {
         TxBuilder txBuilder = txBuilder();
-        txBuilder.dataAccount(address).set(key, value, version);
+        txBuilder.dataAccount(address).setText(key, value, version);
         txProcess(txRequest(txBuilder));
     }
 
     public void writeKv(String address, String key, long value, long version) {
         TxBuilder txBuilder = txBuilder();
-        txBuilder.dataAccount(address).set(key, value, version);
+        txBuilder.dataAccount(address).setInt64(key, value, version);
         txProcess(txRequest(txBuilder));
     }
 
     public void writeKv(String address, String key, byte[] value, long version) {
         TxBuilder txBuilder = txBuilder();
-        txBuilder.dataAccount(address).set(key, value, version);
+        txBuilder.dataAccount(address).setBytes(key, value, version);
         txProcess(txRequest(txBuilder));
     }
 
     public void writeKv(String address, String key, Bytes value, long version) {
         TxBuilder txBuilder = txBuilder();
-        txBuilder.dataAccount(address).set(key, value, version);
+        txBuilder.dataAccount(address).setBytes(key, value, version);
         txProcess(txRequest(txBuilder));
     }
 
