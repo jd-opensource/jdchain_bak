@@ -2,7 +2,7 @@ package com.jd.blockchain.web.serializes;
 
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.jd.blockchain.binaryproto.DataType;
+import com.jd.blockchain.binaryproto.BaseType;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -92,20 +92,20 @@ public class ByteArrayObjectJsonSerializer implements ObjectSerializer {
 
     public static class BytesValueJson {
 
-        public BytesValueJson(DataType type, Object value) {
+        public BytesValueJson(BaseType type, Object value) {
             this.type = type;
             this.value = value;
         }
 
-        DataType type;
+        BaseType type;
 
         Object value;
 
-        public DataType getType() {
+        public BaseType getType() {
             return type;
         }
 
-        public void setType(DataType type) {
+        public void setType(BaseType type) {
             this.type = type;
         }
 
