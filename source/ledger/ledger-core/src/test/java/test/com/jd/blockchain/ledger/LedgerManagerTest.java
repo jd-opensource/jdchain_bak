@@ -97,7 +97,7 @@ public class LedgerManagerTest {
 		System.out.println("UserAddress=" + userAccount.getAddress());
 
 		// 提交交易结果；
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
+		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS, null);
 
 		assertEquals(genesisTxReq.getTransactionContent().getHash(), tx.getTransactionContent().getHash());
 		assertEquals(0, tx.getBlockHeight());
@@ -137,7 +137,7 @@ public class LedgerManagerTest {
 
 		LedgerTransactionContext txCtx1 = editor1.newTransaction(txRequest);
 		txCtx1.getDataSet().getDataAccountSet().register(dataKey.getAddress(), dataKey.getPubKey(), null);
-		txCtx1.commit(TransactionState.SUCCESS);
+		txCtx1.commit(TransactionState.SUCCESS, null);
 
 		LedgerBlock block1 = editor1.prepare();
 		editor1.commit();

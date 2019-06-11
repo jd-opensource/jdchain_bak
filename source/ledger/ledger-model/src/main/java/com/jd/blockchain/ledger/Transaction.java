@@ -45,4 +45,11 @@ public interface Transaction extends NodeRequest, HashObject {
 	@DataField(order=3, refEnum=true)
 	TransactionState getExecutionState();
 
+	/**
+	 * 交易的返回结果
+	 *
+	 * @return
+	 */
+	@DataField(order=4, refContract=true)
+	TransactionReturnMessage getReturnMessage();
 }

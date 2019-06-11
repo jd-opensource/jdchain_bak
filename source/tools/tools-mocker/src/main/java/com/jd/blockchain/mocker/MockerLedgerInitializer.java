@@ -293,7 +293,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 					userRegOP.getUserID().getPubKey());
 		}
 
-		txCtx.commit(TransactionState.SUCCESS);
+		txCtx.commit(TransactionState.SUCCESS, null);
 
 		return ledgerEditor.prepare();
 	}

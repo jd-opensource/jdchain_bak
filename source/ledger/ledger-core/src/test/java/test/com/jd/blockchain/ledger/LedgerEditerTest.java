@@ -76,7 +76,7 @@ public class LedgerEditerTest {
 
 		dataAccount.setBytes(Bytes.fromString("A"), "abc".getBytes(), -1);
 
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
+		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS, null);
 		LedgerBlock block = ldgEdt.prepare();
 		// 提交数据，写入存储；
 		ldgEdt.commit();
@@ -96,7 +96,7 @@ public class LedgerEditerTest {
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);
 
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
+		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS, null);
 
 		assertEquals(genesisTxReq.getTransactionContent().getHash(), tx.getTransactionContent().getHash());
 		assertEquals(0, tx.getBlockHeight());

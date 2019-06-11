@@ -1,11 +1,7 @@
 package com.jd.blockchain.ledger.core.impl;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.*;
 
 public class LedgerTransactionData implements LedgerTransaction {
 
@@ -22,6 +18,8 @@ public class LedgerTransactionData implements LedgerTransaction {
 	private HashDigest hash;
 
 	private long blockHeight;
+
+	private TransactionReturnMessage returnMessage;
 
 	// private HashDigest adminAccountHash;
 	//
@@ -49,7 +47,7 @@ public class LedgerTransactionData implements LedgerTransaction {
 	 *            交易级的系统快照；
 	 */
 	public LedgerTransactionData(long blockHeight, TransactionRequest txReq, TransactionState execState,
-			TransactionStagedSnapshot txSnapshot) {
+			TransactionStagedSnapshot txSnapshot, TransactionReturnMessage returnMessage) {
 		this.blockHeight = blockHeight;
 //		this.txSnapshot = txSnapshot == null ? new TransactionStagedSnapshot() : txSnapshot;
 		this.txSnapshot = txSnapshot;
@@ -57,6 +55,7 @@ public class LedgerTransactionData implements LedgerTransaction {
 		this.endpointSignatures = txReq.getEndpointSignatures();
 		this.nodeSignatures = txReq.getNodeSignatures();
 		this.executionState = execState;
+		this.returnMessage = returnMessage;
 	}
 
 	@Override
@@ -72,6 +71,11 @@ public class LedgerTransactionData implements LedgerTransaction {
 	@Override
 	public TransactionState getExecutionState() {
 		return executionState;
+	}
+
+	@Override
+	public TransactionReturnMessage getReturnMessage() {
+		return returnMessage;
 	}
 
 	@Override

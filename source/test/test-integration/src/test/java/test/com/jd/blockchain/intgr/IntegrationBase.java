@@ -577,6 +577,9 @@ public class IntegrationBase {
         ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
         readContract2.read(newDataAccount.getAddress().toBase58(), key2);
 
+        ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
+        readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2);
+
         // 签名；
         PreparedTransaction contractPtx = txContract.prepare();
         contractPtx.sign(adminKey);
@@ -593,13 +596,16 @@ public class IntegrationBase {
 
         // 验证结果
         assertNotNull(contractReturn);
-        assertEquals(contractReturn.length, 2);
+        assertEquals(contractReturn.length, 3);
 
         String returnVal1 = contractReturn[0];
         assertEquals(value1, returnVal1);
 
         String returnVal2 = contractReturn[1];
         assertEquals(value2, returnVal2);
+
+        String returnVal3 = contractReturn[2];
+        assertEquals("0", returnVal3);
     }
 
     /**
