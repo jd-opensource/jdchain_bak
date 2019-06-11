@@ -1,19 +1,19 @@
 package com.jd.blockchain.contract.jvm;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
+
 import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.contract.ContractEventContext;
-import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * contract code based jvm
@@ -55,7 +55,9 @@ public class JavaContractCode implements ContractCode {
 		if(args == null || args.length == 0){
 			return null;
 		}
-		return ContractSerializeUtils.deserializeMethodParam(args,dataContractList);
+		//TODO: Not implemented;
+		throw new IllegalStateException("Not implemented!");
+//		return ContractSerializeUtils.deserializeMethodParam(args,dataContractList);
 	}
 
 	class ContractExecution implements Runnable {
@@ -83,14 +85,15 @@ public class JavaContractCode implements ContractCode {
 				if (handleMethod == null){
 					throw new IllegalDataException("don't get this method by it's @ContractEvent.");
 				}
-				Object args = resolveArgs(contractEventContext.getArgs(),
-						contractType.getDataContractMap().get(handleMethod));
-
-				Object[] params = null;
-				if(args.getClass().isArray()){
-					params = (Object[])args;
-				}
-				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, params);
+				//TODO: Not implemented;
+//				Object args = resolveArgs(contractEventContext.getArgs(),
+//						contractType.getDataContractMap().get(handleMethod));
+//
+//				Object[] params = null;
+//				if(args.getClass().isArray()){
+//					params = (Object[])args;
+//				}
+//				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, params);
 
 				LOGGER.info("合约执行,耗时:" + (System.currentTimeMillis() - startTime));
 

@@ -19,7 +19,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.BytesValueEntry;
-import com.jd.blockchain.ledger.BytesValueType;
+import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -83,7 +83,7 @@ public class ClientOperationUtil {
     }
 
     public static Object readValueByBytesValue(BytesValue bytesValue) {
-        BytesValueType dataType = bytesValue.getType();
+        DataType dataType = bytesValue.getType();
         Bytes saveVal = bytesValue.getValue();
         Object showVal;
         switch (dataType) {
@@ -125,7 +125,7 @@ public class ClientOperationUtil {
             String typeStr = valueObj.getString("type");
             String realValBase58 = valueObj.getString("value");
             String key = currWriteSetObj.getString("key");
-            BytesValueType dataType = BytesValueType.valueOf(typeStr);
+            DataType dataType = DataType.valueOf(typeStr);
             BytesValue bytesValue =BytesValueEntry.fromType(dataType, Base58Utils.decode(realValBase58));
             KVData kvData = new KVData(key, bytesValue, expectedVersion);
             kvOperation.set(kvData);

@@ -1,22 +1,24 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.binaryproto.DataContract;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.utils.IllegalDataException;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.*;
 
 public class ContractType {
 
 	private String name;
 	private Map<String, Method> events = new HashMap<>();
 	private Map<Method, String> handleMethods = new HashMap<>();
-	private Map<Method, List<DataContract>> dataContractMap = new HashMap<>();
+//	private Map<Method, List<DataContract>> dataContractMap = new HashMap<>();
 
 	/**
 	 * 返回声明的所有事件；
@@ -27,9 +29,9 @@ public class ContractType {
 		return events.keySet();
 	}
 
-	public Map<Method, List<DataContract>> getDataContractMap() {
-		return dataContractMap;
-	}
+//	public Map<Method, List<DataContract>> getDataContractMap() {
+//		return dataContractMap;
+//	}
 
 	/**
 	 * 返回指定方法声明的事件；<br>
@@ -84,12 +86,13 @@ public class ContractType {
 				Class<?>[] paramTypes = method.getParameterTypes();
 				List dataContractList = new ArrayList();
 				for(Class<?> curParamType : paramTypes){
-					DataContract dataContract = ContractSerializeUtils.parseDataContract(curParamType);
-					dataContractList.add(dataContract);
+					throw new IllegalStateException("Not implemented!");
+//					DataContract dataContract = ContractSerializeUtils.parseDataContract(curParamType);
+//					dataContractList.add(dataContract);
 				}
-				if(dataContractList.size()>0){
-					contractType.dataContractMap.put(method,dataContractList);
-				}
+//				if(dataContractList.size()>0){
+//					contractType.dataContractMap.put(method,dataContractList);
+//				}
 
 				contractType.events.put(eventName_, method);
 				contractType.handleMethods.put(method,eventName_);

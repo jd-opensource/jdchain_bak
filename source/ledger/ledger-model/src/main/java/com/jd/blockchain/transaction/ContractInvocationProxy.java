@@ -1,11 +1,10 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.contract.ContractSerializeUtils;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.IllegalDataException;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+
+import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.IllegalDataException;
 
 public class ContractInvocationProxy implements InvocationHandler {
 
@@ -49,6 +48,7 @@ public class ContractInvocationProxy implements InvocationHandler {
 		if(args == null || args.length==0){
 			return null;
 		}
-		return ContractSerializeUtils.serializeMethodParam(args,contractType.getDataContractMap().get(method));
+		throw new IllegalStateException("Not implemented!");
+		//return ContractSerializeUtils.serializeMethodParam(args,contractType.getDataContractMap().get(method));
 	}
 }
