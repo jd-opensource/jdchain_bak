@@ -98,7 +98,7 @@ public class TransactionSetTest {
 		txSnapshot.setContractAccountSetHash(contractAccountSetHash);
 
 		long blockHeight = 8922L;
-		LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txReq, TransactionState.SUCCESS, txSnapshot);
+		LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txReq, TransactionState.SUCCESS, txSnapshot, null);
 		txset.add(tx);
 
 		assertTrue(txset.isUpdated());

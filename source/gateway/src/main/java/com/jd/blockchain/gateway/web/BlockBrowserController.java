@@ -55,7 +55,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 //    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/participants")
     @Override
-    public ParticipantNode[] getConsensusParticipants(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+    public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash) {
         return peerService.getQueryService().getConsensusParticipants(ledgerHash);
     }
 

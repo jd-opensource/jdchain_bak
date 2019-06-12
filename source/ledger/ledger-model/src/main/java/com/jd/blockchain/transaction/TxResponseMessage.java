@@ -17,6 +17,8 @@ public class TxResponseMessage implements TransactionResponse {
 	private long blockHeight;
 
 	private TransactionState executionState;
+
+	private String[] contractReturn;
 	
 	public TxResponseMessage() {
 	}
@@ -39,9 +41,6 @@ public class TxResponseMessage implements TransactionResponse {
 		this.executionState = executionState;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.jd.blockchain.ledger.TransactionResponse#getBlockHash()
-	 */
 	@Override
 	public HashDigest getBlockHash() {
 		return blockHash;
@@ -55,13 +54,23 @@ public class TxResponseMessage implements TransactionResponse {
 	public long getBlockHeight() {
 		return blockHeight;
 	}
+
 	public void setBlockHeight(long blockHeight) {
 		this.blockHeight = blockHeight;
 	}
-	
+
+	public void setContractReturn(String[] contractReturn) {
+		this.contractReturn = contractReturn;
+	}
+
 	@Override
 	public boolean isSuccess() {
 		return blockHash != null & executionState == TransactionState.SUCCESS;
+	}
+
+	@Override
+	public String[] getContractReturn() {
+		return contractReturn;
 	}
 
 }

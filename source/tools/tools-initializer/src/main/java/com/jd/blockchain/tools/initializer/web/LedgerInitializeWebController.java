@@ -425,7 +425,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 					userRegOP.getUserID().getPubKey());
 		}
 
-		txCtx.commit(TransactionState.SUCCESS);
+		txCtx.commit(TransactionState.SUCCESS, null);
 
 		return ledgerEditor.prepare();
 	}

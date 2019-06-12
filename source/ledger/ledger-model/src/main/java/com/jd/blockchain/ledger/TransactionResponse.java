@@ -49,8 +49,20 @@ public interface TransactionResponse {
 	 */
 	@DataField(order=4, primitiveType=PrimitiveType.INT64)
 	long getBlockHeight();
-	
+
+	/**
+	 * 交易是否执行成功
+	 *
+	 * @return
+	 */
 	@DataField(order=5, primitiveType=PrimitiveType.BOOLEAN)
 	boolean isSuccess();
 
+	/**
+	 * 合约返回值
+	 *
+	 * @return
+	 */
+	@DataField(order=6, list=true, primitiveType=PrimitiveType.TEXT)
+	String[] getContractReturn();
 }

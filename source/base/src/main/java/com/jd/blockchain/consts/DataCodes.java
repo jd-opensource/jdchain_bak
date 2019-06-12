@@ -30,6 +30,8 @@ public interface DataCodes {
 
 	public static final int TX_CONTENT_BODY = 0x220;
 
+	public static final int TX_RETURN_MESSAGE = 0x230;
+
 	public static final int TX_OP = 0x300;
 
 	public static final int TX_OP_LEDGER_INIT = 0x301;
@@ -78,6 +80,8 @@ public interface DataCodes {
 	public static final int USER = 0x800;
 
 	public static final int DATA = 0x900;
+
+	public static final int CONTRACT_RETURN = 0xA22;
 
 	public static final int HASH = 0xB00;
 

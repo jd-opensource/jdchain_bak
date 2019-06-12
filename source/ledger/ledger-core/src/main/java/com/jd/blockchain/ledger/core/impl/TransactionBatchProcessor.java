@@ -3,17 +3,15 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.core.impl.handles.ContractEventSendOperationHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerService;
@@ -74,6 +72,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		// 此调用将会验证交易签名，验签失败将会抛出异常，同时，不记录签名错误的交易到链上；
 		LedgerTransactionContext txCtx = newBlockEditor.newTransaction(request);
 		TransactionState result;
+		TransactionReturnMessageData returnMessageData = new TransactionReturnMessageData();
+
 		try {
 			LedgerDataSet dataset = txCtx.getDataSet();
 			TransactionRequestContext reqCtx = new TransactionRequestContextImpl(request);
@@ -100,28 +100,53 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 				}
 			};
 			OperationHandle opHandle;
+			int contractOpIndex = 0;
 			for (Operation op : ops) {
 				opHandle = opHandles.getHandle(op.getClass());
-				opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				// 合约执行需要填充执行结果
+				if (opHandle instanceof ContractEventSendOperationHandle) {
+					CompletableFuture<String> currContractReturn = new CompletableFuture<>();
+					ContractReturnMessageData crmd = new ContractReturnMessageData(contractOpIndex++, currContractReturn);
+					returnMessageData.addContractReturnMessage(crmd);
+					((ContractEventSendOperationHandle) opHandle).process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService, currContractReturn);
+				} else {
+					opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				}
 			}
 
 			// 提交交易（事务）；
 			result = TransactionState.SUCCESS;
-			txCtx.commit(result);
+			txCtx.commit(result, returnMessageData);
 		} catch (LedgerException e) {
 			// TODO: 识别更详细的异常类型以及执行对应的处理；
 			result = TransactionState.LEDGER_ERROR;
-			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR);
+			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR, returnMessageData);
 			LOGGER.warn(String.format("Transaction rollback caused by the ledger exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		} catch (Exception e) {
 			result = TransactionState.SYSTEM_ERROR;
-			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR);
+			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR, returnMessageData);
 			LOGGER.warn(String.format("Transaction rollback caused by the system exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		}
-
 		TxResponseHandle resp = new TxResponseHandle(request, result);
+
+		if (!returnMessageData.isContractReturnEmpty()) {
+
+			ContractReturnMessage[] contractReturnMessages = returnMessageData.getContractReturn();
+
+			// 获取结果中的字符串
+			String[] returnValue = new String[contractReturnMessages.length];
+			try {
+				for (int i = 0; i < contractReturnMessages.length; i++) {
+					returnValue[i] = contractReturnMessages[i].getReturnMessage();
+				}
+				resp.setContractReturn(returnValue);
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		}
+
 		responseList.add(resp);
 
 		return resp;
@@ -201,6 +226,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 		private TransactionState result;
 
+		private String[] contractReturn;
+
 		public TxResponseHandle(TransactionRequest request, TransactionState result) {
 			this.request = request;
 			this.result = result;
@@ -231,6 +258,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			return globalResult == null ? result == TransactionState.SUCCESS : globalResult == TransactionState.SUCCESS;
 		}
 
+		@Override
+		public String[] getContractReturn() {
+			return contractReturn;
+		}
+
+		public void setContractReturn(String[] contractReturn) {
+			this.contractReturn = contractReturn;
+		}
 	}
 
 	private class TransactionBatchResultImpl implements TransactionBatchResult {

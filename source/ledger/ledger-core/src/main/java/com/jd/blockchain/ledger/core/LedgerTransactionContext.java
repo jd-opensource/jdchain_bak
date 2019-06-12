@@ -1,5 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
+import com.jd.blockchain.ledger.TransactionReturnMessage;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -30,19 +31,21 @@ public interface LedgerTransactionContext {
 	 * 提交对账本数据的修改，以指定的交易状态提交交易；
 	 * 
 	 * @param txResult
+	 * @param returnMessage
+	 *
 	 * @return
 	 */
-	LedgerTransaction commit(TransactionState txResult);
+	LedgerTransaction commit(TransactionState txResult, TransactionReturnMessage returnMessage);
 
 	/**
 	 * 抛弃对账本数据的修改，以指定的交易状态提交交易；<br>
 	 * 
-	 * 通常来说，当在开启事务之后，修改账本或者尝试提交交易（{@link #commit(TransactionState)}）时发生错误，都应该抛弃数据，通过此方法记录一个表示错误状态的交易；
+	 * 通常来说，当在开启事务之后，修改账本或者尝试提交交易（{@link #commit(TransactionState, TransactionReturnMessage)}）时发生错误，都应该抛弃数据，通过此方法记录一个表示错误状态的交易；
 	 * 
 	 * @param txResult
 	 * @return
 	 */
-	LedgerTransaction discardAndCommit(TransactionState txResult);
+	LedgerTransaction discardAndCommit(TransactionState txResult, TransactionReturnMessage returnMessage);
 
 	/**
 	 * 回滚事务，抛弃本次事务的所有数据更新；
