@@ -2,6 +2,7 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.TransactionResponse;
 
 /**
@@ -18,7 +19,7 @@ public class TxResponseMessage implements TransactionResponse {
 
 	private TransactionState executionState;
 
-	private String[] contractReturn;
+	private OperationResult[] contractReturn;
 	
 	public TxResponseMessage() {
 	}
@@ -59,7 +60,7 @@ public class TxResponseMessage implements TransactionResponse {
 		this.blockHeight = blockHeight;
 	}
 
-	public void setContractReturn(String[] contractReturn) {
+	public void setContractReturn(OperationResult[] contractReturn) {
 		this.contractReturn = contractReturn;
 	}
 
@@ -69,7 +70,7 @@ public class TxResponseMessage implements TransactionResponse {
 	}
 
 	@Override
-	public String[] getContractReturn() {
+	public OperationResult[] getContractReturn() {
 		return contractReturn;
 	}
 

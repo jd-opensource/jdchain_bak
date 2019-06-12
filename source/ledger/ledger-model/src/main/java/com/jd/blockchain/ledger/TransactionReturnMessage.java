@@ -13,5 +13,5 @@ public interface TransactionReturnMessage {
      * @return
      */
     @DataField(order=1, list = true, refContract=true)
-    ContractReturnMessage[] getContractReturn();
+    OperationResult[] getContractReturn();
 }

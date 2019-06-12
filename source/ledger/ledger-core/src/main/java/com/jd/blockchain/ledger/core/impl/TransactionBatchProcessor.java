@@ -3,15 +3,20 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.impl.handles.ContractEventSendOperationHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.OperationResultData;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerService;
@@ -26,7 +31,7 @@ import com.jd.blockchain.utils.Bytes;
 public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionBatchProcessor.class);
-	
+
 	private LedgerService ledgerService;
 
 	private LedgerEditor newBlockEditor;
@@ -45,12 +50,9 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	private TransactionBatchResult batchResult;
 
 	/**
-	 * @param newBlockEditor
-	 *            新区块的数据编辑器；
-	 * @param previousBlockDataset
-	 *            新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
-	 * @param opHandles
-	 *            操作处理对象注册表；
+	 * @param newBlockEditor       新区块的数据编辑器；
+	 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
+	 * @param opHandles            操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerEditor newBlockEditor, LedgerDataSet previousBlockDataset,
 			OperationHandleRegisteration opHandles, LedgerService ledgerService) {
@@ -71,9 +73,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	public TransactionResponse schedule(TransactionRequest request) {
 		// 此调用将会验证交易签名，验签失败将会抛出异常，同时，不记录签名错误的交易到链上；
 		LedgerTransactionContext txCtx = newBlockEditor.newTransaction(request);
-		TransactionState result;
-		TransactionReturnMessageData returnMessageData = new TransactionReturnMessageData();
-
+		TransactionState txResult;
+		OperationResult[] opResults = null;
 		try {
 			LedgerDataSet dataset = txCtx.getDataSet();
 			TransactionRequestContext reqCtx = new TransactionRequestContextImpl(request);
@@ -94,58 +95,44 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			OperationHandleContext handleContext = new OperationHandleContext() {
 				@Override
 				public void handle(Operation operation) {
-					//assert; Instance of operation are one of User related operations or DataAccount related operations;
+					// assert; Instance of operation are one of User related operations or
+					// DataAccount related operations;
 					OperationHandle hdl = opHandles.getHandle(operation.getClass());
 					hdl.process(operation, dataset, reqCtx, previousBlockDataset, this, ledgerService);
 				}
 			};
 			OperationHandle opHandle;
 			int contractOpIndex = 0;
+			List<OperationResult> opResultList = new ArrayList<OperationResult>();
+			int opIdx = 0;
 			for (Operation op : ops) {
 				opHandle = opHandles.getHandle(op.getClass());
-				// 合约执行需要填充执行结果
-				if (opHandle instanceof ContractEventSendOperationHandle) {
-					CompletableFuture<String> currContractReturn = new CompletableFuture<>();
-					ContractReturnMessageData crmd = new ContractReturnMessageData(contractOpIndex++, currContractReturn);
-					returnMessageData.addContractReturnMessage(crmd);
-					((ContractEventSendOperationHandle) opHandle).process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService, currContractReturn);
-				} else {
-					opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				byte[] retn = opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				if (op instanceof ContractEventSendOperation) {
+					// 支持返回值的操作；
+					opResultList.add(new OperationResultData(opIdx, retn));
 				}
+
+				opIdx++;
 			}
 
 			// 提交交易（事务）；
-			result = TransactionState.SUCCESS;
-			txCtx.commit(result, returnMessageData);
+			txResult = TransactionState.SUCCESS;
+			opResults = opResultList.toArray(new OperationResult[opResultList.size()]);
+			txCtx.commit(txResult, opResults);
 		} catch (LedgerException e) {
 			// TODO: 识别更详细的异常类型以及执行对应的处理；
-			result = TransactionState.LEDGER_ERROR;
-			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR, returnMessageData);
+			txResult = TransactionState.LEDGER_ERROR;
+			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR);
 			LOGGER.warn(String.format("Transaction rollback caused by the ledger exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		} catch (Exception e) {
-			result = TransactionState.SYSTEM_ERROR;
-			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR, returnMessageData);
+			txResult = TransactionState.SYSTEM_ERROR;
+			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR);
 			LOGGER.warn(String.format("Transaction rollback caused by the system exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		}
-		TxResponseHandle resp = new TxResponseHandle(request, result);
-
-		if (!returnMessageData.isContractReturnEmpty()) {
-
-			ContractReturnMessage[] contractReturnMessages = returnMessageData.getContractReturn();
-
-			// 获取结果中的字符串
-			String[] returnValue = new String[contractReturnMessages.length];
-			try {
-				for (int i = 0; i < contractReturnMessages.length; i++) {
-					returnValue[i] = contractReturnMessages[i].getReturnMessage();
-				}
-				resp.setContractReturn(returnValue);
-			} catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		TxResponseHandle resp = new TxResponseHandle(request, txResult, opResults);
 
 		responseList.add(resp);
 
@@ -226,11 +213,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 		private TransactionState result;
 
-		private String[] contractReturn;
+		private OperationResult[] opResults;
 
-		public TxResponseHandle(TransactionRequest request, TransactionState result) {
+		public TxResponseHandle(TransactionRequest request, TransactionState result, OperationResult... opResults) {
 			this.request = request;
 			this.result = result;
+			this.opResults = opResults;
 		}
 
 		@Override
@@ -259,12 +247,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		}
 
 		@Override
-		public String[] getContractReturn() {
-			return contractReturn;
-		}
-
-		public void setContractReturn(String[] contractReturn) {
-			this.contractReturn = contractReturn;
+		public OperationResult[] getContractReturn() {
+			return opResults;
 		}
 	}
 

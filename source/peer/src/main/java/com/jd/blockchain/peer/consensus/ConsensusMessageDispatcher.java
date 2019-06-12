@@ -2,6 +2,7 @@ package com.jd.blockchain.peer.consensus;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
@@ -309,7 +310,7 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 			}
 
 			@Override
-			public String[] getContractReturn() {
+			public OperationResult[] getContractReturn() {
 				return txResp.getContractReturn();
 			}
 		}

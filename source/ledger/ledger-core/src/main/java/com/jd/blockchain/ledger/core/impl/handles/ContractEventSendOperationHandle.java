@@ -2,6 +2,8 @@ package com.jd.blockchain.ledger.core.impl.handles;
 
 import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.contract.LocalContractEventContext;
@@ -20,9 +22,6 @@ import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-
 @Service
 public class ContractEventSendOperationHandle implements OperationHandle {
 
@@ -33,9 +32,12 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 	}
 
 	@Override
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		process(op, dataset, requestContext, previousBlockDataset, opHandleContext, ledgerService, null);
+
+		// TODO: return value;
+		return null;
 	}
 
 	@Override
@@ -44,8 +46,8 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 	}
 
 	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-						LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext,
-						LedgerService ledgerService, CompletableFuture<String> contractReturn) {
+			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService,
+			CompletableFuture<String> contractReturn) {
 
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 		// 先从账本校验合约的有效性；
@@ -83,6 +85,5 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 		// 处理合约事件；
 		contractCode.processEvent(localContractEventContext, contractReturn);
 	}
-
 
 }

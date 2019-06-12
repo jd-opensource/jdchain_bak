@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.ledger.TransactionReturnMessage;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.TransactionRequest;
 
@@ -35,7 +36,8 @@ public interface LedgerTransactionContext {
 	 *
 	 * @return
 	 */
-	LedgerTransaction commit(TransactionState txResult, TransactionReturnMessage returnMessage);
+	LedgerTransaction commit(TransactionState txResult, OperationResult... opResults);
+	
 
 	/**
 	 * 抛弃对账本数据的修改，以指定的交易状态提交交易；<br>
@@ -45,7 +47,7 @@ public interface LedgerTransactionContext {
 	 * @param txResult
 	 * @return
 	 */
-	LedgerTransaction discardAndCommit(TransactionState txResult, TransactionReturnMessage returnMessage);
+	LedgerTransaction discardAndCommit(TransactionState txResult);
 
 	/**
 	 * 回滚事务，抛弃本次事务的所有数据更新；

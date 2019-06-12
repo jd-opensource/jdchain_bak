@@ -348,9 +348,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		public TransactionRequest getRequestTX() {
 			return txRequest;
 		}
-
+		
 		@Override
-		public LedgerTransaction commit(TransactionState txResult, TransactionReturnMessage returnMessage) {
+		public LedgerTransaction commit(TransactionState txResult, OperationResult... opResults) {
 			checkTxState();
 
 			// capture snapshot
@@ -359,7 +359,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, returnMessage);
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, opResults);
 			this.txset.add(tx);
 			// this.txset.commit();
 
@@ -374,9 +374,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			committed = true;
 			return tx;
 		}
-
+		
 		@Override
-		public LedgerTransaction discardAndCommit(TransactionState txResult, TransactionReturnMessage returnMessage) {
+		public LedgerTransaction discardAndCommit(TransactionState txResult) {
 			checkTxState();
 
 			// 未处理
@@ -385,7 +385,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			// TransactionStagedSnapshot txDataSnapshot = takeSnapshot();
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, returnMessage);
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null);
 			this.txset.add(tx);
 			// this.txset.commit();
 

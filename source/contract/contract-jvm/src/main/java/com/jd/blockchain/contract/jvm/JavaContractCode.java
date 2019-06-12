@@ -122,7 +122,9 @@ public class JavaContractCode implements ContractCode {
 
 				// 填充return结果
 				if (this.contractReturn != null) {
-					this.contractReturn.complete(contractReturn);
+					//TODO: Not implemented;
+					throw new IllegalStateException("Not implemented!");
+//					this.contractReturn.complete(contractReturn);
 				}
 			} catch (NoSuchMethodException e) {
 				throw new IllegalArgumentException(e.getMessage());

@@ -9,14 +9,17 @@ import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
-public class UserRegisterOperationHandle implements OperationHandle{
+public class UserRegisterOperationHandle implements OperationHandle {
 
 	@Override
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		UserRegisterOperation userRegOp = (UserRegisterOperation) op;
 		BlockchainIdentity bid = userRegOp.getUserID();
 		dataset.getUserAccountSet().register(bid.getAddress(), bid.getPubKey());
+
+		// No return value;
+		return null;
 	}
 
 	@Override

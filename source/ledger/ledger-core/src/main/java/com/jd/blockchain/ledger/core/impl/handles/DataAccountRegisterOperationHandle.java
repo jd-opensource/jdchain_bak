@@ -12,18 +12,21 @@ import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataAccountRegisterOperationHandle implements OperationHandle{
+public class DataAccountRegisterOperationHandle implements OperationHandle {
 
 	@Override
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountRegisterOperation dataAccountRegOp = (DataAccountRegisterOperation) op;
 		BlockchainIdentity bid = dataAccountRegOp.getAccountID();
-		
-		//TODO: 校验用户身份；
-		
-		//TODO: 请求者应该提供数据账户的公钥签名，已确定注册的地址的唯一性；
+
+		// TODO: 校验用户身份；
+
+		// TODO: 请求者应该提供数据账户的公钥签名，已确定注册的地址的唯一性；
 		dataset.getDataAccountSet().register(bid.getAddress(), bid.getPubKey(), null);
+
+		// No return value;
+		return null;
 	}
 
 	@Override

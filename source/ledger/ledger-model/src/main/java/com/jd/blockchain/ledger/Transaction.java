@@ -5,7 +5,6 @@ import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.utils.io.ByteArray;
 
 /**
  * Transaction 区块链交易，是被原子执行的操作集合；
@@ -13,7 +12,7 @@ import com.jd.blockchain.utils.io.ByteArray;
  * @author huanghaiquan
  *
  */
-@DataContract(code= DataCodes.TX)
+@DataContract(code = DataCodes.TX)
 public interface Transaction extends NodeRequest, HashObject {
 
 	/**
@@ -23,7 +22,7 @@ public interface Transaction extends NodeRequest, HashObject {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	@Override
 	HashDigest getHash();
 
@@ -32,7 +31,7 @@ public interface Transaction extends NodeRequest, HashObject {
 	 * 
 	 * @return
 	 */
-	@DataField(order=2, primitiveType=PrimitiveType.INT64)
+	@DataField(order = 2, primitiveType = PrimitiveType.INT64)
 	long getBlockHeight();
 
 	/**
@@ -42,7 +41,7 @@ public interface Transaction extends NodeRequest, HashObject {
 	 * 
 	 * @return
 	 */
-	@DataField(order=3, refEnum=true)
+	@DataField(order = 3, refEnum = true)
 	TransactionState getExecutionState();
 
 	/**
@@ -50,6 +49,6 @@ public interface Transaction extends NodeRequest, HashObject {
 	 *
 	 * @return
 	 */
-	@DataField(order=4, refContract=true)
-	TransactionReturnMessage getReturnMessage();
+	@DataField(order = 4, refContract = true, list = true)
+	OperationResult[] getOperationResults();
 }

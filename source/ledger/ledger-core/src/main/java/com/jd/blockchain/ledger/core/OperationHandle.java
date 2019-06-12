@@ -25,7 +25,7 @@ public interface OperationHandle {
 	 * @param previousBlockDataset
 	 *            新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
 	 */
-	void process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext,
+	byte[] process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
 
 }

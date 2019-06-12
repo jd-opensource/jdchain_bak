@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public class MockerContractExeHandle implements OperationHandle {
 
 	private Map<HashDigest, ExecutorProxy> executorProxyMap = new ConcurrentHashMap<>();
@@ -30,7 +29,7 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
@@ -42,8 +41,8 @@ public class MockerContractExeHandle implements OperationHandle {
 			LedgerQueryService queryService = new LedgerQueryService(ledgerManager);
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
-			MockerContractEventContext contractEventContext = new MockerContractEventContext(
-					ledgerHash, contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
+			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
+					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
 
 			EventProcessingAwire eventProcessingAwire = (EventProcessingAwire) executorProxy.getInstance();
 			try {
@@ -60,6 +59,9 @@ public class MockerContractExeHandle implements OperationHandle {
 				removeExecutorProxy(txHash);
 			}
 		}
+
+		// No return value;
+		return null;
 	}
 
 	@Override
@@ -90,8 +92,8 @@ public class MockerContractExeHandle implements OperationHandle {
 
 		private LedgerContext ledgerContext;
 
-		public MockerContractEventContext(HashDigest ledgeHash, String event,
-										  TransactionRequest transactionRequest, LedgerContext ledgerContext) {
+		public MockerContractEventContext(HashDigest ledgeHash, String event, TransactionRequest transactionRequest,
+				LedgerContext ledgerContext) {
 			this.ledgeHash = ledgeHash;
 			this.event = event;
 			this.transactionRequest = transactionRequest;
