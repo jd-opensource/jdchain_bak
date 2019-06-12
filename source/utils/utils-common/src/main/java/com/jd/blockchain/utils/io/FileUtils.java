@@ -442,37 +442,44 @@ public class FileUtils {
 	}
 
 	public static void deleteFile(File file) {
-		deleteFile(file, false);
+		deletePath(file, false);
 	}
 
 	public static void deleteFile(String dir, boolean silent) {
 		File directory = new File(dir);
-		deleteFile(directory, silent);
+		deletePath(directory, silent);
 	}
 
 	/**
-	 * 删除文件；
+	 * 删除文件；<br>
 	 * 
-	 * @param file
-	 * @param silent 是否静默删除；如果为 true ，则吞噬删除过程中的异常，意味着方法即便正常返回时也有可能删除不完全；
+	 * @param path   如果指定的路径是单个文件，则删除该文件；如果指定路径是目录，则删除该目录及其下的全部文件；
+	 * @param silent 是否静默删除；如果为 true ，则吞噬删除过程中的异常， 意味着方法即便正常返回时也有可能删除不完全；
+	 * @return 如果删除成功，则返回 true； 否则返回 false，或者抛出 {@link RuntimeIOException};
 	 */
-	public static void deleteFile(File file, boolean silent) {
-		if (file.isFile()) {
+	public static boolean deletePath(File path, boolean silent) {
+		if (path.isFile()) {
 			try {
-				file.delete();
-				return;
+				path.delete();
+				return true;
 			} catch (Exception e) {
 				if (!silent) {
 					throw new RuntimeIOException(e.getMessage(), e);
 				}
 			}
+
+			return false;
 		}
-		File[] files = file.listFiles();
+
+		// delete dir;
+		File[] files = path.listFiles();
 		if (files == null) {
-			return;
+			return false;
 		}
+
 		for (File f : files) {
-			deleteFile(f, silent);
+			deletePath(f, silent);
 		}
+		return path.delete();
 	}
 }

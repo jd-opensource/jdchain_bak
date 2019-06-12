@@ -1,17 +1,12 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.contract.Contract;
-import com.jd.blockchain.contract.ContractEvent;
-import com.jd.blockchain.utils.BaseConstant;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.IllegalDataException;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.jd.blockchain.contract.Contract;
+import com.jd.blockchain.utils.Bytes;
 
 public class ContractInvocationProxyBuilder {
 

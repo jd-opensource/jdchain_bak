@@ -58,8 +58,6 @@ public class LedgerBlockGeneratingTest {
 
 		DefaultOperationHandleRegisteration opHandler = new DefaultOperationHandleRegisteration();
 
-		System.gc();
-
 		test(ledgerHash, node.getPartiKey(), ledgerManager, opHandler, 1000, 5);
 	}
 

@@ -477,40 +477,40 @@ public class IntegrationBase {
 		assertArrayEquals(contractCode, contractCodeInDb);
 
 		// execute the contract;
-        testContractExe(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
+//        testContractExe(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
 //        testContractExe1(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
 
 		return block;
 	}
 
-    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
-		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
-		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
-
-		// 定义交易；
-		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-
-        Byte byteObj = Byte.parseByte("123");
+//    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
+//			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+//		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
+//		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
+//
+//		// 定义交易；
+//		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+//
+//        Byte byteObj = Byte.parseByte("123");
+////        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
+////                contractDeployKey.getAddress().toBase58(),321123);
 //        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
-//                contractDeployKey.getAddress().toBase58(),321123);
-        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
-                dataKey.getAddress().toBase58(),Bytes.fromString("123321"));
-
-		// 签名；
-		PreparedTransaction ptx = txTpl.prepare();
-		ptx.sign(adminKey);
-
-		// 提交并等待共识返回；
-		TransactionResponse txResp = ptx.commit();
-
-		// 验证结果；
-        Assert.assertTrue(txResp.isSuccess());
-        assertEquals(ptx.getHash(),txResp.getContentHash());
-        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
-        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(0,1);
-        assertEquals("100",kvDataEntries[0].getValue().toString());
-    }
+//                dataKey.getAddress().toBase58(),Bytes.fromString("123321"));
+//
+//		// 签名；
+//		PreparedTransaction ptx = txTpl.prepare();
+//		ptx.sign(adminKey);
+//
+//		// 提交并等待共识返回；
+//		TransactionResponse txResp = ptx.commit();
+//
+//		// 验证结果；
+//        Assert.assertTrue(txResp.isSuccess());
+//        assertEquals(ptx.getHash(),txResp.getContentHash());
+//        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
+//        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(0,1);
+//        assertEquals("100",kvDataEntries[0].getValue().toString());
+//    }
 
 //    private static  <T> void testContractExe1(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
 //                                             BlockchainService blockchainService,LedgerRepository ledgerRepository) {

@@ -83,13 +83,13 @@ public class LedgerManagerTest {
 		LedgerEditor ldgEdt = ledgerManager.newLedger(initSetting, storage);
 
 		// 创建一个模拟的创世交易；
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest(null, signatureFunction);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
 
 		// 记录交易，注册用户；
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = txCtx.getDataSet();
 		BlockchainKeypair userKP = BlockchainKeyGenerator.getInstance().generate();
-		;
+		
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);
@@ -97,7 +97,7 @@ public class LedgerManagerTest {
 		System.out.println("UserAddress=" + userAccount.getAddress());
 
 		// 提交交易结果；
-		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS, null);
+		LedgerTransaction tx = txCtx.commit(TransactionState.SUCCESS);
 
 		assertEquals(genesisTxReq.getTransactionContent().getHash(), tx.getTransactionContent().getHash());
 		assertEquals(0, tx.getBlockHeight());
@@ -137,7 +137,7 @@ public class LedgerManagerTest {
 
 		LedgerTransactionContext txCtx1 = editor1.newTransaction(txRequest);
 		txCtx1.getDataSet().getDataAccountSet().register(dataKey.getAddress(), dataKey.getPubKey(), null);
-		txCtx1.commit(TransactionState.SUCCESS, null);
+		txCtx1.commit(TransactionState.SUCCESS);
 
 		LedgerBlock block1 = editor1.prepare();
 		editor1.commit();
