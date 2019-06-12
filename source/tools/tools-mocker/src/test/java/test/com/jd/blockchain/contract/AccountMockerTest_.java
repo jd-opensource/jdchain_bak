@@ -7,7 +7,7 @@ import com.jd.blockchain.mocker.contracts.AccountContractImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AccountMockerTest {
+public class AccountMockerTest_ {
 
     String accountFrom = "zhangsan";
 

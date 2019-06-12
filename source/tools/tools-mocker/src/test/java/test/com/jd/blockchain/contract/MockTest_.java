@@ -10,7 +10,7 @@ import com.jd.blockchain.mocker.contracts.WriteContract;
 import com.jd.blockchain.mocker.contracts.WriteContractImpl;
 import org.junit.Test;
 
-public class MockTest {
+public class MockTest_ {
 
     @Test
     public void test() {
