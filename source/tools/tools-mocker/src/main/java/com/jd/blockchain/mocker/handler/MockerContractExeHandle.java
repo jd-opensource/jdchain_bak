@@ -52,9 +52,9 @@ public class MockerContractExeHandle implements OperationHandle {
 				executorProxy.invoke();
 
 				// After处理过程
-				eventProcessingAwire.postEvent();
+				eventProcessingAwire.postEvent(contractEventContext, null);
 			} catch (Exception e) {
-				eventProcessingAwire.postEvent(new ContractException(e.getMessage()));
+				eventProcessingAwire.postEvent(contractEventContext, new ContractException(e.getMessage()));
 			} finally {
 				removeExecutorProxy(txHash);
 			}

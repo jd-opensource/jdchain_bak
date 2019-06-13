@@ -96,6 +96,7 @@ public class LedgerTestUtils {
 		if (gatewayKeypair != null) {
 			txReqBuilder.signAsNode(gatewayKeypair);
 		}
+		
 		return txReqBuilder.buildRequest();
 	}
 

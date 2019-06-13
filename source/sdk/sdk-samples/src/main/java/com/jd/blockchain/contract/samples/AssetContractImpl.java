@@ -171,17 +171,7 @@ public class AssetContractImpl implements EventProcessingAwire, AssetContract {
 	 * com.jd.blockchain.contract.model.ContractError)
 	 */
 	@Override
-	public void postEvent(ContractEventContext eventContext, ContractException error) {
+	public void postEvent(ContractEventContext eventContext, Exception error) {
 		this.eventContext = null;
-	}
-
-	@Override
-	public void postEvent(ContractException error) {
-
-	}
-
-	@Override
-	public void postEvent() {
-
 	}
 }

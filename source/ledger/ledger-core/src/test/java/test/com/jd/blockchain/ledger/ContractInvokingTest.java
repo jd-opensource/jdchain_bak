@@ -1,9 +1,6 @@
 package test.com.jd.blockchain.ledger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -31,10 +28,10 @@ import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration;
-import com.jd.blockchain.ledger.core.impl.TransactionBatchProcessor;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
+import com.jd.blockchain.transaction.TxBuilder;
 
-public class TransactionBatchProcessorTest {
+public class ContractInvokingTest {
 	static {
 		DataContractRegistry.register(TransactionContent.class);
 		DataContractRegistry.register(TransactionContentBody.class);
@@ -47,56 +44,30 @@ public class TransactionBatchProcessorTest {
 
 	private static final String LEDGER_KEY_PREFIX = "LDG://";
 
-	private HashDigest ledgerHash = null;
 
 	private BlockchainKeypair parti0 = BlockchainKeyGenerator.getInstance().generate();
 	private BlockchainKeypair parti1 = BlockchainKeyGenerator.getInstance().generate();
 	private BlockchainKeypair parti2 = BlockchainKeyGenerator.getInstance().generate();
 	private BlockchainKeypair parti3 = BlockchainKeyGenerator.getInstance().generate();
 
-	private TransactionRequest transactionRequest;
-
 	// 采用基于内存的 Storage；
 	private MemoryKVStorage storage = new MemoryKVStorage();
 
 	@Test
-	public void testTxReqProcess() {
+	public void test() {
 		// 初始化账本到指定的存储库；
-		ledgerHash = initLedger(storage, parti0, parti1, parti2, parti3);
+		 HashDigest ledgerHash = initLedger(storage, parti0, parti1, parti2, parti3);
 
-		// 加载账本；
+		// 重新加载账本；
 		LedgerManager ledgerManager = new LedgerManager();
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, storage);
-
-		// 验证参与方账户的存在；
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
-		assertNotNull(user0);
-		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
-		assertTrue(partiRegistered);
-
-		// 生成新区块；
-		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-
+		
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
-
-		// 注册新用户；
-		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair, parti0);
-		txbatchProcessor.schedule(transactionRequest);
-
-		LedgerBlock newBlock = newBlockEditor.prepare();
-		newBlockEditor.commit();
-
-		// 验证正确性；
-		ledgerManager = new LedgerManager();
-		ledgerRepo = ledgerManager.register(ledgerHash, storage);
-
-		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
-		assertEquals(newBlock.getHash(), latestBlock.getHash());
-		assertEquals(1, newBlock.getHeight());
+		
+		//构建基于接口调用合约的交易请求；
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
+//		txBuilder.contract(address, contractIntf)
+		
 	}
 
 	private HashDigest initLedger(MemoryKVStorage storage, BlockchainKeypair... partiKeys) {
@@ -136,5 +107,4 @@ public class TransactionBatchProcessorTest {
 		HashDigest ledgerHash = block.getHash();
 		return ledgerHash;
 	}
-
 }

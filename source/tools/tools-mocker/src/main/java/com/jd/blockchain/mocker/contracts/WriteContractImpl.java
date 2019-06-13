@@ -25,17 +25,8 @@ public class WriteContractImpl implements EventProcessingAwire, WriteContract {
     }
 
     @Override
-    public void postEvent(ContractEventContext eventContext, ContractException error) {
+    public void postEvent(ContractEventContext eventContext, Exception error) {
         System.out.println("----- postEvent1 -----");
     }
 
-    @Override
-    public void postEvent(ContractException error) {
-        System.out.println("----- postEvent2 -----");
-    }
-
-    @Override
-    public void postEvent() {
-        System.out.println("----- postEvent3 -----");
-    }
 }

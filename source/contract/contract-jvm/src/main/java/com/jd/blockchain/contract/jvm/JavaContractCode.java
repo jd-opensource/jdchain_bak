@@ -1,21 +1,19 @@
 package com.jd.blockchain.contract.jvm;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.ContractException;
+import com.jd.blockchain.contract.EventProcessingAwire;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.IllegalDataException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 /**
  * contract code based jvm
@@ -27,14 +25,22 @@ public class JavaContractCode implements ContractCode {
 	private Module codeModule;
 	private Bytes address;
 	private long version;
-	private ContractEventContext contractEventContext;
 
+	private Class<?> contractClass;
 	private ContractType contractType;
 
 	public JavaContractCode(Bytes address, long version, Module codeModule) {
 		this.address = address;
 		this.version = version;
 		this.codeModule = codeModule;
+
+		init();
+	}
+
+	private void init() {
+		String contractClassName = codeModule.getMainClass();
+		this.contractClass = codeModule.loadClass(contractClassName);
+		this.contractType = ContractType.resolve(contractClass);
 	}
 
 	@Override
@@ -48,89 +54,77 @@ public class JavaContractCode implements ContractCode {
 	}
 
 	@Override
-	public void processEvent(ContractEventContext eventContext, CompletableFuture<String> execReturn) {
-		this.contractEventContext = eventContext;
-		codeModule.execute(new ContractExecution(execReturn));
+	public byte[] processEvent(ContractEventContext eventContext) {
+		return codeModule.call(new ContractExecution(eventContext));
 	}
 
-	private Object resolveArgs(byte[] args, List<DataContract> dataContractList) {
-		if(args == null || args.length == 0){
-			return null;
-		}
-		//TODO: Not implemented;
-		throw new IllegalStateException("Not implemented!");
-//		return ContractSerializeUtils.deserializeMethodParam(args,dataContractList);
-	}
+	private class ContractExecution implements Callable<byte[]> {
 
-	class ContractExecution implements Runnable {
+		private ContractEventContext eventContext;
 
-		private CompletableFuture<String> contractReturn;
-
-		public ContractExecution(CompletableFuture<String> contractReturn) {
-			this.contractReturn = contractReturn;
+		public ContractExecution(ContractEventContext contractEventContext) {
+			this.eventContext = contractEventContext;
 		}
 
-		public void run() {
-			LOGGER.info("ContractThread execute().");
+		@Override
+		public byte[] call() throws Exception {
+			EventProcessingAwire evtProcAwire = null;
+			Object retn = null;
+			Exception error = null;
 			try {
 				// 执行预处理;
-				long startTime = System.currentTimeMillis();
+				Object contractInstance = contractClass.newInstance();// 合约主类生成的类实例;
+				if (contractInstance instanceof EventProcessingAwire) {
+					evtProcAwire = (EventProcessingAwire) contractInstance;
+				}
 
-				String contractClassName = codeModule.getMainClass();
-
-				Class myClass = codeModule.loadClass(contractClassName);
-
-				Object contractMainClassObj = myClass.newInstance();// 合约主类生成的类实例;
-
-				Method beforeMth_ = myClass.getMethod("beforeEvent",
-						codeModule.loadClass(ContractEventContext.class.getName()));
-
-				ReflectionUtils.invokeMethod(beforeMth_, contractMainClassObj, contractEventContext);
-
-				LOGGER.info("beforeEvent,耗时:" + (System.currentTimeMillis() - startTime));
-
-//				Method eventMethod = this.getMethodByAnno(contractMainClassObj, contractEventContext.getEvent());
-				startTime = System.currentTimeMillis();
+				if (evtProcAwire != null) {
+					evtProcAwire.beforeEvent(eventContext);
+				}
 
 				// 反序列化参数；
-				contractType = ContractType.resolve(myClass);
+				Method handleMethod = contractType.getHandleMethod(eventContext.getEvent());
 
-				Method handleMethod = contractType.getHandleMethod(contractEventContext.getEvent());
-
-				if (handleMethod == null){
-					throw new IllegalDataException("don't get this method by it's @ContractEvent.");
+				if (handleMethod == null) {
+					throw new ContractException(
+							String.format("Contract[%s:%s] has no handle method to handle event[%s]!",
+									address.toString(), contractClass.getName(), eventContext.getEvent()));
 				}
-				//TODO: Not implemented;
-//				Object args = resolveArgs(contractEventContext.getArgs(),
-//						contractType.getDataContractMap().get(handleMethod));
-//
-//				Object[] params = null;
-//				if(args.getClass().isArray()){
-//					params = (Object[])args;
-//				}
-//				ReflectionUtils.invokeMethod(handleMethod, contractMainClassObj, params);
 
-				LOGGER.info("合约执行,耗时:" + (System.currentTimeMillis() - startTime));
+				Object[] args = resolveArgs();
+				retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
 
-				Method mth2 = myClass.getMethod("postEvent");
-
-				startTime = System.currentTimeMillis();
-
-				ReflectionUtils.invokeMethod(mth2, contractMainClassObj);
-
-				LOGGER.info("postEvent,耗时:" + (System.currentTimeMillis() - startTime));
-
-				// 填充return结果
-				if (this.contractReturn != null) {
-					//TODO: Not implemented;
-					throw new IllegalStateException("Not implemented!");
-//					this.contractReturn.complete(contractReturn);
-				}
-			} catch (NoSuchMethodException e) {
-				throw new IllegalArgumentException(e.getMessage());
 			} catch (Exception e) {
-				throw new IllegalDataException(e.getMessage());
+				error = e;
 			}
+
+			if (evtProcAwire != null) {
+				try {
+					evtProcAwire.postEvent(eventContext, error);
+				} catch (Exception e) {
+					LOGGER.error("Error occurred while posting contract event! --" + e.getMessage(), e);
+				}
+			}
+			if (error != null) {
+				// Rethrow error;
+				throw error;
+			}
+
+			byte[] retnBytes = resolveResult(retn);
+			return retnBytes;
+		}
+
+		private byte[] resolveResult(Object retn) {
+			if (retn == null) {
+				return null;
+			}
+			// TODO: resolve result in bytes;
+			return null;
+		}
+
+		private Object[] resolveArgs() {
+			// TODO Auto-generated method stub
+			throw new IllegalStateException("Not implemented!");
 		}
 	}
 

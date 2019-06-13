@@ -1,6 +1,5 @@
 package com.jd.blockchain.contract.engine;
 
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -27,9 +26,9 @@ public interface ContractEngine {
 	 * 如果已经存在，则直接返回已有实例；
 	 * 
 	 * @param address
-	 * @param code
+	 * @param codeBytes
 	 * @return
 	 */
-	ContractCode setupContract(Bytes address, long version, byte[] code);
+	ContractCode setupContract(Bytes address, long version, byte[] codeBytes);
 
 }

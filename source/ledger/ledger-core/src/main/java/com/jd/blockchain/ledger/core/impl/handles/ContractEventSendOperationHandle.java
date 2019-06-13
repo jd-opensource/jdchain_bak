@@ -32,23 +32,13 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 	}
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
-		process(op, dataset, requestContext, previousBlockDataset, opHandleContext, ledgerService, null);
-
-		// TODO: return value;
-		return null;
-	}
-
-	@Override
 	public boolean support(Class<?> operationType) {
 		return ContractEventSendOperation.class.isAssignableFrom(operationType);
 	}
 
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService,
-			CompletableFuture<String> contractReturn) {
-
+	@Override
+	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 		// 先从账本校验合约的有效性；
 		// 注意：必须在前一个区块的数据集中进行校验，因为那是经过共识的数据；从当前新区块链数据集校验则会带来攻击风险：未经共识的合约得到执行；
@@ -83,7 +73,7 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 		}
 
 		// 处理合约事件；
-		contractCode.processEvent(localContractEventContext, contractReturn);
+		return contractCode.processEvent(localContractEventContext);
 	}
 
 }

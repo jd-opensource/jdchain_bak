@@ -10,7 +10,7 @@ public interface Module {
 	String getName();
 
 	Class<?> loadClass(String className);
-	
+
 	InputStream loadResourceAsStream(String name);
 
 	String getMainClass();

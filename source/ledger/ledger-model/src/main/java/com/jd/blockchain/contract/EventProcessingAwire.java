@@ -21,19 +21,6 @@ public interface EventProcessingAwire extends ContractRuntimeAwire {
 	 * @param error
 	 *            错误；如果事件处理正常结束，则此参数为 null；如果事件处理发生了错误，此参数非空；
 	 */
-	void postEvent(ContractEventContext eventContext, ContractException error);
+	void postEvent(ContractEventContext eventContext, Exception error);
 
-
-	/**
-	 * 在事件处理方法成功执行之后调用；
-	 *
-	 * @param error
-	 *            错误；如果事件处理正常结束，则此参数为 null；如果事件处理发生了错误，此参数非空；
-	 */
-	void postEvent(ContractException error);
-
-	/**
-	 * 在事件处理方法成功执行之后调用；
-	 */
-	void postEvent();
 }

@@ -65,17 +65,8 @@ public class AccountContractImpl implements EventProcessingAwire, AccountContrac
     }
 
     @Override
-    public void postEvent(ContractEventContext eventContext, ContractException error) {
+    public void postEvent(ContractEventContext eventContext, Exception error) {
 
     }
 
-    @Override
-    public void postEvent(ContractException error) {
-
-    }
-
-    @Override
-    public void postEvent() {
-
-    }
 }

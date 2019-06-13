@@ -17,17 +17,7 @@ public class ReadContractImpl implements EventProcessingAwire, ReadContract {
     }
 
     @Override
-    public void postEvent(ContractEventContext eventContext, ContractException error) {
-
-    }
-
-    @Override
-    public void postEvent(ContractException error) {
-
-    }
-
-    @Override
-    public void postEvent() {
+    public void postEvent(ContractEventContext eventContext, Exception error) {
 
     }
 

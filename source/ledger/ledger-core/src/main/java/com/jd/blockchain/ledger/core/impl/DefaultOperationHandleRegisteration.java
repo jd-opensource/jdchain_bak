@@ -21,18 +21,7 @@ import com.jd.blockchain.ledger.core.impl.handles.UserRegisterOperationHandle;
 public class DefaultOperationHandleRegisteration implements OperationHandleRegisteration {
 
 	private List<OperationHandle> opHandles = new ArrayList<>();
-	
-	
-//	private UserRegisterOperationHandle userRegHandle;
-//	
-//	private DataAccountRegisterOperationHandle dataAccRegHandle;
-//	
-//	private DataAccountKVSetOperationHandle dataAccKVSetHandle;
-//	
-//	private ContractCodeDeployOperationHandle contractDplHandle;
-//	
-//	private ContractEventSendOperationHandle contractEvtSendHandle;
-	
+
 	public DefaultOperationHandleRegisteration() {
 		initDefaultHandles();
 	}
@@ -40,25 +29,30 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 	/**
 	 * 针对不采用bean依赖注入的方式来处理;
 	 */
-	private void initDefaultHandles(){
+	private void initDefaultHandles() {
 		opHandles.add(new DataAccountKVSetOperationHandle());
 		opHandles.add(new DataAccountRegisterOperationHandle());
 		opHandles.add(new UserRegisterOperationHandle());
 		opHandles.add(new ContractCodeDeployOperationHandle());
 		opHandles.add(new ContractEventSendOperationHandle());
 	}
-	
-//	@PostConstruct
-//	private void init() {
-//		opHandles.add(dataAccKVSetHandle);
-//		opHandles.add(dataAccRegHandle);
-//		opHandles.add(userRegHandle);
-//		opHandles.add(contractDplHandle);
-//		opHandles.add(contractEvtSendHandle);
-//	}
 
-	/* (non-Javadoc)
-	 * @see com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration#getHandle(java.lang.Class)
+	/**
+	 * 以最高优先级插入一个操作处理器；
+	 * 
+	 * @param handle
+	 */
+	public void insertAsTopPriority(OperationHandle handle) {
+		opHandles.remove(handle);
+		opHandles.add(0, handle);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration#getHandle(
+	 * java.lang.Class)
 	 */
 	@Override
 	public OperationHandle getHandle(Class<?> operationType) {
@@ -69,6 +63,5 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 		}
 		throw new LedgerException("Unsupported operation type[" + operationType.getName() + "]!");
 	}
-	
-	
+
 }

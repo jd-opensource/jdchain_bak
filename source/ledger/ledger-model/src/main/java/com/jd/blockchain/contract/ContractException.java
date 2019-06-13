@@ -2,6 +2,8 @@ package com.jd.blockchain.contract;
 
 public class ContractException extends RuntimeException {
 	
+	private static final long serialVersionUID = 4338023105616639257L;
+
 	public ContractException(String message) {
 		super(message);
 	}
