@@ -4,6 +4,8 @@ import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.OperationResultData;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.mocker.MockerNodeContext;
 import com.jd.blockchain.mocker.handler.MockerContractExeHandle;
@@ -68,9 +70,14 @@ public class ContractProxy<T> implements InvocationHandler {
         operationHandle.registerExecutorProxy(txHash, new ExecutorProxy(instance, method, args));
 
         // 提交该请求至整个区块链系统
-        mockerNodeContext.txProcess(txRequest);
-        // 不处理返回值
-        return null;
+        OperationResult[] operationResults = mockerNodeContext.txProcess(txRequest);
+        if (operationResults == null || operationResults.length == 0) {
+            return null;
+        }
+        OperationResult opResult = operationResults[0];
+
+        // 处理返回值
+        return new OperationResultData(opResult).getResultData();
     }
 
     private boolean isExecuteContractMethod(Method method) {

@@ -10,5 +10,5 @@ public interface WriteContract {
     void print(String name);
 
     @ContractEvent(name = "writeKv")
-    void writeKv(String address, String key, String value);
+    String writeKv(String address, String key, String value);
 }

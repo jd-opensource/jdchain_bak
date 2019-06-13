@@ -1,9 +1,6 @@
 package com.jd.blockchain.mocker.handler;
 
-import com.jd.blockchain.contract.ContractEventContext;
-import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
-import com.jd.blockchain.contract.LedgerContext;
+import com.jd.blockchain.contract.*;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
@@ -38,6 +35,7 @@ public class MockerContractExeHandle implements OperationHandle {
 
 		ExecutorProxy executorProxy = executorProxyMap.get(txHash);
 
+		Object result = null;
 		if (executorProxy != null) {
 			LedgerQueryService queryService = new LedgerQueryService(ledgerManager);
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
@@ -45,24 +43,31 @@ public class MockerContractExeHandle implements OperationHandle {
 			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
 					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
 
-			EventProcessingAwire eventProcessingAwire = (EventProcessingAwire) executorProxy.getInstance();
-			try {
-				//
-				// Before处理过程
-				eventProcessingAwire.beforeEvent(contractEventContext);
-				executorProxy.invoke();
+			Object instance = executorProxy.getInstance();
+			EventProcessingAwire awire = null;
 
-				// After处理过程
-				eventProcessingAwire.postEvent(contractEventContext, null);
+			if (instance instanceof EventProcessingAwire) {
+				awire = (EventProcessingAwire) instance;
+				awire.beforeEvent(contractEventContext);
+			}
+
+			try {
+				result = executorProxy.invoke();
+				if (awire != null) {
+					// After处理过程
+					awire.postEvent(contractEventContext, null);
+				}
 			} catch (Exception e) {
-				eventProcessingAwire.postEvent(contractEventContext, new ContractException(e.getMessage()));
+				if (awire != null) {
+					awire.postEvent(contractEventContext, new ContractException(e.getMessage()));
+				}
 			} finally {
 				removeExecutorProxy(txHash);
 			}
 		}
 
 		// No return value;
-		return null;
+		return ContractSerializeUtils.serialize(result);
 	}
 
 	@Override
