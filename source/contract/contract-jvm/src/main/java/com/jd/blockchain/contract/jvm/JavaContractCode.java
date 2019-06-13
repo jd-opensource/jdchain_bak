@@ -3,6 +3,7 @@ package com.jd.blockchain.contract.jvm;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -91,9 +92,8 @@ public class JavaContractCode implements ContractCode {
 									address.toString(), contractClass.getName(), eventContext.getEvent()));
 				}
 
-				Object[] args = resolveArgs();
+				Object[] args = resolveArgs(eventContext.getArgs());
 				retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
-
 			} catch (Exception e) {
 				error = e;
 			}
@@ -115,16 +115,11 @@ public class JavaContractCode implements ContractCode {
 		}
 
 		private byte[] resolveResult(Object retn) {
-			if (retn == null) {
-				return null;
-			}
-			// TODO: resolve result in bytes;
-			return null;
+			return ContractSerializeUtils.serialize(retn);
 		}
 
-		private Object[] resolveArgs() {
-			// TODO Auto-generated method stub
-			throw new IllegalStateException("Not implemented!");
+		private Object[] resolveArgs(byte[] argBytes) {
+			return ContractSerializeUtils.resolveArray(argBytes);
 		}
 	}
 

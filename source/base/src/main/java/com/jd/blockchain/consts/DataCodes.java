@@ -51,6 +51,8 @@ public interface DataCodes {
 
 	public static final int TX_RESPONSE = 0x350;
 
+	public static final int TX_OP_RESULT = 0x360;
+
 	public static final int METADATA = 0x600;
 
 	public static final int METADATA_INIT_SETTING = 0x610;
@@ -80,6 +82,26 @@ public interface DataCodes {
 	public static final int USER = 0x800;
 
 	public static final int DATA = 0x900;
+
+	//contract related;
+	public static final int CONTRACT = 0xA00;
+	public static final int CONTRACT_BYTE = 0xA01;
+
+	public static final int CONTRACT_SHORT = 0xA02;
+
+	public static final int CONTRACT_INT = 0xA03;
+
+	public static final int CONTRACT_LONG = 0xA04;
+
+	public static final int CONTRACT_STRING = 0xA05;
+
+	public static final int CONTRACT_BYTES = 0xA06;
+
+	public static final int CONTRACT_BIG_INT = 0xA07;
+	//...0xA19
+	public static final int CONTRACT_BIZ_CONTENT = 0xA20;
+
+	public static final int CONTRACT_ARGS = 0xA21;
 
 	public static final int CONTRACT_RETURN = 0xA22;
 

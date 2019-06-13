@@ -1,6 +1,5 @@
 package com.jd.blockchain.contract;
 
-import com.jd.blockchain.ledger.ContractBizContent;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.utils.Bytes;

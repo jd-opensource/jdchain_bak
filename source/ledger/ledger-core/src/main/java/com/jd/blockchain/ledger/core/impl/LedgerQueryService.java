@@ -276,15 +276,15 @@ public class LedgerQueryService implements BlockchainQueryService {
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
-			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+			final String currKey = keys[i];
 
-			dataAccount.getBytes(Bytes.fromString(keys[i]), 1);
+			ver = dataAccount.getDataVersion(Bytes.fromString(currKey));
 
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, null);
+				entries[i] = new KVDataObject(currKey, -1, null);
 			} else {
-				BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				entries[i] = new KVDataObject(keys[i], ver, value);
+				BytesValue value = dataAccount.getBytes(Bytes.fromString(currKey), ver);
+				entries[i] = new KVDataObject(currKey, ver, value);
 			}
 		}
 

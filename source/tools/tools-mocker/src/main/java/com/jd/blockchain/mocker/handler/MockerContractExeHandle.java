@@ -15,6 +15,7 @@ import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.ledger.core.impl.handles.ContractLedgerContext;
 import com.jd.blockchain.mocker.proxy.ExecutorProxy;
+import com.jd.blockchain.utils.concurrent.AsyncFuture;
 
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class MockerContractExeHandle implements OperationHandle {
 		}
 
 		// No return value;
+		return null;
+	}
+
+	@Override
+	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		return null;
 	}
 

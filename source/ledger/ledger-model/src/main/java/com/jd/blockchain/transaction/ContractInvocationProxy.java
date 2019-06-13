@@ -3,6 +3,7 @@ package com.jd.blockchain.transaction;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
 
@@ -37,18 +38,14 @@ public class ContractInvocationProxy implements InvocationHandler {
 			// hashCode 方法；
 		}
 		// 合约方法；
-		byte[] argBytes = serializeArgs(args,method);
+		byte[] argBytes = serializeArgs(args);
 		sendOpBuilder.send(contractAddress, event, argBytes);
 
 		// TODO: 暂时未考虑有返回值的情况；
 		return null;
 	}
 
-	private byte[] serializeArgs(Object[] args, Method method) {
-		if(args == null || args.length==0){
-			return null;
-		}
-		throw new IllegalStateException("Not implemented!");
-		//return ContractSerializeUtils.serializeMethodParam(args,contractType.getDataContractMap().get(method));
+	private byte[] serializeArgs(Object[] args) {
+		return ContractSerializeUtils.serializeArray(args);
 	}
 }

@@ -7,12 +7,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.*;
 
 public class PreparedTx implements PreparedTransaction {
 
@@ -56,6 +51,17 @@ public class PreparedTx implements PreparedTransaction {
 		TransactionRequest txReq = txReqBuilder.buildRequest();
 		// 发起交易请求；
 		TransactionResponse txResponse = txProcessor.process(txReq);
+		// 重新包装操作集合
+		OperationResult[] operationResults = txResponse.getOperationResults();
+		if (operationResults != null && operationResults.length > 0) {
+			OperationResult[] wrapOpResults = new OperationResult[operationResults.length];
+			for (int i = 0; i < operationResults.length; i++) {
+				wrapOpResults[i] = new OperationResultData(operationResults[i]);
+			}
+			return new TxResponseMessage(txResponse, wrapOpResults);
+		}
 		return txResponse;
 	}
+
+
 }

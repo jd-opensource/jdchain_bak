@@ -50,9 +50,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	private TransactionBatchResult batchResult;
 
 	/**
-	 * @param newBlockEditor       新区块的数据编辑器；
-	 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
-	 * @param opHandles            操作处理对象注册表；
+	 * @param newBlockEditor
+	 *            新区块的数据编辑器；
+	 * @param previousBlockDataset
+	 *            新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
+	 * @param opHandles
+	 *            操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerEditor newBlockEditor, LedgerDataSet previousBlockDataset,
 			OperationHandleRegisteration opHandles, LedgerService ledgerService) {
@@ -73,9 +76,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	public TransactionResponse schedule(TransactionRequest request) {
 		// 此调用将会验证交易签名，验签失败将会抛出异常，同时，不记录签名错误的交易到链上；
 		LedgerTransactionContext txCtx = newBlockEditor.newTransaction(request);
-		TransactionState txResult;
-		OperationResult[] opResults = null;
+		TransactionState result;
+
+		List<OperationResult> operationResults = new ArrayList<>();
+
 		try {
+
 			LedgerDataSet dataset = txCtx.getDataSet();
 			TransactionRequestContext reqCtx = new TransactionRequestContextImpl(request);
 			// TODO: 验证签名者的有效性；
@@ -95,44 +101,44 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			OperationHandleContext handleContext = new OperationHandleContext() {
 				@Override
 				public void handle(Operation operation) {
-					// assert; Instance of operation are one of User related operations or
-					// DataAccount related operations;
+					//assert; Instance of operation are one of User related operations or DataAccount related operations;
 					OperationHandle hdl = opHandles.getHandle(operation.getClass());
 					hdl.process(operation, dataset, reqCtx, previousBlockDataset, this, ledgerService);
 				}
 			};
 			OperationHandle opHandle;
-			int contractOpIndex = 0;
-			List<OperationResult> opResultList = new ArrayList<OperationResult>();
-			int opIdx = 0;
+			int opIndex = 0;
 			for (Operation op : ops) {
 				opHandle = opHandles.getHandle(op.getClass());
-				byte[] retn = opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
-				if (op instanceof ContractEventSendOperation) {
-					// 支持返回值的操作；
-					opResultList.add(new OperationResultData(opIdx, retn));
+				byte[] opResult = opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				if (opResult != null) {
+					operationResults.add(new OperationResultData(opIndex, opResult));
 				}
-
-				opIdx++;
+				opIndex++;
 			}
 
 			// 提交交易（事务）；
-			txResult = TransactionState.SUCCESS;
-			opResults = opResultList.toArray(new OperationResult[opResultList.size()]);
-			txCtx.commit(txResult, opResults);
+			result = TransactionState.SUCCESS;
+
+			txCtx.commit(result, operationResults);
 		} catch (LedgerException e) {
 			// TODO: 识别更详细的异常类型以及执行对应的处理；
-			txResult = TransactionState.LEDGER_ERROR;
-			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR);
+			result = TransactionState.LEDGER_ERROR;
+			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR, operationResults);
 			LOGGER.warn(String.format("Transaction rollback caused by the ledger exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		} catch (Exception e) {
-			txResult = TransactionState.SYSTEM_ERROR;
-			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR);
+			result = TransactionState.SYSTEM_ERROR;
+			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR, operationResults);
 			LOGGER.warn(String.format("Transaction rollback caused by the system exception! --[TxHash=%s] --%s",
 					request.getHash().toBase58(), e.getMessage()), e);
 		}
-		TxResponseHandle resp = new TxResponseHandle(request, txResult, opResults);
+		TxResponseHandle resp = new TxResponseHandle(request, result);
+
+		if (!operationResults.isEmpty()) {
+			OperationResult[] operationResultArray = new OperationResult[operationResults.size()];
+			resp.setOperationResults(operationResults.toArray(operationResultArray));
+		}
 
 		responseList.add(resp);
 
@@ -213,12 +219,11 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 		private TransactionState result;
 
-		private OperationResult[] opResults;
+		private OperationResult[] operationResults;
 
-		public TxResponseHandle(TransactionRequest request, TransactionState result, OperationResult... opResults) {
+		public TxResponseHandle(TransactionRequest request, TransactionState result) {
 			this.request = request;
 			this.result = result;
-			this.opResults = opResults;
 		}
 
 		@Override
@@ -247,8 +252,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		}
 
 		@Override
-		public OperationResult[] getContractReturn() {
-			return opResults;
+		public OperationResult[] getOperationResults() {
+			return operationResults;
+		}
+
+		public void setOperationResults(OperationResult[] operationResults) {
+			this.operationResults = operationResults;
 		}
 	}
 

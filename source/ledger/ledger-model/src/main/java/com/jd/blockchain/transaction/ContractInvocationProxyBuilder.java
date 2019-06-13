@@ -35,9 +35,9 @@ public class ContractInvocationProxyBuilder {
 		}
 		// TODO 检查返回值类型；
 
-		ContractType contractType1 =  ContractType.resolve(contractIntf);
-		contractTypes.put(contractIntf,contractType1);
-		return contractType1;
+		ContractType ct = ContractType.resolve(contractIntf);
+		contractTypes.put(contractIntf, ct);
+		return ct;
 	}
 
 

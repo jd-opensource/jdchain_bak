@@ -19,9 +19,18 @@ public class TxResponseMessage implements TransactionResponse {
 
 	private TransactionState executionState;
 
-	private OperationResult[] contractReturn;
+	private OperationResult[] operationResults;
 	
 	public TxResponseMessage() {
+	}
+
+	// 重新包装operationResults
+	public TxResponseMessage(TransactionResponse transactionResponse, OperationResult[] operationResults) {
+		this.contentHash = transactionResponse.getContentHash();
+		this.blockHash = transactionResponse.getBlockHash();
+		this.blockHeight = transactionResponse.getBlockHeight();
+		this.executionState = transactionResponse.getExecutionState();
+		this.operationResults = operationResults;
 	}
 	
 	public TxResponseMessage(HashDigest contentHash) {
@@ -60,8 +69,8 @@ public class TxResponseMessage implements TransactionResponse {
 		this.blockHeight = blockHeight;
 	}
 
-	public void setContractReturn(OperationResult[] contractReturn) {
-		this.contractReturn = contractReturn;
+	public void setOperationResults(OperationResult[] operationResults) {
+		this.operationResults = operationResults;
 	}
 
 	@Override
@@ -70,8 +79,8 @@ public class TxResponseMessage implements TransactionResponse {
 	}
 
 	@Override
-	public OperationResult[] getContractReturn() {
-		return contractReturn;
+	public OperationResult[] getOperationResults() {
+		return operationResults;
 	}
 
 }

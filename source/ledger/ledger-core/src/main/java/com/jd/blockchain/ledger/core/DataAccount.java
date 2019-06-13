@@ -57,7 +57,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 		BytesValue bytesValue = BytesValueEntry.fromBytes(value);
 		return baseAccount.setBytes(key, bytesValue, version);
 	}
-	
+
 	/**
 	 * Return the latest version entry associated the specified key; If the key
 	 * doesn't exist, then return -1;

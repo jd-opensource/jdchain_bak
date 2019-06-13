@@ -2,8 +2,8 @@ package com.jd.blockchain.ledger.core.impl.handles;
 
 import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
 
-import java.util.concurrent.CompletableFuture;
 
+import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.contract.LocalContractEventContext;
@@ -74,6 +74,11 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 
 		// 处理合约事件；
 		return contractCode.processEvent(localContractEventContext);
+	}
+
+	@Override
+	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+		return null;
 	}
 
 }
