@@ -23,4 +23,17 @@ public interface ContractEventSendOperationBuilder {
 	@Deprecated
 	ContractEventSendOperation send(Bytes address, String event, byte[] args);
 
+	/**
+	 *
+	 * @param address
+	 * @return
+	 */
+	ContractEventSendOperation send(String address);
+
+	/**
+	 *
+	 * @param address
+	 * @return
+	 */
+	ContractEventSendOperation send(Bytes address);
 }

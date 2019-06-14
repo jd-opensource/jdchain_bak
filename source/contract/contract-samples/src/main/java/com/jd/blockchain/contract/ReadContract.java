@@ -9,5 +9,7 @@ public interface ReadContract {
 
     @ContractEvent(name = "version-key")
     Long readVersion(String address, String key);
+
+    int test();
 }
 

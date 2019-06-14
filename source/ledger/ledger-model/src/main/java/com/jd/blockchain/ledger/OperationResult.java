@@ -13,6 +13,4 @@ public interface OperationResult {
 
     @DataField(order=2, primitiveType = PrimitiveType.BYTES)
     byte[] getResult();
-
-    <T> T getResultData();
 }

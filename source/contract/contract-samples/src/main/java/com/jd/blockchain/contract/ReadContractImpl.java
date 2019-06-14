@@ -42,4 +42,9 @@ public class ReadContractImpl implements EventProcessingAwire, ReadContract {
         }
         return -1L;
     }
+
+    @Override
+    public int test() {
+        return 0;
+    }
 }

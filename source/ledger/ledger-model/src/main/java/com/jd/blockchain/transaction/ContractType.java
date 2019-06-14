@@ -91,6 +91,13 @@ public class ContractType {
 						throw new IllegalStateException(String.format("Param Type = %s can not support !!!", currParamType.getName()));
 					}
 				}
+
+				// 判断返回值是否可序列化
+				Class<?> returnType = method.getReturnType();
+				if (!ContractSerializeUtils.support(returnType)) {
+					throw new IllegalStateException(String.format("Return Type = %s can not support !!!", returnType.getName()));
+				}
+
 				contractType.events.put(eventName, method);
 				contractType.handleMethods.put(method, eventName);
 			}

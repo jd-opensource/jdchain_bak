@@ -1,7 +1,6 @@
 package com.jd.blockchain.contract;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.binaryproto.*;
 import com.jd.blockchain.contract.param.*;
 import com.jd.blockchain.utils.io.BytesUtils;
 
@@ -19,9 +18,18 @@ public class ContractSerializeUtils {
     static {
         MAP.put(byte[].class, WRAP_BYTES.class);
         MAP.put(Short.class, WRAP_SHORT.class);
+        MAP.put(short.class, WRAP_SHORT.class);
         MAP.put(Integer.class, WRAP_INT.class);
+        MAP.put(int.class, WRAP_INT.class);
         MAP.put(Long.class, WRAP_LONG.class);
+        MAP.put(long.class, WRAP_LONG.class);
         MAP.put(String.class, WRAP_STRING.class);
+
+        DataContractRegistry.register(WRAP_BYTES.class);
+        DataContractRegistry.register(WRAP_SHORT.class);
+        DataContractRegistry.register(WRAP_INT.class);
+        DataContractRegistry.register(WRAP_LONG.class);
+        DataContractRegistry.register(WRAP_STRING.class);
     }
 
     public static boolean support(Class<?> clazz) {

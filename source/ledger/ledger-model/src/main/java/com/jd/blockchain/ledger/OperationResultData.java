@@ -1,6 +1,5 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.contract.ContractSerializeUtils;
 
 public class OperationResultData implements OperationResult {
 
@@ -9,10 +8,6 @@ public class OperationResultData implements OperationResult {
     private byte[] result;
 
     public OperationResultData() {
-    }
-
-    public OperationResultData(OperationResult operationResult) {
-        this(operationResult.getIndex(), operationResult.getResult());
     }
 
     public OperationResultData(int index, byte[] result) {
@@ -28,11 +23,6 @@ public class OperationResultData implements OperationResult {
     @Override
     public byte[] getResult() {
         return result;
-    }
-
-    @Override
-    public <T> T getResultData() {
-        return (T) ContractSerializeUtils.resolve(result);
     }
 
     public void setIndex(int index) {

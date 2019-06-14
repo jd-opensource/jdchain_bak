@@ -24,8 +24,10 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.transaction.ContractEventExecutor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -568,13 +570,25 @@ public class IntegrationBase {
 		TransactionTemplate txContract = blockchainService.newTransaction(ledgerHash);
 
 		ReadContract readContract1 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
-		readContract1.read(newDataAccount.getAddress().toBase58(), key1);
+
+		EventResult<String> read1 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
+			readContract1.read(newDataAccount.getAddress().toBase58(), key1);
+			return readContract1;
+		});
 
 		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
-		readContract2.read(newDataAccount.getAddress().toBase58(), key2);
+
+		EventResult<String> read2 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
+			readContract2.read(newDataAccount.getAddress().toBase58(), key2);
+			return readContract2;
+		});
 
 		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
-		readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2);
+
+		EventResult<Long> read3 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
+			readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2);
+			return readContract3;
+		});
 
 		// 签名；
 		PreparedTransaction contractPtx = txContract.prepare();
@@ -585,10 +599,16 @@ public class IntegrationBase {
 
 		OperationResult[] operationResults = readTxResp.getOperationResults();
 
+		// 通过EventResult获取结果
+		System.out.printf("readContract1.result = %s \r\n", read1.get());
+		System.out.printf("readContract2.result = %s \r\n", read2.get());
+		System.out.printf("readContract3.result = %s \r\n", read3.get());
+
+
 		// 打印结果
-		for (OperationResult or : operationResults) {
-			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), or.getResultData());
-		}
+//		for (OperationResult or : operationResults) {
+//			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), or.getResult());
+//		}
 //
 //        // 验证结果
 //        assertNotNull(contractReturn);

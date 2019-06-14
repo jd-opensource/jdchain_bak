@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
@@ -29,7 +30,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private static final ContractCodeDeployOperationBuilderImpl CONTRACT_CODE_DEPLOY_OP_BUILDER = new ContractCodeDeployOperationBuilderImpl();
 
-	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
+//	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
 
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
@@ -89,6 +90,11 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		return contractInvoProxyBuilder.create(address, contractIntf, contractEventSendOpBuilder);
 	}
 
+	@Override
+	public <T> EventResult<T> result(ContractEventExecutor execute) {
+		return contractInvoProxyBuilder.execute(execute);
+	}
+
 	public Collection<Operation> getOperations() {
 		// TODO: 合并操作列表中可能的重复操作；
 		return operationList;
@@ -130,7 +136,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			operationList.add(op);
 			return op;
 		}
-
 	}
 
 	private class DataAccountKVSetOperationBuilderFilter implements DataAccountKVSetOperationBuilder {
@@ -235,25 +240,35 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			operationList.add(op);
 			return op;
 		}
-
 	}
 
 	private class ContractEventSendOperationBuilderFilter implements ContractEventSendOperationBuilder {
 
 		@Override
 		public ContractEventSendOperation send(String address, String event, byte[] args) {
-			ContractEventSendOperation op = CONTRACT_EVENT_SEND_OP_BUILDER.send(address, event, args);
+			return send(Bytes.fromBase58(address), event, args);
+		}
+
+		@Override
+		public ContractEventSendOperation send(Bytes address, String event, byte[] args) {
+			int opIndex = operationList.size();
+			ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(address, event, args, opIndex);
 			operationList.add(op);
 			return op;
 		}
 
 		@Override
-		public ContractEventSendOperation send(Bytes address, String event, byte[] args) {
-			ContractEventSendOperation op = CONTRACT_EVENT_SEND_OP_BUILDER.send(address, event, args);
+		public ContractEventSendOperation send(String address) {
+			return send(Bytes.fromBase58(address));
+		}
+
+		@Override
+		public ContractEventSendOperation send(Bytes address) {
+			int opIndex = operationList.size();
+			ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(address, opIndex);
 			operationList.add(op);
 			return op;
 		}
-
 	}
 
 }

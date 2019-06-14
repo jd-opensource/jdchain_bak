@@ -44,5 +44,4 @@ public interface ContractEventSendOperation extends Operation {
 	 */
 	@DataField(order = 5, primitiveType = PrimitiveType.INT64)
 	long getTxOpTime();
-
 }

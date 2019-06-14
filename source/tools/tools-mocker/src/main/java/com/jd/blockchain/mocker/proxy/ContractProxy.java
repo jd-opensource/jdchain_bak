@@ -2,6 +2,7 @@ package com.jd.blockchain.mocker.proxy;
 
 import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.OperationResult;
@@ -77,7 +78,7 @@ public class ContractProxy<T> implements InvocationHandler {
         OperationResult opResult = operationResults[0];
 
         // 处理返回值
-        return new OperationResultData(opResult).getResultData();
+        return ContractSerializeUtils.resolve(opResult.getResult());
     }
 
     private boolean isExecuteContractMethod(Method method) {

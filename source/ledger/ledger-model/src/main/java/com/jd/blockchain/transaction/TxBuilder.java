@@ -2,6 +2,7 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.TransactionBuilder;
@@ -10,6 +11,9 @@ import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.utils.Bytes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TxBuilder implements TransactionBuilder {
 
 	static {
@@ -17,6 +21,8 @@ public class TxBuilder implements TransactionBuilder {
 	}
 
 	private BlockchainOperationFactory opFactory = new BlockchainOperationFactory();
+
+	private Map<Object, Integer> contractProxyMap = new HashMap<>();
 
 	private static final String DEFAULT_HASH_ALGORITHM = "SHA256";
 
@@ -86,6 +92,11 @@ public class TxBuilder implements TransactionBuilder {
 	@Override
 	public <T> T contract(Bytes address, Class<T> contractIntf) {
 		return opFactory.contract(address, contractIntf);
+	}
+
+	@Override
+	public <T> EventResult<T> result(ContractEventExecutor execute) {
+		return opFactory.result(execute);
 	}
 
 	@Override
