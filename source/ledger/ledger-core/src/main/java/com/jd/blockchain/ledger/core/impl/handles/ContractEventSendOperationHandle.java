@@ -2,8 +2,6 @@ package com.jd.blockchain.ledger.core.impl.handles;
 
 import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.contract.LocalContractEventContext;

@@ -3,13 +3,9 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jd.blockchain.ledger.LedgerException;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.ContractCodeDeployOperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.ContractEventSendOperationHandle;

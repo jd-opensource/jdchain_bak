@@ -1,4 +1,4 @@
-package com.jd.blockchain.transaction;
+package com.jd.blockchain.contract;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.jd.blockchain.contract.Contract;
-import com.jd.blockchain.contract.ContractEvent;
-import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.utils.IllegalDataException;
 
 public class ContractType {
@@ -18,7 +15,16 @@ public class ContractType {
 	private String name;
 	private Map<String, Method> events = new HashMap<>();
 	private Map<Method, String> handleMethods = new HashMap<>();
-//	private Map<Method, List<DataContract>> dataContractMap = new HashMap<>();
+
+	private Class<?> declaredClass;
+
+	public String getName() {
+		return name;
+	}
+
+	public Class<?> getDeclaredClass() {
+		return declaredClass;
+	}
 
 	/**
 	 * 返回声明的所有事件；
@@ -28,10 +34,6 @@ public class ContractType {
 	public Set<String> getEvents() {
 		return events.keySet();
 	}
-
-//	public Map<Method, List<DataContract>> getDataContractMap() {
-//		return dataContractMap;
-//	}
 
 	/**
 	 * 返回指定方法声明的事件；<br>
@@ -60,32 +62,39 @@ public class ContractType {
 	private ContractType() {
 	}
 
-	public static ContractType resolve(Class<?> contractIntf){
+	/**
+	 * 解析合约的声明；
+	 * 
+	 * @param contractDelaredInterface 声明合约的接口类型；
+	 * @return
+	 */
+	public static ContractType resolve(Class<?> contractDelaredInterface) {
 		ContractType contractType = new ContractType();
 
-		Annotation annotation = contractIntf.getDeclaredAnnotation(Contract.class);
+		Annotation annotation = contractDelaredInterface.getDeclaredAnnotation(Contract.class);
 
-		//contains: @Contract?
+		// contains: @Contract?
 		boolean isContractType = annotation != null ? true : false;
-		if(!isContractType){
+		if (!isContractType) {
 			throw new IllegalDataException("is not Contract Type, becaust there is not @Contract.");
 		}
 
-		//contractIntf contains @Contract and @ContractEvent;
-		Method[] classMethods = contractIntf.getDeclaredMethods();
+		// contractIntf contains @Contract and @ContractEvent;
+		Method[] classMethods = contractDelaredInterface.getDeclaredMethods();
 		for (Method method : classMethods) {
 			// if current method contains @ContractEvent，then put it in this map;
 			ContractEvent contractEvent = method.getAnnotation(ContractEvent.class);
 			if (contractEvent != null) {
 				String eventName_ = contractEvent.name();
-				//if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
-				if(contractType.events.containsKey(eventName_)){
+				// if annoMethodMap has contained the eventName, too many same eventNames exists
+				// probably, say NO!
+				if (contractType.events.containsKey(eventName_)) {
 					throw new ContractException("there is repeat definition of contractEvent to @ContractEvent.");
 				}
-				//check param's type is fit for need.
+				// check param's type is fit for need.
 				Class<?>[] paramTypes = method.getParameterTypes();
 				List dataContractList = new ArrayList();
-				for(Class<?> curParamType : paramTypes){
+				for (Class<?> curParamType : paramTypes) {
 					throw new IllegalStateException("Not implemented!");
 //					DataContract dataContract = ContractSerializeUtils.parseDataContract(curParamType);
 //					dataContractList.add(dataContract);
@@ -95,18 +104,9 @@ public class ContractType {
 //				}
 
 				contractType.events.put(eventName_, method);
-				contractType.handleMethods.put(method,eventName_);
+				contractType.handleMethods.put(method, eventName_);
 			}
 		}
 		return contractType;
-	}
-
-	@Override
-	public String toString() {
-		return "ContractType{" +
-				"name='" + name + '\'' +
-				", events=" + events +
-				", handleMethods=" + handleMethods +
-				'}';
 	}
 }

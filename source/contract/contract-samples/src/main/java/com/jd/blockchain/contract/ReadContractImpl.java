@@ -4,7 +4,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.KVDataEntry;
 
 @Contract
-public class ReadContractImpl implements EventProcessingAwire, ReadContract {
+public class ReadContractImpl implements EventProcessingAware, ReadContract {
 
     private ContractEventContext eventContext;
 

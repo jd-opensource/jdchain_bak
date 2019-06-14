@@ -13,17 +13,14 @@ import com.jd.blockchain.ledger.TransactionRequest;
 public class LocalContractEventContext implements ContractEventContext,Cloneable {
     private HashDigest ledgeHash;
     private String event;
-    private byte[] chainCode;
     private byte[] args;
     private TransactionRequest transactionRequest;
     private Set<BlockchainIdentity> txSigners;
-    private Set<BlockchainIdentity> contractOwners;
     private LedgerContext ledgerContext;
 
     public LocalContractEventContext(HashDigest ledgeHash, String event){
         this.ledgeHash = ledgeHash;
         this.event = event;
-//        this.chainCode = chainCode;
     }
 
     @Override
@@ -78,11 +75,6 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
 
     public LocalContractEventContext setTxSigners(Set<BlockchainIdentity> txSigners) {
         this.txSigners = txSigners;
-        return this;
-    }
-
-    public LocalContractEventContext setContractOwners(Set<BlockchainIdentity> contractOwners) {
-        this.contractOwners = contractOwners;
         return this;
     }
 

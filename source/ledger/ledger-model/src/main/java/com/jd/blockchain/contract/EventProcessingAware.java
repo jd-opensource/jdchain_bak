@@ -4,7 +4,7 @@ package com.jd.blockchain.contract;
  * @author huanghaiquan
  *
  */
-public interface EventProcessingAwire extends ContractRuntimeAwire {
+public interface EventProcessingAware extends ContractAware {
 
 	/**
 	 * 在事件处理方法执行之前调用；

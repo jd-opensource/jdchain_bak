@@ -1,46 +1,57 @@
 package com.jd.blockchain.contract.jvm;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
+import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
-import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.runtime.Module;
-import com.jd.blockchain.transaction.ContractType;
 import com.jd.blockchain.utils.Bytes;
 
 /**
- * contract code based jvm
+ * 基于 java jar 包并且以模块化方式独立加载的合约代码；
  * 
- * @author zhaogw
+ * @author huanghaiquan
+ *
  */
-public class JavaContractCode implements ContractCode {
+public class JavaContractCode extends AbstractContractCode {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaContractCode.class);
+	
 	private Module codeModule;
 	private Bytes address;
 	private long version;
 
-	private Class<?> contractClass;
-	private ContractType contractType;
-
 	public JavaContractCode(Bytes address, long version, Module codeModule) {
+		super(address, version, resolveContractDefinition(codeModule));
 		this.address = address;
 		this.version = version;
 		this.codeModule = codeModule;
-
-		init();
 	}
 
-	private void init() {
-		String contractClassName = codeModule.getMainClass();
-		this.contractClass = codeModule.loadClass(contractClassName);
-		this.contractType = ContractType.resolve(contractClass);
+	protected static ContractDefinition resolveContractDefinition(Module codeModule) {
+		String mainClassName = codeModule.getMainClass();
+		Class<?> mainClass = codeModule.loadClass(mainClassName);
+		Class<?>[] interfaces = mainClass.getInterfaces();
+		Class<?> contractInterface = null;
+		for (Class<?> itf : interfaces) {
+			Contract annoContract = itf.getAnnotation(Contract.class);
+			if (annoContract != null) {
+				if (contractInterface == null) {
+					contractInterface = itf;
+				}else {
+					throw new ContractException("One contract definition is only allowed to implement one contract type!");
+				}
+			}
+		}
+		if (contractInterface == null) {
+			throw new ContractException("No contract type is implemented!");
+		}
+		ContractType type = ContractType.resolve(contractInterface);
+		return new ContractDefinition(type, mainClass);
 	}
 
 	@Override
@@ -58,8 +69,16 @@ public class JavaContractCode implements ContractCode {
 		return codeModule.call(new ContractExecution(eventContext));
 	}
 
-	private class ContractExecution implements Callable<byte[]> {
+	protected Object getContractInstance() {
+		try {
+			// 每一次调用都通过反射创建合约的实例；
+			return getContractDefinition().getMainClass().newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
 
+	private class ContractExecution implements Callable<byte[]> {
 		private ContractEventContext eventContext;
 
 		public ContractExecution(ContractEventContext contractEventContext) {
@@ -68,63 +87,7 @@ public class JavaContractCode implements ContractCode {
 
 		@Override
 		public byte[] call() throws Exception {
-			EventProcessingAwire evtProcAwire = null;
-			Object retn = null;
-			Exception error = null;
-			try {
-				// 执行预处理;
-				Object contractInstance = contractClass.newInstance();// 合约主类生成的类实例;
-				if (contractInstance instanceof EventProcessingAwire) {
-					evtProcAwire = (EventProcessingAwire) contractInstance;
-				}
-
-				if (evtProcAwire != null) {
-					evtProcAwire.beforeEvent(eventContext);
-				}
-
-				// 反序列化参数；
-				Method handleMethod = contractType.getHandleMethod(eventContext.getEvent());
-
-				if (handleMethod == null) {
-					throw new ContractException(
-							String.format("Contract[%s:%s] has no handle method to handle event[%s]!",
-									address.toString(), contractClass.getName(), eventContext.getEvent()));
-				}
-
-				Object[] args = resolveArgs();
-				retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
-
-			} catch (Exception e) {
-				error = e;
-			}
-
-			if (evtProcAwire != null) {
-				try {
-					evtProcAwire.postEvent(eventContext, error);
-				} catch (Exception e) {
-					LOGGER.error("Error occurred while posting contract event! --" + e.getMessage(), e);
-				}
-			}
-			if (error != null) {
-				// Rethrow error;
-				throw error;
-			}
-
-			byte[] retnBytes = resolveResult(retn);
-			return retnBytes;
-		}
-
-		private byte[] resolveResult(Object retn) {
-			if (retn == null) {
-				return null;
-			}
-			// TODO: resolve result in bytes;
-			return null;
-		}
-
-		private Object[] resolveArgs() {
-			// TODO Auto-generated method stub
-			throw new IllegalStateException("Not implemented!");
+			return JavaContractCode.super.processEvent(eventContext);
 		}
 	}
 

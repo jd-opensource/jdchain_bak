@@ -2,7 +2,7 @@ package com.jd.blockchain.mocker.handler;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
@@ -44,7 +44,7 @@ public class MockerContractExeHandle implements OperationHandle {
 			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
 					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
 
-			EventProcessingAwire eventProcessingAwire = (EventProcessingAwire) executorProxy.getInstance();
+			EventProcessingAware eventProcessingAwire = (EventProcessingAware) executorProxy.getInstance();
 			try {
 				//
 				// Before处理过程

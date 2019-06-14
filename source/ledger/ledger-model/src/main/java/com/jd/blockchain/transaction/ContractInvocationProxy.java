@@ -3,6 +3,7 @@ package com.jd.blockchain.transaction;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
 
