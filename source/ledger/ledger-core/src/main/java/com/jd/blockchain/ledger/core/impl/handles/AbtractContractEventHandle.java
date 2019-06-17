@@ -2,8 +2,6 @@ package com.jd.blockchain.ledger.core.impl.handles;
 
 import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
 
-
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.contract.LocalContractEventContext;
@@ -23,13 +21,7 @@ import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
 @Service
-public class ContractEventSendOperationHandle implements OperationHandle {
-
-	private static final ContractEngine JVM_ENGINE;
-
-	static {
-		JVM_ENGINE = ContractServiceProviders.getProvider(CONTRACT_SERVICE_PROVIDER).getEngine();
-	}
+public abstract class AbtractContractEventHandle implements OperationHandle {
 
 	@Override
 	public boolean support(Class<?> operationType) {
@@ -65,20 +57,15 @@ public class ContractEventSendOperationHandle implements OperationHandle {
 		localContractEventContext.setArgs(contractOP.getArgs()).setTransactionRequest(requestContext.getRequest())
 				.setLedgerContext(ledgerContext);
 
-		ContractCode contractCode = JVM_ENGINE.getContract(contract.getAddress(), contract.getChaincodeVersion());
-		if (contractCode == null) {
-			// 装载合约；
-			contractCode = JVM_ENGINE.setupContract(contract.getAddress(), contract.getChaincodeVersion(),
-					contract.getChainCode());
-		}
+		
+		// 装载合约；
+		ContractCode contractCode = loadContractCode(contract);
 
 		// 处理合约事件；
 		return contractCode.processEvent(localContractEventContext);
 	}
+	
+	protected abstract ContractCode loadContractCode(ContractAccount contract);
 
-	@Override
-	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
-		return null;
-	}
 
 }

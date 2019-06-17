@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.jd.blockchain.contract.EventResult;
+import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
 

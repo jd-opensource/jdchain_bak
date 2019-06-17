@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;

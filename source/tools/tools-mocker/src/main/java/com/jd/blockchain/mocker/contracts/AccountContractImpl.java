@@ -2,11 +2,11 @@ package com.jd.blockchain.mocker.contracts;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.KVDataEntry;
 
-public class AccountContractImpl implements EventProcessingAwire, AccountContract {
+public class AccountContractImpl implements EventProcessingAware, AccountContract {
 
     private ContractEventContext eventContext;
 

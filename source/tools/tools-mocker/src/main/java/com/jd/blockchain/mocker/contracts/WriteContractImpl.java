@@ -2,9 +2,9 @@ package com.jd.blockchain.mocker.contracts;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 
-public class WriteContractImpl implements EventProcessingAwire, WriteContract {
+public class WriteContractImpl implements EventProcessingAware, WriteContract {
 
     private ContractEventContext eventContext;
 

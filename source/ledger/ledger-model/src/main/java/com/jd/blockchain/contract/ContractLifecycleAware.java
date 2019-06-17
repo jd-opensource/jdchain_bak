@@ -7,7 +7,7 @@ package com.jd.blockchain.contract;
  * @author huanghaiquan
  *
  */
-public interface ContractAppLifecycleAwire extends ContractRuntimeAwire {
+public interface ContractLifecycleAware extends ContractAware {
 	
 	void postConstruct();
 	

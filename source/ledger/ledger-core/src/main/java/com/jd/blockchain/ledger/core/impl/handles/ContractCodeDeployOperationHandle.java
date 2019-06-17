@@ -32,10 +32,10 @@ public class ContractCodeDeployOperationHandle implements OperationHandle {
 		return null;
 	}
 
-	@Override
-	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
-		return null;
-	}
+//	@Override
+//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+//		return null;
+//	}
 
 	@Override
 	public boolean support(Class<?> operationType) {

@@ -1,13 +1,10 @@
-package com.jd.blockchain.transaction;
+package com.jd.blockchain.contract;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.jd.blockchain.contract.Contract;
-import com.jd.blockchain.contract.ContractEvent;
-import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.utils.IllegalDataException;
 
@@ -16,7 +13,16 @@ public class ContractType {
 	private String name;
 	private Map<String, Method> events = new HashMap<>();
 	private Map<Method, String> handleMethods = new HashMap<>();
-//	private Map<Method, List<DataContract>> dataContractMap = new HashMap<>();
+
+	private Class<?> declaredClass;
+
+	public String getName() {
+		return name;
+	}
+
+	public Class<?> getDeclaredClass() {
+		return declaredClass;
+	}
 
 	/**
 	 * 返回声明的所有事件；
@@ -26,10 +32,6 @@ public class ContractType {
 	public Set<String> getEvents() {
 		return events.keySet();
 	}
-
-//	public Map<Method, List<DataContract>> getDataContractMap() {
-//		return dataContractMap;
-//	}
 
 	/**
 	 * 返回指定方法声明的事件；<br>
@@ -58,6 +60,12 @@ public class ContractType {
 	private ContractType() {
 	}
 
+	/**
+	 * 解析合约的声明；
+	 * 
+	 * @param delaredInterface 声明合约的接口类型；
+	 * @return
+	 */
 	public static ContractType resolve(Class<?> contractIntf) {
 
 		// 如果是Class则首先获取其接口

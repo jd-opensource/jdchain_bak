@@ -1,22 +1,28 @@
 package com.jd.blockchain.mocker.handler;
 
-import com.jd.blockchain.contract.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.jd.blockchain.contract.ContractEventContext;
+import com.jd.blockchain.contract.ContractException;
+import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.contract.EventProcessingAware;
+import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.OperationHandle;
+import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.ledger.core.impl.handles.ContractLedgerContext;
 import com.jd.blockchain.mocker.proxy.ExecutorProxy;
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MockerContractExeHandle implements OperationHandle {
 
@@ -44,10 +50,10 @@ public class MockerContractExeHandle implements OperationHandle {
 					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
 
 			Object instance = executorProxy.getInstance();
-			EventProcessingAwire awire = null;
+			EventProcessingAware awire = null;
 
-			if (instance instanceof EventProcessingAwire) {
-				awire = (EventProcessingAwire) instance;
+			if (instance instanceof EventProcessingAware) {
+				awire = (EventProcessingAware) instance;
 				awire.beforeEvent(contractEventContext);
 			}
 
@@ -70,10 +76,10 @@ public class MockerContractExeHandle implements OperationHandle {
 		return ContractSerializeUtils.serialize(result);
 	}
 
-	@Override
-	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
-		return null;
-	}
+//	@Override
+//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+//		return null;
+//	}
 
 	@Override
 	public boolean support(Class<?> operationType) {

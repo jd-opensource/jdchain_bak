@@ -1,10 +1,10 @@
-package test.com.jd.blockchain.ledger;
+package test.com.jd.blockchain.ledger.data;
 
 import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;
 
-@Contract
-public interface TestContract {
+@Contract(name="NORMAL-CONTRACT")
+public interface NormalContract {
 
 	/**
 	 * 发行资产；
@@ -13,7 +13,7 @@ public interface TestContract {
 	 * @param amount 本次发行的资产数量；
 	 * @return 资产总量；
 	 */
-	@ContractEvent(name = "issue")
+	@ContractEvent(name="issue")
 	long issue(String asset, long amount);
 
 	/**
@@ -22,7 +22,7 @@ public interface TestContract {
 	 * @param asset
 	 * @return
 	 */
-	@ContractEvent(name = "get-amount")
+	@ContractEvent(name="get_amount")
 	long getAmount(String asset);
 
 	/**
@@ -32,7 +32,7 @@ public interface TestContract {
 	 * @param asset
 	 * @return
 	 */
-	@ContractEvent(name = "get-balance")
+	@ContractEvent(name="get_balance")
 	long getBalance(String address, String asset);
 	
 	/**
@@ -42,7 +42,7 @@ public interface TestContract {
 	 * @param asset
 	 * @param amount
 	 */
-	@ContractEvent(name = "assign")
+	@ContractEvent(name="assign")
 	void assign(String address, String asset, int amount);
 
 	/**
@@ -53,6 +53,6 @@ public interface TestContract {
 	 * @param asset
 	 * @param amount
 	 */
-	@ContractEvent(name = "transfer")
+	@ContractEvent(name="transfer")
 	void transfer(String fromAddress, String toAddress, String asset, long amount);
 }

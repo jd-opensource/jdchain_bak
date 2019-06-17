@@ -131,17 +131,17 @@ public abstract class RuntimeContext {
 
 		private ClassLoader moduleClassLoader;
 
-		private String MainClass;
+		private String mainClass;
 
 		public DefaultModule(String name, ClassLoader cl, String mainClass) {
 			this.name = name;
 			this.moduleClassLoader = cl;
-			this.MainClass = mainClass;
+			this.mainClass = mainClass;
 		}
 
 		@Override
 		public String getMainClass() {
-			return MainClass;
+			return mainClass;
 		}
 
 
