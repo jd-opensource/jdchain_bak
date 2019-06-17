@@ -5,6 +5,7 @@ import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainEventHandle;
 import com.jd.blockchain.sdk.BlockchainEventListener;
 import com.jd.blockchain.sdk.BlockchainService;
+import com.jd.blockchain.sdk.converters.ClientResolveUtil;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.TransactionService;
 import com.jd.blockchain.transaction.TxTemplate;
@@ -144,17 +145,20 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 
 	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
-		return getQueryService(ledgerHash).getDataEntries(ledgerHash, address, keys);
+		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, keys);
+		return ClientResolveUtil.read(kvDataEntries);
 	}
 
 	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
-		return getQueryService(ledgerHash).getDataEntries(ledgerHash, address, kvInfoVO);
+		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, kvInfoVO);
+		return ClientResolveUtil.read(kvDataEntries);
 	}
 
 	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
-		return getQueryService(ledgerHash).getDataEntries(ledgerHash, address, fromIndex, count);
+		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, fromIndex, count);
+		return ClientResolveUtil.read(kvDataEntries);
 	}
 
 	@Override

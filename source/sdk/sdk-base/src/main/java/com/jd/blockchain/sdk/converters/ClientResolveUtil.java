@@ -1,46 +1,26 @@
 /**
  * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
- * FileName: com.jd.blockchain.sdk.client.ClientOperationUtil
+ * FileName: com.jd.blockchain.sdk.client.ClientResolveUtil
  * Author: shaozhuguang
  * Department: Y事业部
  * Date: 2019/3/27 下午4:12
  * Description:
  */
-package com.jd.blockchain.sdk.client;
-
-import java.lang.reflect.Field;
-
-import org.apache.commons.codec.binary.Base64;
+package com.jd.blockchain.sdk.converters;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainIdentityData;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
-import com.jd.blockchain.ledger.DataType;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
-import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
-import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
-import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
-import com.jd.blockchain.transaction.KVData;
-import com.jd.blockchain.transaction.LedgerInitOpTemplate;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
-import com.jd.blockchain.transaction.UserRegisterOpTemplate;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.transaction.*;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.BytesUtils;
+import org.apache.commons.codec.binary.Base64;
+
+import java.lang.reflect.Field;
 
 /**
  *
@@ -49,7 +29,42 @@ import com.jd.blockchain.utils.io.BytesUtils;
  * @since 1.0.0
  */
 
-public class ClientOperationUtil {
+public class ClientResolveUtil {
+
+    public static KVDataEntry[] read(KVDataEntry[] kvDataEntries) {
+        if (kvDataEntries == null || kvDataEntries.length == 0) {
+            return kvDataEntries;
+        }
+        KVDataEntry[] resolveKvDataEntries = new KVDataEntry[kvDataEntries.length];
+        // kvDataEntries是代理对象，需要处理
+        for (int i = 0; i < kvDataEntries.length; i++) {
+            KVDataEntry kvDataEntry = kvDataEntries[i];
+            String key = kvDataEntry.getKey();
+            long version = kvDataEntry.getVersion();
+            DataType dataType = kvDataEntry.getType();
+            KvData innerKvData = new KvData(key, version, dataType);
+            Object valueObj = kvDataEntry.getValue();
+            switch (dataType) {
+                case NIL:
+                    break;
+                case BYTES:
+                case TEXT:
+                case JSON:
+                    innerKvData.setValue(valueObj.toString());
+                    break;
+                case INT32:
+                    innerKvData.setValue(Integer.parseInt(valueObj.toString()));
+                    break;
+                case INT64:
+                    innerKvData.setValue(Long.parseLong(valueObj.toString()));
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported value type[" + dataType + "] to resolve!");
+            }
+            resolveKvDataEntries[i] = innerKvData;
+        }
+        return resolveKvDataEntries;
+    }
 
     public static Operation read(Operation operation) {
 
@@ -295,6 +310,67 @@ public class ClientOperationUtil {
 
         public void setId(int id) {
             this.id = id;
+        }
+    }
+
+    public static class KvData implements KVDataEntry {
+
+        private String key;
+
+        private long version;
+
+        private DataType dataType;
+
+        private Object value;
+
+        public KvData() {
+        }
+
+        public KvData(String key, long version, DataType dataType) {
+            this(key, version, dataType, null);
+        }
+
+        public KvData(String key, long version, DataType dataType, Object value) {
+            this.key = key;
+            this.version = version;
+            this.dataType = dataType;
+            this.value = value;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public void setVersion(long version) {
+            this.version = version;
+        }
+
+        public void setDataType(DataType dataType) {
+            this.dataType = dataType;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public long getVersion() {
+            return version;
+        }
+
+        @Override
+        public DataType getType() {
+            return dataType;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
         }
     }
 }

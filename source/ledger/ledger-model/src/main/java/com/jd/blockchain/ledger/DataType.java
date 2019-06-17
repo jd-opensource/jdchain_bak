@@ -106,9 +106,6 @@ public enum DataType {
 	ENCRYPTED_DATA((byte) (BaseType.BYTES | 0x08));
 
 	
-	
-	
-
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 

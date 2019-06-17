@@ -8,6 +8,13 @@ package com.jd.blockchain.ledger;
 public class KVInfoVO {
     private KVDataVO[] data;
 
+    public KVInfoVO() {
+    }
+
+    public KVInfoVO(KVDataVO[] data) {
+        this.data = data;
+    }
+
     public KVDataVO[] getData() {
         return data;
     }

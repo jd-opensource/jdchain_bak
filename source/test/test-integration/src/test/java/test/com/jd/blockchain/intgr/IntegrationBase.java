@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.ledger.*;
@@ -556,9 +557,13 @@ public class IntegrationBase {
 		// 再提交一个KV写入
 		String key1 = "JingDong", value1 = "www.jd.com";
 		String key2 = "JD", value2 = "JingDong";
+		String key3 = "Test", value3 = "OK";
 
 		TransactionTemplate txKv = blockchainService.newTransaction(ledgerHash);
-		txKv.dataAccount(newDataAccount.getAddress()).setText(key1, value1, -1).setText(key2, value2, -1);
+		txKv.dataAccount(newDataAccount.getAddress())
+				.setText(key1, value1, -1)
+				.setBytes(key2, Bytes.fromString(value2), -1)
+				.setBytes(key3, Bytes.fromString(value3).toBytes(), -1);
 		PreparedTransaction kvPtx = txKv.prepare();
 		kvPtx.sign(adminKey);
 
@@ -578,10 +583,7 @@ public class IntegrationBase {
 
 		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		EventResult<String> read2 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
-			readContract2.read(newDataAccount.getAddress().toBase58(), key2);
-			return readContract2;
-		});
+		readContract2.read(newDataAccount.getAddress().toBase58(), key2);
 
 		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
@@ -601,14 +603,13 @@ public class IntegrationBase {
 
 		// 通过EventResult获取结果
 		System.out.printf("readContract1.result = %s \r\n", read1.get());
-		System.out.printf("readContract2.result = %s \r\n", read2.get());
 		System.out.printf("readContract3.result = %s \r\n", read3.get());
 
 
 		// 打印结果
-//		for (OperationResult or : operationResults) {
-//			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), or.getResult());
-//		}
+		for (OperationResult or : operationResults) {
+			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), ContractSerializeUtils.resolve(or.getResult()));
+		}
 //
 //        // 验证结果
 //        assertNotNull(contractReturn);

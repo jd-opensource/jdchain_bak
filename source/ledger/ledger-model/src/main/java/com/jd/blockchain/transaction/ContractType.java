@@ -60,6 +60,23 @@ public class ContractType {
 
 	public static ContractType resolve(Class<?> contractIntf) {
 
+		// 如果是Class则首先获取其接口
+		if (!contractIntf.isInterface()) {
+			Class<?> realIntf = null;
+			Class<?>[] interfaces = contractIntf.getInterfaces();
+			for (Class<?> intf: interfaces) {
+				if (intf.isAnnotationPresent(Contract.class)) {
+					realIntf = intf;
+					break;
+				}
+			}
+			if (realIntf == null) {
+				throw new IllegalDataException(String.format(
+						"%s is not a Contract Type, because there is not @Contract !", contractIntf.getName()));
+			}
+			contractIntf = realIntf;
+		}
+
 		// 接口上必须有注解
 		if (!contractIntf.isAnnotationPresent(Contract.class)) {
 			throw new IllegalDataException("It is not a Contract Type, because there is not @Contract !");

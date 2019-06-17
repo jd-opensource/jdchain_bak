@@ -61,7 +61,7 @@ public class ContractInvocationProxy implements InvocationHandler {
 			((ContractEventSendOpTemplate) sendOperation).setEventAndArgs(event, argBytes);
 		}
 		// 代理操作，返回值类型无法创建
-		return null;
+		return returnResult(method.getReturnType());
 	}
 
 	private byte[] serializeArgs(Object[] args) {
@@ -73,5 +73,37 @@ public class ContractInvocationProxy implements InvocationHandler {
 			return ((ContractEventSendOpTemplate) sendOperation).getOpIndex();
 		}
 		return -1;
+	}
+
+	private Object returnResult(Class<?> clazz) {
+		if (clazz.equals(Void.TYPE)) {
+			return null;
+		}
+
+		if (!clazz.isPrimitive()) {
+			// 非基本类型
+			return null;
+		} else {
+			// 基本类型需要处理返回值，目前采用枚举遍历方式
+			// 八种基本类型：int, double, float, long, short, boolean, byte, char， void
+			if (clazz.equals(int.class)) {
+				return 0;
+			} else if (clazz.equals(double.class)) {
+				return 0.0D;
+			} else if (clazz.equals(float.class)) {
+				return 0F;
+			} else if (clazz.equals(long.class)) {
+				return 0L;
+			} else if (clazz.equals(short.class)) {
+				return (short)0;
+			} else if (clazz.equals(boolean.class)) {
+				return Boolean.FALSE;
+			} else if (clazz.equals(byte.class)) {
+				return (byte)0;
+			} else if (clazz.equals(char.class)) {
+				return (char)0;
+			}
+			return null;
+		}
 	}
 }

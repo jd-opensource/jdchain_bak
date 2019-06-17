@@ -34,11 +34,11 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>contract</finalName>
+                    <finalName>transfer</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>com.jd.blockchain.contract.ReadContractImpl</mainClass>
+                            <mainClass>com.jd.blockchain.contract.TransferContractImpl</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
