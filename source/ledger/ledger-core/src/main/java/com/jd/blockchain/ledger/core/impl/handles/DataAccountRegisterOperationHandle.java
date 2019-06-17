@@ -9,6 +9,7 @@ import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
+import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +21,18 @@ public class DataAccountRegisterOperationHandle implements OperationHandle {
 		DataAccountRegisterOperation dataAccountRegOp = (DataAccountRegisterOperation) op;
 		BlockchainIdentity bid = dataAccountRegOp.getAccountID();
 
-		// TODO: 校验用户身份；
+		//TODO: 校验用户身份；
 
-		// TODO: 请求者应该提供数据账户的公钥签名，已确定注册的地址的唯一性；
+		//TODO: 请求者应该提供数据账户的公钥签名，已确定注册的地址的唯一性；
 		dataset.getDataAccountSet().register(bid.getAddress(), bid.getPubKey(), null);
 
-		// No return value;
 		return null;
 	}
+
+//	@Override
+//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+//		return null;
+//	}
 
 	@Override
 	public boolean support(Class<?> operationType) {

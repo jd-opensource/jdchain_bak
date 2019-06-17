@@ -49,6 +49,6 @@ public interface Transaction extends NodeRequest, HashObject {
 	 *
 	 * @return
 	 */
-	@DataField(order = 4, refContract = true, list = true)
+	@DataField(order=4, list = true, refContract=true)
 	OperationResult[] getOperationResults();
 }

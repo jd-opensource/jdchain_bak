@@ -310,8 +310,8 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 			}
 
 			@Override
-			public OperationResult[] getContractReturn() {
-				return txResp.getContractReturn();
+			public OperationResult[] getOperationResults() {
+				return txResp.getOperationResults();
 			}
 		}
 

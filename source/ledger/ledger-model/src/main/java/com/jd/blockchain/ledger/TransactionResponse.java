@@ -63,6 +63,6 @@ public interface TransactionResponse {
 	 *
 	 * @return
 	 */
-	@DataField(order = 6, list = true, refContract = true)
-	OperationResult[] getContractReturn();
+	@DataField(order=6, list=true, refContract = true)
+	OperationResult[] getOperationResults();
 }

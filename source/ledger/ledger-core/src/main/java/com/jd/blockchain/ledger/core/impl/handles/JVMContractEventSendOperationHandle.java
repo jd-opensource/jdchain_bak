@@ -5,7 +5,13 @@ import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.contract.engine.ContractEngine;
 import com.jd.blockchain.contract.engine.ContractServiceProviders;
+import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.ContractAccount;
+import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.TransactionRequestContext;
+import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
+import com.jd.blockchain.utils.concurrent.AsyncFuture;
 
 public class JVMContractEventSendOperationHandle extends AbtractContractEventHandle {
 
@@ -25,5 +31,13 @@ public class JVMContractEventSendOperationHandle extends AbtractContractEventHan
 		}
 		return contractCode;
 	}
+
+//	@Override
+//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset,
+//			TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset,
+//			OperationHandleContext handleContext, LedgerService ledgerService) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

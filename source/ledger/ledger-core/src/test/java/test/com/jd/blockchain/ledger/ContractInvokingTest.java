@@ -116,7 +116,7 @@ public class ContractInvokingTest {
 
 		TransactionResponse resp = txbatchProcessor.schedule(txReq);
 		verify(contractInstance, times(1)).issue(asset, issueAmount);
-		OperationResult[] opResults = resp.getContractReturn();
+		OperationResult[] opResults = resp.getOperationResults();
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
 

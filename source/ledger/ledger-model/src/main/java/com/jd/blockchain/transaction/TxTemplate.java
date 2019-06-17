@@ -1,10 +1,14 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.utils.Bytes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TxTemplate implements TransactionTemplate {
 
@@ -12,9 +16,12 @@ public class TxTemplate implements TransactionTemplate {
 
 	private TransactionService txService;
 
+	private Map<Integer, EventResult> eventResults;
+
 	public TxTemplate(HashDigest ledgerHash, TransactionService txService) {
 		this.txBuilder = new TxBuilder(ledgerHash);
 		this.txService = txService;
+		this.eventResults = new HashMap<>();
 	}
 
 	@Override
@@ -25,7 +32,7 @@ public class TxTemplate implements TransactionTemplate {
 	@Override
 	public PreparedTransaction prepare() {
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
-		return new PreparedTx(txReqBuilder, txService);
+		return new PreparedTx(txReqBuilder, txService, eventResults);
 	}
 
 	@Override
@@ -62,7 +69,16 @@ public class TxTemplate implements TransactionTemplate {
 	public <T> T contract(Bytes address, Class<T> contractIntf) {
 		return txBuilder.contract(address, contractIntf);
 	}
-	
+
+	@Override
+	public <T> EventResult<T> result(ContractEventExecutor execute) {
+		EventResult<T> eventResult = txBuilder.result(execute);
+		if (eventResult != null) {
+			eventResults.put(eventResult.opIndex(), eventResult);
+		}
+		return eventResult;
+	}
+
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
 		return txBuilder.contract(address, contractIntf);

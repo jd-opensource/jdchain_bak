@@ -1,5 +1,6 @@
 package com.jd.blockchain.ledger.core.impl;
 
+import java.util.List;
 import java.util.Stack;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
@@ -348,9 +349,14 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		public TransactionRequest getRequestTX() {
 			return txRequest;
 		}
-		
+
 		@Override
-		public LedgerTransaction commit(TransactionState txResult, OperationResult... opResults) {
+		public LedgerTransaction commit(TransactionState txResult) {
+			return commit(txResult, null);
+		}
+
+		@Override
+		public LedgerTransaction commit(TransactionState txResult, List<OperationResult> operationResults) {
 			checkTxState();
 
 			// capture snapshot
@@ -359,7 +365,8 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, opResults);
+
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, operationResultArray(operationResults));
 			this.txset.add(tx);
 			// this.txset.commit();
 
@@ -374,9 +381,14 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			committed = true;
 			return tx;
 		}
-		
+
 		@Override
 		public LedgerTransaction discardAndCommit(TransactionState txResult) {
+			return discardAndCommit(txResult, null);
+		}
+
+		@Override
+		public LedgerTransaction discardAndCommit(TransactionState txResult, List<OperationResult> operationResults) {
 			checkTxState();
 
 			// 未处理
@@ -385,7 +397,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			// TransactionStagedSnapshot txDataSnapshot = takeSnapshot();
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null);
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, operationResultArray(operationResults));
 			this.txset.add(tx);
 			// this.txset.commit();
 
@@ -408,6 +420,15 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			txDataSnapshot.setDataAccountSetHash(dataset.getDataAccountSet().getRootHash());
 			txDataSnapshot.setUserAccountSetHash(dataset.getUserAccountSet().getRootHash());
 			return txDataSnapshot;
+		}
+
+		private OperationResult[] operationResultArray(List<OperationResult> operationResults) {
+			OperationResult[] operationResultArray = null;
+			if (operationResults != null && !operationResults.isEmpty()) {
+				operationResultArray = new OperationResult[operationResults.size()];
+				operationResults.toArray(operationResultArray);
+			}
+			return operationResultArray;
 		}
 
 		@Override

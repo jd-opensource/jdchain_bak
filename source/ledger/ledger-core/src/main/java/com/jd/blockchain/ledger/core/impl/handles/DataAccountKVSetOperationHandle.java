@@ -1,5 +1,7 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
@@ -26,14 +28,18 @@ public class DataAccountKVSetOperationHandle implements OperationHandle {
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountKVSetOperation kvWriteOp = (DataAccountKVSetOperation) op;
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
-		KVWriteEntry[] writeset = kvWriteOp.getWriteSet();
-		for (KVWriteEntry kvw : writeset) {
+		KVWriteEntry[] writeSet = kvWriteOp.getWriteSet();
+		for (KVWriteEntry kvw : writeSet) {
+//			byte[] value = BinaryProtocol.encode(kvw.getValue(), BytesValue.class);
 			account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
 		}
-
-		// No return value;
 		return null;
 	}
+
+//	@Override
+//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+//		return null;
+//	}
 
 	@Override
 	public boolean support(Class<?> operationType) {

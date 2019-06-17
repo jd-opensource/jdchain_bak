@@ -19,32 +19,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVInfoVO;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerMetadata;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
@@ -427,15 +402,16 @@ public class MockerNodeContext implements BlockchainQueryService {
         return reqBuilder.buildRequest();
     }
 
-    public void txProcess(TransactionRequest txRequest) {
+    public OperationResult[] txProcess(TransactionRequest txRequest) {
         LedgerEditor newEditor = ledgerRepository.createNextBlock();
         LedgerBlock latestBlock = ledgerRepository.getLatestBlock();
         LedgerDataSet previousDataSet = ledgerRepository.getDataSet(latestBlock);
         TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor, previousDataSet, opHandler,
                 ledgerManager);
-        txProc.schedule(txRequest);
+        TransactionResponse txResp = txProc.schedule(txRequest);
         TransactionBatchResultHandle handle = txProc.prepare();
         handle.commit();
+        return txResp.getOperationResults();
     }
 
     private LedgerRepository registerLedger(HashDigest ledgerHash, DBConnectionConfig dbConnConf) {

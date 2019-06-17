@@ -27,7 +27,7 @@ public class TransactionRespHandle implements TransactionResponse {
 
     private TransactionState globalResult;
 
-    private OperationResult[] contractReturn;
+    private OperationResult[] operationResults;
 
     public TransactionRespHandle(TransactionRequest request, TransactionState result, TransactionState globalResult) {
         this.request = request;
@@ -51,8 +51,8 @@ public class TransactionRespHandle implements TransactionResponse {
         this.result = result;
     }
 
-    public void setContractReturn(OperationResult[] contractReturn) {
-        this.contractReturn = contractReturn;
+    public void setOperationResults(OperationResult[] operationResults) {
+        this.operationResults = operationResults;
     }
 
     public LedgerBlock getBlock() {
@@ -97,7 +97,7 @@ public class TransactionRespHandle implements TransactionResponse {
     }
 
     @Override
-    public OperationResult[] getContractReturn() {
-        return contractReturn;
+    public OperationResult[] getOperationResults() {
+        return operationResults;
     }
 }
