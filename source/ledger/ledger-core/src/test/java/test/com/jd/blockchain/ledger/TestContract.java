@@ -1,5 +1,9 @@
 package test.com.jd.blockchain.ledger;
 
+import com.jd.blockchain.contract.Contract;
+import com.jd.blockchain.contract.ContractEvent;
+
+@Contract
 public interface TestContract {
 
 	/**
@@ -9,6 +13,7 @@ public interface TestContract {
 	 * @param amount 本次发行的资产数量；
 	 * @return 资产总量；
 	 */
+	@ContractEvent(name = "issue")
 	long issue(String asset, long amount);
 
 	/**
@@ -17,6 +22,7 @@ public interface TestContract {
 	 * @param asset
 	 * @return
 	 */
+	@ContractEvent(name = "get-amount")
 	long getAmount(String asset);
 
 	/**
@@ -26,6 +32,7 @@ public interface TestContract {
 	 * @param asset
 	 * @return
 	 */
+	@ContractEvent(name = "get-balance")
 	long getBalance(String address, String asset);
 	
 	/**
@@ -35,6 +42,7 @@ public interface TestContract {
 	 * @param asset
 	 * @param amount
 	 */
+	@ContractEvent(name = "assign")
 	void assign(String address, String asset, int amount);
 
 	/**
@@ -45,5 +53,6 @@ public interface TestContract {
 	 * @param asset
 	 * @param amount
 	 */
+	@ContractEvent(name = "transfer")
 	void transfer(String fromAddress, String toAddress, String asset, long amount);
 }

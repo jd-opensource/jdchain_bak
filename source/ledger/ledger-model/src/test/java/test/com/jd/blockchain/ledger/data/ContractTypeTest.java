@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.ContractType;
 
 public class ContractTypeTest {
@@ -54,6 +55,15 @@ public class ContractTypeTest {
 		Method toStringMethod = NormalContractImpl.class.getMethod("toString");
 		assertNull(contractType.getEvent(toStringMethod));
 		assertNull(contractType.getHandleMethod("NotExist"));
+		
+		//解析非合约声明接口类型时，应该引发异常 ContractException；
+		ContractException ex = null;
+		try {
+			ContractType.resolve(NormalContractImpl.class);
+		} catch (ContractException e) {
+			ex = e;
+		}
+		assertNotNull(ex);
 	}
 
 }

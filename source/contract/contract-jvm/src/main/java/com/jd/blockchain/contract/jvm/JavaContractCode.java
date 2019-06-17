@@ -20,7 +20,6 @@ import com.jd.blockchain.utils.Bytes;
  */
 public class JavaContractCode extends AbstractContractCode {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaContractCode.class);
-	
 	private Module codeModule;
 	private Bytes address;
 	private long version;
@@ -42,8 +41,9 @@ public class JavaContractCode extends AbstractContractCode {
 			if (annoContract != null) {
 				if (contractInterface == null) {
 					contractInterface = itf;
-				}else {
-					throw new ContractException("One contract definition is only allowed to implement one contract type!");
+				} else {
+					throw new ContractException(
+							"One contract definition is only allowed to implement one contract type!");
 				}
 			}
 		}
@@ -66,7 +66,20 @@ public class JavaContractCode extends AbstractContractCode {
 
 	@Override
 	public byte[] processEvent(ContractEventContext eventContext) {
-		return codeModule.call(new ContractExecution(eventContext));
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Start processing event[%s] of contract[%s]...", eventContext.getEvent(), address.toString());
+		}
+		try {
+			return codeModule.call(new ContractExecution(eventContext));
+		} catch (Exception ex) {
+			LOGGER.error(String.format("Error occurred while processing event[%s] of contract[%s]! --%s",
+					eventContext.getEvent(), address.toString(), ex.getMessage()), ex);
+			throw ex;
+		} finally {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("End processing event[%s] of contract[%s]. ", eventContext.getEvent(), address.toString());
+			}
+		}
 	}
 
 	protected Object getContractInstance() {

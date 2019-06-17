@@ -65,22 +65,22 @@ public class ContractType {
 	/**
 	 * 解析合约的声明；
 	 * 
-	 * @param contractDelaredInterface 声明合约的接口类型；
+	 * @param delaredInterface 声明合约的接口类型；
 	 * @return
 	 */
-	public static ContractType resolve(Class<?> contractDelaredInterface) {
+	public static ContractType resolve(Class<?> delaredInterface) {
 		ContractType contractType = new ContractType();
 
-		Annotation annotation = contractDelaredInterface.getDeclaredAnnotation(Contract.class);
+		Annotation annotation = delaredInterface.getDeclaredAnnotation(Contract.class);
 
 		// contains: @Contract?
 		boolean isContractType = annotation != null ? true : false;
 		if (!isContractType) {
-			throw new IllegalDataException("is not Contract Type, becaust there is not @Contract.");
+			throw new IllegalDataException("The specified type is not annotated by @Contract!");
 		}
 
 		// contractIntf contains @Contract and @ContractEvent;
-		Method[] classMethods = contractDelaredInterface.getDeclaredMethods();
+		Method[] classMethods = delaredInterface.getDeclaredMethods();
 		for (Method method : classMethods) {
 			// if current method contains @ContractEvent，then put it in this map;
 			ContractEvent contractEvent = method.getAnnotation(ContractEvent.class);

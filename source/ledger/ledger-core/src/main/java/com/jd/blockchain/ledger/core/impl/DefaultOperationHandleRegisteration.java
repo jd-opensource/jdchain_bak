@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.ContractCodeDeployOperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.ContractEventSendOperationHandle;
+import com.jd.blockchain.ledger.core.impl.handles.JVMContractEventSendOperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.DataAccountKVSetOperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.DataAccountRegisterOperationHandle;
 import com.jd.blockchain.ledger.core.impl.handles.UserRegisterOperationHandle;
@@ -30,7 +30,7 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 		opHandles.add(new DataAccountRegisterOperationHandle());
 		opHandles.add(new UserRegisterOperationHandle());
 		opHandles.add(new ContractCodeDeployOperationHandle());
-		opHandles.add(new ContractEventSendOperationHandle());
+		opHandles.add(new JVMContractEventSendOperationHandle());
 	}
 
 	/**
