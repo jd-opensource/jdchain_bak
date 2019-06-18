@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -258,12 +259,12 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private class ContractEventSendOperationBuilderFilter implements ContractEventSendOperationBuilder {
 
 		@Override
-		public ContractEventSendOperation send(String address, String event, byte[] args) {
+		public ContractEventSendOperation send(String address, String event, BytesValueList args) {
 			return send(Bytes.fromBase58(address), event, args);
 		}
 
 		@Override
-		public synchronized ContractEventSendOperation send(Bytes address, String event, byte[] args) {
+		public synchronized ContractEventSendOperation send(Bytes address, String event, BytesValueList args) {
 			ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(address, event, args);
 			operationList.add(op);
 			return op;

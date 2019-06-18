@@ -12,6 +12,7 @@ import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -134,7 +135,7 @@ public class MockerContractExeHandle implements OperationHandle {
 		}
 
 		@Override
-		public byte[] getArgs() {
+		public BytesValueList getArgs() {
 			return null;
 		}
 

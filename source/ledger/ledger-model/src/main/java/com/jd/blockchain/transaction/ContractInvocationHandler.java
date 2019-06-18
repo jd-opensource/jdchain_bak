@@ -7,6 +7,7 @@ import java.util.Arrays;
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.ContractType;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
 
@@ -51,10 +52,9 @@ public class ContractInvocationHandler implements InvocationHandler {
 							method.toString()));
 		}
 		// 序列化调用参数；
-		byte[] argBytes = serializeArgs(args);
+		BytesValueList argBytes = serializeArgs(args);
 
 		// 定义合约调用操作；
-		@SuppressWarnings("deprecation")
 		ContractEventSendOpTemplate opTemplate = (ContractEventSendOpTemplate) sendOpBuilder.send(contractAddress,
 				event, argBytes);
 
@@ -71,7 +71,7 @@ public class ContractInvocationHandler implements InvocationHandler {
 		return getDefaultValue(method.getReturnType());
 	}
 
-	private byte[] serializeArgs(Object[] args) {
+	private BytesValueList serializeArgs(Object[] args) {
 		return ContractSerializeUtils.serializeArray(args);
 	}
 

@@ -1,10 +1,11 @@
 package com.jd.blockchain.contract;
 
+import java.util.Set;
+
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.TransactionRequest;
-
-import java.util.Set;
 
 
 public interface ContractEventContext  {
@@ -42,7 +43,7 @@ public interface ContractEventContext  {
 	 *
 	 * @return
 	 */
-	byte[] getArgs();
+	BytesValueList getArgs();
 
 	/**
 	 * 账本操作上下文；

@@ -1,6 +1,7 @@
 package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.utils.Bytes;
 
@@ -11,12 +12,12 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 	}
 
 	private Bytes contractAddress;
-	private byte[] args;
+	private BytesValueList args;
 	private String event;
 	
 	private ContractInvocation invocation;
 
-	public ContractEventSendOpTemplate(Bytes contractAddress, String event, byte[] args) {
+	public ContractEventSendOpTemplate(Bytes contractAddress, String event, BytesValueList args) {
 		this.contractAddress = contractAddress;
 		this.event = event;
 		this.args = args;
@@ -33,7 +34,7 @@ public class ContractEventSendOpTemplate implements ContractEventSendOperation {
 	}
 
 	@Override
-	public byte[] getArgs() {
+	public BytesValueList getArgs() {
 		return args;
 	}
 

@@ -14,6 +14,7 @@ import com.jd.blockchain.contract.param.WRAP_LONG;
 import com.jd.blockchain.contract.param.WRAP_SHORT;
 import com.jd.blockchain.contract.param.WRAP_STRING;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 public class ContractSerializeUtils {
@@ -82,7 +83,7 @@ public class ContractSerializeUtils {
 		return BinaryProtocol.encode(wrapData, serialClass);
 	}
 
-	public static byte[] serializeArray(Object[] datas) {
+	public static BytesValueList serializeArray(Object[] datas) {
 		if (datas == null || datas.length == 0) {
 			return null;
 		}
