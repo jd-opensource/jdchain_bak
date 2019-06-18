@@ -8,6 +8,7 @@
  */
 package test.com.jd.blockchain.intgr;
 
+import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,7 +30,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.contract.ContractSerializeUtils;
-import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
@@ -51,8 +51,7 @@ import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.transaction.ContractEventExecutor;
-import static com.jd.blockchain.transaction.ContractReturns.*;
+import com.jd.blockchain.transaction.ValueHolder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -587,7 +586,7 @@ public class IntegrationBase {
 
 		ReadContract readContract1 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		ReturnValue<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
+		ValueHolder<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
 
 		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
@@ -595,7 +594,7 @@ public class IntegrationBase {
 
 		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		ReturnValue<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
+		ValueHolder<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
 
 		// 签名；
 		PreparedTransaction contractPtx = txContract.prepare();
