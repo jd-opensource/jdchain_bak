@@ -6,7 +6,7 @@ import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataVO;
 import com.jd.blockchain.ledger.KVInfoVO;
 
-public class TransferContractImpl implements EventProcessingAwire, TransferContract {
+public class TransferContractImpl implements EventProcessingAware, TransferContract {
 
     private ContractEventContext eventContext;
 
