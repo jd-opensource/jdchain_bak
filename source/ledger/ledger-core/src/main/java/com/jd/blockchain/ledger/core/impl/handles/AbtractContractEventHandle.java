@@ -1,13 +1,10 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
-import static com.jd.blockchain.utils.BaseConstant.CONTRACT_SERVICE_PROVIDER;
-
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.contract.LocalContractEventContext;
 import com.jd.blockchain.contract.engine.ContractCode;
-import com.jd.blockchain.contract.engine.ContractEngine;
-import com.jd.blockchain.contract.engine.ContractServiceProviders;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
@@ -29,7 +26,7 @@ public abstract class AbtractContractEventHandle implements OperationHandle {
 	}
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 		// 先从账本校验合约的有效性；

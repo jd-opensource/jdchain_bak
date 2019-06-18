@@ -1,6 +1,9 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
+import org.springframework.stereotype.Service;
+
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
@@ -9,14 +12,11 @@ import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
-import org.springframework.stereotype.Service;
-
 @Service
 public class DataAccountRegisterOperationHandle implements OperationHandle {
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountRegisterOperation dataAccountRegOp = (DataAccountRegisterOperation) op;
 		BlockchainIdentity bid = dataAccountRegOp.getAccountID();

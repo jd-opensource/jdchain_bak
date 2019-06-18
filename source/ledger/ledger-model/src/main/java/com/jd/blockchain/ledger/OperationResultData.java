@@ -5,12 +5,12 @@ public class OperationResultData implements OperationResult {
 
     private int index;
 
-    private byte[] result;
+    private BytesValue result;
 
     public OperationResultData() {
     }
 
-    public OperationResultData(int index, byte[] result) {
+    public OperationResultData(int index, BytesValue result) {
         this.index = index;
         this.result = result;
     }
@@ -21,7 +21,7 @@ public class OperationResultData implements OperationResult {
     }
 
     @Override
-    public byte[] getResult() {
+    public BytesValue getResult() {
         return result;
     }
 
@@ -29,7 +29,7 @@ public class OperationResultData implements OperationResult {
         this.index = index;
     }
 
-    public void setResult(byte[] result) {
+    public void setResult(BytesValue result) {
         this.result = result;
     }
 }

@@ -9,14 +9,14 @@ package com.jd.blockchain.consts;
 public interface DataCodes {
 
 	public static final int BYTES_VALUE = 0x80;
+	
+	public static final int BYTES_VALUE_LIST = 0x81;
 
 	public static final int BLOCK_CHAIN_IDENTITY = 0x90;
 
 	public static final int BLOCK = 0x100;
 
 	public static final int BLOCK_BODY = 0x110;
-
-	// public static final int BLOCK_LEDGER = 0x110;
 
 	public static final int BLOCK_GENESIS = 0x120;
 

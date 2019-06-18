@@ -36,23 +36,21 @@ public enum DataType {
 	INT32(PrimitiveType.INT32.CODE),
 
 	INT64(PrimitiveType.INT64.CODE),
-	
+
 	/**
 	 * 文本数据；
 	 */
 	TEXT(PrimitiveType.TEXT.CODE),
-	
 
 	/**
 	 * 二进制数据；
 	 */
 	BYTES(PrimitiveType.BYTES.CODE),
-	
+
 	/**
 	 * 时间戳；
 	 */
 	TIMESTAMP((byte) (BaseType.INTEGER | 0x08)),
-
 
 	/**
 	 * 文本数据；
@@ -63,7 +61,6 @@ public enum DataType {
 	 * 文本数据；
 	 */
 	XML((byte) (BaseType.TEXT | 0x02)),
-
 
 	/**
 	 * 大整数；
@@ -84,28 +81,32 @@ public enum DataType {
 	 * 位置坐标；
 	 */
 	LOCATION((byte) (BaseType.BYTES | 0x04)),
-	
+
 	/**
 	 * 公钥；
 	 */
 	PUB_KEY((byte) (BaseType.BYTES | 0x05)),
-	
+
 	/**
 	 * 签名摘要；
 	 */
 	SIGNATURE_DIGEST((byte) (BaseType.BYTES | 0x06)),
-	
+
 	/**
 	 * 哈希摘要；
 	 */
 	HASH_DIGEST((byte) (BaseType.BYTES | 0x07)),
-	
+
 	/**
 	 * 加密数据；
 	 */
-	ENCRYPTED_DATA((byte) (BaseType.BYTES | 0x08));
+	ENCRYPTED_DATA((byte) (BaseType.BYTES | 0x08)),
 
-	
+	/**
+	 * DataContract 数据；
+	 */
+	DATA_CONTRACT((byte) (BaseType.EXT | 0x01));
+
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 

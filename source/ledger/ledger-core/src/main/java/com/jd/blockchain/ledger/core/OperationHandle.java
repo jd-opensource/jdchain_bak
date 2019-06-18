@@ -1,8 +1,8 @@
 package com.jd.blockchain.ledger.core;
 
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
 
 
 public interface OperationHandle {
@@ -30,7 +30,7 @@ public interface OperationHandle {
 	 *
 	 * @return 操作执行结果
 	 */
-	byte[] process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext,
+	BytesValue process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
 
 //	/**

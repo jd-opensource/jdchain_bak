@@ -10,6 +10,7 @@ import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.engine.ContractCode;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -44,7 +45,7 @@ public abstract class AbstractContractCode implements ContractCode {
 	}
 
 	@Override
-	public byte[] processEvent(ContractEventContext eventContext) {
+	public BytesValue processEvent(ContractEventContext eventContext) {
 		EventProcessingAware evtProcAwire = null;
 		Object retn = null;
 		Exception error = null;
@@ -90,13 +91,13 @@ public abstract class AbstractContractCode implements ContractCode {
 					eventContext.getEvent(), address.toString(), error.getMessage()), error);
 		}
 
-		byte[] retnBytes = resolveResult(retn);
+		BytesValue retnBytes = resolveResult(retn);
 		return retnBytes;
 	}
 
 	protected abstract Object getContractInstance();
 
-	private byte[] resolveResult(Object retn) {
+	private BytesValue resolveResult(Object retn) {
 		if (retn == null) {
 			return null;
 		}

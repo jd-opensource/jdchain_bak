@@ -2,7 +2,6 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.SignatureFunction;
 
 /**
  * 已就绪的交易；
@@ -10,7 +9,7 @@ import com.jd.blockchain.crypto.SignatureFunction;
  * @author huanghaiquan
  *
  */
-public interface PreparedTransaction extends HashObject  {
+public interface PreparedTransaction extends HashObject {
 
 	/**
 	 * 交易内容的 Hash；
@@ -33,10 +32,8 @@ public interface PreparedTransaction extends HashObject  {
 	/**
 	 * 对交易进行签名；
 	 * 
-	 * @param address
-	 *            签名账户的地址；
-	 * @param privKey
-	 *            签名账户的私钥；
+	 * @param address 签名账户的地址；
+	 * @param privKey 签名账户的私钥；
 	 * @return
 	 */
 	DigitalSignature sign(AsymmetricKeypair keyPair);
@@ -44,17 +41,22 @@ public interface PreparedTransaction extends HashObject  {
 	/**
 	 * 加入签名；
 	 * 
-	 * @param address
-	 *            签名账户的地址；
-	 * @param digest
-	 *            Base64格式的签名摘要；
+	 * @param address 签名账户的地址；
+	 * @param digest  Base64格式的签名摘要；
 	 * @return
 	 */
 	void addSignature(DigitalSignature signature);
 
 	/**
-	 * 生成交易请求；
+	 * 提交交易请求到共识节点；<br>
+	 * 
+	 * 这是同步方法，将阻塞当前线程，直到交易处理完成并返回结果之后，此方法才返回给调用者；
 	 * 
 	 */
 	TransactionResponse commit();
+
+	/**
+	 * 取消交易；<br>
+	 */
+	void cancel();
 }

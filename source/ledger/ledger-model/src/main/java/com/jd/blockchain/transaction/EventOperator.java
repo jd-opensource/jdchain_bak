@@ -1,17 +1,8 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.contract.EventResult;
 import com.jd.blockchain.utils.Bytes;
 
 public interface EventOperator {
-
-	// /**
-	// * 合约事件；
-	// *
-	// * @return
-	// */
-	// @Deprecated
-	// ContractEventSendOperationBuilder contractEvents();
 
 	/**
 	 * 创建调用合约的代理实例；
@@ -31,11 +22,11 @@ public interface EventOperator {
 	 */
 	<T> T contract(Bytes address, Class<T> contractIntf);
 
-	/**
-	 * 执行合约异步等待应答结果
-	 *
-	 * @param execute
-	 * @return
-	 */
-	<T> EventResult<T> result(ContractEventExecutor execute);
+//	/**
+//	 * 执行合约异步等待应答结果
+//	 *
+//	 * @param execute
+//	 * @return
+//	 */
+//	<T> EventResult<T> result(ContractEventExecutor execute);
 }

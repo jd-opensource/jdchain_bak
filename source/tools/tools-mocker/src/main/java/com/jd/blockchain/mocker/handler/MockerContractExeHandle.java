@@ -11,6 +11,7 @@ import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -33,7 +34,7 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
@@ -75,11 +76,6 @@ public class MockerContractExeHandle implements OperationHandle {
 		// No return value;
 		return ContractSerializeUtils.serialize(result);
 	}
-
-//	@Override
-//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
-//		return null;
-//	}
 
 	@Override
 	public boolean support(Class<?> operationType) {

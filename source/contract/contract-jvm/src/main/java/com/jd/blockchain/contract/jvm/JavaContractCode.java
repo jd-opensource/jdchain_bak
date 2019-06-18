@@ -9,6 +9,7 @@ import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.ContractType;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.runtime.Module;
 import com.jd.blockchain.utils.Bytes;
 
@@ -65,7 +66,7 @@ public class JavaContractCode extends AbstractContractCode {
 	}
 
 	@Override
-	public byte[] processEvent(ContractEventContext eventContext) {
+	public BytesValue processEvent(ContractEventContext eventContext) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Start processing event[%s] of contract[%s]...", eventContext.getEvent(), address.toString());
 		}
@@ -91,7 +92,7 @@ public class JavaContractCode extends AbstractContractCode {
 		}
 	}
 
-	private class ContractExecution implements Callable<byte[]> {
+	private class ContractExecution implements Callable<BytesValue> {
 		private ContractEventContext eventContext;
 
 		public ContractExecution(ContractEventContext contractEventContext) {
@@ -99,7 +100,7 @@ public class JavaContractCode extends AbstractContractCode {
 		}
 
 		@Override
-		public byte[] call() throws Exception {
+		public BytesValue call() throws Exception {
 			return JavaContractCode.super.processEvent(eventContext);
 		}
 	}

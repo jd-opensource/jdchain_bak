@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
@@ -110,7 +110,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			int opIndex = 0;
 			for (Operation op : ops) {
 				opHandle = opHandles.getHandle(op.getClass());
-				byte[] opResult = opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
+				BytesValue opResult = opHandle.process(op, dataset, reqCtx, previousBlockDataset, handleContext, ledgerService);
 				if (opResult != null) {
 					operationResults.add(new OperationResultData(opIndex, opResult));
 				}

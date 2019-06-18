@@ -1,7 +1,5 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
@@ -24,7 +22,7 @@ public class DataAccountKVSetOperationHandle implements OperationHandle {
 	}
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountKVSetOperation kvWriteOp = (DataAccountKVSetOperation) op;
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());

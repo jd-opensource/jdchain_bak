@@ -1,6 +1,8 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
+import org.springframework.stereotype.Service;
+
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
@@ -9,17 +11,11 @@ import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.concurrent.AsyncFuture;
-import org.springframework.stereotype.Service;
-
-import java.util.concurrent.Future;
-
 @Service
 public class ContractCodeDeployOperationHandle implements OperationHandle {
 
 	@Override
-	public byte[] process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		ContractCodeDeployOperation contractOP = (ContractCodeDeployOperation) op;
 		// TODO: 校验合约代码的正确性；

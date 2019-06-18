@@ -63,24 +63,24 @@ public class ContractType {
 	/**
 	 * 解析合约的声明；
 	 * 
-	 * @param delaredInterface 声明合约的接口类型；
+	 * @param contractIntf 合约的声明接口，必须是 interface ；
 	 * @return
 	 */
 	public static ContractType resolve(Class<?> contractIntf) {
-
+		// TODO：方法会检查合约方法声明的类型和返回值类型；
 		// 如果是Class则首先获取其接口
 		if (!contractIntf.isInterface()) {
 			Class<?> realIntf = null;
 			Class<?>[] interfaces = contractIntf.getInterfaces();
-			for (Class<?> intf: interfaces) {
+			for (Class<?> intf : interfaces) {
 				if (intf.isAnnotationPresent(Contract.class)) {
 					realIntf = intf;
 					break;
 				}
 			}
 			if (realIntf == null) {
-				throw new IllegalDataException(String.format(
-						"%s is not a Contract Type, because there is not @Contract !", contractIntf.getName()));
+				throw new IllegalDataException(String
+						.format("%s is not a Contract Type, because there is not @Contract !", contractIntf.getName()));
 			}
 			contractIntf = realIntf;
 		}
@@ -105,22 +105,25 @@ public class ContractType {
 
 			if (contractEvent != null) {
 				String eventName = contractEvent.name();
-				//if annoMethodMap has contained the eventName, too many same eventNames exists probably, say NO!
-				if(contractType.events.containsKey(eventName)){
+				// if annoMethodMap has contained the eventName, too many same eventNames exists
+				// probably, say NO!
+				if (contractType.events.containsKey(eventName)) {
 					throw new ContractException("there is repeat definition of contractEvent to @ContractEvent.");
 				}
-				//check param's type is fit for need.
+				// check param's type is fit for need.
 				Class<?>[] paramTypes = method.getParameterTypes();
-				for(Class<?> currParamType : paramTypes) {
+				for (Class<?> currParamType : paramTypes) {
 					if (!ContractSerializeUtils.support(currParamType)) {
-						throw new IllegalStateException(String.format("Param Type = %s can not support !!!", currParamType.getName()));
+						throw new IllegalStateException(
+								String.format("Param Type = %s can not support !!!", currParamType.getName()));
 					}
 				}
 
 				// 判断返回值是否可序列化
 				Class<?> returnType = method.getReturnType();
 				if (!ContractSerializeUtils.support(returnType)) {
-					throw new IllegalStateException(String.format("Return Type = %s can not support !!!", returnType.getName()));
+					throw new IllegalStateException(
+							String.format("Return Type = %s can not support !!!", returnType.getName()));
 				}
 
 				contractType.events.put(eventName, method);
@@ -132,10 +135,7 @@ public class ContractType {
 
 	@Override
 	public String toString() {
-		return "ContractType{" +
-				"name='" + name + '\'' +
-				", events=" + events +
-				", handleMethods=" + handleMethods +
-				'}';
+		return "ContractType{" + "name='" + name + '\'' + ", events=" + events + ", handleMethods=" + handleMethods
+				+ '}';
 	}
 }

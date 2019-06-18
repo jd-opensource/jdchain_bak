@@ -120,8 +120,9 @@ public class ContractInvokingTest {
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
 
-		byte[] retnBytes = BinaryProtocol.encode(BytesValueEntry.fromInt64(issueAmount), BytesValue.class);
-		assertArrayEquals(retnBytes, opResults[0].getResult());
+		byte[] expectedRetnBytes = BinaryProtocol.encode(BytesValueEntry.fromInt64(issueAmount), BytesValue.class);
+		byte[] reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
+		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
 
 		// 提交区块；
 		TransactionBatchResultHandle txResultHandle = txbatchProcessor.prepare();
@@ -135,7 +136,10 @@ public class ContractInvokingTest {
 		// 再验证一次结果；
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
-		assertArrayEquals(retnBytes, opResults[0].getResult());
+		
+		reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
+		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
+
 	}
 
 	private HashDigest initLedger(MemoryKVStorage storage, BlockchainKeypair... partiKeys) {

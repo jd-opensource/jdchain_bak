@@ -24,24 +24,35 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.jd.blockchain.contract.ContractSerializeUtils;
-import com.jd.blockchain.contract.EventResult;
-import com.jd.blockchain.contract.ReadContract;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.transaction.ContractEventExecutor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.contract.EventResult;
+import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TransactionTemplate;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
+import com.jd.blockchain.transaction.ContractEventExecutor;
+import static com.jd.blockchain.transaction.ContractReturns.*;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -576,10 +587,7 @@ public class IntegrationBase {
 
 		ReadContract readContract1 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		EventResult<String> read1 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
-			readContract1.read(newDataAccount.getAddress().toBase58(), key1);
-			return readContract1;
-		});
+		ReturnValue<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
 
 		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
@@ -587,10 +595,7 @@ public class IntegrationBase {
 
 		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		EventResult<Long> read3 = txContract.result((ContractEventExecutor<ReadContract>) () -> {
-			readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2);
-			return readContract3;
-		});
+		ReturnValue<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
 
 		// 签名；
 		PreparedTransaction contractPtx = txContract.prepare();
@@ -602,8 +607,8 @@ public class IntegrationBase {
 		OperationResult[] operationResults = readTxResp.getOperationResults();
 
 		// 通过EventResult获取结果
-		System.out.printf("readContract1.result = %s \r\n", read1.get());
-		System.out.printf("readContract3.result = %s \r\n", read3.get());
+		System.out.printf("readContract1.result = %s \r\n", result1.get());
+		System.out.printf("readContract3.result = %s \r\n", result3.get());
 
 
 		// 打印结果
