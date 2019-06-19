@@ -26,9 +26,9 @@ public class ContractReturnValue {
 	 * @param call
 	 * @return
 	 */
-	public static <T> ValueHolder<T> decode(T call) {
+	public static <T> GenericValueHolder<T> decode(T call) {
 		ContractInvocation invocation = ContractInvocationStub.take();
-		return new ValueHolder<T>(invocation);
+		return new GenericValueHolder<T>(invocation);
 	}
 
 	/**

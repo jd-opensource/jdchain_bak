@@ -1,5 +1,7 @@
 package com.jd.blockchain.ledger;
 
+import java.io.Closeable;
+
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 
@@ -9,7 +11,7 @@ import com.jd.blockchain.crypto.HashDigest;
  * @author huanghaiquan
  *
  */
-public interface PreparedTransaction extends HashObject {
+public interface PreparedTransaction extends HashObject, Closeable {
 
 	/**
 	 * 交易内容的 Hash；
@@ -55,8 +57,4 @@ public interface PreparedTransaction extends HashObject {
 	 */
 	TransactionResponse commit();
 
-	/**
-	 * 取消交易；<br>
-	 */
-	void cancel();
 }

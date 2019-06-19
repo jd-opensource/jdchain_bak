@@ -4,7 +4,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.utils.Bytes;
 
 public class ContractAccount implements AccountHeader {
@@ -43,7 +43,7 @@ public class ContractAccount implements AccountHeader {
 	}
 
 	public long setChaincode(byte[] chaincode, long version) {
-		BytesValue bytesValue = BytesValueEntry.fromBytes(chaincode);
+		BytesValue bytesValue = BytesData.fromBytes(chaincode);
 		return accBase.setBytes(CHAIN_CODE_KEY, bytesValue, version);
 	}
 
@@ -60,18 +60,18 @@ public class ContractAccount implements AccountHeader {
 	}
 
 	public long setProperty(Bytes key, String value, long version) {
-		BytesValue bytesValue = BytesValueEntry.fromText(value);
+		BytesValue bytesValue = BytesData.fromText(value);
 		return accBase.setBytes(encodePropertyKey(key), bytesValue, version);
 	}
 
 	public String getProperty(Bytes key) {
 		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key));
-		return BytesValueEntry.toText(bytesValue);
+		return BytesData.toText(bytesValue);
 	}
 
 	public String getProperty(Bytes key, long version) {
 		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key), version);
-		return BytesValueEntry.toText(bytesValue);
+		return BytesData.toText(bytesValue);
 	}
 
 	private Bytes encodePropertyKey(Bytes key) {

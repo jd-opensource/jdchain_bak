@@ -1,8 +1,6 @@
 package com.jd.blockchain.transaction;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.ledger.BytesValue;
@@ -14,7 +12,7 @@ import com.jd.blockchain.ledger.BytesValueEncoding;
  * @author huanghaiquan
  *
  */
-class ContractInvocation implements OperationReturnValueHandler {
+class ContractInvocation extends OperationResultHolder {
 
 	private Method method;
 
@@ -22,12 +20,9 @@ class ContractInvocation implements OperationReturnValueHandler {
 
 	private int operationIndex = -1;
 
-	private CompletableFuture<Object> returnValueFuture;
-
 	public ContractInvocation(ContractType contractType, Method method) {
 		this.contractType = contractType;
 		this.method = method;
-		this.returnValueFuture = new CompletableFuture<Object>();
 	}
 
 	public ContractType getContractType() {
@@ -47,16 +42,9 @@ class ContractInvocation implements OperationReturnValueHandler {
 		return method.getReturnType();
 	}
 
-	public Future<Object> getReturnValue() {
-		return returnValueFuture;
-	}
-
 	@Override
-	public Object setReturnValue(BytesValue bytesValue) {
-		// Resolve BytesValue to an value object with the return type;
-		Object returnValue = BytesValueEncoding.decode(bytesValue, method.getReturnType());
-		returnValueFuture.complete(returnValue);
-		return returnValue;
+	protected Object decodeResult(BytesValue bytesValue) {
+		return BytesValueEncoding.decode(bytesValue, method.getReturnType());
 	}
 
 }

@@ -21,7 +21,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -103,6 +103,7 @@ public class ContractInvokingTest {
 		Random rand = new Random();
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 		TestContract contractProxy = txBuilder.contract(contractAddress, TestContract.class);
+		TestContract contractProxy1 = txBuilder.contract(contractAddress, TestContract.class);
 
 		String asset = "AK";
 		long issueAmount = rand.nextLong();
@@ -120,7 +121,7 @@ public class ContractInvokingTest {
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
 
-		byte[] expectedRetnBytes = BinaryProtocol.encode(BytesValueEntry.fromInt64(issueAmount), BytesValue.class);
+		byte[] expectedRetnBytes = BinaryProtocol.encode(BytesData.fromInt64(issueAmount), BytesValue.class);
 		byte[] reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
 		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
 

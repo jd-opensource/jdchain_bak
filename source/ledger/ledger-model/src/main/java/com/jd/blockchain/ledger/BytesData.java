@@ -8,38 +8,38 @@ import com.jd.blockchain.utils.io.BytesUtils;
  * @author huanghaiquan
  *
  */
-public class BytesValueEntry implements BytesValue {
+public class BytesData implements BytesValue {
 	DataType type;
 	Bytes value;
 
-	private BytesValueEntry(DataType type, byte[] bytes) {
+	private BytesData(DataType type, byte[] bytes) {
 		this.type = type;
 		this.value = new Bytes(bytes);
 	}
 
-	private BytesValueEntry(DataType type, Bytes bytes) {
+	private BytesData(DataType type, Bytes bytes) {
 		this.type = type;
 		this.value = bytes;
 	}
 	
 	public static BytesValue fromType(DataType type, byte[] value) {
-		return new BytesValueEntry(type, value);
+		return new BytesData(type, value);
 	}
 
 	public static BytesValue fromBytes(byte[] value) {
-		return new BytesValueEntry(DataType.BYTES, value);
+		return new BytesData(DataType.BYTES, value);
 	}
 
 	public static BytesValue fromBytes(Bytes value) {
-		return new BytesValueEntry(DataType.BYTES, value);
+		return new BytesData(DataType.BYTES, value);
 	}
 
 	public static BytesValue fromImage(byte[] value) {
-		return new BytesValueEntry(DataType.IMG, value);
+		return new BytesData(DataType.IMG, value);
 	}
 
 	public static BytesValue fromImage(Bytes value) {
-		return new BytesValueEntry(DataType.IMG, value);
+		return new BytesData(DataType.IMG, value);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class BytesValueEntry implements BytesValue {
 	 * @return
 	 */
 	public static BytesValue fromText(String value) {
-		return new BytesValueEntry(DataType.TEXT, BytesUtils.toBytes(value));
+		return new BytesData(DataType.TEXT, BytesUtils.toBytes(value));
 	}
 
 	/**
@@ -70,35 +70,35 @@ public class BytesValueEntry implements BytesValue {
 	}
 
 	public static BytesValue fromJSON(String value) {
-		return new BytesValueEntry(DataType.JSON, BytesUtils.toBytes(value));
+		return new BytesData(DataType.JSON, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromXML(String value) {
-		return new BytesValueEntry(DataType.XML, BytesUtils.toBytes(value));
+		return new BytesData(DataType.XML, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt32(int value) {
-		return new BytesValueEntry(DataType.INT32, BytesUtils.toBytes(value));
+		return new BytesData(DataType.INT32, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt64(long value) {
-		return new BytesValueEntry(DataType.INT64, BytesUtils.toBytes(value));
+		return new BytesData(DataType.INT64, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt16(short value) {
-		return new BytesValueEntry(DataType.INT16, BytesUtils.toBytes(value));
+		return new BytesData(DataType.INT16, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromInt8(byte value) {
-		return new BytesValueEntry(DataType.INT8, BytesUtils.toBytes(value));
+		return new BytesData(DataType.INT8, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromTimestamp(long value) {
-		return new BytesValueEntry(DataType.TIMESTAMP, BytesUtils.toBytes(value));
+		return new BytesData(DataType.TIMESTAMP, BytesUtils.toBytes(value));
 	}
 
 	public static BytesValue fromBoolean(boolean value) {
-		return new BytesValueEntry(DataType.BOOLEAN, BytesUtils.toBytes(value));
+		return new BytesData(DataType.BOOLEAN, BytesUtils.toBytes(value));
 	}
 
 	@Override

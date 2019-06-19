@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
@@ -75,7 +74,7 @@ public class MockerContractExeHandle implements OperationHandle {
 		}
 
 		// No return value;
-		return ContractSerializeUtils.serialize(result);
+		return null;
 	}
 
 	@Override

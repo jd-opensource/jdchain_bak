@@ -11,7 +11,7 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.transaction.LongValueHolder;
-import com.jd.blockchain.transaction.ValueHolder;
+import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
 
 public class SDK_Contract_Demo extends SDK_Base_Demo {
@@ -92,7 +92,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-		ValueHolder<String> result = decode(transferContract.readAll(address, account));
+		GenericValueHolder<String> result = decode(transferContract.readAll(address, account));
 		commit(txTpl);
 		return result.get();
 	}
@@ -122,7 +122,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-		ValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
+		GenericValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
 		commit(txTpl);
 		return result.get();
 	}
@@ -142,7 +142,7 @@ public class SDK_Contract_Demo extends SDK_Base_Demo {
 		if (useContract) {
 			// 使用合约创建
 			TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-			ValueHolder<String> result = decode(transferContract.create(address, account, money));
+			GenericValueHolder<String> result = decode(transferContract.create(address, account, money));
 			commit(txTpl);
 			return result.get();
 		} else {

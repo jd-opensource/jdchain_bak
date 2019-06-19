@@ -51,7 +51,7 @@ public class TxBuilder implements TransactionBuilder {
 		return txContent;
 	}
 
-	public Collection<OperationReturnValueHandler> getReturnValuehandlers() {
+	public Collection<OperationResultHandle> getReturnValuehandlers() {
 		return opFactory.getReturnValuetHandlers();
 	}
 

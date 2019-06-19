@@ -29,7 +29,6 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
@@ -51,7 +50,7 @@ import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.transaction.ValueHolder;
+import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -586,7 +585,7 @@ public class IntegrationBase {
 
 		ReadContract readContract1 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		ValueHolder<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
+		GenericValueHolder<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
 
 		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
@@ -594,7 +593,7 @@ public class IntegrationBase {
 
 		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-		ValueHolder<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
+		GenericValueHolder<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
 
 		// 签名；
 		PreparedTransaction contractPtx = txContract.prepare();
@@ -610,10 +609,10 @@ public class IntegrationBase {
 		System.out.printf("readContract3.result = %s \r\n", result3.get());
 
 
-		// 打印结果
-		for (OperationResult or : operationResults) {
-			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), ContractSerializeUtils.resolve(or.getResult()));
-		}
+//		// 打印结果
+//		for (OperationResult or : operationResults) {
+//			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), ContractSerializeUtils.resolve(or.getResult()));
+//		}
 //
 //        // 验证结果
 //        assertNotNull(contractReturn);

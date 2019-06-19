@@ -3,11 +3,12 @@ package com.jd.blockchain.utils.event;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 import com.jd.blockchain.utils.Disposable;
@@ -36,17 +37,22 @@ public class EventMulticaster<TListener> implements Disposable {
 	}
 
 	public EventMulticaster(Class<TListener> listenerClass, Logger errorLogger) {
-		this(listenerClass, new ExceptionLoggingHandle<TListener>(errorLogger));
+		this(listenerClass, new RethrowExceptionHandler<TListener>(errorLogger));
 	}
 
 	@SuppressWarnings("unchecked")
 	public EventMulticaster(Class<TListener> listenerClass, ExceptionHandle<TListener> exHandle) {
+		if (!listenerClass.isInterface()) {
+			throw new IllegalArgumentException("The specified class of listener does not represent an interface!");
+		}
 		// 初始化错误处理器；
-		this.exHandle = exHandle == null ? new DefaultExceptionHandle<TListener>() : exHandle;
+		this.exHandle = exHandle == null
+				? new RethrowExceptionHandler<TListener>(LoggerFactory.getLogger(EventMulticaster.class))
+				: exHandle;
 
 		// 解析出不支持的方法；
 		Method[] methods = ReflectionUtils.getAllDeclaredMethods(listenerClass);
-		List<Method> supMths = new LinkedList<Method>();
+		List<Method> supMths = new ArrayList<Method>();
 		for (Method method : methods) {
 			if (method.getDeclaringClass() == Object.class) {
 				// 不支持 Object 方法；
@@ -86,14 +92,14 @@ public class EventMulticaster<TListener> implements Disposable {
 			throw new UnsupportedOperationException("Unsupported method for event multicasting!");
 		}
 	}
-	
-	protected void doNotify(List<TListener> listeners, Method method, Object[] args){
+
+	protected void doNotify(List<TListener> listeners, Method method, Object[] args) {
 		for (TListener listener : listeners) {
 			doNotifySingle(listener, method, args);
 		}
 	}
-	
-	protected void doNotifySingle(TListener listener, Method method, Object[] args){
+
+	protected void doNotifySingle(TListener listener, Method method, Object[] args) {
 		try {
 			ReflectionUtils.invokeMethod(method, listener, args);
 		} catch (Exception e) {
@@ -104,12 +110,12 @@ public class EventMulticaster<TListener> implements Disposable {
 	public void addListener(TListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void removeListener(TListener listener) {
 		listeners.remove(listener);
 	}
 
-	public TListener broadcast() {
+	public TListener getBroadcaster() {
 		return listenerProxy;
 	}
 

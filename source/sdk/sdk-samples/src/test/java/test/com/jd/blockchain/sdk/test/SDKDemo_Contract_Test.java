@@ -20,7 +20,7 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.transaction.LongValueHolder;
-import com.jd.blockchain.transaction.ValueHolder;
+import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
 
 public class SDKDemo_Contract_Test {
@@ -108,7 +108,7 @@ public class SDKDemo_Contract_Test {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-		ValueHolder<String> result = decode(transferContract.readAll(address, account));
+		GenericValueHolder<String> result = decode(transferContract.readAll(address, account));
 		commit(txTpl);
 		return result.get();
 	}
@@ -126,7 +126,7 @@ public class SDKDemo_Contract_Test {
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 		// 使用合约创建
 		TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-		ValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
+		GenericValueHolder<String> result = decode(transferContract.transfer(address, from, to, money));
 		commit(txTpl);
 		return result.get();
 	}
@@ -146,7 +146,7 @@ public class SDKDemo_Contract_Test {
 		if (useContract) {
 			// 使用合约创建
 			TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
-			ValueHolder<String> result = decode(transferContract.create(address, account, money));
+			GenericValueHolder<String> result = decode(transferContract.create(address, account, money));
 			commit(txTpl);
 			return result.get();
 		} else {

@@ -1,5 +1,6 @@
 package test.com.jd.blockchain.ledger;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -10,10 +11,13 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesDataList;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.CryptoSetting;
@@ -67,8 +71,8 @@ public class TransactionSetTest {
 		BlockchainKeypair dataKey = BlockchainKeyGenerator.getInstance().generate();
 		DataAccountRegisterOperation dataAccRegOp = txBuilder.dataAccounts().register(dataKey.getIdentity());
 
-		DataAccountKVSetOperation kvsetOP = txBuilder.dataAccount(dataKey.getAddress())
-				.setText("A", "Value_A_0", -1).setText("B", "Value_B_0", -1).getOperation();
+		DataAccountKVSetOperation kvsetOP = txBuilder.dataAccount(dataKey.getAddress()).setText("A", "Value_A_0", -1)
+				.setText("B", "Value_B_0", -1).getOperation();
 
 		byte[] chainCode = new byte[128];
 		rand.nextBytes(chainCode);
@@ -76,7 +80,7 @@ public class TransactionSetTest {
 		ContractCodeDeployOperation contractDplOP = txBuilder.contracts().deploy(contractKey.getIdentity(), chainCode);
 
 		ContractEventSendOperation contractEvtSendOP = txBuilder.contractEvents().send(contractKey.getAddress(), "test",
-				"TestContractArgs".getBytes());
+				BytesDataList.singleText("TestContractArgs"));
 
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 
@@ -98,7 +102,8 @@ public class TransactionSetTest {
 		txSnapshot.setContractAccountSetHash(contractAccountSetHash);
 
 		long blockHeight = 8922L;
-		LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txReq, TransactionState.SUCCESS, txSnapshot, null);
+		LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txReq, TransactionState.SUCCESS, txSnapshot,
+				null);
 		txset.add(tx);
 
 		assertTrue(txset.isUpdated());
@@ -172,7 +177,8 @@ public class TransactionSetTest {
 		for (int i = 0; i < acutualKVWriteSet.length; i++) {
 			assertEquals(expKVWriteSet[i].getKey(), acutualKVWriteSet[i].getKey());
 			assertEquals(expKVWriteSet[i].getExpectedVersion(), acutualKVWriteSet[i].getExpectedVersion());
-			assertTrue(BytesUtils.equals(expKVWriteSet[i].getValue().getValue().toBytes(), acutualKVWriteSet[i].getValue().getValue().toBytes()));
+			assertTrue(BytesUtils.equals(expKVWriteSet[i].getValue().getValue().toBytes(),
+					acutualKVWriteSet[i].getValue().getValue().toBytes()));
 		}
 
 		ContractCodeDeployOperation actualContractDplOp = (ContractCodeDeployOperation) actualOperations[3];
@@ -184,8 +190,14 @@ public class TransactionSetTest {
 		assertEquals(contractEvtSendOP.getContractAddress(), actualContractEvtSendOp.getContractAddress());
 		assertEquals(contractEvtSendOP.getEvent(), actualContractEvtSendOp.getEvent());
 		assertEquals("test", actualContractEvtSendOp.getEvent());
-		assertTrue(BytesUtils.equals(contractEvtSendOP.getArgs(), actualContractEvtSendOp.getArgs()));
-		assertTrue(BytesUtils.equals("TestContractArgs".getBytes(), actualContractEvtSendOp.getArgs()));
+
+		byte[] expectedBytes = BinaryProtocol.encode(contractEvtSendOP.getArgs(), BytesValueList.class);
+		byte[] actualBytes = BinaryProtocol.encode(actualContractEvtSendOp.getArgs(), BytesValueList.class);
+		assertArrayEquals(expectedBytes, actualBytes);
+		
+		expectedBytes = BinaryProtocol.encode(BytesDataList.singleText("TestContractArgs"), BytesValueList.class);
+		actualBytes = BinaryProtocol.encode(actualContractEvtSendOp.getArgs(), BytesValueList.class);
+		assertArrayEquals(expectedBytes, actualBytes);
 	}
 
 }

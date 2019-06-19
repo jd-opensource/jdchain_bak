@@ -106,15 +106,15 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	 * 
 	 * @return
 	 */
-	public Collection<OperationReturnValueHandler> getReturnValuetHandlers() {
-		List<OperationReturnValueHandler> resultHandlers = new ArrayList<OperationReturnValueHandler>();
+	public Collection<OperationResultHandle> getReturnValuetHandlers() {
+		List<OperationResultHandle> resultHandlers = new ArrayList<OperationResultHandle>();
 		int index = 0;
 		for (Operation op : operationList) {
 			if (op instanceof ContractEventSendOperation) {
 				// 操作具有返回值，创建对应的结果处理器；
 				ContractEventSendOpTemplate opTemp = (ContractEventSendOpTemplate) op;
 				ContractInvocation invocation = opTemp.getInvocation();
-				OperationReturnValueHandler retnHandler;
+				OperationResultHandle retnHandler;
 				if (invocation == null) {
 					retnHandler = new NullOperationReturnValueHandler(index);
 				} else {
@@ -278,7 +278,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	 * @author huanghaiquan
 	 *
 	 */
-	private static class NullOperationReturnValueHandler implements OperationReturnValueHandler {
+	private static class NullOperationReturnValueHandler implements OperationResultHandle {
 
 		private int operationIndex;
 
@@ -292,8 +292,12 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		}
 
 		@Override
-		public Object setReturnValue(BytesValue bytesValue) {
+		public Object complete(BytesValue bytesValue) {
 			return null;
+		}
+
+		@Override
+		public void complete(Throwable error) {
 		}
 
 	}

@@ -1,43 +1,22 @@
 package com.jd.blockchain.transaction;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+public  class ShortValueHolder extends ValueHolderWrapper {
 
-public  class ShortValueHolder extends ValueHolderBase {
-
-	ShortValueHolder(ContractInvocation invocation) {
-		super(invocation);
+	ShortValueHolder(OperationResultHolder resultHolder) {
+		super(resultHolder);
 	}
 
 	/**
-	 * 等待结果合约调用的结果返回；
+	 * 获取值；<br>
+	 * 
+	 * 此方法不堵塞，调用立即返回；<br>
+	 * 
+	 * 如果未完成时（ {@link #isCompleted()} 为 false ），总是返回 0；
 	 * 
 	 * @return
 	 */
 	public short get() {
-		return (short) super.getValue();
+		return super.isCompleted() ? (short) super.getValue() : 0;
 	}
 
-	/**
-	 * 等待结果合约调用的结果返回；
-	 * 
-	 * @param timeout
-	 * @return
-	 * @throws TimeoutException
-	 */
-	public short get(long timeout) throws TimeoutException {
-		return get(timeout, TimeUnit.MILLISECONDS);
-	}
-
-	/**
-	 * 等待结果合约调用的结果返回；
-	 * 
-	 * @param timeout
-	 * @param unit
-	 * @return
-	 * @throws TimeoutException
-	 */
-	public short get(long timeout, TimeUnit unit) throws TimeoutException {
-		return (short) super.getValue(timeout, unit);
-	}
 }
