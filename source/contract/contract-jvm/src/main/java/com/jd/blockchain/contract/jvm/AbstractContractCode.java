@@ -11,6 +11,8 @@ import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEncoding;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -29,7 +31,7 @@ public abstract class AbstractContractCode implements ContractCode {
 		this.version = version;
 		this.contractDefinition = contractDefinition;
 	}
-	
+
 	public ContractDefinition getContractDefinition() {
 		return contractDefinition;
 	}
@@ -48,6 +50,7 @@ public abstract class AbstractContractCode implements ContractCode {
 	public BytesValue processEvent(ContractEventContext eventContext) {
 		EventProcessingAware evtProcAwire = null;
 		Object retn = null;
+		Method handleMethod = null;
 		Exception error = null;
 		try {
 			// 执行预处理;
@@ -61,17 +64,19 @@ public abstract class AbstractContractCode implements ContractCode {
 			}
 
 			// 反序列化参数；
-			Method handleMethod = contractDefinition.getType().getHandleMethod(eventContext.getEvent());
+			handleMethod = contractDefinition.getType().getHandleMethod(eventContext.getEvent());
 
 			if (handleMethod == null) {
 				throw new ContractException(
 						String.format("Contract[%s:%s] has no handle method to handle event[%s]!", address.toString(),
 								contractDefinition.getType().getDeclaredClass().toString(), eventContext.getEvent()));
 			}
-
-			Object[] args = resolveArgs();
+			
+			BytesValueList bytesValues = eventContext.getArgs();
+			Object[] args = BytesValueEncoding.decode(bytesValues, handleMethod.getParameterTypes());
+			
 			retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
-
+			
 		} catch (Exception e) {
 			error = e;
 		}
@@ -91,23 +96,10 @@ public abstract class AbstractContractCode implements ContractCode {
 					eventContext.getEvent(), address.toString(), error.getMessage()), error);
 		}
 
-		BytesValue retnBytes = resolveResult(retn);
+		BytesValue retnBytes = BytesValueEncoding.encode(retn, handleMethod.getReturnType());
 		return retnBytes;
 	}
 
 	protected abstract Object getContractInstance();
-
-	private BytesValue resolveResult(Object retn) {
-		if (retn == null) {
-			return null;
-		}
-		// TODO: resolve result in bytes;
-		throw new IllegalStateException("Not implemented!");
-	}
-
-	private Object[] resolveArgs() {
-		// TODO Auto-generated method stub
-		throw new IllegalStateException("Not implemented!");
-	}
 
 }

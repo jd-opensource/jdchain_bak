@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.jd.blockchain.contract.ContractSerializeUtils;
+import com.jd.blockchain.ledger.BytesValueEncoding;
 import com.jd.blockchain.utils.IllegalDataException;
 
 public class ContractType {
@@ -113,7 +113,7 @@ public class ContractType {
 				// check param's type is fit for need.
 				Class<?>[] paramTypes = method.getParameterTypes();
 				for (Class<?> currParamType : paramTypes) {
-					if (!ContractSerializeUtils.support(currParamType)) {
+					if (!BytesValueEncoding.supportType(currParamType)) {
 						throw new IllegalStateException(
 								String.format("Param Type = %s can not support !!!", currParamType.getName()));
 					}
@@ -121,7 +121,7 @@ public class ContractType {
 
 				// 判断返回值是否可序列化
 				Class<?> returnType = method.getReturnType();
-				if (!ContractSerializeUtils.support(returnType)) {
+				if (!BytesValueEncoding.supportType(returnType)) {
 					throw new IllegalStateException(
 							String.format("Return Type = %s can not support !!!", returnType.getName()));
 				}

@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.ContractSerializeUtils;
 import com.jd.blockchain.contract.ContractType;
+import com.jd.blockchain.ledger.BytesValueEncoding;
 import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.IllegalDataException;
@@ -52,7 +52,8 @@ public class ContractInvocationHandler implements InvocationHandler {
 							method.toString()));
 		}
 		// 序列化调用参数；
-		BytesValueList argBytes = serializeArgs(args);
+		Class<?>[] argTypes = method.getParameterTypes();
+		BytesValueList argBytes = BytesValueEncoding.encode(args, argTypes);
 
 		// 定义合约调用操作；
 		ContractEventSendOpTemplate opTemplate = (ContractEventSendOpTemplate) sendOpBuilder.send(contractAddress,
@@ -68,42 +69,7 @@ public class ContractInvocationHandler implements InvocationHandler {
 		ContractInvocationStub.set(invocation);
 
 		// 返回类型的默认值
-		return getDefaultValue(method.getReturnType());
+		return BytesValueEncoding.getDefaultValue(method.getReturnType());
 	}
 
-	private BytesValueList serializeArgs(Object[] args) {
-		return ContractSerializeUtils.serializeArray(args);
-	}
-
-	private Object getDefaultValue(Class<?> returnType) {
-		if (returnType == void.class || returnType == Void.class) {
-			return null;
-		}
-
-		if (!returnType.isPrimitive()) {
-			// 非基本类型
-			return null;
-		} else {
-			// 基本类型需要处理返回值，目前采用枚举遍历方式
-			// 八种基本类型：int, double, float, long, short, boolean, byte, char， void
-			if (returnType.equals(int.class)) {
-				return 0;
-			} else if (returnType.equals(double.class)) {
-				return 0.0D;
-			} else if (returnType.equals(float.class)) {
-				return 0F;
-			} else if (returnType.equals(long.class)) {
-				return 0L;
-			} else if (returnType.equals(short.class)) {
-				return (short) 0;
-			} else if (returnType.equals(boolean.class)) {
-				return Boolean.FALSE;
-			} else if (returnType.equals(byte.class)) {
-				return (byte) 0;
-			} else if (returnType.equals(char.class)) {
-				return (char) 0;
-			}
-			return null;
-		}
-	}
 }

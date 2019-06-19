@@ -85,26 +85,9 @@ public interface DataCodes {
 
 	//contract related;
 	public static final int CONTRACT = 0xA00;
-	public static final int CONTRACT_BYTE = 0xA01;
 
-	public static final int CONTRACT_SHORT = 0xA02;
 
-	public static final int CONTRACT_INT = 0xA03;
-
-	public static final int CONTRACT_LONG = 0xA04;
-
-	public static final int CONTRACT_STRING = 0xA05;
-
-	public static final int CONTRACT_BYTES = 0xA06;
-
-	public static final int CONTRACT_BIG_INT = 0xA07;
 	//...0xA19
-	public static final int CONTRACT_BIZ_CONTENT = 0xA20;
-
-	public static final int CONTRACT_ARGS = 0xA21;
-
-	public static final int CONTRACT_RETURN = 0xA22;
-
 	public static final int HASH = 0xB00;
 
 	public static final int HASH_OBJECT = 0xB10;

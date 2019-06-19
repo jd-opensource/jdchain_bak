@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 
 import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEncoding;
 
 /**
  * ContractInvocation 包装了客户端发起的一次合约方法调用的相关信息，用于在客户端交易处理上下文进行共享处理状态；
@@ -53,14 +54,9 @@ class ContractInvocation implements OperationReturnValueHandler {
 	@Override
 	public Object setReturnValue(BytesValue bytesValue) {
 		// Resolve BytesValue to an value object with the return type;
-		Object returnValue = resolveValue(bytesValue, method.getReturnType());
+		Object returnValue = BytesValueEncoding.decode(bytesValue, method.getReturnType());
 		returnValueFuture.complete(returnValue);
 		return returnValue;
-	}
-
-	private Object resolveValue(BytesValue bytesValue, Class<?> returnType) {
-		// TODO: Resolve BytesValue to an value object with the return type;
-		throw new IllegalStateException("Not implemented!");
 	}
 
 }
