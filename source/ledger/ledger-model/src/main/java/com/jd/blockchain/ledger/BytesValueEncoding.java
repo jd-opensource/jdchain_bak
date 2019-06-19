@@ -6,19 +6,19 @@ public class BytesValueEncoding {
 	
 	
 	public static BytesValue encode(Object value, Class<?> type) {
-		
+		throw new IllegalStateException("Not implemented!");
 	}
 	
 	public static BytesValueList encode(Object[] values, Class<?>[] types) {
-		
+		throw new IllegalStateException("Not implemented!");
 	}
 	
 	public static Object decode(BytesValue value, Class<?> type) {
-		
+		throw new IllegalStateException("Not implemented!");
 	}
 	
 	public static Object[] decode(BytesValueList values, Class<?>[] types) {
-		
+		throw new IllegalStateException("Not implemented!");
 	}
 	
 	public static Object getDefaultValue(Class<?> type) {
