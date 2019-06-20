@@ -296,7 +296,7 @@ public interface BlockchainQueryService {
 	 * @param address
 	 * @return
 	 */
-	AccountHeader getContract(HashDigest ledgerHash, String address);
+	ContractInfo getContract(HashDigest ledgerHash, String address);
 
 	/**
 	 * get users by ledgerHash and its range;

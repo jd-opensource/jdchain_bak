@@ -7,8 +7,11 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
 import com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.gateway.PeerService;
+import com.jd.blockchain.gateway.decompiler.utils.DecompilerUtils;
+import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.sdk.ContractSettings;
 import com.jd.blockchain.sdk.LedgerInitSettings;
 import com.jd.blockchain.utils.QueryUtil;
 import com.jd.blockchain.utils.codec.HexUtils;
@@ -51,6 +54,21 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
         LedgerMetadata ledgerMetadata = peerService.getQueryService().getLedgerMetadata(ledgerHash);
 
         return initLedgerInitSettings(participantNodes, ledgerMetadata);
+    }
+
+    @Override
+    public ContractSettings getContractSettings(HashDigest ledgerHash, String address) {
+        ContractInfo contractInfo = peerService.getQueryService().getContract(ledgerHash, address);
+        return contractSettings(contractInfo);
+    }
+
+    private ContractSettings contractSettings(ContractInfo contractInfo) {
+        ContractSettings contractSettings = new ContractSettings(contractInfo.getAddress(), contractInfo.getPubKey(), contractInfo.getRootHash());
+        byte[] chainCodeBytes = contractInfo.getChainCode();
+        // 将反编译chainCode
+        String mainClassJava = DecompilerUtils.decompileMainClassFromBytes(chainCodeBytes);
+        contractSettings.setChainCode(mainClassJava);
+        return contractSettings;
     }
 
     /**

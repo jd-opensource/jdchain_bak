@@ -11,7 +11,8 @@ abstract class OperationResultHolder implements OperationResultHandle {
 
 	private volatile boolean completed;
 
-	private EventMulticaster<OperationCompletedListener> listenerMulticaster;
+	private EventMulticaster<OperationCompletedListener> listenerMulticaster =
+			new EventMulticaster<>(OperationCompletedListener.class);
 
 	/**
 	 * 导致结束的错误；
