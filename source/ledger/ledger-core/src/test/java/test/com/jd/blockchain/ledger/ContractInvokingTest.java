@@ -92,21 +92,26 @@ public class ContractInvokingTest {
 		DefaultOperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
 		opReg.insertAsTopPriority(contractInvokingHandle);
 
+		// 发布指定地址合约
+		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);
+
+
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+
+		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
 				opReg, ledgerManager);
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
-		Random rand = new Random();
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 		TestContract contractProxy = txBuilder.contract(contractAddress, TestContract.class);
 		TestContract contractProxy1 = txBuilder.contract(contractAddress, TestContract.class);
 
 		String asset = "AK";
-		long issueAmount = rand.nextLong();
+		long issueAmount = new Random().nextLong();
 		when(contractInstance.issue(anyString(), anyLong())).thenReturn(issueAmount);
 		contractProxy.issue(asset, issueAmount);
 
@@ -137,10 +142,39 @@ public class ContractInvokingTest {
 		// 再验证一次结果；
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
-		
+
 		reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
 		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
 
+	}
+
+	private void deploy(LedgerRepository ledgerRepo, LedgerManager ledgerManager,
+						DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash,
+						BlockchainKeypair contractKey) {
+		// 创建新区块的交易处理器；
+		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
+		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+
+		// 加载合约
+		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
+				opReg, ledgerManager);
+
+		// 构建基于接口调用合约的交易请求，用于测试合约调用；
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
+		txBuilder.contracts().deploy(contractKey.getIdentity(), chainCode());
+		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
+		txReqBuilder.signAsEndpoint(parti0);
+		txReqBuilder.signAsNode(parti0);
+		TransactionRequest txReq = txReqBuilder.buildRequest();
+
+		TransactionResponse resp = txbatchProcessor.schedule(txReq);
+		OperationResult[] opResults = resp.getOperationResults();
+		assertNull(opResults);
+
+		// 提交区块；
+		TransactionBatchResultHandle txResultHandle = txbatchProcessor.prepare();
+		txResultHandle.commit();
 	}
 
 	private HashDigest initLedger(MemoryKVStorage storage, BlockchainKeypair... partiKeys) {
@@ -179,5 +213,11 @@ public class ContractInvokingTest {
 
 		HashDigest ledgerHash = block.getHash();
 		return ledgerHash;
+	}
+
+	private byte[] chainCode() {
+		byte[] chainCode = new byte[1024];
+		new Random().nextBytes(chainCode);
+		return chainCode;
 	}
 }
