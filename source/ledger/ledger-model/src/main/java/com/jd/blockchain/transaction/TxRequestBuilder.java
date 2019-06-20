@@ -71,8 +71,7 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 	}
 
 	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
-		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey,
-				txContent.getHash().toBytes());
+		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
 	}
 
 	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {

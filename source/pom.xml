@@ -41,7 +41,7 @@
 	<properties>
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
 		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
-		<browser.version>0.6.6.RELEASE</browser.version>
+		<explorer.version>0.7.0.RELEASE</explorer.version>
 		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
 		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
 			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
@@ -49,7 +49,7 @@
 		<shiro.version>1.2.2</shiro.version>
 		<aspectj.version>1.8.8</aspectj.version>
 		<!-- <asm.version>5.2</asm.version> -->
-
+		<procyon.version>0.5.35</procyon.version>
 		<druid.version>1.0.18</druid.version>
 		<commons.fileupload.version>1.2.2</commons.fileupload.version>
 		<mybatis.spring.version>1.2.4</mybatis.spring.version>
@@ -112,8 +112,8 @@
 
 			<dependency>
 				<groupId>com.jd.blockchain</groupId>
-				<artifactId>browser</artifactId>
-				<version>${browser.version}</version>
+				<artifactId>explorer</artifactId>
+				<version>${explorer.version}</version>
 			</dependency>
 
 			<!-- The test dependency -->
@@ -145,6 +145,27 @@
 				<groupId>com.lmax</groupId>
 				<artifactId>disruptor</artifactId>
 				<version>${disruptor.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-core</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-expressions</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-reflection</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-compilertools</artifactId>
+				<version>${procyon.version}</version>
 			</dependency>
 
 			<dependency>

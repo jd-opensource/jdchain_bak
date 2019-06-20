@@ -2,9 +2,9 @@ package com.jd.blockchain.mocker.contracts;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 
-public class WriteContractImpl implements EventProcessingAwire, WriteContract {
+public class WriteContractImpl implements EventProcessingAware, WriteContract {
 
     private ContractEventContext eventContext;
 
@@ -15,8 +15,9 @@ public class WriteContractImpl implements EventProcessingAwire, WriteContract {
     }
 
     @Override
-    public void writeKv(String address, String key, String value) {
+    public String writeKv(String address, String key, String value) {
         eventContext.getLedger().dataAccount(address).setText(key, value, -1);
+        return String.format("address = %s, key = %s, value = %s, version = %s", address, key, value, 0);
     }
 
     @Override
@@ -25,17 +26,8 @@ public class WriteContractImpl implements EventProcessingAwire, WriteContract {
     }
 
     @Override
-    public void postEvent(ContractEventContext eventContext, ContractException error) {
+    public void postEvent(ContractEventContext eventContext, Exception error) {
         System.out.println("----- postEvent1 -----");
     }
 
-    @Override
-    public void postEvent(ContractException error) {
-        System.out.println("----- postEvent2 -----");
-    }
-
-    @Override
-    public void postEvent() {
-        System.out.println("----- postEvent3 -----");
-    }
 }

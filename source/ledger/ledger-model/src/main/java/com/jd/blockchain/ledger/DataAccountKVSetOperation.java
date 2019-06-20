@@ -7,7 +7,7 @@ import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.utils.Bytes;
 
 @DataContract(code= DataCodes.TX_OP_DATA_ACC_SET)
-public interface DataAccountKVSetOperation extends Operation{
+public interface DataAccountKVSetOperation extends Operation {
 	
 	@DataField(order=2, primitiveType=PrimitiveType.BYTES)
 	Bytes getAccountAddress();

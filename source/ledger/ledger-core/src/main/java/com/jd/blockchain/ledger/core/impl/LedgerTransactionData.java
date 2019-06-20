@@ -1,8 +1,12 @@
 package com.jd.blockchain.ledger.core.impl;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionState;
@@ -22,6 +26,8 @@ public class LedgerTransactionData implements LedgerTransaction {
 	private HashDigest hash;
 
 	private long blockHeight;
+
+	private OperationResult[] operationResults;
 
 	// private HashDigest adminAccountHash;
 	//
@@ -49,7 +55,7 @@ public class LedgerTransactionData implements LedgerTransaction {
 	 *            交易级的系统快照；
 	 */
 	public LedgerTransactionData(long blockHeight, TransactionRequest txReq, TransactionState execState,
-			TransactionStagedSnapshot txSnapshot) {
+			TransactionStagedSnapshot txSnapshot, OperationResult... opResults) {
 		this.blockHeight = blockHeight;
 //		this.txSnapshot = txSnapshot == null ? new TransactionStagedSnapshot() : txSnapshot;
 		this.txSnapshot = txSnapshot;
@@ -57,6 +63,15 @@ public class LedgerTransactionData implements LedgerTransaction {
 		this.endpointSignatures = txReq.getEndpointSignatures();
 		this.nodeSignatures = txReq.getNodeSignatures();
 		this.executionState = execState;
+		if (opResults != null) {
+			Arrays.sort(opResults, new Comparator<OperationResult>() {
+				@Override
+				public int compare(OperationResult o1, OperationResult o2) {
+					return o1.getIndex() - o2.getIndex();
+				}
+			});
+		}
+		this.operationResults = opResults;
 	}
 
 	@Override
@@ -72,6 +87,11 @@ public class LedgerTransactionData implements LedgerTransaction {
 	@Override
 	public TransactionState getExecutionState() {
 		return executionState;
+	}
+
+	@Override
+	public OperationResult[] getOperationResults() {
+		return operationResults;
 	}
 
 	@Override

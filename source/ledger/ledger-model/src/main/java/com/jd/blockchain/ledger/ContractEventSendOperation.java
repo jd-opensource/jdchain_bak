@@ -7,6 +7,8 @@ import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.utils.Bytes;
 
 /**
+ * 发送合约事件的操作；
+ * 
  * @author huanghaiquan
  *
  */
@@ -34,15 +36,7 @@ public interface ContractEventSendOperation extends Operation {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 4, primitiveType = PrimitiveType.BYTES)
-	byte[] getArgs();
-
-	/**
-	 * 获得交易操作时间;
-	 * 
-	 * @return
-	 */
-	@DataField(order = 5, primitiveType = PrimitiveType.INT64)
-	long getTxOpTime();
+	@DataField(order = 4, refContract = true)
+	BytesValueList getArgs();
 
 }

@@ -162,8 +162,10 @@ public class AccountSet implements Transactional, MerkleProvable {
 	 * 
 	 * 只有最新版本的账户才能可写的，其它都是只读；
 	 * 
-	 * @param address 账户地址；
-	 * @param version 账户版本；如果指定为 -1，则返回最新版本；
+	 * @param address
+	 *            账户地址；
+	 * @param version
+	 *            账户版本；如果指定为 -1，则返回最新版本；
 	 * @return
 	 */
 	public BaseAccount getAccount(Bytes address, long version) {

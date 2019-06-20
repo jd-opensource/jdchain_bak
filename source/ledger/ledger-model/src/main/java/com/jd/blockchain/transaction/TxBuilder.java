@@ -1,5 +1,7 @@
 package com.jd.blockchain.transaction;
 
+import java.util.Collection;
+
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
@@ -47,6 +49,10 @@ public class TxBuilder implements TransactionBuilder {
 		txContent.setHash(contentHash);
 
 		return txContent;
+	}
+
+	public Collection<OperationResultHandle> getReturnValuehandlers() {
+		return opFactory.getReturnValuetHandlers();
 	}
 
 	@Override

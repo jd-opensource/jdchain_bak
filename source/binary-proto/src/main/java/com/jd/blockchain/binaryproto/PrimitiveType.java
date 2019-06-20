@@ -11,68 +11,42 @@ public enum PrimitiveType {
 	/**
 	 * 空；
 	 */
-	NIL(DataType.NIL),
+	NIL(BaseType.NIL),
 
 	/**
 	 * 布尔型；
 	 */
-	BOOLEAN(DataType.BOOLEAN),
+	BOOLEAN(BaseType.BOOLEAN),
 
 	/**
-	 * 数值型：
+	 * 8位的整数：
 	 */
-	INT8((byte) (DataType.NUMERIC | 0x01)),
-
-	INT16((byte) (DataType.NUMERIC | 0x02)),
-
-	INT32((byte) (DataType.NUMERIC | 0x03)),
-
-	INT64((byte) (DataType.NUMERIC | 0x04)),
+	INT8(BaseType.INT8),
 
 	/**
-	 * 时间戳；
+	 * 16位整数；
 	 */
-	TIMESTAMP((byte) (DataType.NUMERIC | 0x08)),
+	INT16(BaseType.INT16),
 
 	/**
-	 * 文本数据；
+	 * 32位整数；
 	 */
-	TEXT(DataType.TEXT),
+	INT32(BaseType.INT32),
 
 	/**
-	 * 文本数据；
+	 * 64位整数；
 	 */
-	JSON((byte) (DataType.TEXT | 0x01)),
+	INT64(BaseType.INT64),
 
 	/**
-	 * 文本数据；
+	 * 文本；
 	 */
-	XML((byte) (DataType.TEXT | 0x02)),
+	TEXT(BaseType.TEXT),
 
 	/**
 	 * 二进制数据；
 	 */
-	BYTES(DataType.BINARY),
-
-	/**
-	 * 大整数；
-	 */
-	BIG_INT((byte) (DataType.BINARY | 0x01)),
-
-	/**
-	 * 图片；
-	 */
-	IMG((byte) (DataType.BINARY | 0x02)),
-
-	/**
-	 * 视频；
-	 */
-	VIDEO((byte) (DataType.BINARY | 0x03)),
-
-	/**
-	 * 位置坐标；
-	 */
-	LOCATION((byte) (DataType.BINARY | 0x04));
+	BYTES(BaseType.BYTES);
 
 	public final byte CODE;
 

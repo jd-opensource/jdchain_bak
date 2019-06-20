@@ -2,7 +2,9 @@ package com.jd.blockchain.gateway.service;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.sdk.ContractSettings;
 import com.jd.blockchain.sdk.LedgerInitSettings;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * queryService only for gateway;
@@ -34,4 +36,15 @@ public interface GatewayQueryService {
      * @return
      */
     LedgerInitSettings getLedgerInitSettings(HashDigest ledgerHash);
+
+    /**
+     * 获取账本指定合约信息
+     *
+     * @param ledgerHash
+     *     账本Hash
+     * @param address
+     *     合约地址
+     * @return
+     */
+    ContractSettings getContractSettings(HashDigest ledgerHash, String address);
 }

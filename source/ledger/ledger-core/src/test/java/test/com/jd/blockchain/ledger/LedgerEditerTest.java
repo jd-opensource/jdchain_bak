@@ -18,7 +18,7 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueType;
+import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -68,17 +68,17 @@ public class LedgerEditerTest {
 		MemoryKVStorage storage = new MemoryKVStorage();
 
 		// 创建初始化配置；
-		LedgerInitSetting initSetting = createLedgerInitSetting();
+		LedgerInitSetting initSetting = LedgerTestUtils.createLedgerInitSetting();
 
 		// 创建账本；
 		return LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
 	}
 
 	private LedgerTransactionContext createGenisisTx(LedgerEditor ldgEdt) {
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest(null, signatureFunction);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
 
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
-		
+
 		return txCtx;
 	}
 
@@ -88,8 +88,7 @@ public class LedgerEditerTest {
 		LedgerEditor ldgEdt = createLedgerInitEditor();
 		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
-		
-		
+
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeypair dataKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
 
@@ -109,7 +108,7 @@ public class LedgerEditerTest {
 
 		// 验证数据读写的一致性；
 		BytesValue bytes = dataAccount.getBytes("A");
-		assertEquals(BytesValueType.TEXT, bytes.getType());
+		assertEquals(DataType.TEXT, bytes.getType());
 		String textValue = bytes.getValue().toUTF8String();
 		assertEquals("abc", textValue);
 	}
@@ -147,42 +146,5 @@ public class LedgerEditerTest {
 		ldgEdt.commit();
 
 	}
-
-	private LedgerInitSetting createLedgerInitSetting() {
-		SignatureFunction signFunc = Crypto.getSignatureFunction("ED25519");
-
-		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
-		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
-			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
-		}
-
-		CryptoConfig defCryptoSetting = new CryptoConfig();
-		defCryptoSetting.setSupportedProviders(supportedProviders);
-		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
-
-		LedgerInitSettingData initSetting = new LedgerInitSettingData();
-
-		initSetting.setLedgerSeed(BytesUtils.toBytes("A Test Ledger seed!", "UTF-8"));
-		initSetting.setCryptoSetting(defCryptoSetting);
-		ConsensusParticipantData[] parties = new ConsensusParticipantData[2];
-		parties[0] = new ConsensusParticipantData();
-		parties[0].setId(0);
-		parties[0].setName("John");
-		AsymmetricKeypair kp0 = signFunc.generateKeypair();
-		parties[0].setPubKey(kp0.getPubKey());
-		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
-		parties[0].setHostAddress(new NetworkAddress("192.168.1.6", 9000));
-
-		parties[1] = new ConsensusParticipantData();
-		parties[1].setId(1);
-		parties[1].setName("John");
-		AsymmetricKeypair kp1 = signFunc.generateKeypair();
-		parties[1].setPubKey(kp1.getPubKey());
-		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
-		parties[1].setHostAddress(new NetworkAddress("192.168.1.7", 9000));
-		initSetting.setConsensusParticipants(parties);
-
-		return initSetting;
-	}
+	
 }

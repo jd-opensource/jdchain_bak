@@ -42,7 +42,7 @@ public class CompositeConnectionFactory implements DbConnectionFactory {
                         connectionFactoryMap.put(dbPrefix, dbConnectionFactory);
                     }
                 } catch (Exception e) {
-                    LOGGER.error("class:{%s} init error {%s}", clazz.getName(), e.getMessage());
+                    LOGGER.error("class:{} init error {}", clazz.getName(), e.getMessage());
                 }
             }
         }

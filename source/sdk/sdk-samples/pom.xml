@@ -25,6 +25,11 @@
 			<artifactId>tools-initializer</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>contract-samples</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

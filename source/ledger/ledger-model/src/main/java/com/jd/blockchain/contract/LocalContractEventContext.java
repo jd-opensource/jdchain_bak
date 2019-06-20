@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.TransactionRequest;
 
 /**
@@ -13,17 +14,14 @@ import com.jd.blockchain.ledger.TransactionRequest;
 public class LocalContractEventContext implements ContractEventContext,Cloneable {
     private HashDigest ledgeHash;
     private String event;
-    private byte[] chainCode;
-    private byte[] args;
+    private BytesValueList args;
     private TransactionRequest transactionRequest;
     private Set<BlockchainIdentity> txSigners;
-    private Set<BlockchainIdentity> contractOwners;
     private LedgerContext ledgerContext;
 
     public LocalContractEventContext(HashDigest ledgeHash, String event){
         this.ledgeHash = ledgeHash;
         this.event = event;
-//        this.chainCode = chainCode;
     }
 
     @Override
@@ -47,7 +45,7 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
     }
 
     @Override
-    public byte[] getArgs() {
+    public BytesValueList getArgs() {
         return args;
     }
 
@@ -81,11 +79,6 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
         return this;
     }
 
-    public LocalContractEventContext setContractOwners(Set<BlockchainIdentity> contractOwners) {
-        this.contractOwners = contractOwners;
-        return this;
-    }
-
     public LocalContractEventContext setLedgerContext(LedgerContext ledgerContext) {
         this.ledgerContext = ledgerContext;
         return this;
@@ -100,7 +93,7 @@ public class LocalContractEventContext implements ContractEventContext,Cloneable
 //        return this;
 //    }
 
-    public LocalContractEventContext setArgs(byte[] args) {
+    public LocalContractEventContext setArgs(BytesValueList args) {
         this.args = args;
         return this;
     }

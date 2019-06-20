@@ -68,7 +68,7 @@ public class LedgerTransactionDataTest {
 
 		long blockHeight = 9986L;
 		data = new LedgerTransactionData(blockHeight, txRequestMessage, TransactionState.SUCCESS,
-				initTransactionStagedSnapshot());
+				initTransactionStagedSnapshot(), null);
 
 		HashDigest hash = new HashDigest(ClassicAlgorithm.SHA256, "zhangsan".getBytes());
 		HashDigest adminAccountHash = new HashDigest(ClassicAlgorithm.SHA256, "lisi".getBytes());

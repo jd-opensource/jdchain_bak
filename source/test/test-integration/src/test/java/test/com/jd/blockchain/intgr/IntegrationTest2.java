@@ -1,12 +1,32 @@
 package test.com.jd.blockchain.intgr;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -17,21 +37,11 @@ import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
+
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
 import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest.NodeWebContext;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-
-import static org.junit.Assert.*;
 
 /**
  * 测试合约，提交后不立即进行验证，因为此时可能还没有完成正式结块;

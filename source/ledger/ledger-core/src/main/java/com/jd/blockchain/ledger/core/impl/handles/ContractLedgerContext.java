@@ -5,23 +5,7 @@ import java.util.List;
 
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVInfoVO;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerMetadata;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.DataAccountKVSetOperationBuilder;
@@ -186,7 +170,7 @@ public class ContractLedgerContext implements LedgerContext {
 	}
 
 	@Override
-	public AccountHeader getContract(HashDigest ledgerHash, String address) {
+	public ContractInfo getContract(HashDigest ledgerHash, String address) {
 		return innerQueryService.getContract(ledgerHash, address);
 	}
 
@@ -279,7 +263,7 @@ public class ContractLedgerContext implements LedgerContext {
 
 		@Override
 		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromText(value);
+			BytesValue bytesValue = BytesData.fromText(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -287,7 +271,7 @@ public class ContractLedgerContext implements LedgerContext {
 
 		@Override
 		public DataAccountKVSetOperationBuilder setBytes(String key, Bytes value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+			BytesValue bytesValue = BytesData.fromBytes(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -295,7 +279,7 @@ public class ContractLedgerContext implements LedgerContext {
 
 		@Override
 		public DataAccountKVSetOperationBuilder setInt64(String key, long value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromInt64(value);
+			BytesValue bytesValue = BytesData.fromInt64(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -312,7 +296,7 @@ public class ContractLedgerContext implements LedgerContext {
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromJSON(value);
+			BytesValue bytesValue = BytesData.fromJSON(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -320,7 +304,7 @@ public class ContractLedgerContext implements LedgerContext {
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setXML(String key, String value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromXML(value);
+			BytesValue bytesValue = BytesData.fromXML(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -328,7 +312,7 @@ public class ContractLedgerContext implements LedgerContext {
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setBytes(String key, byte[] value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+			BytesValue bytesValue = BytesData.fromBytes(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -336,7 +320,7 @@ public class ContractLedgerContext implements LedgerContext {
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setImage(String key, byte[] value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromImage(value);
+			BytesValue bytesValue = BytesData.fromImage(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;
@@ -344,7 +328,7 @@ public class ContractLedgerContext implements LedgerContext {
 		
 		@Override
 		public DataAccountKVSetOperationBuilder setTimestamp(String key, long value, long expVersion) {
-			BytesValue bytesValue = BytesValueEntry.fromTimestamp(value);
+			BytesValue bytesValue = BytesData.fromTimestamp(value);
 			this.op = new SingleKVSetOpTemplate(key, bytesValue, expVersion);
 			handle(op);
 			return this;

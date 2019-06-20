@@ -55,14 +55,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		DataContractRegistry.register(ActionResponse.class);
 		DataContractRegistry.register(ClientIdentifications.class);
 		DataContractRegistry.register(ClientIdentification.class);
-
-		DataContractRegistry.register(CONTRACT_INT8.class);
-		DataContractRegistry.register(CONTRACT_INT16.class);
-		DataContractRegistry.register(CONTRACT_INT32.class);
-		DataContractRegistry.register(CONTRACT_INT64.class);
-		DataContractRegistry.register(CONTRACT_TEXT.class);
-		DataContractRegistry.register(CONTRACT_BINARY.class);
-		DataContractRegistry.register(ContractBizContent.class);
+		DataContractRegistry.register(BytesValueList.class);
 
 		ByteArrayObjectUtil.init();
 	}

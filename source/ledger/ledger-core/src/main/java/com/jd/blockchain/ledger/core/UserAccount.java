@@ -3,7 +3,7 @@ package com.jd.blockchain.ledger.core;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.utils.Bytes;
 
@@ -50,12 +50,12 @@ public class UserAccount implements UserInfo {
 
 	public long setDataPubKey(PubKey pubKey) {
 		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, BytesValueEntry.fromBytes(pkBytes), -1);
+		return baseAccount.setBytes(DATA_PUB_KEY, BytesData.fromBytes(pkBytes), -1);
 	}
 
 	public long setDataPubKey(PubKey pubKey, long version) {
 		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, BytesValueEntry.fromBytes(pkBytes), version);
+		return baseAccount.setBytes(DATA_PUB_KEY, BytesData.fromBytes(pkBytes), version);
 	}
 
 	public long setProperty(String key, String value, long version) {
@@ -63,7 +63,7 @@ public class UserAccount implements UserInfo {
 	}
 
 	public long setProperty(Bytes key, String value, long version) {
-		return baseAccount.setBytes(encodePropertyKey(key), BytesValueEntry.fromText(value), version);
+		return baseAccount.setBytes(encodePropertyKey(key), BytesData.fromText(value), version);
 	}
 
 	public String getProperty(Bytes key) {

@@ -8,43 +8,52 @@
  */
 package test.com.jd.blockchain.intgr;
 
+import static com.jd.blockchain.transaction.ContractReturnValue.decode;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.ClassPathResource;
+
 import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.LedgerManage;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TransactionTemplate;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
+import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.net.NetworkAddress;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.springframework.core.io.ClassPathResource;
-import test.com.jd.blockchain.intgr.contract.AssetContract;
-import test.com.jd.blockchain.intgr.contract.AssetContract2;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static org.junit.Assert.*;
 
 /**
  *
@@ -63,7 +72,8 @@ public class IntegrationBase {
 
 	public static final String PASSWORD = "abc";
 
-	public static final String[] PUB_KEYS = { "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
+	public static final String[] PUB_KEYS = {
+			"3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
 			"3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX",
 			"3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x",
 			"3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk" };
@@ -441,9 +451,9 @@ public class IntegrationBase {
 	// 合约测试使用的初始化数据;
     static BlockchainKeypair contractDataKey = BlockchainKeyGenerator.getInstance().generate();
     static BlockchainKeypair contractDeployKey = BlockchainKeyGenerator.getInstance().generate();
-	// 保存资产总数的键；
-	// 第二个参数;
-    private static String contractZipName = "contract.jar";
+    // 保存资产总数的键；
+    // 第二个参数;
+    private static String contractZipName = "contract-read.jar";
     static HashDigest txContentHash;
 
     public static LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
@@ -477,67 +487,146 @@ public class IntegrationBase {
 		assertArrayEquals(contractCode, contractCodeInDb);
 
 		// execute the contract;
-        testContractExe(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
-        testContractExe1(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
-
+//        testContractExe(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
+//        testContractExe1(adminKey, ledgerHash, keyPairResponse.keyPair,  blockchainService, ledgerRepository);
+		testExeReadContract(adminKey, ledgerHash, blockchainService);
 		return block;
 	}
 
-    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
-		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
-		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
-
-		// 定义交易；
-		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
-
-        Byte byteObj = Byte.parseByte("123");
+//    private static  <T> void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
+//			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+//		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
+//		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
+//
+//		// 定义交易；
+//		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+//
+//        Byte byteObj = Byte.parseByte("123");
+////        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
+////                contractDeployKey.getAddress().toBase58(),321123);
 //        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
-//                contractDeployKey.getAddress().toBase58(),321123);
-        txTpl.contract(contractDeployKey.getAddress(),AssetContract2.class).issue(byteObj,
-                dataKey.getAddress().toBase58(),Bytes.fromString("123321"));
+//                dataKey.getAddress().toBase58(),Bytes.fromString("123321"));
+//
+//		// 签名；
+//		PreparedTransaction ptx = txTpl.prepare();
+//		ptx.sign(adminKey);
+//
+//		// 提交并等待共识返回；
+//		TransactionResponse txResp = ptx.commit();
+//
+//		// 验证结果；
+//        Assert.assertTrue(txResp.isSuccess());
+//        assertEquals(ptx.getHash(),txResp.getContentHash());
+//        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
+//        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(0,1);
+//        assertEquals("100",kvDataEntries[0].getValue().toString());
+//    }
 
-		// 签名；
+//    private static  <T> void testContractExe1(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
+//                                             BlockchainService blockchainService,LedgerRepository ledgerRepository) {
+//        LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
+//        LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
+//
+//        // 定义交易；
+//        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+//
+//        AssetContract2 assetContract = txTpl.contract(contractDeployKey.getAddress(), AssetContract2.class);
+//        ContractBizContent contractBizContent = () -> new String[]{"param1","param2"};
+//        assetContract.issue(contractBizContent,dataKey.getAddress().toBase58(),123456);
+//
+//        // 签名；
+//        PreparedTransaction ptx = txTpl.prepare();
+//        ptx.sign(adminKey);
+//
+//        // 提交并等待共识返回；
+//        TransactionResponse txResp = ptx.commit();
+//
+//        // 验证结果；
+//		Assert.assertTrue(txResp.isSuccess());
+//        assertEquals(ptx.getHash(),txResp.getContentHash());
+//        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
+//        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(1,2);
+//        assertEquals("value1",kvDataEntries[0].getValue().toString());
+//        assertEquals(888L,kvDataEntries[1].getValue());
+//	}
+
+	private static void testExeReadContract(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainService blockchainService) {
+
+		// 首先注册一个数据账户
+		BlockchainKeypair newDataAccount = BlockchainKeyGenerator.getInstance().generate();
+
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+		txTpl.dataAccounts().register(newDataAccount.getIdentity());
+
 		PreparedTransaction ptx = txTpl.prepare();
 		ptx.sign(adminKey);
 
 		// 提交并等待共识返回；
-		TransactionResponse txResp = ptx.commit();
+		ptx.commit();
 
-		// 验证结果；
-        Assert.assertTrue(txResp.isSuccess());
-        assertEquals(ptx.getHash(),txResp.getContentHash());
-        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
-        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(0,1);
-        assertEquals("100",kvDataEntries[0].getValue().toString());
-    }
+		// 再提交一个KV写入
+		String key1 = "JingDong", value1 = "www.jd.com";
+		String key2 = "JD", value2 = "JingDong";
+		String key3 = "Test", value3 = "OK";
 
-    private static  <T> void testContractExe1(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair dataKey,
-                                             BlockchainService blockchainService,LedgerRepository ledgerRepository) {
-        LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
-        LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
+		TransactionTemplate txKv = blockchainService.newTransaction(ledgerHash);
+		txKv.dataAccount(newDataAccount.getAddress())
+				.setText(key1, value1, -1)
+				.setBytes(key2, Bytes.fromString(value2), -1)
+				.setBytes(key3, Bytes.fromString(value3).toBytes(), -1);
+		PreparedTransaction kvPtx = txKv.prepare();
+		kvPtx.sign(adminKey);
 
-        // 定义交易；
-        TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+		// 提交并等待共识返回；
+		kvPtx.commit();
 
-        AssetContract2 assetContract = txTpl.contract(contractDeployKey.getAddress(), AssetContract2.class);
-        ContractBizContent contractBizContent = () -> new String[]{"param1","param2"};
-        assetContract.issue(contractBizContent,dataKey.getAddress().toBase58(),123456);
+		// 下面才是执行Read交易
+		// 定义交易；
+		TransactionTemplate txContract = blockchainService.newTransaction(ledgerHash);
 
-        // 签名；
-        PreparedTransaction ptx = txTpl.prepare();
-        ptx.sign(adminKey);
+		ReadContract readContract1 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
 
-        // 提交并等待共识返回；
-        TransactionResponse txResp = ptx.commit();
+		GenericValueHolder<String> result1 = decode(readContract1.read(newDataAccount.getAddress().toBase58(), key1));
 
-        // 验证结果；
-		Assert.assertTrue(txResp.isSuccess());
-        assertEquals(ptx.getHash(),txResp.getContentHash());
-        LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
-        KVDataEntry[] kvDataEntries =  ledgerRepository.getDataAccountSet(block).getDataAccount(dataKey.getAddress()).getDataEntries(1,2);
-        assertEquals("value1",kvDataEntries[0].getValue().toString());
-        assertEquals(888L,kvDataEntries[1].getValue());
+		ReadContract readContract2 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
+
+		readContract2.read(newDataAccount.getAddress().toBase58(), key2);
+
+		ReadContract readContract3 = txContract.contract(contractDeployKey.getAddress(), ReadContract.class);
+
+		GenericValueHolder<Long> result3 = decode(readContract3.readVersion(newDataAccount.getAddress().toBase58(), key2));
+
+		// 签名；
+		PreparedTransaction contractPtx = txContract.prepare();
+		contractPtx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse readTxResp = contractPtx.commit();
+
+		OperationResult[] operationResults = readTxResp.getOperationResults();
+
+		// 通过EventResult获取结果
+		System.out.printf("readContract1.result = %s \r\n", result1.get());
+		System.out.printf("readContract3.result = %s \r\n", result3.get());
+
+
+//		// 打印结果
+//		for (OperationResult or : operationResults) {
+//			System.out.printf("操作[%s].Result = %s \r\n", or.getIndex(), ContractSerializeUtils.resolve(or.getResult()));
+//		}
+//
+//        // 验证结果
+//        assertNotNull(contractReturn);
+//        assertEquals(contractReturn.length, 3);
+//
+//        String returnVal1 = contractReturn[0];
+//        assertEquals(value1, returnVal1);
+//
+//        String returnVal2 = contractReturn[1];
+//        assertEquals(value2, returnVal2);
+//
+//        String returnVal3 = contractReturn[2];
+//        assertEquals("0", returnVal3);
 	}
 
 	/**

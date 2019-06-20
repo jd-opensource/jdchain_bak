@@ -33,7 +33,9 @@ public class SampleTest {
 
         writeContract = mockerNodeContext.deployContract(writeContract);
 
-        writeContract.writeKv(dataAccountAddress, key, value);
+        String result = writeContract.writeKv(dataAccountAddress, key, value);
+
+        System.out.println(result);
 
         // 查询结果
         KVDataEntry[] dataEntries = mockerNodeContext.getDataEntries(ledgerHash, dataAccountAddress, key);

@@ -1,5 +1,7 @@
 package com.jd.blockchain.ledger;
 
+import java.io.Closeable;
+
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.transaction.ClientOperator;
 
@@ -9,7 +11,7 @@ import com.jd.blockchain.transaction.ClientOperator;
  * @author huanghaiquan
  *
  */
-public interface TransactionTemplate extends ClientOperator {
+public interface TransactionTemplate extends ClientOperator, Closeable {
 	
 	HashDigest getLedgerHash();
 

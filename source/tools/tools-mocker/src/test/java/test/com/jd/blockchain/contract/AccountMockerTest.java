@@ -39,7 +39,7 @@ public class AccountMockerTest {
 
         accountContract.create(address, accountTo, 1000L);
 
-        accountContract.print(address, accountFrom, accountTo);
+//        accountContract.print(address, accountFrom, accountTo);
 
         // 开始转账
         accountContract.transfer(address, accountFrom, accountTo, 500);

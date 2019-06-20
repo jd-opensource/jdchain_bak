@@ -8,6 +8,14 @@ public class KVDataVO {
     private String key;
     private long[] version;
 
+    public KVDataVO() {
+    }
+
+    public KVDataVO(String key, long[] version) {
+        this.key = key;
+        this.version = version;
+    }
+
     public String getKey() {
         return key;
     }

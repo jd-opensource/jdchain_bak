@@ -544,7 +544,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/contracts/address/{address}")
 	@Override
-	AccountHeader getContract(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	ContractInfo getContract(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
                               @PathParam(name="address") String address);
 
 

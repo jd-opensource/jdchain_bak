@@ -6,7 +6,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEntry;
+import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
 import com.jd.blockchain.utils.Bytes;
@@ -49,15 +49,15 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 
 	
 	public long setBytes(Bytes key, String value, long version) {
-		BytesValue bytesValue = BytesValueEntry.fromText(value);
+		BytesValue bytesValue = BytesData.fromText(value);
 		return baseAccount.setBytes(key, bytesValue, version);
 	}
 
 	public long setBytes(Bytes key, byte[] value, long version) {
-		BytesValue bytesValue = BytesValueEntry.fromBytes(value);
+		BytesValue bytesValue = BytesData.fromBytes(value);
 		return baseAccount.setBytes(key, bytesValue, version);
 	}
-	
+
 	/**
 	 * Return the latest version entry associated the specified key; If the key
 	 * doesn't exist, then return -1;

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
@@ -29,7 +31,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private static final ContractCodeDeployOperationBuilderImpl CONTRACT_CODE_DEPLOY_OP_BUILDER = new ContractCodeDeployOperationBuilderImpl();
 
-	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
+//	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
 
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
@@ -43,6 +45,7 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private ContractInvocationProxyBuilder contractInvoProxyBuilder = new ContractInvocationProxyBuilder();
 
+	// TODO: 暂时只支持单线程情形，未考虑多线程；
 	private List<Operation> operationList = new ArrayList<>();
 
 	@Override
@@ -89,9 +92,41 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		return contractInvoProxyBuilder.create(address, contractIntf, contractEventSendOpBuilder);
 	}
 
+	/**
+	 * 返回已经定义的操作列表；
+	 * 
+	 * @return
+	 */
 	public Collection<Operation> getOperations() {
-		// TODO: 合并操作列表中可能的重复操作；
 		return operationList;
+	}
+
+	/**
+	 * 返回与操作列表对应的返回值处理器；
+	 * 
+	 * @return
+	 */
+	public Collection<OperationResultHandle> getReturnValuetHandlers() {
+		List<OperationResultHandle> resultHandlers = new ArrayList<OperationResultHandle>();
+		int index = 0;
+		for (Operation op : operationList) {
+			if (op instanceof ContractEventSendOperation) {
+				// 操作具有返回值，创建对应的结果处理器；
+				ContractEventSendOpTemplate opTemp = (ContractEventSendOpTemplate) op;
+				ContractInvocation invocation = opTemp.getInvocation();
+				OperationResultHandle retnHandler;
+				if (invocation == null) {
+					retnHandler = new NullOperationReturnValueHandler(index);
+				} else {
+					invocation.setOperationIndex(index);
+					retnHandler = invocation;
+				}
+				resultHandlers.add(retnHandler);
+			}
+			index++;
+		}
+
+		return resultHandlers;
 	}
 
 	public void clear() {
@@ -130,7 +165,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			operationList.add(op);
 			return op;
 		}
-
 	}
 
 	private class DataAccountKVSetOperationBuilderFilter implements DataAccountKVSetOperationBuilder {
@@ -154,13 +188,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 				operationList.add(op);
 			}
 		}
-
-//		@Override
-//		public DataAccountKVSetOperationBuilder set(String key, byte[] value, long expVersion) {
-//			innerBuilder.set(key, value, expVersion);
-//			addOperation();
-//			return this;
-//		}
 
 		@Override
 		public DataAccountKVSetOperationBuilder setText(String key, String value, long expVersion) {
@@ -197,13 +224,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			return this;
 		}
 
-//		@Override
-//		public DataAccountKVSetOperationBuilder set(String key, String value, long expVersion) {
-//			innerBuilder.setText(key, value, expVersion);
-//			addOperation();
-//			return this;
-//		}
-
 		@Override
 		public DataAccountKVSetOperationBuilder setJSON(String key, String value, long expVersion) {
 			innerBuilder.setJSON(key, value, expVersion);
@@ -228,30 +248,56 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	}
 
 	private class ContractCodeDeployOperationBuilderFilter implements ContractCodeDeployOperationBuilder {
-
 		@Override
 		public ContractCodeDeployOperation deploy(BlockchainIdentity id, byte[] chainCode) {
 			ContractCodeDeployOperation op = CONTRACT_CODE_DEPLOY_OP_BUILDER.deploy(id, chainCode);
 			operationList.add(op);
 			return op;
 		}
-
 	}
 
 	private class ContractEventSendOperationBuilderFilter implements ContractEventSendOperationBuilder {
 
 		@Override
-		public ContractEventSendOperation send(String address, String event, byte[] args) {
-			ContractEventSendOperation op = CONTRACT_EVENT_SEND_OP_BUILDER.send(address, event, args);
+		public ContractEventSendOperation send(String address, String event, BytesValueList args) {
+			return send(Bytes.fromBase58(address), event, args);
+		}
+
+		@Override
+		public synchronized ContractEventSendOperation send(Bytes address, String event, BytesValueList args) {
+			ContractEventSendOpTemplate op = new ContractEventSendOpTemplate(address, event, args);
 			operationList.add(op);
 			return op;
 		}
 
+	}
+
+	/**
+	 * 不做任何操作的返回值处理器；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
+	private static class NullOperationReturnValueHandler implements OperationResultHandle {
+
+		private int operationIndex;
+
+		public NullOperationReturnValueHandler(int operationIndex) {
+			this.operationIndex = operationIndex;
+		}
+
 		@Override
-		public ContractEventSendOperation send(Bytes address, String event, byte[] args) {
-			ContractEventSendOperation op = CONTRACT_EVENT_SEND_OP_BUILDER.send(address, event, args);
-			operationList.add(op);
-			return op;
+		public int getOperationIndex() {
+			return operationIndex;
+		}
+
+		@Override
+		public Object complete(BytesValue bytesValue) {
+			return null;
+		}
+
+		@Override
+		public void complete(Throwable error) {
 		}
 
 	}

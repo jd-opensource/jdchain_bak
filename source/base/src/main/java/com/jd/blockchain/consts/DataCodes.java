@@ -9,14 +9,14 @@ package com.jd.blockchain.consts;
 public interface DataCodes {
 
 	public static final int BYTES_VALUE = 0x80;
+	
+	public static final int BYTES_VALUE_LIST = 0x81;
 
 	public static final int BLOCK_CHAIN_IDENTITY = 0x90;
 
 	public static final int BLOCK = 0x100;
 
 	public static final int BLOCK_BODY = 0x110;
-
-	// public static final int BLOCK_LEDGER = 0x110;
 
 	public static final int BLOCK_GENESIS = 0x120;
 
@@ -29,6 +29,8 @@ public interface DataCodes {
 	public static final int TX_CONTENT = 0x210;
 
 	public static final int TX_CONTENT_BODY = 0x220;
+
+	public static final int TX_RETURN_MESSAGE = 0x230;
 
 	public static final int TX_OP = 0x300;
 
@@ -48,6 +50,8 @@ public interface DataCodes {
 	public static final int TX_OP_CONTRACT_EVENT_SEND = 0x340;
 
 	public static final int TX_RESPONSE = 0x350;
+
+	public static final int TX_OP_RESULT = 0x360;
 
 	public static final int METADATA = 0x600;
 
@@ -81,17 +85,9 @@ public interface DataCodes {
 
 	//contract related;
 	public static final int CONTRACT = 0xA00;
-	public static final int CONTRACT_INT8 = 0xA01;
-	public static final int CONTRACT_INT16 = 0xA02;
-	public static final int CONTRACT_INT32 = 0xA03;
-	public static final int CONTRACT_INT64 = 0xA04;
-	public static final int CONTRACT_TEXT = 0xA05;
-	public static final int CONTRACT_BINARY = 0xA06;
-	public static final int CONTRACT_BIG_INT = 0xA07;
-	//...0xA19
-	public static final int CONTRACT_BIZ_CONTENT = 0xA20;
-	public static final int CONTRACT_ARGS = 0xA21;
 
+
+	//...0xA19
 	public static final int HASH = 0xB00;
 
 	public static final int HASH_OBJECT = 0xB10;

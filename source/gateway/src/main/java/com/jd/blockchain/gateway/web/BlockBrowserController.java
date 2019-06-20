@@ -8,6 +8,7 @@ import com.jd.blockchain.gateway.service.DataRetrievalService;
 import com.jd.blockchain.gateway.service.GatewayQueryService;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
+import com.jd.blockchain.sdk.ContractSettings;
 import com.jd.blockchain.sdk.LedgerInitSettings;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.BaseConstant;
@@ -23,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/")
 public class BlockBrowserController implements BlockchainExtendQueryService {
+
     private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BlockBrowserController.class);
 
 	@Autowired
@@ -55,7 +57,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 //    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/participants")
     @Override
-    public ParticipantNode[] getConsensusParticipants(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+    public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash) {
         return peerService.getQueryService().getConsensusParticipants(ledgerHash);
     }
 
@@ -263,10 +265,15 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts/address/{address}")
+    public ContractSettings getContractSettings(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+                                        @PathVariable(name = "address") String address) {
+        return gatewayQueryService.getContractSettings(ledgerHash, address);
+    }
+
+//    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts/address/{address}")
     @Override
-    public AccountHeader getContract(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
-                                     @PathVariable(name = "address") String address) {
-	    return peerService.getQueryService().getContract(ledgerHash, address);
+    public ContractInfo getContract(HashDigest ledgerHash, String address) {
+        return peerService.getQueryService().getContract(ledgerHash, address);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/blocks/latest")
@@ -450,7 +457,8 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "ledgers/{ledgerHash}/**/search")
-    public Object dataRetrieval(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,HttpServletRequest request) {
+    public Object dataRetrieval(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+                                HttpServletRequest request) {
         String result;
         if (dataRetrievalUrl == null || dataRetrievalUrl.length() <= 0) {
             result = "{'message':'OK','data':'" + "data.retrieval.url is empty" + "'}";

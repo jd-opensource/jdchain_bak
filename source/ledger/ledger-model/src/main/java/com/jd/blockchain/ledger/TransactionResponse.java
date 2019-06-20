@@ -12,7 +12,7 @@ import com.jd.blockchain.crypto.HashDigest;
  * @author huanghaiquan
  *
  */
-@DataContract(code= DataCodes.TX_RESPONSE)
+@DataContract(code = DataCodes.TX_RESPONSE)
 public interface TransactionResponse {
 
 	/**
@@ -20,7 +20,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	HashDigest getContentHash();
 
 	/**
@@ -28,7 +28,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=2, refEnum=true)
+	@DataField(order = 2, refEnum = true)
 	TransactionState getExecutionState();
 
 	/**
@@ -36,7 +36,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=3, primitiveType = PrimitiveType.BYTES)
+	@DataField(order = 3, primitiveType = PrimitiveType.BYTES)
 	HashDigest getBlockHash();
 
 	/**
@@ -47,7 +47,7 @@ public interface TransactionResponse {
 	 * 
 	 * @return
 	 */
-	@DataField(order=4, primitiveType=PrimitiveType.INT64)
+	@DataField(order = 4, primitiveType = PrimitiveType.INT64)
 	long getBlockHeight();
 
 	/**
@@ -55,7 +55,7 @@ public interface TransactionResponse {
 	 *
 	 * @return
 	 */
-	@DataField(order=5, primitiveType=PrimitiveType.BOOLEAN)
+	@DataField(order = 5, primitiveType = PrimitiveType.BOOLEAN)
 	boolean isSuccess();
 
 	/**
@@ -63,6 +63,6 @@ public interface TransactionResponse {
 	 *
 	 * @return
 	 */
-	@DataField(order=6, list=true, primitiveType=PrimitiveType.TEXT)
-	String[] getContractReturn();
+	@DataField(order=6, list=true, refContract = true)
+	OperationResult[] getOperationResults();
 }

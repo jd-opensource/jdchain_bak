@@ -21,7 +21,7 @@ public interface BytesValue {
 	 * @return
 	 */
 	@DataField(order = 0, refEnum = true)
-	BytesValueType getType();
+	DataType getType();
 
 	/**
 	 * 数据值的二进制序列；

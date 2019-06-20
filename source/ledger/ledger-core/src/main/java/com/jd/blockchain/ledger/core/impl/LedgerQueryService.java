@@ -5,19 +5,7 @@ import java.util.List;
 
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
-import com.jd.blockchain.ledger.KVDataVO;
-import com.jd.blockchain.ledger.KVInfoVO;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerMetadata;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserInfo;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountSet;
@@ -276,15 +264,15 @@ public class LedgerQueryService implements BlockchainQueryService {
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
-			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+			final String currKey = keys[i];
 
-			dataAccount.getBytes(Bytes.fromString(keys[i]), 1);
+			ver = dataAccount.getDataVersion(Bytes.fromString(currKey));
 
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, null);
+				entries[i] = new KVDataObject(currKey, -1, null);
 			} else {
-				BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
-				entries[i] = new KVDataObject(keys[i], ver, value);
+				BytesValue value = dataAccount.getBytes(Bytes.fromString(currKey), ver);
+				entries[i] = new KVDataObject(currKey, ver, value);
 			}
 		}
 
@@ -367,7 +355,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	}
 
 	@Override
-	public AccountHeader getContract(HashDigest ledgerHash, String address) {
+	public ContractInfo getContract(HashDigest ledgerHash, String address) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		ContractAccountSet contractAccountSet = ledger.getContractAccountSet(block);

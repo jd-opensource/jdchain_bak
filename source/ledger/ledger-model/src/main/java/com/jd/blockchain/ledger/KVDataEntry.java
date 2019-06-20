@@ -25,7 +25,7 @@ public interface KVDataEntry {
 	 * 
 	 * @return
 	 */
-	BytesValueType getType();
+	DataType getType();
 	
 	/**
 	 * 值；

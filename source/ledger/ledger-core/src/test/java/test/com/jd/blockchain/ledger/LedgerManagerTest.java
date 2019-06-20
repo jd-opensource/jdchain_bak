@@ -83,13 +83,13 @@ public class LedgerManagerTest {
 		LedgerEditor ldgEdt = ledgerManager.newLedger(initSetting, storage);
 
 		// 创建一个模拟的创世交易；
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest(null, signatureFunction);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
 
 		// 记录交易，注册用户；
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = txCtx.getDataSet();
 		BlockchainKeypair userKP = BlockchainKeyGenerator.getInstance().generate();
-		;
+		
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;
@@ -21,7 +21,7 @@ import com.jd.blockchain.ledger.KVDataObject;
  * @author huanghaiquan
  *
  */
-public class AssetContractImpl implements EventProcessingAwire, AssetContract {
+public class AssetContractImpl implements EventProcessingAware, AssetContract {
 	// 资产管理账户的地址；
 	private static final String ASSET_ADDRESS = "2njZBNbFQcmKd385DxVejwSjy4driRzf9Pk";
 	// 保存资产总数的键；
@@ -171,17 +171,7 @@ public class AssetContractImpl implements EventProcessingAwire, AssetContract {
 	 * com.jd.blockchain.contract.model.ContractError)
 	 */
 	@Override
-	public void postEvent(ContractEventContext eventContext, ContractException error) {
+	public void postEvent(ContractEventContext eventContext, Exception error) {
 		this.eventContext = null;
-	}
-
-	@Override
-	public void postEvent(ContractException error) {
-
-	}
-
-	@Override
-	public void postEvent() {
-
 	}
 }

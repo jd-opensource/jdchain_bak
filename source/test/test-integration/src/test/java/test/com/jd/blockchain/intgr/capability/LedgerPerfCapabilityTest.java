@@ -38,22 +38,22 @@ public class LedgerPerfCapabilityTest {
 
     @Test
     public void testKvStorage4Memory() {
-        LedgerPerformanceTest.test(new String[]{SILENT, CONSENSUS});
+        LedgerPerformanceTest.test(new String[]{SILENT});
     }
 
     @Test
     public void testUserRegister4Memory() {
-        LedgerPerformanceTest.test(new String[]{USERTEST, SILENT, CONSENSUS});
+        LedgerPerformanceTest.test(new String[]{USERTEST, SILENT});
     }
 
     @Test
     public void testKvStorage4Rocksdb() {
-        LedgerPerformanceTest.test(new String[]{ROCKSDB, SILENT, CONSENSUS});
+        LedgerPerformanceTest.test(new String[]{ROCKSDB, SILENT});
     }
 
     @Test
     public void testUserRegister4Rocksdb() {
-        LedgerPerformanceTest.test(new String[]{USERTEST, ROCKSDB, SILENT, CONSENSUS});
+        LedgerPerformanceTest.test(new String[]{USERTEST, ROCKSDB, SILENT});
     }
 
     public void testUserRegister4Redis() {

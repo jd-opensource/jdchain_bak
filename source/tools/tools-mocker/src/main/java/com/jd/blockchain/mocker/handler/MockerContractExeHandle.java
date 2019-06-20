@@ -1,25 +1,24 @@
 package com.jd.blockchain.mocker.handler;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractException;
-import com.jd.blockchain.contract.EventProcessingAwire;
+import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.OperationHandle;
+import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.ledger.core.impl.handles.ContractLedgerContext;
 import com.jd.blockchain.mocker.proxy.ExecutorProxy;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 public class MockerContractExeHandle implements OperationHandle {
 
@@ -30,7 +29,7 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public void process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
 			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
@@ -38,28 +37,39 @@ public class MockerContractExeHandle implements OperationHandle {
 
 		ExecutorProxy executorProxy = executorProxyMap.get(txHash);
 
+		Object result = null;
 		if (executorProxy != null) {
 			LedgerQueryService queryService = new LedgerQueryService(ledgerManager);
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
-			MockerContractEventContext contractEventContext = new MockerContractEventContext(
-					ledgerHash, contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
+			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
+					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
 
-			EventProcessingAwire eventProcessingAwire = (EventProcessingAwire) executorProxy.getInstance();
+			Object instance = executorProxy.getInstance();
+			EventProcessingAware awire = null;
+
+			if (instance instanceof EventProcessingAware) {
+				awire = (EventProcessingAware) instance;
+				awire.beforeEvent(contractEventContext);
+			}
+
 			try {
-				//
-				// Before处理过程
-				eventProcessingAwire.beforeEvent(contractEventContext);
-				executorProxy.invoke();
-
-				// After处理过程
-				eventProcessingAwire.postEvent();
+				result = executorProxy.invoke();
+				if (awire != null) {
+					// After处理过程
+					awire.postEvent(contractEventContext, null);
+				}
 			} catch (Exception e) {
-				eventProcessingAwire.postEvent(new ContractException(e.getMessage()));
+				if (awire != null) {
+					awire.postEvent(contractEventContext, new ContractException(e.getMessage()));
+				}
 			} finally {
 				removeExecutorProxy(txHash);
 			}
 		}
+
+		// No return value;
+		return BytesValueEncoding.encodeSingle(result, null);
 	}
 
 	@Override
@@ -90,8 +100,8 @@ public class MockerContractExeHandle implements OperationHandle {
 
 		private LedgerContext ledgerContext;
 
-		public MockerContractEventContext(HashDigest ledgeHash, String event,
-										  TransactionRequest transactionRequest, LedgerContext ledgerContext) {
+		public MockerContractEventContext(HashDigest ledgeHash, String event, TransactionRequest transactionRequest,
+				LedgerContext ledgerContext) {
 			this.ledgeHash = ledgeHash;
 			this.event = event;
 			this.transactionRequest = transactionRequest;
@@ -119,7 +129,7 @@ public class MockerContractExeHandle implements OperationHandle {
 		}
 
 		@Override
-		public byte[] getArgs() {
+		public BytesValueList getArgs() {
 			return null;
 		}
 

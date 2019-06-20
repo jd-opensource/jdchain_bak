@@ -10,20 +10,18 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.DoubleStream;
 
+import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.ledger.core.CryptoConfig;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesDataList;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -143,8 +141,9 @@ public class LedgerPerformanceTest {
 					batchCount = Integer.parseInt(args[1]);
 				}
 			}
-			if (contract){
-				testContract(ledgerHash, testNode.getPartiKey(), ledgerManager, opHandler, batchSize, batchCount, silent);
+			if (contract) {
+				testContract(ledgerHash, testNode.getPartiKey(), ledgerManager, opHandler, batchSize, batchCount,
+						silent);
 			}
 
 			if (usertest) {
@@ -177,8 +176,9 @@ public class LedgerPerformanceTest {
 	 * @param batchCount
 	 * @param silent
 	 */
-	private static void testUserRegistering(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
-			DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
+	private static void testUserRegistering(HashDigest ledgerHash, AsymmetricKeypair adminKey,
+			LedgerManager ledgerManager, DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount,
+			boolean silent) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [注册用户] =================");
 
@@ -273,7 +273,7 @@ public class LedgerPerformanceTest {
 	 * @param silent
 	 */
 	private static void testContract(HashDigest ledgerHash, AsymmetricKeypair adminKey, LedgerManager ledgerManager,
-									 DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
+			DefaultOperationHandleRegisteration opHandler, int batchSize, int batchCount, boolean silent) {
 		LedgerRepository ledger = ledgerManager.getLedger(ledgerHash);
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [执行合约] =================");
 
@@ -285,8 +285,8 @@ public class LedgerPerformanceTest {
 
 		// 准备请求
 		int totalCount = batchSize * batchCount;
-		List<TransactionRequest> contractTxList = prepareContractRequests(ledgerHash,
-				adminKey, totalCount, false, txProc);
+		List<TransactionRequest> contractTxList = prepareContractRequests(ledgerHash, adminKey, totalCount, false,
+				txProc);
 
 		Prompter consolePrompter = new PresetAnswerPrompter("N");
 
@@ -303,6 +303,7 @@ public class LedgerPerformanceTest {
 		}
 
 	}
+
 	private static void execPerformanceTest(int batchCount, int batchSize, List<TransactionRequest> txList,
 			LedgerRepository ledger, LedgerManager ledgerManager, DefaultOperationHandleRegisteration opHandler,
 			boolean statistic) {
@@ -407,8 +408,7 @@ public class LedgerPerformanceTest {
 			// BlockchainKeyPair dataAccountKey =
 			// BlockchainKeyGenerator.getInstance().generate();
 			BlockchainIdentity targetAccount = dataAccounts[count % dataAccounts.length];
-			txbuilder.dataAccount(targetAccount.getAddress()).setText("key-" + startTs + "-" + i,
-					"value-" + i, -1L);
+			txbuilder.dataAccount(targetAccount.getAddress()).setText("key-" + startTs + "-" + i, "value-" + i, -1L);
 			TransactionRequestBuilder reqBuilder = txbuilder.prepareRequest();
 			reqBuilder.signAsEndpoint(adminKey);
 			txList.add(reqBuilder.buildRequest());
@@ -426,8 +426,9 @@ public class LedgerPerformanceTest {
 	public static ConsensusProvider getConsensusProvider(String provider) {
 		return ConsensusProviders.getProvider(provider);
 	}
-	public static List<TransactionRequest> prepareContractRequests(HashDigest ledgerHash,
-																   AsymmetricKeypair adminKey, int count, boolean statistic, TransactionBatchProcessor txProc) {
+
+	public static List<TransactionRequest> prepareContractRequests(HashDigest ledgerHash, AsymmetricKeypair adminKey,
+			int count, boolean statistic, TransactionBatchProcessor txProc) {
 
 		// deploy contract
 		byte[] chainCode;
@@ -436,7 +437,7 @@ public class LedgerPerformanceTest {
 			InputStream input = LedgerPerformanceTest.class.getClassLoader().getResourceAsStream("example1.jar");
 			chainCode = new byte[input.available()];
 			input.read(chainCode);
-		}catch (IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -457,10 +458,10 @@ public class LedgerPerformanceTest {
 		System.out.println(resp.isSuccess());
 		TransactionBatchResultHandle handle = txProc.prepare();
 		handle.commit();
-		try{
+		try {
 
 			Thread.sleep(1000);
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -468,8 +469,9 @@ public class LedgerPerformanceTest {
 		List<TransactionRequest> txList = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
 			txbuilder = new TxBuilder(ledgerHash);
-			String args = dataIdentity.getAddress().toString() + "##"+Integer.toString(i)+ "##"+Integer.toString(i);
-			txbuilder.contractEvents().send(contractIdentity.getAddress(), "hello", args.getBytes());
+			String args = dataIdentity.getAddress().toString() + "##" + Integer.toString(i) + "##"
+					+ Integer.toString(i);
+			txbuilder.contractEvents().send(contractIdentity.getAddress(), "print", BytesDataList.singleText("hello"));
 //			txbuilder.contractEvents().send(contractIdentity.getAddress(), "print", args.getBytes());
 			reqBuilder = txbuilder.prepareRequest();
 			reqBuilder.signAsEndpoint(adminKey);
@@ -485,7 +487,8 @@ public class LedgerPerformanceTest {
 		return txList;
 	}
 
-	public static NodeContext[] initLedgers(boolean optimized, CryptoAlgorithm hashAlg, DBType dbType, String provider, String config) {
+	public static NodeContext[] initLedgers(boolean optimized, CryptoAlgorithm hashAlg, DBType dbType, String provider,
+			String config) {
 		Map<NetworkAddress, LedgerInitConsensusService> serviceRegisterMap = new ConcurrentHashMap<>();
 
 		Prompter consolePrompter = new PresetAnswerPrompter("N"); // new ConsolePrompter();
