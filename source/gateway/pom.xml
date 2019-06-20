@@ -45,7 +45,7 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>browser</artifactId>
+			<artifactId>explorer</artifactId>
 		</dependency>
 
 		<dependency>
@@ -76,6 +76,23 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bitbucket.mstrobel</groupId>
+			<artifactId>procyon-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bitbucket.mstrobel</groupId>
+			<artifactId>procyon-expressions</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bitbucket.mstrobel</groupId>
+			<artifactId>procyon-reflection</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bitbucket.mstrobel</groupId>
+			<artifactId>procyon-compilertools</artifactId>
 		</dependency>
 
 		<dependency>

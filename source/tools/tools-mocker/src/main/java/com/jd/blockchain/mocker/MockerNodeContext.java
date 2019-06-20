@@ -373,7 +373,7 @@ public class MockerNodeContext implements BlockchainQueryService {
     }
 
     @Override
-    public AccountHeader getContract(HashDigest ledgerHash, String address) {
+    public ContractInfo getContract(HashDigest ledgerHash, String address) {
         return queryService.getContract(ledgerHash, address);
     }
 
