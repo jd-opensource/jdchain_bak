@@ -60,7 +60,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	}
 
 	public static LedgerTransactionalEditor createEditor(LedgerSetting ledgerSetting, LedgerBlock previousBlock,
-														 String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
+			String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// new block;
 		LedgerBlockData currBlock = new LedgerBlockData(previousBlock.getHeight() + 1, previousBlock.getLedgerHash(),
 				previousBlock.getHash());
@@ -123,13 +123,14 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			// load the starting point of the new transaction;
 			StagedSnapshot previousSnapshot = stagedSnapshots.peek();
 			if (previousSnapshot instanceof GenesisSnapshot) {
-				// Genesis;
+				// 准备生成创世区块；
 				GenesisSnapshot snpht = (GenesisSnapshot) previousSnapshot;
 				txDataset = LedgerRepositoryImpl.newDataSet(snpht.initSetting, ledgerKeyPrefix, txBuffStorage,
 						txBuffStorage);
 				txset = LedgerRepositoryImpl.newTransactionSet(txDataset.getAdminAccount().getSetting(),
 						ledgerKeyPrefix, txBuffStorage, txBuffStorage);
 			} else {
+				// 新的区块；
 				// TxSnapshot; reload dataset and txset;
 				TxSnapshot snpht = (TxSnapshot) previousSnapshot;
 				// load dataset;
@@ -182,8 +183,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 		// compute block hash;
 		byte[] blockBodyBytes = BinaryProtocol.encode(newlyBlock, BlockBody.class);
-		HashDigest blockHash = Crypto.getHashFunction(cryptoSetting.getHashAlgorithm())
-				.hash(blockBodyBytes);
+		HashDigest blockHash = Crypto.getHashFunction(cryptoSetting.getHashAlgorithm()).hash(blockBodyBytes);
 		newlyBlock.setHash(blockHash);
 		if (newlyBlock.getLedgerHash() == null) {
 			// init GenesisBlock's ledger hash;
@@ -251,13 +251,13 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	private void checkState() {
 		if (prepared) {
-			throw new IllegalStateException("LedgerEditor had been prepared!");
+			throw new IllegalStateException("LedgerEditor has been prepared!");
 		}
 		if (committed) {
-			throw new IllegalStateException("LedgerEditor had been committed!");
+			throw new IllegalStateException("LedgerEditor has been committed!");
 		}
 		if (canceled) {
-			throw new IllegalStateException("LedgerEditor had been canceled!");
+			throw new IllegalStateException("LedgerEditor has been canceled!");
 		}
 	}
 
@@ -366,7 +366,8 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
 
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, operationResultArray(operationResults));
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null,
+					operationResultArray(operationResults));
 			this.txset.add(tx);
 			// this.txset.commit();
 
@@ -397,7 +398,8 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			// TransactionStagedSnapshot txDataSnapshot = takeSnapshot();
 			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
 			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null, operationResultArray(operationResults));
+			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null,
+					operationResultArray(operationResults));
 			this.txset.add(tx);
 			// this.txset.commit();
 
