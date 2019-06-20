@@ -30,6 +30,8 @@ public class TxContentBlob implements TransactionContent {
 	private HashDigest hash;
 
 	private HashDigest ledgerHash;
+	
+	private long time;
 
 	public TxContentBlob(HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
@@ -79,6 +81,15 @@ public class TxContentBlob implements TransactionContent {
 			Operation op = (Operation) operation;
 			addOperation(op);
 		}
+	}
+	
+	@Override
+	public long getTime() {
+		return time;
+	}
+	
+	public void setTime(long time) {
+		this.time = time;
 	}
 
 	public void addOperation(Operation operation) {

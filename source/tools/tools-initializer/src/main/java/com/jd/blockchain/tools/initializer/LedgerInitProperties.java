@@ -3,6 +3,8 @@ package com.jd.blockchain.tools.initializer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -22,6 +24,12 @@ public class LedgerInitProperties {
 
 	// 账本种子；
 	public static final String LEDGER_SEED = "ledger.seed";
+
+	// 声明的账本建立时间；
+	public static final String CREATED_TIME = "created-time";
+	// 创建时间的格式；
+	public static final String CREATED_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSZ";
+
 	// 共识参与方的个数，后续以 part.id 分别标识每一个参与方的配置；
 	public static final String PART_COUNT = "cons_parti.count";
 	// 共识参与方的名称的模式；
@@ -61,8 +69,14 @@ public class LedgerInitProperties {
 
 	private String[] cryptoProviders;
 
+	private long createdTime;
+
 	public byte[] getLedgerSeed() {
 		return ledgerSeed.clone();
+	}
+
+	public long getCreatedTime() {
+		return createdTime;
 	}
 
 	public Properties getConsensusConfig() {
@@ -80,11 +94,11 @@ public class LedgerInitProperties {
 	public List<ConsensusParticipantConfig> getConsensusParticipants() {
 		return consensusParticipants;
 	}
-	
+
 	public String[] getCryptoProviders() {
 		return cryptoProviders.clone();
 	}
-	
+
 	public void setCryptoProviders(String[] cryptoProviders) {
 		this.cryptoProviders = cryptoProviders;
 	}
@@ -131,6 +145,14 @@ public class LedgerInitProperties {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
+
+		// 创建时间；
+		String strCreatedTime = PropertiesUtils.getRequiredProperty(props, CREATED_TIME);
+		try {
+			initProps.createdTime = new SimpleDateFormat(CREATED_TIME_FORMAT).parse(strCreatedTime).getTime();
+		} catch (ParseException ex) {
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
 
 		// 解析共识相关的属性；
 		initProps.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);

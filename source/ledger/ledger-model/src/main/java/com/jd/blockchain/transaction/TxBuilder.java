@@ -35,14 +35,25 @@ public class TxBuilder implements TransactionBuilder {
 
 	@Override
 	public TransactionRequestBuilder prepareRequest() {
-		TransactionContent txContent = prepareContent();
-		return new TxRequestBuilder(txContent);
+		return prepareRequest(System.currentTimeMillis());
 	}
 
 	@Override
 	public TransactionContent prepareContent() {
+		return prepareContent(System.currentTimeMillis());
+	}
+
+	@Override
+	public TransactionRequestBuilder prepareRequest(long time) {
+		TransactionContent txContent = prepareContent(time);
+		return new TxRequestBuilder(txContent);
+	}
+
+	@Override
+	public TransactionContent prepareContent(long time) {
 		TxContentBlob txContent = new TxContentBlob(ledgerHash);
 		txContent.addOperations(opFactory.getOperations());
+		txContent.setTime(time);
 
 		byte[] contentBodyBytes = BinaryProtocol.encode(txContent, TransactionContentBody.class);
 		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);

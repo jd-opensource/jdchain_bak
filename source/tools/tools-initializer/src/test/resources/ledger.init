@@ -5,6 +5,20 @@ ledger.seed=932dfe23-fe23232f-283f32fa-dd32aa76-8322ca2f-56236cda-7136b322-cb323
 #账本的描述名称；此属性不参与共识，仅仅在当前参与方的本地节点用于描述用途；
 ledger.name=
 
+#声明的账本创建时间；格式为 “yyyy-MM-dd HH:mm:ss.SSSZ”，表示”年-月-日 时:分:秒:毫秒时区“；例如：“2019-08-01 14:26:58.069+0800”，其中，+0800 表示时区是东8区
+created-time=2019-08-01 14:26:58.069+0800
+
+#共识服务提供者；必须；
+consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
+
+#共识服务的参数配置；必须；
+consensus.conf=classpath:bftsmart.config
+
+#密码服务提供者列表，以英文逗点“,”分隔；必须；
+crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
+com.jd.blockchain.crypto.service.sm.SMCryptoService
+
+
 #参与方的个数，后续以 cons_parti.id 分别标识每一个参与方的配置；
 cons_parti.count=4
 
@@ -13,7 +27,7 @@ cons_parti.0.name=jd.com
 #第0个参与方的公钥文件路径；
 cons_parti.0.pubkey-path=keys/jd-com.pub
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.0.pubkey=endPsK36koyFr1D245Sa9j83vt6pZUdFBJoJRB3xAsWM6cwhRbna
+cons_parti.0.pubkey=3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9
 #第0个参与方的共识服务的主机地址；
 cons_parti.0.consensus.host=127.0.0.1
 #第0个参与方的共识服务的端口；
@@ -32,7 +46,7 @@ cons_parti.1.name=at.com
 #第1个参与方的公钥文件路径；
 cons_parti.1.pubkey-path=keys/at-com.pub
 #第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.1.pubkey=endPsK36sC5JdPCDPDAXUwZtS3sxEmqEhFcC4whayAsTTh8Z6eoZ
+cons_parti.1.pubkey=3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX
 #第1个参与方的共识服务的主机地址；
 cons_parti.1.consensus.host=127.0.0.1
 #第1个参与方的共识服务的端口；
@@ -49,9 +63,9 @@ cons_parti.1.initializer.secure=false
 #第2个参与方的名称；
 cons_parti.2.name=bt.com
 #第2个参与方的公钥文件路径；
-cons_parti.2.pubkey-path=keys/bt-com.pub
+cons_parti.2.pubkey-path=classpath:keys/parti2.pub
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.2.pubkey=endPsK36jEG281HMHeh6oSqzqLkT95DTnCM6REDURjdb2c67uR3R
+cons_parti.2.pubkey=
 #第2个参与方的共识服务的主机地址；
 cons_parti.2.consensus.host=127.0.0.1
 #第2个参与方的共识服务的端口；
@@ -70,7 +84,7 @@ cons_parti.3.name=xt.com
 #第3个参与方的公钥文件路径；
 cons_parti.3.pubkey-path=keys/xt-com.pub
 #第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.3.pubkey=endPsK36nse1dck4uF19zPvAMijCV336Y3zWdgb4rQG8QoRj5ktR
+cons_parti.3.pubkey=3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk
 #第3个参与方的共识服务的主机地址；
 cons_parti.3.consensus.host=127.0.0.1
 #第3个参与方的共识服务的端口；

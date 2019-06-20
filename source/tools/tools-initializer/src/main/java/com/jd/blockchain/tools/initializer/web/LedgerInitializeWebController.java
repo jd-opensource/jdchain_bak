@@ -338,6 +338,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		ConsensusParticipantConfig[] parties = partiList.toArray(new ConsensusParticipantConfig[partiList.size()]);
 		ConsensusParticipantConfig[] orderedParties = sortAndVerify(parties);
 		initSetting.setConsensusParticipants(orderedParties);
+		initSetting.setCreatedTime(ledgerProps.getCreatedTime());
 
 		// 创建默认的共识配置；
 		try {
@@ -377,7 +378,8 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			BlockchainIdentity superUserId = new BlockchainIdentityData(p.getPubKey());
 			initTxBuilder.users().register(superUserId);
 		}
-		this.initTxContent = initTxBuilder.prepareContent();
+		// 账本初始化配置声明的创建时间来初始化交易时间戳；注：不能用本地时间，因为共识节点之间的本地时间系统不一致；
+		this.initTxContent = initTxBuilder.prepareContent(initSetting.getCreatedTime());
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
 		SignatureDigest permissionSign = TxRequestBuilder.sign(initTxContent, privKey);
@@ -755,7 +757,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		prompter.info("Received request of synchronizing decision! --[RemoteId=%s][CurrentId=%s]", remoteId, currentId);
 
 		try {
-			
+
 			DecisionResultHandle resultHandle = this.decisions[remoteId];
 			if (!validateAndRecordDecision(initDecision, resultHandle)) {
 				// 签名无效；

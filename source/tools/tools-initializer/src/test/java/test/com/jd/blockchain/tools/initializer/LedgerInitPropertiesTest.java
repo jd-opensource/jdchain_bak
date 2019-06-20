@@ -1,9 +1,12 @@
-package test.com.jd.blockchain.intgr.initializer;
+package test.com.jd.blockchain.tools.initializer;
 
 import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.jd.blockchain.crypto.AddressEncoding;
 import org.junit.Test;
@@ -14,12 +17,21 @@ import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.codec.HexUtils;
-import test.com.jd.blockchain.intgr.IntegrationBase;
 
 public class LedgerInitPropertiesTest {
 
+	private static String expectedCreatedTimeStr = "2019-08-01 14:26:58.069+0800";
+	
 	@Test
-	public void test() throws IOException {
+	public void testTimeFormat() throws ParseException {
+		SimpleDateFormat timeFormat = new SimpleDateFormat(LedgerInitProperties.CREATED_TIME_FORMAT);
+		Date time = timeFormat.parse(expectedCreatedTimeStr);
+		String actualTimeStr = timeFormat.format(time);
+		assertEquals(expectedCreatedTimeStr, actualTimeStr);
+	}
+
+	@Test
+	public void testProperties() throws IOException, ParseException {
 		ClassPathResource ledgerInitSettingResource = new ClassPathResource("ledger.init");
 		InputStream in = ledgerInitSettingResource.getInputStream();
 		try {
@@ -29,6 +41,13 @@ public class LedgerInitPropertiesTest {
 					.replace("-", "");
 			String actualLedgerSeed = HexUtils.encode(initProps.getLedgerSeed());
 			assertEquals(expectedLedgerSeed, actualLedgerSeed);
+
+			SimpleDateFormat timeFormat = new SimpleDateFormat(LedgerInitProperties.CREATED_TIME_FORMAT);
+			long expectedTs = timeFormat.parse(expectedCreatedTimeStr).getTime();
+			assertEquals(expectedTs, initProps.getCreatedTime());
+			
+			String createdTimeStr = timeFormat.format(new Date(initProps.getCreatedTime()));
+			assertEquals(expectedCreatedTimeStr, createdTimeStr);
 
 			assertEquals("com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider",
 					initProps.getConsensusProvider());
@@ -61,7 +80,7 @@ public class LedgerInitPropertiesTest {
 
 	@Test
 	public void testPubKeyAddress() {
-		String[] pubKeys = IntegrationBase.PUB_KEYS;
+		String[] pubKeys = TestConsts.PUB_KEYS;
 		int index = 0;
 		for (String pubKeyStr : pubKeys) {
 			System.out.println("[" + index + "][配置] = " + pubKeyStr);

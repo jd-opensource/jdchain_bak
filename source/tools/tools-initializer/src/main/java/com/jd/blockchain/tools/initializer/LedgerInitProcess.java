@@ -1,8 +1,5 @@
 package com.jd.blockchain.tools.initializer;
 
-import com.jd.blockchain.consensus.ConsensusProvider;
-import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.consensus.service.ConsensusServiceProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.CryptoSetting;

@@ -33,4 +33,13 @@ public interface TransactionContentBody {
 	@DataField(order = 2, list = true, refContract = true, genericContract = true)
 	Operation[] getOperations();
 
+	/**
+	 * 生成交易的时间；<br>
+	 * 以毫秒为单位，表示距离 1970-1-1 00:00:00 (UTC) 的毫秒数；<br>
+	 * 
+	 * @return
+	 */
+	@DataField(order = 3, primitiveType = PrimitiveType.INT64)
+	long getTime();
+
 }

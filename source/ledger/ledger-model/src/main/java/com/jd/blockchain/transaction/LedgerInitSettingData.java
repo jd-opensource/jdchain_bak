@@ -16,6 +16,8 @@ public  class LedgerInitSettingData implements LedgerInitSetting {
 	private String consensusProvider;
 
 	private Bytes consensusSettings;
+	
+	private long createdTime;
 
 	@Override
 	public byte[] getLedgerSeed() {
@@ -62,4 +64,12 @@ public  class LedgerInitSettingData implements LedgerInitSetting {
 		this.consensusProvider = consensusProvider;
 	}
 
+	@Override
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
 }

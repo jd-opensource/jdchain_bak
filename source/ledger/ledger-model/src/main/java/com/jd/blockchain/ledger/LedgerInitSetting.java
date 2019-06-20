@@ -17,6 +17,7 @@ public interface LedgerInitSetting {
 
 	/**
 	 * 账本的种子；
+	 * 
 	 * @return
 	 */
 	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
@@ -37,9 +38,8 @@ public interface LedgerInitSetting {
 	 */
 	@DataField(order = 3, refContract = true)
 	CryptoSetting getCryptoSetting();
-	
-	
-	@DataField(order = 4, primitiveType=PrimitiveType.TEXT)
+
+	@DataField(order = 4, primitiveType = PrimitiveType.TEXT)
 	String getConsensusProvider();
 
 	/**
@@ -47,7 +47,15 @@ public interface LedgerInitSetting {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 5, primitiveType=PrimitiveType.BYTES)
+	@DataField(order = 5, primitiveType = PrimitiveType.BYTES)
 	Bytes getConsensusSettings();
+
+	/**
+	 * 账本创建时间；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 6, primitiveType = PrimitiveType.INT64)
+	long getCreatedTime();
 
 }
