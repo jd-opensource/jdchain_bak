@@ -17,8 +17,7 @@ import com.jd.blockchain.utils.Bytes;
 public class SDK_Contract_Demo extends SDK_Base_Demo {
 
 	public static void main(String[] args) {
-		SDK_Contract_Demo demo = new SDK_Contract_Demo();
-		demo.executeContract();
+		new SDK_Contract_Demo().executeContract();
 	}
 
 	public void executeContract() {

@@ -96,7 +96,7 @@ public abstract class AbstractContractCode implements ContractCode {
 					eventContext.getEvent(), address.toString(), error.getMessage()), error);
 		}
 
-		BytesValue retnBytes = BytesValueEncoding.encode(retn, handleMethod.getReturnType());
+		BytesValue retnBytes = BytesValueEncoding.encodeSingle(retn, handleMethod.getReturnType());
 		return retnBytes;
 	}
 

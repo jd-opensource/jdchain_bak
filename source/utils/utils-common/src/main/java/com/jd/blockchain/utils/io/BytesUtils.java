@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 
 import com.jd.blockchain.utils.IllegalDataException;
 
@@ -368,6 +369,10 @@ public class BytesUtils {
 		value = (short) (value | (bytes[offset + 1] & 0xFF));
 
 		return value;
+	}
+
+	public static short toShort(byte[] bytes) {
+		return toShort(bytes, 0);
 	}
 
 	public static char toChar(byte[] bytes, int offset) {

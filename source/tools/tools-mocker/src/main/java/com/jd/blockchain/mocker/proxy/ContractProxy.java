@@ -78,7 +78,7 @@ public class ContractProxy<T> implements InvocationHandler {
 		OperationResult opResult = operationResults[0];
 
 		// 处理返回值
-		return BytesValueEncoding.encode(opResult.getResult(), method.getReturnType());
+		return BytesValueEncoding.encodeSingle(opResult.getResult(), method.getReturnType());
 	}
 
 	private boolean isExecuteContractMethod(Method method) {
