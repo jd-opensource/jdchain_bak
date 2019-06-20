@@ -49,8 +49,13 @@ public class BytesValueEncoding {
 
 
 	public static BytesValue encodeSingle(Object value, Class<?> type) {
+		if (value == null) {
+			return null;
+		}
 		if (type == null) {
 			type = value.getClass();
+		} else if (type.equals(void.class) || type.equals(Void.class)) {
+			return null;
 		}
 		if (type.isInterface()) {
 			// 判断是否含有DataContract注解
@@ -161,6 +166,11 @@ public class BytesValueEncoding {
 	}
 
 	public static boolean supportType(Class<?> currParamType) {
+		// 支持空返回值
+		if (currParamType.equals(void.class) || currParamType.equals(Void.class)) {
+			return true;
+		}
+
 		if (currParamType.isInterface()) {
 			// 接口序列化必须实现DataContract注解
 			if (!currParamType.isAnnotationPresent(DataContract.class)) {

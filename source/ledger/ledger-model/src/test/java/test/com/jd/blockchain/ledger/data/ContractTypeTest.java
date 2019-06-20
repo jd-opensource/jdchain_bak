@@ -24,7 +24,6 @@ public class ContractTypeTest {
 	public void normalTest() throws NoSuchMethodException, SecurityException {
 		ContractType contractType = ContractType.resolve(NormalContract.class);
 
-		assertEquals(NormalContract.class, contractType.getDeclaredClass());
 		assertEquals("NORMAL-CONTRACT", contractType.getName());
 
 		Set<String> events = contractType.getEvents();
@@ -56,14 +55,14 @@ public class ContractTypeTest {
 		assertNull(contractType.getEvent(toStringMethod));
 		assertNull(contractType.getHandleMethod("NotExist"));
 		
-		//解析非合约声明接口类型时，应该引发异常 ContractException；
+		//解析非合约声明接口类型时，应该正常，只需要实现接口（该接口定义了具体的合约类型）即可
 		ContractException ex = null;
 		try {
 			ContractType.resolve(NormalContractImpl.class);
 		} catch (ContractException e) {
 			ex = e;
 		}
-		assertNotNull(ex);
+		assertNull(ex);
 	}
 
 }

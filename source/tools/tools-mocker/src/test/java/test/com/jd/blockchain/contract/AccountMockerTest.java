@@ -7,7 +7,7 @@ import com.jd.blockchain.mocker.contracts.AccountContractImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AccountMockerTest_ {
+public class AccountMockerTest {
 
     String accountFrom = "zhangsan";
 
@@ -39,7 +39,7 @@ public class AccountMockerTest_ {
 
         accountContract.create(address, accountTo, 1000L);
 
-        accountContract.print(address, accountFrom, accountTo);
+//        accountContract.print(address, accountFrom, accountTo);
 
         // 开始转账
         accountContract.transfer(address, accountFrom, accountTo, 500);

@@ -11,17 +11,13 @@ import com.jd.blockchain.utils.IllegalDataException;
 public class ContractType {
 
 	private String name;
-	private Map<String, Method> events = new HashMap<>();
-	private Map<Method, String> handleMethods = new HashMap<>();
 
-	private Class<?> declaredClass;
+	private Map<String, Method> events = new HashMap<>();
+
+	private Map<Method, String> handleMethods = new HashMap<>();
 
 	public String getName() {
 		return name;
-	}
-
-	public Class<?> getDeclaredClass() {
-		return declaredClass;
 	}
 
 	/**
@@ -86,7 +82,8 @@ public class ContractType {
 		}
 
 		// 接口上必须有注解
-		if (!contractIntf.isAnnotationPresent(Contract.class)) {
+		Contract contract = contractIntf.getAnnotation(Contract.class);
+		if (contract == null) {
 			throw new IllegalDataException("It is not a Contract Type, because there is not @Contract !");
 		}
 
@@ -97,6 +94,9 @@ public class ContractType {
 		}
 
 		ContractType contractType = new ContractType();
+
+		// 设置合约显示名字为
+		contractType.name = contract.name();
 
 		for (Method method : classMethods) {
 
@@ -130,6 +130,12 @@ public class ContractType {
 				contractType.handleMethods.put(method, eventName);
 			}
 		}
+		// 最起码有一个ContractEvent
+		if (contractType.events.isEmpty()) {
+			throw new IllegalStateException(
+					String.format("Contract Interface[%s] have none method for annotation[@ContractEvent] !", contractIntf.getName()));
+		}
+
 		return contractType;
 	}
 

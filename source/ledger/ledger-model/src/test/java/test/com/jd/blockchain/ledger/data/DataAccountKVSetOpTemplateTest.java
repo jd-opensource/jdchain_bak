@@ -29,7 +29,6 @@ import com.jd.blockchain.utils.Bytes;
  * @create 2018/8/30
  * @since 1.0.0
  */
-//todo 尚未测试通过，等张爽处理完再测试
 public class DataAccountKVSetOpTemplateTest {
 
     private DataAccountKVSetOpTemplate data;

@@ -37,6 +37,7 @@ public class ContractEventSendOpTemplateTest {
 
 	@Before
 	public void initContractEventSendOpTemplate() {
+		DataContractRegistry.register(BytesValueList.class);
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(Operation.class);
 		String contractAddress = "zhangsan-address", event = "zhangsan-event";

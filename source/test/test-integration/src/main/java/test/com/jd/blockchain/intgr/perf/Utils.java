@@ -39,7 +39,8 @@ public class Utils {
 
 	public static final String PASSWORD = "abc";
 
-	public static final String[] PUB_KEYS = { "3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu",
+	public static final String[] PUB_KEYS = {
+			"3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu",
 			"3snPdw7i7Ph1SYLQt9uqVEqiuvNXjxCdGvEdN6otJsg5rbr7Aze7kf",
 			"3snPdw7i7PezptA6dNBkotPjmKEbTkY8fmusLBnfj8Cf7eFwhWDwKr",
 			"3snPdw7i7PerZYfRzEB61SAN9tFK4yHm9wUSRtkLSSGXHkQRbB5PkS" };

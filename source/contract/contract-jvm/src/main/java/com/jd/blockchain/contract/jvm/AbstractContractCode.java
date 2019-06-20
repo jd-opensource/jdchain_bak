@@ -69,7 +69,7 @@ public abstract class AbstractContractCode implements ContractCode {
 			if (handleMethod == null) {
 				throw new ContractException(
 						String.format("Contract[%s:%s] has no handle method to handle event[%s]!", address.toString(),
-								contractDefinition.getType().getDeclaredClass().toString(), eventContext.getEvent()));
+								contractDefinition.getType().getName(), eventContext.getEvent()));
 			}
 			
 			BytesValueList bytesValues = eventContext.getArgs();

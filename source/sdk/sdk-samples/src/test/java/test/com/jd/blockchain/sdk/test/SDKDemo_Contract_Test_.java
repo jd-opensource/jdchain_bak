@@ -23,7 +23,7 @@ import com.jd.blockchain.transaction.LongValueHolder;
 import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
 
-public class SDKDemo_Contract_Test {
+public class SDKDemo_Contract_Test_ {
 
 	private BlockchainKeypair adminKey;
 
