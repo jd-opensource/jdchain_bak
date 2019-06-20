@@ -6,16 +6,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
@@ -40,16 +37,19 @@ public class Utils {
 	public static final String PASSWORD = "abc";
 
 	public static final String[] PUB_KEYS = {
-			"3snPdw7i7PapsDoW185c3kfK6p8s6SwiJAdEUzgnfeuUox12nxgzXu",
-			"3snPdw7i7Ph1SYLQt9uqVEqiuvNXjxCdGvEdN6otJsg5rbr7Aze7kf",
-			"3snPdw7i7PezptA6dNBkotPjmKEbTkY8fmusLBnfj8Cf7eFwhWDwKr",
-			"3snPdw7i7PerZYfRzEB61SAN9tFK4yHm9wUSRtkLSSGXHkQRbB5PkS" };
+			"3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
+			"3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX",
+			"3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x",
+			"3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk" };
 
 	public static final String[] PRIV_KEYS = {
-			"177gjyoEUhdD1NkQSxBVvfSyovMd1ha5H46zsb9kyErLNBuQkLRAf2ea6CNjStjCFJQN8S1",
-			"177gjsa6KcyxUpx7T3tvCVMuqHvvguiQFRLmDY9jaMcH6L9R4k7XgANLfY3paC5XaXeASej",
-			"177gju7AgXp371qqprjEN3Lg4Hc4EWHnDH9eWgTttEUoN8PuNpQTbS253uTxdKn5w1zZXUp",
-			"177gjtddYr7CtN6iN6KRgu1kKzFn6quQsx3DQLnUD1xgj5E2QhUTMDnpZKzSKbB7kt35gzj" };
+			"177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x",
+			"177gju9p5zrNdHJVEQnEEKF4ZjDDYmAXyfG84V5RPGVc5xFfmtwnHA7j51nyNLUFffzz5UT",
+			"177gjtwLgmSx5v1hFb46ijh7L9kdbKUpJYqdKVf9afiEmAuLgo8Rck9yu5UuUcHknWJuWaF",
+			"177gk1pudweTq5zgJTh8y3ENCTwtSFsKyX7YnpuKPo7rKgCkCBXVXh5z2syaTCPEMbuWRns" };
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
+			SMCryptoService.class.getName() };
 
 	private Map<NetworkAddress, LedgerInitConsensusService> serviceRegisterMap = new ConcurrentHashMap<>();
 
@@ -132,7 +132,14 @@ public class Utils {
 		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties setting,
 				ConsensusSettings csProps, ConsensusProvider consensusProvider, DBConnectionConfig dbConnConfig,
 				Prompter prompter, boolean autoVerifyHash, CryptoAlgorithm hashAlg) {
+
+			CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+			for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+				supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+			}
 			CryptoConfig cryptoSetting = new CryptoConfig();
+			cryptoSetting.setSupportedProviders(supportedProviders);
+			cryptoSetting.setSupportedProviders(supportedProviders);
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
 			cryptoSetting.setHashAlgorithm(hashAlg);
 

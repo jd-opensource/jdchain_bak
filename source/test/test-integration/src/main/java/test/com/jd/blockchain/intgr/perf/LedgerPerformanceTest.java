@@ -10,17 +10,14 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.DoubleStream;
 
+import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.ledger.core.CryptoConfig;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
