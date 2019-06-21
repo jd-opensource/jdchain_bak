@@ -68,7 +68,7 @@ public class JavaContractCode extends AbstractContractCode {
 	@Override
 	public BytesValue processEvent(ContractEventContext eventContext) {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Start processing event[%s] of contract[%s]...", eventContext.getEvent(), address.toString());
+			LOGGER.debug("Start processing event{} of contract{}...", eventContext.getEvent(), address.toString());
 		}
 		try {
 			return codeModule.call(new ContractExecution(eventContext));
@@ -78,7 +78,7 @@ public class JavaContractCode extends AbstractContractCode {
 			throw ex;
 		} finally {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("End processing event[%s] of contract[%s]. ", eventContext.getEvent(), address.toString());
+				LOGGER.debug("End processing event{} of contract{}. ", eventContext.getEvent(), address.toString());
 			}
 		}
 	}

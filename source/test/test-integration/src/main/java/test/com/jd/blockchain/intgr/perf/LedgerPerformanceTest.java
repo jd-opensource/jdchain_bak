@@ -495,7 +495,9 @@ public class LedgerPerformanceTest {
 		LedgerInitProperties initSetting = loadInitSetting();
 		Properties props = loadConsensusSetting(config);
 		ConsensusProvider csProvider = getConsensusProvider(provider);
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		DBSetting dbsetting0;
 		DBSetting dbsetting1;

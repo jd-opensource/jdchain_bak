@@ -596,28 +596,31 @@ JD区块链的核心对象包括：
 
     // 合约地址
     String contractAddressBase58 = "";
-
-    // Event
-    String event = "";
-
-    // args（注意参数的格式）
-    byte[] args = "20##30##abc".getBytes();
-
-
-    // 提交合约执行代码
-    txTemp.contractEvents().send(contractAddressBase58, event, args);
-
-    // TX 准备就绪；
-    PreparedTransaction prepTx = txTemp.prepare();
-
-    // 生成私钥并使用私钥进行签名；
-    CryptoKeyPair keyPair = getSponsorKey();
-
-    prepTx.sign(keyPair);
-
-    // 提交交易；
-    TransactionResponse transactionResponse = prepTx.commit();
-
-    assertTrue(transactionResponse.isSuccess());
+    
+    // 使用接口方式调用合约
+    TransferContract transferContract = txTpl.contract(contractAddress, TransferContract.class);
+    
+    // 使用decode方式调用合约内部方法（create方法）
+    // 返回GenericValueHolder可通过get方法获取结果，但get方法需要在commit调用后执行
+    GenericValueHolder<String> result = ContractReturnValue.decode(transferContract.create(address, account, money));
+    
+    PreparedTransaction ptx = txTpl.prepare();
+    
+    ptx.sign(adminKey);
+    
+    TransactionResponse transactionResponse = ptx.commit();
+    
+    String cotractExecResult = result.get();
+    
+    // TransactionResponse也提供了可供查询结果的接口
+    OperationResult[] operationResults = transactionResponse.getOperationResults();
+    
+    // 通过OperationResult获取结果
+    for (int i = 0; i < operationResults.length; i++) {
+        OperationResult opResult = operationResults[i];
+        System.out.printf("Operation[%s].result = %s \r\n", 
+                opResult.getIndex(), BytesValueEncoding.decode(opResult.getResult()));
+    }
+    
 
 ```

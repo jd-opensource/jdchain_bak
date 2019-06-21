@@ -9,7 +9,7 @@ public class BftsmartConsensusConfig implements BftsmartConsensusSettings {
 
 	private BftsmartNodeSettings[] nodes;
 
-	private BftsmartCommitBlockSettings commitBlockSettings;
+//	private BftsmartCommitBlockSettings commitBlockSettings;
 
 	static {
 		DataContractRegistry.register(BftsmartConsensusSettings.class);
@@ -24,9 +24,11 @@ public class BftsmartConsensusConfig implements BftsmartConsensusSettings {
 	 * @param bftsmartSystemConfigs
 	 *            bftsmart系统配置；
 	 */
-	public BftsmartConsensusConfig(BftsmartNodeSettings[] nodes, BftsmartCommitBlockSettings commitBlockSettings, Property[] bftsmartSystemConfigs) {
+	public BftsmartConsensusConfig(BftsmartNodeSettings[] nodes,
+//								   BftsmartCommitBlockSettings commitBlockSettings,
+								   Property[] bftsmartSystemConfigs) {
 		this.nodes = nodes;
-		this.commitBlockSettings = commitBlockSettings;
+//		this.commitBlockSettings = commitBlockSettings;
 		this.bftsmartSystemConfig = bftsmartSystemConfigs;
 	}
 
@@ -40,13 +42,13 @@ public class BftsmartConsensusConfig implements BftsmartConsensusSettings {
 		return bftsmartSystemConfig;
 	}
 
-	@Override
-	public BftsmartCommitBlockSettings getCommitBlockSettings() {
-		return commitBlockSettings;
-	}
-
-
-	public void setCommitBlockSettings(BftsmartCommitBlockSettings commitBlockSettings) {
-		this.commitBlockSettings = commitBlockSettings;
-	}
+//	@Override
+//	public BftsmartCommitBlockSettings getCommitBlockSettings() {
+//		return commitBlockSettings;
+//	}
+//
+//
+//	public void setCommitBlockSettings(BftsmartCommitBlockSettings commitBlockSettings) {
+//		this.commitBlockSettings = commitBlockSettings;
+//	}
 }

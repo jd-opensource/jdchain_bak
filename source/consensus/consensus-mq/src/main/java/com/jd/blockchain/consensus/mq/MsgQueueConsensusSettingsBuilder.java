@@ -21,6 +21,7 @@ import com.jd.blockchain.consensus.mq.settings.MsgQueueNetworkSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNodeSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
@@ -97,7 +98,7 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
     }
 
     @Override
-    public MsgQueueConsensusSettings createSettings(Properties props) {
+    public MsgQueueConsensusSettings createSettings(Properties props, ParticipantNode[] participantNodes) {
         MsgQueueNetworkConfig networkConfig = new MsgQueueNetworkConfig();
         Properties resolvingProps = PropertiesUtils.cloneFrom(props);
 

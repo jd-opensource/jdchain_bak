@@ -26,7 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class proxyClientTest {
+public class ProxyClientTest {
 
     int number = 1500000;
 
@@ -69,13 +69,14 @@ public class proxyClientTest {
             nodesSettings[i] = (BftsmartNodeSettings) node;
         }
 
-        BftsmartConsensusConfig consensusConfig = new BftsmartConsensusConfig(nodesSettings, null,
+        BftsmartConsensusConfig consensusConfig = new BftsmartConsensusConfig(nodesSettings,
+//                null,
                 PropertiesUtils.getOrderedValues(bftsmartConf));
 
         for (int j = 0; j < nodeNum; j++) {
-            ServerSettings serverSettings = new BftsmartServerSettingConfig();
-            ((BftsmartServerSettingConfig) serverSettings).setReplicaSettings(nodesSettings[j]);
-            ((BftsmartServerSettingConfig) serverSettings).setConsensusSettings(consensusConfig);
+            BftsmartServerSettingConfig serverSettings = new BftsmartServerSettingConfig();
+            serverSettings.setReplicaSettings(nodesSettings[j]);
+            serverSettings.setConsensusSettings(consensusConfig);
             BftsmartNodeServer server = new BftsmartNodeServer(serverSettings, null, null);
             nodeServers[j] = server;
             nodeStartPools.execute(() -> {

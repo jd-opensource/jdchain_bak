@@ -8,10 +8,10 @@ ledger.name=
 created-time=2019-08-01 14:26:58.069+0800
 
 #共识服务提供者；必须；
-consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
+consensus.service-provider=com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider
 
-#共识服务的参数配置；推荐使用绝对路径；必须；
-consensus.conf=bftsmart.config
+#共识服务的参数配置；必须；
+consensus.conf=mq.config
 
 #密码服务提供者列表，以英文逗点“,”分隔；必须；
 crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
@@ -22,11 +22,11 @@ com.jd.blockchain.crypto.service.sm.SMCryptoService
 cons_parti.count=4
 
 #第0个参与方的名称；
-cons_parti.0.name=
+cons_parti.0.name=jd.com
 #第0个参与方的公钥文件路径；
-cons_parti.0.pubkey-path=
+cons_parti.0.pubkey-path=keys/jd-com.pub
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.0.pubkey=
+cons_parti.0.pubkey=3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9
 #第0个参与方的账本初始服务的主机；
 cons_parti.0.initializer.host=127.0.0.1
 #第0个参与方的账本初始服务的端口；
@@ -35,11 +35,11 @@ cons_parti.0.initializer.port=8800
 cons_parti.0.initializer.secure=false
 
 #第1个参与方的名称；
-cons_parti.1.name=
+cons_parti.1.name=at.com
 #第1个参与方的公钥文件路径；
-cons_parti.1.pubkey-path=
+cons_parti.1.pubkey-path=keys/at-com.pub
 #第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.1.pubkey=
+cons_parti.1.pubkey=3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX
 #第1个参与方的账本初始服务的主机；
 cons_parti.1.initializer.host=127.0.0.1
 #第1个参与方的账本初始服务的端口；
@@ -48,9 +48,9 @@ cons_parti.1.initializer.port=8810
 cons_parti.1.initializer.secure=false
 
 #第2个参与方的名称；
-cons_parti.2.name=
+cons_parti.2.name=bt.com
 #第2个参与方的公钥文件路径；
-cons_parti.2.pubkey-path=
+cons_parti.2.pubkey-path=classpath:keys/parti2.pub
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.2.pubkey=
 #第2个参与方的账本初始服务的主机；
@@ -61,11 +61,11 @@ cons_parti.2.initializer.port=8820
 cons_parti.2.initializer.secure=false
 
 #第3个参与方的名称；
-cons_parti.3.name=
+cons_parti.3.name=xt.com
 #第3个参与方的公钥文件路径；
-cons_parti.3.pubkey-path=
+cons_parti.3.pubkey-path=keys/xt-com.pub
 #第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
-cons_parti.3.pubkey=
+cons_parti.3.pubkey=3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk
 #第3个参与方的账本初始服务的主机；
 cons_parti.3.initializer.host=127.0.0.1
 #第3个参与方的账本初始服务的端口；

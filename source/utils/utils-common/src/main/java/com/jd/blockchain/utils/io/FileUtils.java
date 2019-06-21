@@ -16,6 +16,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import com.jd.blockchain.utils.PathUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -481,5 +482,27 @@ public class FileUtils {
 			deletePath(f, silent);
 		}
 		return path.delete();
+	}
+
+	/**
+	 * 获取指定路径和位置的文件信息
+	 *
+	 * @param dir
+	 *     指定路径，不要以"/"结尾
+	 * @param resourceLocation
+	 *     文件位置信息，可支持绝对路径、相对路径（相对dir）、classpath：前缀
+	 * @return
+	 *
+	 * @throws FileNotFoundException
+	 */
+	public static File getFile(String dir, String resourceLocation) throws FileNotFoundException {
+		if (resourceLocation.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)) {
+			return ResourceUtils.getFile(resourceLocation);
+		}
+		if (resourceLocation.startsWith(PathUtils.PATH_SEPERATOR)) {
+			return new File(resourceLocation);
+		}
+		String totalPath = PathUtils.concatPaths(dir, resourceLocation);
+		return new File(totalPath);
 	}
 }

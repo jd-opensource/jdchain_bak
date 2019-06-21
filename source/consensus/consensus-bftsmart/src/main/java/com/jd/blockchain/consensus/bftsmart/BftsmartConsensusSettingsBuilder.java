@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.Base58Utils;
@@ -23,6 +24,8 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 	private static final int DEFAULT_MAXDELAY = 1000;
 
 	private static final String CONFIG_TEMPLATE_FILE = "bftsmart.config";
+
+	private static final String CONFIG_LEDGER_INIT = "ledger.init";
 
 	/**
 	 * 参数键：节点数量；
@@ -61,6 +64,8 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 	 */
 	public static final String CONSENSUS_SECURE_PATTERN = "system.server.%s.network.secure";
 
+
+
 	private static Properties CONFIG_TEMPLATE;
 	static {
 		ClassPathResource configResource = new ClassPathResource(CONFIG_TEMPLATE_FILE);
@@ -74,31 +79,31 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 	}
 
 	//解析得到结块的相关配置信息
-	public BftsmartCommitBlockConfig createBlockConfig(Properties resolvingProps) {
-		BftsmartCommitBlockConfig blockConfig = new BftsmartCommitBlockConfig();
-
-		String txSizeString = PropertiesUtils.getRequiredProperty(resolvingProps, BFTSMART_BLOCK_TXSIZE_KEY);
-		resolvingProps.remove(BFTSMART_BLOCK_TXSIZE_KEY);
-
-		if (txSizeString == null || txSizeString.length() == 0) {
-			blockConfig.setTxSizePerBlock(DEFAULT_TXSIZE);
-		}
-		else {
-			blockConfig.setTxSizePerBlock(Integer.parseInt(txSizeString));
-		}
-
-		String maxDelayString = PropertiesUtils.getRequiredProperty(resolvingProps, BFTSMART_BLOCK_MAXDELAY_KEY);
-		resolvingProps.remove(BFTSMART_BLOCK_MAXDELAY_KEY);
-
-		if (maxDelayString == null || maxDelayString.length() == 0) {
-			blockConfig.setMaxDelayMilliSecondsPerBlock(DEFAULT_MAXDELAY);
-		}
-		else {
-			blockConfig.setMaxDelayMilliSecondsPerBlock(Long.parseLong(maxDelayString));
-		}
-
-		return blockConfig;
-	}
+//	public BftsmartCommitBlockConfig createBlockConfig(Properties resolvingProps) {
+//		BftsmartCommitBlockConfig blockConfig = new BftsmartCommitBlockConfig();
+//
+//		String txSizeString = PropertiesUtils.getRequiredProperty(resolvingProps, BFTSMART_BLOCK_TXSIZE_KEY);
+//		resolvingProps.remove(BFTSMART_BLOCK_TXSIZE_KEY);
+//
+//		if (txSizeString == null || txSizeString.length() == 0) {
+//			blockConfig.setTxSizePerBlock(DEFAULT_TXSIZE);
+//		}
+//		else {
+//			blockConfig.setTxSizePerBlock(Integer.parseInt(txSizeString));
+//		}
+//
+//		String maxDelayString = PropertiesUtils.getRequiredProperty(resolvingProps, BFTSMART_BLOCK_MAXDELAY_KEY);
+//		resolvingProps.remove(BFTSMART_BLOCK_MAXDELAY_KEY);
+//
+//		if (maxDelayString == null || maxDelayString.length() == 0) {
+//			blockConfig.setMaxDelayMilliSecondsPerBlock(DEFAULT_MAXDELAY);
+//		}
+//		else {
+//			blockConfig.setMaxDelayMilliSecondsPerBlock(Long.parseLong(maxDelayString));
+//		}
+//
+//		return blockConfig;
+//	}
 
 	@Override
 	public Properties createPropertiesTemplate() {
@@ -106,7 +111,7 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 	}
 
 	@Override
-	public BftsmartConsensusSettings createSettings(Properties props) {
+	public BftsmartConsensusSettings createSettings(Properties props, ParticipantNode[] participantNodes) {
 		Properties resolvingProps = PropertiesUtils.cloneFrom(props);
 		int serversNum = PropertiesUtils.getInt(resolvingProps, SERVER_NUM_KEY);
 		if (serversNum < 0) {
@@ -115,18 +120,26 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 		if (serversNum < 4) {
 			throw new IllegalArgumentException(String.format("Property[%s] is less than 4!", SERVER_NUM_KEY));
 		}
+		if (participantNodes == null) {
+			throw new IllegalArgumentException("ParticipantNodes is Empty !!!");
+		}
+		if (serversNum != participantNodes.length) {
+			throw new IllegalArgumentException(String.format("Property[%s] which is [%s] unequal " +
+					"ParticipantNodes's length which is [%s] !", SERVER_NUM_KEY, serversNum, participantNodes.length));
+		}
 
-		BftsmartCommitBlockConfig blockConfig = createBlockConfig(resolvingProps);
+//		BftsmartCommitBlockConfig blockConfig = createBlockConfig(resolvingProps);
 
 		BftsmartNodeSettings[] nodesSettings = new BftsmartNodeSettings[serversNum];
 		for (int i = 0; i < serversNum; i++) {
 			int id = i;
 
-			String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
-			String base58PubKey = PropertiesUtils.getRequiredProperty(resolvingProps, keyOfPubkey);
+//			String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
+//			String base58PubKey = PropertiesUtils.getRequiredProperty(resolvingProps, keyOfPubkey);
 //			PubKey pubKey = new PubKey(Base58Utils.decode(base58PubKey));
-			PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
-			resolvingProps.remove(keyOfPubkey);
+//			PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
+			PubKey pubKey = participantNodes[i].getPubKey();
+//			resolvingProps.remove(keyOfPubkey);
 
 			String keyOfHost = keyOfNode(CONSENSUS_HOST_PATTERN, id);
 			String networkAddressHost = PropertiesUtils.getRequiredProperty(resolvingProps, keyOfHost);
@@ -145,7 +158,8 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 			nodesSettings[i] = nodeConfig;
 		}
 
-		BftsmartConsensusConfig config = new BftsmartConsensusConfig(nodesSettings, blockConfig,
+		BftsmartConsensusConfig config = new BftsmartConsensusConfig(nodesSettings,
+//				blockConfig,
 				PropertiesUtils.getOrderedValues(resolvingProps));
 		return config;
 	}
@@ -160,8 +174,8 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 		if (serversNum > 0) {
 			for (int i = 0; i < serversNum; i++) {
 				int id = i;
-				String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
-				props.remove(keyOfPubkey);
+//				String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
+//				props.remove(keyOfPubkey);
 
 				String keyOfHost = keyOfNode(CONSENSUS_HOST_PATTERN, id);
 				props.remove(keyOfHost);
@@ -180,22 +194,22 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 		props.setProperty(SERVER_NUM_KEY, serversNum + "");
 
 		//获得结块相关的属性信息
-		BftsmartCommitBlockSettings blockSettings = bftsmartSettings.getCommitBlockSettings();
-		if (blockSettings == null) {
-			props.setProperty(BFTSMART_BLOCK_TXSIZE_KEY, DEFAULT_TXSIZE + "");
-			props.setProperty(BFTSMART_BLOCK_MAXDELAY_KEY, DEFAULT_MAXDELAY + "");
-		} else {
-			int txSize = blockSettings.getTxSizePerBlock();
-			long maxDelay = blockSettings.getMaxDelayMilliSecondsPerBlock();
-			props.setProperty(BFTSMART_BLOCK_TXSIZE_KEY, txSize + "");
-			props.setProperty(BFTSMART_BLOCK_MAXDELAY_KEY, maxDelay + "");
-		}
+//		BftsmartCommitBlockSettings blockSettings = bftsmartSettings.getCommitBlockSettings();
+//		if (blockSettings == null) {
+//			props.setProperty(BFTSMART_BLOCK_TXSIZE_KEY, DEFAULT_TXSIZE + "");
+//			props.setProperty(BFTSMART_BLOCK_MAXDELAY_KEY, DEFAULT_MAXDELAY + "");
+//		} else {
+//			int txSize = blockSettings.getTxSizePerBlock();
+//			long maxDelay = blockSettings.getMaxDelayMilliSecondsPerBlock();
+//			props.setProperty(BFTSMART_BLOCK_TXSIZE_KEY, txSize + "");
+//			props.setProperty(BFTSMART_BLOCK_MAXDELAY_KEY, maxDelay + "");
+//		}
 
 		for (int i = 0; i < serversNum; i++) {
 			BftsmartNodeSettings ns = nodesSettings[i];
 			int id = i;
-			String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
-			props.setProperty(keyOfPubkey, ns.getPubKey().toBase58());
+//			String keyOfPubkey = keyOfNode(PUBKEY_PATTERN, id);
+//			props.setProperty(keyOfPubkey, ns.getPubKey().toBase58());
 
 			String keyOfHost = keyOfNode(CONSENSUS_HOST_PATTERN, id);
 			props.setProperty(keyOfHost, ns.getNetworkAddress() == null ? "" : ns.getNetworkAddress().getHost());

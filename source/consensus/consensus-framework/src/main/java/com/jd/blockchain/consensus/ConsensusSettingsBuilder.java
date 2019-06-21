@@ -1,5 +1,7 @@
 package com.jd.blockchain.consensus;
 
+import com.jd.blockchain.ledger.ParticipantNode;
+
 import java.util.Properties;
 
 public interface ConsensusSettingsBuilder {
@@ -9,13 +11,11 @@ public interface ConsensusSettingsBuilder {
 	 * 
 	 * @param props
 	 *            属性表；
-	 * @param keyPrefix
-	 *            属性的key 的前缀；<br>
-	 *            在解析过程中，以具体协议实现的标准参数的key 加入此前缀后从属性表中检索参数值；<br>
-	 *            如果指定为 null 或者空白，则忽略此参数；
+	 * @param participantNodes
+	 *            参与方列表；<br>
 	 * @return
 	 */
-	ConsensusSettings createSettings(Properties props);
+	ConsensusSettings createSettings(Properties props, ParticipantNode[] participantNodes);
 	
 	Properties createPropertiesTemplate();
 

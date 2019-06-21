@@ -29,6 +29,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest.NodeWebContext;
+import test.com.jd.blockchain.intgr.perf.Utils;
 
 public class IntegrationBaseTest {
 
@@ -122,7 +123,9 @@ public class IntegrationBaseTest {
 		LedgerInitProperties initSetting = loadInitSetting_integration();
 		Properties props = LedgerInitializeWeb4SingleStepsTest.loadConsensusSetting(configPath);
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(providerName);
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();

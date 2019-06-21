@@ -95,6 +95,14 @@ public class LedgerInitProperties {
 		return consensusParticipants;
 	}
 
+	public ParticipantNode[] getConsensusParticipantNodes() {
+		if (consensusParticipants.isEmpty()) {
+			return null;
+		}
+		ParticipantNode[] participantNodes = new ParticipantNode[consensusParticipants.size()];
+		return consensusParticipants.toArray(participantNodes);
+	}
+
 	public String[] getCryptoProviders() {
 		return cryptoProviders.clone();
 	}
@@ -106,7 +114,7 @@ public class LedgerInitProperties {
 	/**
 	 * 返回参与者；
 	 * 
-	 * @param address 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
+	 * @param id 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
 	 * @return
 	 */
 	public ConsensusParticipantConfig getConsensusParticipant(int id) {
@@ -133,7 +141,8 @@ public class LedgerInitProperties {
 
 	public static LedgerInitProperties resolve(String initSettingFile) {
 		Properties props = FileUtils.readProperties(initSettingFile, "UTF-8");
-		return resolve(props);
+		File realFile = new File(initSettingFile);
+		return resolve(realFile.getParentFile().getPath(), props);
 	}
 
 	public static LedgerInitProperties resolve(InputStream in) {
@@ -142,6 +151,10 @@ public class LedgerInitProperties {
 	}
 
 	public static LedgerInitProperties resolve(Properties props) {
+		return resolve(null, props);
+	}
+
+	public static LedgerInitProperties resolve(String dir, Properties props) {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
@@ -158,7 +171,7 @@ public class LedgerInitProperties {
 		initProps.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);
 		String consensusConfigFilePath = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONFIG);
 		try {
-			File consensusConfigFile = ResourceUtils.getFile(consensusConfigFilePath);
+			File consensusConfigFile = FileUtils.getFile(dir, consensusConfigFilePath);
 			initProps.consensusConfig = FileUtils.readProperties(consensusConfigFile);
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException(

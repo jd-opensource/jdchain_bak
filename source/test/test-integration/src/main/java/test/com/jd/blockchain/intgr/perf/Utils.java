@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
@@ -70,6 +72,14 @@ public class Utils {
 		} catch (IOException e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
+	}
+
+	public static ParticipantNode[] loadParticipantNodes() {
+		ParticipantNode[] participantNodes = new ParticipantNode[PUB_KEYS.length];
+		for (int i = 0; i < PUB_KEYS.length; i++) {
+			participantNodes[i] = new PartNode(i, KeyGenCommand.decodePubKey(PUB_KEYS[i]));
+		}
+		return participantNodes;
 	}
 
 	public static class NodeContext {
@@ -213,6 +223,48 @@ public class Utils {
 			return invoker.startAndWait();
 		}
 
+	}
+
+	private static class PartNode implements ParticipantNode {
+
+		private int id;
+
+		private String address;
+
+		private String name;
+
+		private PubKey pubKey;
+
+		public PartNode(int id, PubKey pubKey) {
+			this(id, id + "", pubKey);
+		}
+
+		public PartNode(int id, String name, PubKey pubKey) {
+			this.id = id;
+			this.name = name;
+			this.pubKey = pubKey;
+			this.address = pubKey.toBase58();
+		}
+
+		@Override
+		public int getId() {
+			return id;
+		}
+
+		@Override
+		public String getAddress() {
+			return address;
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public PubKey getPubKey() {
+			return pubKey;
+		}
 	}
 
 }
