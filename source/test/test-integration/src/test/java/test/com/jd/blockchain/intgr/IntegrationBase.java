@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.jd.blockchain.ledger.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -33,17 +34,6 @@ import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.OperationResult;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -608,6 +598,12 @@ public class IntegrationBase {
 		// 通过EventResult获取结果
 		System.out.printf("readContract1.result = %s \r\n", result1.get());
 		System.out.printf("readContract3.result = %s \r\n", result3.get());
+
+		for (int i = 0; i < operationResults.length; i++) {
+			OperationResult opResult = operationResults[i];
+			System.out.printf("Operation[%s].result = %s \r\n", opResult.getIndex(), BytesValueEncoding.decode(opResult.getResult()));
+		}
+
 
 
 //		// 打印结果
