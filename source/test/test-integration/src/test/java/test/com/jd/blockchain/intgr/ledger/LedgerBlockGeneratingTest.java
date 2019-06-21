@@ -45,6 +45,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 import test.com.jd.blockchain.intgr.PresetAnswerPrompter;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeTest.NodeContext;
+import test.com.jd.blockchain.intgr.perf.Utils;
 
 public class LedgerBlockGeneratingTest {
 
@@ -128,7 +129,9 @@ public class LedgerBlockGeneratingTest {
 		LedgerInitProperties initSetting = loadInitSetting();
 		Properties props = loadConsensusSetting();
 		ConsensusProvider csProvider = getConsensusProvider();
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		NodeContext node0 = new NodeContext(initSetting.getConsensusParticipant(0).getInitializerAddress(),
 				serviceRegisterMap);

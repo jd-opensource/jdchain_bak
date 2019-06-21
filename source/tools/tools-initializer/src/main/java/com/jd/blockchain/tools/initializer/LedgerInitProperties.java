@@ -95,6 +95,14 @@ public class LedgerInitProperties {
 		return consensusParticipants;
 	}
 
+	public ParticipantNode[] getConsensusParticipantNodes() {
+		if (consensusParticipants.isEmpty()) {
+			return null;
+		}
+		ParticipantNode[] participantNodes = new ParticipantNode[consensusParticipants.size()];
+		return consensusParticipants.toArray(participantNodes);
+	}
+
 	public String[] getCryptoProviders() {
 		return cryptoProviders.clone();
 	}
@@ -106,7 +114,7 @@ public class LedgerInitProperties {
 	/**
 	 * 返回参与者；
 	 * 
-	 * @param address 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
+	 * @param id 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
 	 * @return
 	 */
 	public ConsensusParticipantConfig getConsensusParticipant(int id) {

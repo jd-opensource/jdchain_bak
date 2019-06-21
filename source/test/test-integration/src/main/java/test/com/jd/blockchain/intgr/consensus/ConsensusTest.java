@@ -188,7 +188,9 @@ public class ConsensusTest {
 		LedgerInitProperties initSetting = loadInitSetting_integration();
 		Properties props = Utils.loadConsensusSetting();
 		ConsensusProvider csProvider = getConsensusProvider();
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();

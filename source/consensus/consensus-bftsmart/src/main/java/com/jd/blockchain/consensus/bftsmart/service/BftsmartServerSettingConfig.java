@@ -1,10 +1,7 @@
 package com.jd.blockchain.consensus.bftsmart.service;
 
 import com.jd.blockchain.consensus.NodeSettings;
-import com.jd.blockchain.consensus.bftsmart.BftsmartCommitBlockSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
-import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
-import com.jd.blockchain.consensus.service.ServerSettings;
 
 public class BftsmartServerSettingConfig implements BftsmartServerSettings {
     private NodeSettings replicaSettings;

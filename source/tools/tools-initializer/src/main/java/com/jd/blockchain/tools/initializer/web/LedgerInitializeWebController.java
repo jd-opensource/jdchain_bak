@@ -181,8 +181,9 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 		Properties csProps = ledgerInitProps.getConsensusConfig();
 		ConsensusProvider csProvider = ConsensusProviders.getProvider(ledgerInitProps.getConsensusProvider());
-		ConsensusSettings csSettings = csProvider.getSettingsFactory().getConsensusSettingsBuilder()
-				.createSettings(csProps);
+		ConsensusSettings csSettings = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(csProps, ledgerInitProps.getConsensusParticipantNodes());
 		setConsensusProvider(csProvider);
 
 		prompter.info("Init settings and sign permision...");
@@ -335,7 +336,9 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		initSetting.setCryptoSetting(cryptoSetting);
 
 		List<ConsensusParticipantConfig> partiList = ledgerProps.getConsensusParticipants();
-		ConsensusParticipantConfig[] parties = partiList.toArray(new ConsensusParticipantConfig[partiList.size()]);
+		ConsensusParticipantConfig[] parties = new ConsensusParticipantConfig[partiList.size()];
+		parties = partiList.toArray(parties);
+//		ConsensusParticipantConfig[] parties = partiList.toArray(new ConsensusParticipantConfig[partiList.size()]);
 		ConsensusParticipantConfig[] orderedParties = sortAndVerify(parties);
 		initSetting.setConsensusParticipants(orderedParties);
 		initSetting.setCreatedTime(ledgerProps.getCreatedTime());

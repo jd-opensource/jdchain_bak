@@ -42,6 +42,7 @@ import test.com.jd.blockchain.intgr.IntegratedContext.Node;
 import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest.NodeWebContext;
+import test.com.jd.blockchain.intgr.perf.Utils;
 
 /**
  * 测试合约，提交后不立即进行验证，因为此时可能还没有完成正式结块;
@@ -160,7 +161,9 @@ public class IntegrationTest2 {
 		LedgerInitProperties initSetting = loadInitSetting_integration();
 		Properties props = LedgerInitializeWeb4SingleStepsTest.loadConsensusSetting(config.getConfigPath());
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(config.getProvider());
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();

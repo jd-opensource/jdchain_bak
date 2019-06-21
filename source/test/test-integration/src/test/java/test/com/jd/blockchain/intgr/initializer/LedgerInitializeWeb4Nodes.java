@@ -27,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import test.com.jd.blockchain.intgr.IntegrationBase;
 import test.com.jd.blockchain.intgr.LedgerInitConsensusConfig;
 import test.com.jd.blockchain.intgr.PresetAnswerPrompter;
+import test.com.jd.blockchain.intgr.perf.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +71,9 @@ public class LedgerInitializeWeb4Nodes {
 		LedgerInitProperties initSetting = loadInitSetting_2();
 		Properties props = loadConsensusSetting(config.getConfigPath());
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(config.getProvider());
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();

@@ -107,7 +107,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
         setting = ((BftsmartServerSettings) serverSettings).getConsensusSettings();
 
-        List<HostsConfig.Config> configList = new ArrayList<HostsConfig.Config>();
+        List<HostsConfig.Config> configList = new ArrayList<>();
 
         NodeSettings[] nodeSettingsArray = setting.getNodes();
         for (NodeSettings nodeSettings : nodeSettingsArray) {

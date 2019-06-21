@@ -34,26 +34,28 @@ public class BftsmartConsensusManageService implements ConsensusManageService {
 	@Override
 	public BftsmartClientIncomingSettings authClientIncoming(ClientIdentification authId) {
 		if (verify(authId)) {
-			BftsmartClientIncomingSettings clientIncomingSettings = new BftsmartClientIncomingConfig();
+			BftsmartClientIncomingConfig clientIncomingSettings = new BftsmartClientIncomingConfig();
 
-			((BftsmartClientIncomingConfig) clientIncomingSettings)
+			clientIncomingSettings
 					.setTopology(BinarySerializeUtils.serialize(nodeServer.getTopology()));
-			((BftsmartClientIncomingConfig) clientIncomingSettings)
+
+			clientIncomingSettings
 					.setTomConfig(BinarySerializeUtils.serialize(nodeServer.getTomConfig()));
-			((BftsmartClientIncomingConfig) clientIncomingSettings)
+
+			clientIncomingSettings
 					.setConsensusSettings(nodeServer.getConsensusSetting());
-			((BftsmartClientIncomingConfig) clientIncomingSettings).setPubKey(authId.getPubKey());
+
+			clientIncomingSettings.setPubKey(authId.getPubKey());
 			// compute gateway id
+			authLock.lock();
 			try {
-				authLock.lock();
-				((BftsmartClientIncomingConfig) clientIncomingSettings).setClientId(clientId++);
+				clientIncomingSettings.setClientId(clientId++);
 				clientId += CLIENT_SIZE_PER_GATEWAY;
 			} finally {
 				authLock.unlock();
 			}
 
 			return clientIncomingSettings;
-
 		}
 
 		return null;

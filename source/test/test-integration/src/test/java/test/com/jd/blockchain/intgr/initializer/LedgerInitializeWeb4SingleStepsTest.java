@@ -50,6 +50,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 
 import test.com.jd.blockchain.intgr.LedgerInitConsensusConfig;
 import test.com.jd.blockchain.intgr.PresetAnswerPrompter;
+import test.com.jd.blockchain.intgr.perf.Utils;
 
 public class LedgerInitializeWeb4SingleStepsTest {
 
@@ -77,7 +78,9 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		// 加载共识配置；
 		Properties props = loadConsensusSetting(consensusConfig.getConfigPath());
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(consensusConfig.getProvider());
-		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props);
+		ConsensusSettings csProps = csProvider.getSettingsFactory()
+				.getConsensusSettingsBuilder()
+				.createSettings(props, Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();
