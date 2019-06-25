@@ -424,7 +424,8 @@ public class LedgerQueryController implements BlockchainQueryService {
 		DataAccountSet dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
 
-		return dataAccount.getDataEntries(fromIndex, count);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataEntriesTotalCount());
+		return dataAccount.getDataEntries(pages[0], pages[1]);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries/count")
