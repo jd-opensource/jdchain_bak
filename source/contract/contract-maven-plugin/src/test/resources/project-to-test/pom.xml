@@ -16,7 +16,7 @@
                     <!--<outputDirectory>target/test-harness/project-to-test</outputDirectory>-->
                     <!-- The defined stubs -->
                     <project implementation="com.jd.blockchain.ledger.MyProjectStub"/>
-                    <finalName>contract1</finalName>
+                    <finalName>contract</finalName>
                 </configuration>
             </plugin>
         </plugins>
