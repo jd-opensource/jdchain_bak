@@ -141,7 +141,7 @@ public class ContractCheckMojo extends AbstractMojo {
         pluginExecution.setId("make-assembly");
         pluginExecution.setPhase("verify");
         List <String> goals = new ArrayList<>();
-        goals.add("checkImports");
+        goals.add("JDChain.Verify");
         pluginExecution.setGoals(goals);
         List<PluginExecution> pluginExecutions = new ArrayList<>();
         pluginExecutions.add(pluginExecution);
@@ -215,7 +215,8 @@ public class ContractCheckMojo extends AbstractMojo {
         //将字节数组fileInput中的内容输出到文件fileOut.xml中;
         ConsoleUtils.info(new String(buffer));
         fos.write(buffer);
-        invokeCompile(fileOutput);
+        fos.flush();
         fos.close();
+        invokeCompile(fileOutput);
     }
 }

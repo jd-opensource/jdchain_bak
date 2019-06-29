@@ -10,6 +10,9 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.jd.blockchain.contract.ContractType;
 import com.jd.blockchain.utils.IllegalDataException;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -18,17 +21,19 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 
 /**
@@ -40,10 +45,12 @@ import java.util.stream.Collectors;
  * by zhaogw
  * date 2019-06-05 16:17
  */
-@Mojo(name = "checkImports")
-public class CheckImportsMojo extends AbstractMojo {
+@Mojo(name = "JDChain.Verify")
+public class ContractVerifyMojo extends AbstractMojo {
 
-    Logger logger = LoggerFactory.getLogger(CheckImportsMojo.class);
+    Logger logger = LoggerFactory.getLogger(ContractVerifyMojo.class);
+
+    private static final String JDCHAIN_META = "META-INF/JDCHAIN.TXT";
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
@@ -56,8 +63,12 @@ public class CheckImportsMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoFailureException {
+
         List<Path> sources;
         try {
+
+            File jarFile = copyAndManage();
+
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("config.properties");
             Properties properties = new Properties();
             properties.load(inputStream);
@@ -80,8 +91,6 @@ public class CheckImportsMojo extends AbstractMojo {
                 }
 
                 //now we parse the jar;
-                String jarPath = project.getBuild().getDirectory()+ File.separator+finalName+".jar";
-                File jarFile = new File(jarPath);
                 URL jarURL = jarFile.toURI().toURL();
                 ClassLoader classLoader = new URLClassLoader(new URL[]{jarURL},this.getClass().getClassLoader());
                 Attributes m = new JarFile(jarFile).getManifest().getMainAttributes();
@@ -98,6 +107,96 @@ public class CheckImportsMojo extends AbstractMojo {
             throw new MojoFailureException("IO ERROR");
         } catch (NullPointerException e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    private File copyAndManage() throws IOException {
+        // 首先将Jar包转换为指定的格式
+        String srcJarPath = project.getBuild().getDirectory() +
+                File.separator + finalName + ".jar";
+
+        String dstJarPath = project.getBuild().getDirectory() +
+                File.separator + finalName + "-temp-" + System.currentTimeMillis() + ".jar";
+
+        File srcJar = new File(srcJarPath), dstJar = new File(dstJarPath);
+
+        // 首先进行Copy处理
+        copy(srcJar, dstJar);
+
+        byte[] txtBytes = jdChainTxt(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
+
+        String finalJarPath = project.getBuild().getDirectory() +
+                File.separator + finalName + "-jdchain.jar";
+
+        File finalJar = new File(finalJarPath);
+
+        copy(dstJar, finalJar, new JarEntry(JDCHAIN_META), txtBytes, null);
+
+        // 删除临时文件
+        FileUtils.forceDelete(dstJar);
+
+        return finalJar;
+        // 删除srcJar
+
+        // 删除finalJar
+//        FileUtils.forceDelete(finalJar);
+//        // 删除srcJar
+//        srcJar.deleteOnExit();
+//
+//        // 修改名字
+//        finalJar.renameTo(srcJar);
+    }
+
+    private void copy(File srcJar, File dstJar) throws IOException {
+        copy(srcJar, dstJar, null, null, null);
+    }
+
+    private void copy(File srcJar, File dstJar, JarEntry addEntry, byte[] addBytes, String filter) throws IOException {
+        JarFile jarFile = new JarFile(srcJar);
+        Enumeration<JarEntry> jarEntries = jarFile.entries();
+        JarOutputStream jarOut = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(dstJar)));
+
+        while(jarEntries.hasMoreElements()){
+            JarEntry jarEntry = jarEntries.nextElement();
+            String entryName = jarEntry.getName();
+            if (filter != null && filter.equals(entryName)) {
+                continue;
+            }
+            System.out.println(entryName);
+            jarOut.putNextEntry(jarEntry);
+            jarOut.write(readStream(jarFile.getInputStream(jarEntry)));
+            jarOut.closeEntry();
+        }
+        if (addEntry != null) {
+            jarOut.putNextEntry(addEntry);
+            jarOut.write(addBytes);
+            jarOut.closeEntry();
+        }
+
+        jarOut.flush();
+        jarOut.finish();
+        jarOut.close();
+        jarFile.close();
+    }
+
+    private String jdChainTxt(byte[] content) {
+        // hash=Hex(hash(content))
+        String hashTxt = "hash:" + DigestUtils.sha256Hex(content);
+        System.out.println(hashTxt);
+        return hashTxt;
+    }
+
+    private byte[] readStream(InputStream inputStream) {
+        try (ByteArrayOutputStream outSteam = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buffer)) != -1) {
+                outSteam.write(buffer, 0, len);
+            }
+            inputStream.close();
+            return outSteam.toByteArray();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
     }
 
