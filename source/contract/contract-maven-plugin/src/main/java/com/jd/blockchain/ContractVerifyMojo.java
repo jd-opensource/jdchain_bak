@@ -36,6 +36,8 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 
+import static com.jd.blockchain.utils.jar.ContractJarUtils.*;
+
 /**
  * first step, we want to parse the source code by javaParse. But it's repeated and difficult to parse the source.
  * This is a try of "from Initail to Abandoned".
@@ -49,8 +51,6 @@ import java.util.stream.Collectors;
 public class ContractVerifyMojo extends AbstractMojo {
 
     Logger logger = LoggerFactory.getLogger(ContractVerifyMojo.class);
-
-    private static final String JDCHAIN_META = "META-INF/JDCHAIN.TXT";
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
@@ -130,75 +130,15 @@ public class ContractVerifyMojo extends AbstractMojo {
 
         File finalJar = new File(finalJarPath);
 
-        copy(dstJar, finalJar, new JarEntry(JDCHAIN_META), txtBytes, null);
+        copy(dstJar, finalJar, jdChainMetaTxtJarEntry(), txtBytes, null);
 
         // 删除临时文件
         FileUtils.forceDelete(dstJar);
 
         return finalJar;
-        // 删除srcJar
-
-        // 删除finalJar
-//        FileUtils.forceDelete(finalJar);
-//        // 删除srcJar
-//        srcJar.deleteOnExit();
-//
-//        // 修改名字
-//        finalJar.renameTo(srcJar);
     }
 
-    private void copy(File srcJar, File dstJar) throws IOException {
-        copy(srcJar, dstJar, null, null, null);
-    }
 
-    private void copy(File srcJar, File dstJar, JarEntry addEntry, byte[] addBytes, String filter) throws IOException {
-        JarFile jarFile = new JarFile(srcJar);
-        Enumeration<JarEntry> jarEntries = jarFile.entries();
-        JarOutputStream jarOut = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(dstJar)));
-
-        while(jarEntries.hasMoreElements()){
-            JarEntry jarEntry = jarEntries.nextElement();
-            String entryName = jarEntry.getName();
-            if (filter != null && filter.equals(entryName)) {
-                continue;
-            }
-            System.out.println(entryName);
-            jarOut.putNextEntry(jarEntry);
-            jarOut.write(readStream(jarFile.getInputStream(jarEntry)));
-            jarOut.closeEntry();
-        }
-        if (addEntry != null) {
-            jarOut.putNextEntry(addEntry);
-            jarOut.write(addBytes);
-            jarOut.closeEntry();
-        }
-
-        jarOut.flush();
-        jarOut.finish();
-        jarOut.close();
-        jarFile.close();
-    }
-
-    private String jdChainTxt(byte[] content) {
-        // hash=Hex(hash(content))
-        String hashTxt = "hash:" + DigestUtils.sha256Hex(content);
-        System.out.println(hashTxt);
-        return hashTxt;
-    }
-
-    private byte[] readStream(InputStream inputStream) {
-        try (ByteArrayOutputStream outSteam = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) {
-                outSteam.write(buffer, 0, len);
-            }
-            inputStream.close();
-            return outSteam.toByteArray();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     private  class MethodVisitor extends VoidVisitorAdapter<Void> {
         @Override

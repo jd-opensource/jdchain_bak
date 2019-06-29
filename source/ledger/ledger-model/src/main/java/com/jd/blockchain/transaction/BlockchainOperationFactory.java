@@ -1,8 +1,15 @@
 package com.jd.blockchain.transaction;
 
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
@@ -16,6 +23,9 @@ import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.jar.ContractJarUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author huanghaiquan
@@ -250,6 +260,9 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private class ContractCodeDeployOperationBuilderFilter implements ContractCodeDeployOperationBuilder {
 		@Override
 		public ContractCodeDeployOperation deploy(BlockchainIdentity id, byte[] chainCode) {
+			// 校验chainCode
+			ContractJarUtils.verify(chainCode);
+			// 校验成功后发布
 			ContractCodeDeployOperation op = CONTRACT_CODE_DEPLOY_OP_BUILDER.deploy(id, chainCode);
 			operationList.add(op);
 			return op;
