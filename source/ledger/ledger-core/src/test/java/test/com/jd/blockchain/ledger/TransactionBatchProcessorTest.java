@@ -88,7 +88,7 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair, parti0);
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair, ledgerHash, parti0, parti0);
 		TransactionResponse txResp = txbatchProcessor.schedule(transactionRequest);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();
@@ -132,7 +132,7 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair1, parti0);
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash, parti0, parti0);
 		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
 
 //		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
@@ -187,15 +187,15 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair1, parti0);
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash, parti0, parti0);
 		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
 
 		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_MultiOPs_WithError(ledgerHash, userKeypair2, parti0);
+		transactionRequest = LedgerTestUtils.createTxRequest_MultiOPs_WithError(userKeypair2, ledgerHash, parti0, parti0);
 		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest);
 
 		BlockchainKeypair userKeypair3 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair3, parti0);
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair3, ledgerHash, parti0, parti0);
 		TransactionResponse txResp3 = txbatchProcessor.schedule(transactionRequest);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();

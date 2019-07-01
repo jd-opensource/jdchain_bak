@@ -103,7 +103,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 				return resp;
 			}
 
-			LOGGER.debug("Start handling transaction... --[BlockHeight=%s][RequestHash=%s][TxHash=%s]",
+			LOGGER.debug("Start handling transaction... --[BlockHeight={}][RequestHash={}][TxHash={}]",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 			// 创建交易上下文；
 			// 此调用将会验证交易签名，验签失败将会抛出异常，同时，不记录签名错误的交易到链上；
@@ -112,7 +112,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			// 处理交易；
 			resp = handleTx(request, txCtx);
 			
-			LOGGER.debug("Complete handling transaction.  --[BlockHeight=%s][RequestHash=%s][TxHash=%s]",
+			LOGGER.debug("Complete handling transaction.  --[BlockHeight={}][RequestHash={}][TxHash={}]",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 			
 			responseList.add(resp);
@@ -246,7 +246,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		TxResponseMessage resp = new TxResponseMessage(request.getTransactionContent().getHash());
 		resp.setExecutionState(txState);
 
-		LOGGER.error("Discard transaction request! --[BlockHeight=%s][RequestHash=%s][TxHash=%s][ResponseState=%s]",
+		LOGGER.error("Discard transaction request! --[BlockHeight={}][RequestHash={}][TxHash={}][ResponseState={}]",
 				newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 				resp.getExecutionState());
 		return resp;

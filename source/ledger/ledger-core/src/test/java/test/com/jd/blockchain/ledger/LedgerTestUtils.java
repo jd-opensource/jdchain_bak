@@ -84,14 +84,14 @@ public class LedgerTestUtils {
 //	public static TransactionRequest createTxRequest_UserReg(BlockchainKeypair userKeypair, HashDigest ledgerHash, BlockchainKeypair... partiKeys) {
 //		return createTxRequest_UserReg(userKeypair, ledgerHash, null, null);
 //	}
-	
+
 	public static TransactionRequest createLedgerInitTxRequest(BlockchainKeypair... participants) {
 		TxBuilder txBuilder = new TxBuilder(null);
-		
+
 		for (BlockchainKeypair parti : participants) {
 			txBuilder.users().register(parti.getIdentity());
 		}
-		
+
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 		for (BlockchainKeypair parti : participants) {
 			txReqBuilder.signAsNode(parti);
@@ -100,11 +100,11 @@ public class LedgerTestUtils {
 		return txReqBuilder.buildRequest();
 	}
 
-	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash,
-			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
-		return createTxRequest_UserReg(BlockchainKeyGenerator.getInstance().generate(), ledgerHash, nodeKeypair,
-				signers);
-	}
+//	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash, BlockchainKeypair nodeKeypair,
+//			BlockchainKeypair... signers) {
+//		return createTxRequest_UserReg(BlockchainKeyGenerator.getInstance().generate(), ledgerHash, nodeKeypair,
+//				signers);
+//	}
 
 	public static TransactionRequest createTxRequest_UserReg(BlockchainKeypair userKeypair, HashDigest ledgerHash,
 			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
@@ -113,7 +113,11 @@ public class LedgerTestUtils {
 		txBuilder.users().register(userKeypair.getIdentity());
 
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
-		txReqBuilder.signAsEndpoint(nodeKeypair);
+		if (signers != null) {
+			for (BlockchainKeypair signer : signers) {
+				txReqBuilder.signAsEndpoint(signer);
+			}
+		}
 		if (nodeKeypair != null) {
 			txReqBuilder.signAsNode(nodeKeypair);
 		}
@@ -121,8 +125,8 @@ public class LedgerTestUtils {
 		return txReqBuilder.buildRequest();
 	}
 
-	public static TransactionRequest createTxRequest_MultiOPs_WithError(HashDigest ledgerHash,
-			BlockchainKeypair userKeypair, BlockchainKeypair nodeKeypair) {
+	public static TransactionRequest createTxRequest_MultiOPs_WithError(BlockchainKeypair userKeypair, HashDigest ledgerHash,
+			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 
 		txBuilder.users().register(userKeypair.getIdentity());
