@@ -38,10 +38,10 @@ public class LedgerTestUtils {
 
 	private static Random rand = new Random();
 
-	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash) {
-		BlockchainKeypair key = BlockchainKeyGenerator.getInstance().generate(ED25519);
-		return createTxRequest_UserReg(ledgerHash, key);
-	}
+//	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash) {
+//		BlockchainKeypair key = BlockchainKeyGenerator.getInstance().generate(ED25519);
+//		return createTxRequest_UserReg(ledgerHash, key);
+//	}
 
 	public static LedgerInitSetting createLedgerInitSetting() {
 		BlockchainKeypair[] partiKeys = new BlockchainKeypair[2];
@@ -81,22 +81,61 @@ public class LedgerTestUtils {
 		return initSetting;
 	}
 
-	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash, BlockchainKeypair userKeypair) {
-		return createTxRequest_UserReg(ledgerHash, userKeypair, null);
+//	public static TransactionRequest createTxRequest_UserReg(BlockchainKeypair userKeypair, HashDigest ledgerHash, BlockchainKeypair... partiKeys) {
+//		return createTxRequest_UserReg(userKeypair, ledgerHash, null, null);
+//	}
+	
+	public static TransactionRequest createLedgerInitTxRequest(BlockchainKeypair... participants) {
+		TxBuilder txBuilder = new TxBuilder(null);
+		
+		for (BlockchainKeypair parti : participants) {
+			txBuilder.users().register(parti.getIdentity());
+		}
+		
+		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
+		for (BlockchainKeypair parti : participants) {
+			txReqBuilder.signAsNode(parti);
+		}
+
+		return txReqBuilder.buildRequest();
 	}
 
-	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash, BlockchainKeypair userKeypair,
-			BlockchainKeypair gatewayKeypair) {
+	public static TransactionRequest createTxRequest_UserReg(HashDigest ledgerHash,
+			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+		return createTxRequest_UserReg(BlockchainKeyGenerator.getInstance().generate(), ledgerHash, nodeKeypair,
+				signers);
+	}
+
+	public static TransactionRequest createTxRequest_UserReg(BlockchainKeypair userKeypair, HashDigest ledgerHash,
+			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 
 		txBuilder.users().register(userKeypair.getIdentity());
 
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
-		txReqBuilder.signAsEndpoint(userKeypair);
-		if (gatewayKeypair != null) {
-			txReqBuilder.signAsNode(gatewayKeypair);
+		txReqBuilder.signAsEndpoint(nodeKeypair);
+		if (nodeKeypair != null) {
+			txReqBuilder.signAsNode(nodeKeypair);
 		}
-		
+
+		return txReqBuilder.buildRequest();
+	}
+
+	public static TransactionRequest createTxRequest_MultiOPs_WithError(HashDigest ledgerHash,
+			BlockchainKeypair userKeypair, BlockchainKeypair nodeKeypair) {
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
+
+		txBuilder.users().register(userKeypair.getIdentity());
+
+		BlockchainKeypair testKey = BlockchainKeyGenerator.getInstance().generate();
+		txBuilder.dataAccount(testKey.getAddress()).setBytes("AA", "Value".getBytes(), 1);
+
+		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
+		txReqBuilder.signAsEndpoint(nodeKeypair);
+		if (nodeKeypair != null) {
+			txReqBuilder.signAsNode(nodeKeypair);
+		}
+
 		return txReqBuilder.buildRequest();
 	}
 

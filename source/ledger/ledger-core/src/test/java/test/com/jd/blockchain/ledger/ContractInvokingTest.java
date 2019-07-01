@@ -184,7 +184,7 @@ public class ContractInvokingTest {
 		// 创建账本；
 		LedgerEditor ldgEdt = LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
 
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(partiKeys);
 		LedgerTransactionContext genisisTxCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 

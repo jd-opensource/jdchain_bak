@@ -16,6 +16,7 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataType;
@@ -52,6 +53,13 @@ public class LedgerEditerTest {
 	private static final String LEDGER_KEY_PREFIX = "LDG://";
 	private SignatureFunction signatureFunction;
 
+	private BlockchainKeypair parti0 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti1 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti2 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti3 = BlockchainKeyGenerator.getInstance().generate();
+
+	private BlockchainKeypair[] participants = { parti0, parti1, parti2, parti3 };
+
 	/**
 	 * 初始化一个;
 	 */
@@ -74,8 +82,8 @@ public class LedgerEditerTest {
 		return LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
 	}
 
-	private LedgerTransactionContext createGenisisTx(LedgerEditor ldgEdt) {
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
+	private LedgerTransactionContext createGenisisTx(LedgerEditor ldgEdt, BlockchainKeypair[] partis) {
+		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(partis);
 
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 
@@ -86,7 +94,7 @@ public class LedgerEditerTest {
 	@Test
 	public void testWriteDataAccoutKvOp() {
 		LedgerEditor ldgEdt = createLedgerInitEditor();
-		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt);
+		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt, participants);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
@@ -119,7 +127,7 @@ public class LedgerEditerTest {
 	@Test
 	public void testGennesisBlockCreation() {
 		LedgerEditor ldgEdt = createLedgerInitEditor();
-		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt);
+		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt, participants);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
@@ -146,5 +154,5 @@ public class LedgerEditerTest {
 		ldgEdt.commit();
 
 	}
-	
+
 }

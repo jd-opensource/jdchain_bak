@@ -26,6 +26,11 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		System.out.println("------ [[ parallel-dbwrite=" + PARALLEL_DB_WRITE + " ]] ------");
 	}
 
+	/**
+	 * 账本Hash，创世区块的编辑器则返回 null；
+	 */
+	private HashDigest ledgerHash;
+
 	private final String ledgerKeyPrefix;
 
 	private CryptoSetting cryptoSetting;
@@ -49,8 +54,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	private LedgerDataContext newTxCtx;
 
-	private LedgerTransactionalEditor(CryptoSetting cryptoSetting, LedgerBlockData newlyBlock,
+	private LedgerTransactionalEditor(HashDigest ledgerHash, CryptoSetting cryptoSetting, LedgerBlockData newlyBlock,
 			StagedSnapshot startingPoint, String ledgerKeyPrefix, BufferedKVStorage bufferedStorage) {
+		this.ledgerHash = ledgerHash;
 		this.ledgerKeyPrefix = ledgerKeyPrefix;
 		this.cryptoSetting = cryptoSetting;
 		this.newlyBlock = newlyBlock;
@@ -59,8 +65,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		this.stagedSnapshots.push(startingPoint);
 	}
 
-	public static LedgerTransactionalEditor createEditor(LedgerSetting ledgerSetting, LedgerBlock previousBlock,
-			String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
+	public static LedgerTransactionalEditor createEditor(HashDigest ledgerHash, LedgerSetting ledgerSetting,
+			LedgerBlock previousBlock, String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage,
+			VersioningKVStorage ledgerVerStorage) {
 		// new block;
 		LedgerBlockData currBlock = new LedgerBlockData(previousBlock.getHeight() + 1, previousBlock.getLedgerHash(),
 				previousBlock.getHash());
@@ -71,7 +78,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		StagedSnapshot startingPoint = new TxSnapshot(previousBlock, previousBlock.getTransactionSetHash());
 
 		// instantiate editor;
-		return new LedgerTransactionalEditor(ledgerSetting.getCryptoSetting(), currBlock, startingPoint,
+		return new LedgerTransactionalEditor(ledgerHash, ledgerSetting.getCryptoSetting(), currBlock, startingPoint,
 				ledgerKeyPrefix, txStagedStorage);
 	}
 
@@ -81,7 +88,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		StagedSnapshot startingPoint = new GenesisSnapshot(initSetting);
 		// init storage;
 		BufferedKVStorage txStagedStorage = new BufferedKVStorage(ledgerExStorage, ledgerVerStorage, false);
-		return new LedgerTransactionalEditor(initSetting.getCryptoSetting(), genesisBlock, startingPoint,
+		return new LedgerTransactionalEditor(null, initSetting.getCryptoSetting(), genesisBlock, startingPoint,
 				ledgerKeyPrefix, txStagedStorage);
 	}
 
@@ -102,12 +109,39 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	// return lastTxCtx.getDataSet();
 	// }
 
-	public LedgerBlock getNewlyBlock() {
+	LedgerBlock getNewlyBlock() {
 		return newlyBlock;
 	}
 
 	@Override
+	public long getBlockHeight() {
+		return newlyBlock.getHeight();
+	}
+
+	@Override
+	public HashDigest getLedgerHash() {
+		return ledgerHash;
+	}
+
+	private boolean isRequestedLedger(TransactionRequest txRequest) {
+		HashDigest reqLedgerHash = txRequest.getTransactionContent().getLedgerHash();
+		if (ledgerHash == reqLedgerHash) {
+			return true;
+		}
+		if (ledgerHash == null || reqLedgerHash == null) {
+			return false;
+		}
+		return ledgerHash.equals(reqLedgerHash);
+	}
+
+	@Override
 	public LedgerTransactionContext newTransaction(TransactionRequest txRequest) {
+		// 验证账本是否；
+		if (!isRequestedLedger(txRequest)) {
+			throw new LedgerException("This ledger is not the target ledger of transaction request["
+					+ txRequest.getTransactionContent().getHash() + "]!");
+		}
+
 		checkState();
 		// TODO:验证交易签名；
 

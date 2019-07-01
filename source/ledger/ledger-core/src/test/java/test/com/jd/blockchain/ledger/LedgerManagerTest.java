@@ -63,6 +63,13 @@ public class LedgerManagerTest {
 	public static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };
 
+	private BlockchainKeypair parti0 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti1 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti2 = BlockchainKeyGenerator.getInstance().generate();
+	private BlockchainKeypair parti3 = BlockchainKeyGenerator.getInstance().generate();
+
+	private BlockchainKeypair[] participants = { parti0, parti1, parti2, parti3 };
+
 	private SignatureFunction signatureFunction;
 
 	@Before
@@ -83,13 +90,13 @@ public class LedgerManagerTest {
 		LedgerEditor ldgEdt = ledgerManager.newLedger(initSetting, storage);
 
 		// 创建一个模拟的创世交易；
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(participants);
 
 		// 记录交易，注册用户；
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = txCtx.getDataSet();
 		BlockchainKeypair userKP = BlockchainKeyGenerator.getInstance().generate();
-		
+
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
 		userAccount.setProperty("Name", "孙悟空", -1);
 		userAccount.setProperty("Age", "10000", -1);

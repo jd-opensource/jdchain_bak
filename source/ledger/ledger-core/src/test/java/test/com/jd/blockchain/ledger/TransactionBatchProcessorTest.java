@@ -1,6 +1,7 @@
 package test.com.jd.blockchain.ledger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -54,19 +55,22 @@ public class TransactionBatchProcessorTest {
 	private BlockchainKeypair parti2 = BlockchainKeyGenerator.getInstance().generate();
 	private BlockchainKeypair parti3 = BlockchainKeyGenerator.getInstance().generate();
 
+	private BlockchainKeypair[] participants = { parti0, parti1, parti2, parti3 };
+
 	private TransactionRequest transactionRequest;
 
-	// 采用基于内存的 Storage；
-	private MemoryKVStorage storage = new MemoryKVStorage();
+	// TODO: 验证无效签名会被拒绝；
 
 	@Test
-	public void testTxReqProcess() {
+	public void testSingleTxProcess() {
+		final MemoryKVStorage STORAGE = new MemoryKVStorage();
+
 		// 初始化账本到指定的存储库；
-		ledgerHash = initLedger(storage, parti0, parti1, parti2, parti3);
+		ledgerHash = initLedger(STORAGE, parti0, parti1, parti2, parti3);
 
 		// 加载账本；
 		LedgerManager ledgerManager = new LedgerManager();
-		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, storage);
+		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
 		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
@@ -85,18 +89,137 @@ public class TransactionBatchProcessorTest {
 		// 注册新用户；
 		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
 		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair, parti0);
-		txbatchProcessor.schedule(transactionRequest);
+		TransactionResponse txResp = txbatchProcessor.schedule(transactionRequest);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
 		// 验证正确性；
 		ledgerManager = new LedgerManager();
-		ledgerRepo = ledgerManager.register(ledgerHash, storage);
+		ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
 		assertEquals(newBlock.getHash(), latestBlock.getHash());
 		assertEquals(1, newBlock.getHeight());
+
+		assertEquals(TransactionState.SUCCESS, txResp.getExecutionState());
+	}
+
+	@Test
+	public void testMultiTxsProcess() {
+		final MemoryKVStorage STORAGE = new MemoryKVStorage();
+
+		// 初始化账本到指定的存储库；
+		ledgerHash = initLedger(STORAGE, parti0, parti1, parti2, parti3);
+
+		// 加载账本；
+		LedgerManager ledgerManager = new LedgerManager();
+		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+
+		// 验证参与方账户的存在；
+		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		assertNotNull(user0);
+		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
+		assertTrue(partiRegistered);
+
+		// 生成新区块；
+		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
+
+		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
+				opReg, ledgerManager);
+
+		// 注册新用户；
+		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair1, parti0);
+		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
+
+//		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
+//		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair2, parti0);
+//		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest);
+
+		LedgerBlock newBlock = newBlockEditor.prepare();
+		newBlockEditor.commit();
+
+		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
+//		assertEquals(TransactionState.SUCCESS, txResp2.getExecutionState());
+
+		// 验证正确性；
+		ledgerManager = new LedgerManager();
+		ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+
+		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
+		assertEquals(newBlock.getHash(), latestBlock.getHash());
+		assertEquals(1, newBlock.getHeight());
+
+		LedgerDataSet ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
+//		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
+		assertTrue(existUser1);
+//		assertTrue(existUser2);
+	}
+
+	@Test
+	public void testTxRollback() {
+		final MemoryKVStorage STORAGE = new MemoryKVStorage();
+
+		// 初始化账本到指定的存储库；
+		ledgerHash = initLedger(STORAGE, parti0, parti1, parti2, parti3);
+
+		// 加载账本；
+		LedgerManager ledgerManager = new LedgerManager();
+		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+
+		// 验证参与方账户的存在；
+		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		assertNotNull(user0);
+		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
+		assertTrue(partiRegistered);
+
+		// 生成新区块；
+		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
+
+		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
+				opReg, ledgerManager);
+
+		// 注册新用户；
+		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair1, parti0);
+		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
+
+		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
+		transactionRequest = LedgerTestUtils.createTxRequest_MultiOPs_WithError(ledgerHash, userKeypair2, parti0);
+		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest);
+
+		BlockchainKeypair userKeypair3 = BlockchainKeyGenerator.getInstance().generate();
+		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair3, parti0);
+		TransactionResponse txResp3 = txbatchProcessor.schedule(transactionRequest);
+
+		LedgerBlock newBlock = newBlockEditor.prepare();
+		newBlockEditor.commit();
+
+		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
+		assertEquals(TransactionState.LEDGER_ERROR, txResp2.getExecutionState());
+		assertEquals(TransactionState.SUCCESS, txResp3.getExecutionState());
+
+		// 验证正确性；
+		ledgerManager = new LedgerManager();
+		ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+
+		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
+		assertEquals(newBlock.getHash(), latestBlock.getHash());
+		assertEquals(1, newBlock.getHeight());
+
+		LedgerDataSet ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
+		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
+		boolean existUser3 = ledgerDS.getUserAccountSet().contains(userKeypair3.getAddress());
+		assertTrue(existUser1);
+		assertFalse(existUser2);
+		assertTrue(existUser3);
 	}
 
 	private HashDigest initLedger(MemoryKVStorage storage, BlockchainKeypair... partiKeys) {
@@ -106,7 +229,7 @@ public class TransactionBatchProcessorTest {
 		// 创建账本；
 		LedgerEditor ldgEdt = LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
 
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(partiKeys);
 		LedgerTransactionContext genisisTxCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 

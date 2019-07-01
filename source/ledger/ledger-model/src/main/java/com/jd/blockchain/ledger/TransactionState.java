@@ -11,7 +11,7 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@EnumContract(code= DataCodes.ENUM_TYPE_TRANSACTION_STATE)
+@EnumContract(code = DataCodes.ENUM_TYPE_TRANSACTION_STATE)
 public enum TransactionState {
 
 	/**
@@ -23,16 +23,21 @@ public enum TransactionState {
 	 * 共识错误；
 	 */
 	CONSENSUS_ERROR((byte) 1),
-	
+
 	/**
 	 * 账本错误；
 	 */
 	LEDGER_ERROR((byte) 2),
 
 	/**
-	 * 数据序列更新错误；
+	 * 由于在错误的账本上执行交易而被丢弃；
 	 */
-	DATA_SEQUENCE_UPDATE_ERROR((byte) 3),
+	DISCARD_BY_WRONG_LEDGER((byte) 3),
+	
+	/**
+	 * 由于交易内容的验签失败而丢弃；
+	 */
+	DISCARD_BY_WRONG_CONTENT_SIGNATURE((byte) 4),
 
 	/**
 	 * 系统错误；
@@ -44,7 +49,7 @@ public enum TransactionState {
 	 */
 	TIMEOUT((byte) 0x81);
 
-	@EnumField(type= PrimitiveType.INT8)
+	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 
 	private TransactionState(byte code) {

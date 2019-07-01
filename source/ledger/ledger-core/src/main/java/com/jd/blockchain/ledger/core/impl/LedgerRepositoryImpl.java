@@ -401,7 +401,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 					"A new block is in process, cann't create another one until it finish by committing or canceling.");
 		}
 		LedgerBlock previousBlock = getLatestBlock();
-		LedgerTransactionalEditor editor = LedgerTransactionalEditor.createEditor(
+		LedgerTransactionalEditor editor = LedgerTransactionalEditor.createEditor(ledgerHash,
 				getAdminInfo().getMetadata().getSetting(), previousBlock, keyPrefix, exPolicyStorage,
 				versioningStorage);
 		NewBlockCommittingMonitor committingMonitor = new NewBlockCommittingMonitor(editor, this);
@@ -479,7 +479,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	static TransactionSet newTransactionSet(LedgerSetting ledgerSetting, String keyPrefix,
-											ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
+			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// TransactionSet transactionSet = new
 		// TransactionSet(ledgerSetting.getCryptoSetting(),
 		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerExStorage),
@@ -574,6 +574,16 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		public NewBlockCommittingMonitor(LedgerTransactionalEditor editor, LedgerRepositoryImpl ledgerRepo) {
 			this.editor = editor;
 			this.ledgerRepo = ledgerRepo;
+		}
+
+		@Override
+		public HashDigest getLedgerHash() {
+			return editor.getLedgerHash();
+		}
+
+		@Override
+		public long getBlockHeight() {
+			return editor.getBlockHeight();
 		}
 
 		@Override
