@@ -39,7 +39,7 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
-public class LedgerEditerTest {
+public class LedgerEditorTest {
 
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };

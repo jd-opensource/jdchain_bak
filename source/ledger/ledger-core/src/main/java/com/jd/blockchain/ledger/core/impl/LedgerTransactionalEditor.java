@@ -45,6 +45,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	private boolean committed = false;
 
+//	private BufferedKVStorage baseStorage;
 	private BufferedKVStorage bufferedStorage;
 
 	/**
@@ -65,6 +66,17 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		this.stagedSnapshots.push(startingPoint);
 	}
 
+	/**
+	 * 创建账本新区块的编辑器；
+	 * 
+	 * @param ledgerHash
+	 * @param ledgerSetting
+	 * @param previousBlock
+	 * @param ledgerKeyPrefix
+	 * @param ledgerExStorage
+	 * @param ledgerVerStorage
+	 * @return
+	 */
 	public static LedgerTransactionalEditor createEditor(HashDigest ledgerHash, LedgerSetting ledgerSetting,
 			LedgerBlock previousBlock, String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage,
 			VersioningKVStorage ledgerVerStorage) {
@@ -82,6 +94,15 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 				ledgerKeyPrefix, txStagedStorage);
 	}
 
+	/**
+	 * 创建创世区块的编辑器；
+	 * 
+	 * @param initSetting
+	 * @param ledgerKeyPrefix
+	 * @param ledgerExStorage
+	 * @param ledgerVerStorage
+	 * @return
+	 */
 	public static LedgerTransactionalEditor createEditor(LedgerInitSetting initSetting, String ledgerKeyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		LedgerBlockData genesisBlock = new LedgerBlockData(0, null, null);
