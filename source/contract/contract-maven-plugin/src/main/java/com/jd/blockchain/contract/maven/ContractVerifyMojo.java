@@ -183,9 +183,12 @@ public class ContractVerifyMojo extends AbstractMojo {
                     }
                 }
                 if (!isOK) {
+                    // 需要将该Jar删除
+                    jarFile.delete();
                     throw new IllegalStateException("There are many Illegal information, please check !!!");
                 }
             } else {
+                jarFile.delete();
                 throw new IllegalStateException("There is none class !!!");
             }
         } catch (Exception e) {
