@@ -1,6 +1,6 @@
-package com.jd.blockchain.gateway.decompiler.utils;
+package com.jd.blockchain.utils.decompiler.utils;
 
-import com.jd.blockchain.gateway.decompiler.loads.BytesTypeLoader;
+import com.jd.blockchain.utils.decompiler.loads.BytesTypeLoader;
 import com.strobel.assembler.metadata.JarTypeLoader;
 import com.strobel.decompiler.Decompiler;
 import com.strobel.decompiler.DecompilerSettings;

@@ -15,7 +15,7 @@ import java.util.jar.JarOutputStream;
 
 public class ContractJarUtils {
 
-    private static final String JDCHAIN_META = "META-INF/JDCHAIN.TXT";
+    private static final String JDCHAIN_META = "META-INF/CONTRACT.MF";
 
     private static final int JDCHAIN_HASH_LENGTH = 69;
 

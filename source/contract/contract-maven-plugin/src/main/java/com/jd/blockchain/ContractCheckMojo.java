@@ -1,6 +1,7 @@
 package com.jd.blockchain;
 
-import com.jd.blockchain.utils.ConsoleUtils;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
@@ -12,7 +13,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.invoker.*;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +22,25 @@ import java.util.Collections;
 import java.util.List;
 
 
-@Mojo(name = "contractCheck")
+@Mojo(name = "Contract.Check")
 public class ContractCheckMojo extends AbstractMojo {
-    Logger logger = LoggerFactory.getLogger(ContractCheckMojo.class);
+    Logger LOG = LoggerFactory.getLogger(ContractCheckMojo.class);
+
+    public static final String CONTRACT_VERIFY = "Contract.Verify";
+
+    private static final String CONTRACT_MAVEN_PLUGIN = "contract-maven-plugin";
+
+    private static final String MAVEN_ASSEMBLY_PLUGIN = "maven-assembly-plugin";
+
+    private static final String JDCHAIN_PACKAGE = "com.jd.blockchain";
+
+    private static final String APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
+
+    private static final String GOALS_VERIFY = "verify";
+
+    private static final String GOALS_PACKAGE = "package";
+
+    private static final String OUT_POM_XML = "OutPom.xml";
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
@@ -58,27 +74,21 @@ public class ContractCheckMojo extends AbstractMojo {
      */
     @Override
     public void execute() {
-        this.compileFiles();
-
+        compileFiles();
     }
 
     private void compileFiles(){
-        // 获取当前项目pom.xml文件所在路径
-//        URL targetClasses = this.getClass().getClassLoader().getResource("");
-//        File file = new File(targetClasses.getPath());
-//        String pomXmlPath = file.getParentFile().getParent() + File.separator + "pom.xml";
+        try (FileInputStream fis = new FileInputStream(project.getFile())) {
 
-        FileInputStream fis = null;
-        try {
-//            fis = new FileInputStream(new File(pomXmlPath));
-            fis = new FileInputStream(project.getFile());
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model model = reader.read(fis);
 
             //delete this plugin(contractCheck) from destination pom.xml;then add the proper plugins;
-            Plugin plugin = model.getBuild().getPluginsAsMap().get("com.jd.blockchain:contract-maven-plugin");
+            Plugin plugin = model.getBuild().getPluginsAsMap()
+                    .get(JDCHAIN_PACKAGE + ":" + CONTRACT_MAVEN_PLUGIN);
             if(plugin == null){
-                plugin = model.getBuild().getPluginsAsMap().get("org.apache.maven.plugins:contract-maven-plugin");
+                plugin = model.getBuild().getPluginsAsMap()
+                        .get(APACHE_MAVEN_PLUGINS + ":" + CONTRACT_MAVEN_PLUGIN);
             }
 
             if(plugin == null) {
@@ -86,26 +96,18 @@ public class ContractCheckMojo extends AbstractMojo {
             }
 
             model.getBuild().removePlugin(plugin);
-//            model.getBuild().setPlugins(null);
-
-//            ConsoleUtils.info("----- 不携带Plugin -----");
-//            print(model);
 
             List<Plugin> plugins = new ArrayList<>();
             plugins.add(createAssembly());
-            plugins.add(createCheckImports());
+            plugins.add(createContractVerify());
 
             model.getBuild().setPlugins(plugins);
 
-            ConsoleUtils.info("----- add Plugin -----");
             handle(model);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new IllegalStateException(e);
         }
     }
 
@@ -116,43 +118,35 @@ public class ContractCheckMojo extends AbstractMojo {
         try {
             request.setPomFile(file);
 
-            request.setGoals( Collections.singletonList( "verify" ) );
-//            request.setMavenOpts("-DmainClass="+mainClass);
+            request.setGoals(Collections.singletonList(GOALS_VERIFY));
             invoker.setMavenHome(new File(mvnHome));
             invoker.execute(request);
         } catch (MavenInvocationException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+            throw new IllegalStateException(e);
         }
     }
 
-    private Plugin createCheckImports() {
+    private Plugin createContractVerify() {
         Plugin plugin = new Plugin();
-        plugin.setGroupId("com.jd.blockchain");
-        plugin.setArtifactId("contract-maven-plugin");
+        plugin.setGroupId(JDCHAIN_PACKAGE);
+        plugin.setArtifactId(CONTRACT_MAVEN_PLUGIN);
         plugin.setVersion(ledgerVersion);
 
         Xpp3Dom finalNameNode = new Xpp3Dom("finalName");
         finalNameNode.setValue(finalName);
         Xpp3Dom configuration = new Xpp3Dom("configuration");
         configuration.addChild(finalNameNode);
-        plugin.setConfiguration(configuration);
 
-        PluginExecution pluginExecution = new PluginExecution();
-        pluginExecution.setId("make-assembly");
-        pluginExecution.setPhase("verify");
-        List <String> goals = new ArrayList<>();
-        goals.add("JDChain.Verify");
-        pluginExecution.setGoals(goals);
-        List<PluginExecution> pluginExecutions = new ArrayList<>();
-        pluginExecutions.add(pluginExecution);
-        plugin.setExecutions(pluginExecutions);
+        plugin.setConfiguration(configuration);
+        plugin.setExecutions(pluginExecution("make-assembly", GOALS_VERIFY, CONTRACT_VERIFY));
 
         return plugin;
     }
 
     private Plugin createAssembly() {
         Plugin plugin = new Plugin();
-        plugin.setArtifactId("maven-assembly-plugin");
+        plugin.setArtifactId(MAVEN_ASSEMBLY_PLUGIN);
 
         Xpp3Dom configuration = new Xpp3Dom("configuration");
 
@@ -180,21 +174,28 @@ public class ContractCheckMojo extends AbstractMojo {
         configuration.addChild(appendAssemblyId);
         configuration.addChild(archive);
         configuration.addChild(descriptorRefs);
-        plugin.setConfiguration(configuration);
 
-        PluginExecution pluginExecution = new PluginExecution();
-        pluginExecution.setId("make-assembly");
-        pluginExecution.setPhase("package");
-        List <String> goals = new ArrayList<>();
-        goals.add("single");
-        pluginExecution.setGoals(goals);
-        List<PluginExecution> pluginExecutions = new ArrayList<>();
-        pluginExecutions.add(pluginExecution);
-        plugin.setExecutions(pluginExecutions);
+        plugin.setConfiguration(configuration);
+        plugin.setExecutions(pluginExecution("make-assembly", GOALS_PACKAGE, "single"));
+
         return plugin;
     }
 
+    private List<PluginExecution> pluginExecution(String id, String phase, String goal) {
+        PluginExecution pluginExecution = new PluginExecution();
+        pluginExecution.setId(id);
+        pluginExecution.setPhase(phase);
+        List <String> goals = new ArrayList<>();
+        goals.add(goal);
+        pluginExecution.setGoals(goals);
+        List<PluginExecution> pluginExecutions = new ArrayList<>();
+        pluginExecutions.add(pluginExecution);
+
+        return pluginExecutions;
+    }
+
     private void handle(Model model) throws IOException {
+
         MavenXpp3Writer mavenXpp3Writer = new MavenXpp3Writer();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -203,20 +204,10 @@ public class ContractCheckMojo extends AbstractMojo {
 
         byte[] buffer = outputStream.toByteArray();
 
-        //输出文件
-//        File fileOutput = new File("fileOut.xml");
-//        File fileOutput = File.createTempFile("fileOut",".xml");
-        File fileOutput = new File(project.getBasedir().getPath(),"fileOut.xml");
-        fileOutput.createNewFile();
+        File outPom = new File(project.getBasedir().getPath(), OUT_POM_XML);
 
-        ConsoleUtils.info("fileOutput's path="+fileOutput.getPath());
-        //创建文件输出流对象
-        FileOutputStream fos = new FileOutputStream(fileOutput);
-        //将字节数组fileInput中的内容输出到文件fileOut.xml中;
-        ConsoleUtils.info(new String(buffer));
-        fos.write(buffer);
-        fos.flush();
-        fos.close();
-        invokeCompile(fileOutput);
+        FileUtils.writeByteArrayToFile(outPom, buffer);
+
+        invokeCompile(outPom);
     }
 }

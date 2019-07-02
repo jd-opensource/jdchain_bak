@@ -1,6 +1,5 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.CheckImportsMojo;
 import com.jd.blockchain.ContractVerifyMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
@@ -22,7 +21,7 @@ public class ContractVerifyMojoTest extends AbstractMojoTestCase {
         assertNotNull( pom );
         assertTrue( pom.exists() );
 
-        ContractVerifyMojo myMojo = (ContractVerifyMojo) lookupMojo( "JDChain.Verify", pom );
+        ContractVerifyMojo myMojo = (ContractVerifyMojo) lookupMojo( "Contract.Verify", pom );
         assertNotNull( myMojo );
         myMojo.execute();
     }

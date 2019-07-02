@@ -1,4 +1,4 @@
-package com.jd.blockchain.gateway.decompiler.loads;
+package com.jd.blockchain.utils.decompiler.loads;
 
 import com.strobel.assembler.ir.ConstantPool;
 import com.strobel.assembler.metadata.Buffer;

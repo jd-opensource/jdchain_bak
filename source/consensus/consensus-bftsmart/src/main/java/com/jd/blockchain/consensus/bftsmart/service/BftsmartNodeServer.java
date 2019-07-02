@@ -123,11 +123,11 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return;
     }
 
-    protected void initConfig(int id, String systemConfig, String hostsConfig) {
-
-        this.tomConfig = new TOMConfiguration(id, systemConfig, hostsConfig);
-
-    }
+//    protected void initConfig(int id, String systemConfig, String hostsConfig) {
+//
+//        this.tomConfig = new TOMConfiguration(id, systemConfig, hostsConfig);
+//
+//    }
 
     protected void initConfig(int id, Properties systemsConfig, HostsConfig hostConfig) {
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
@@ -309,6 +309,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
             try {
                 LOGGER.debug("Start replica...[ID=" + getId() + "]");
+                // 调整绑定Host
                 this.replica = new ServiceReplica(tomConfig, this, this);
                 this.topology = new BftsmartTopology(replica.getReplicaContext().getCurrentView());
                 status = Status.RUNNING;
