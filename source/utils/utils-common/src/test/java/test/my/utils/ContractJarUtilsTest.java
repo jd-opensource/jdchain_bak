@@ -34,14 +34,14 @@ public class ContractJarUtilsTest {
             // 首先进行Copy处理
             copy(srcJar, dstJar);
 
-            byte[] txtBytes = jdChainTxt(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
+            byte[] txtBytes = contractMF(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
 
             String finalJarPath = classPath +
                     File.separator + jarName + "-jdchain.jar";
 
             File finalJar = new File(finalJarPath);
 
-            copy(dstJar, finalJar, jdChainMetaTxtJarEntry(), txtBytes, null);
+            copy(dstJar, finalJar, contractMFJarEntry(), txtBytes, null);
 
             // 删除临时文件
             FileUtils.forceDelete(dstJar);

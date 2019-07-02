@@ -5,6 +5,7 @@ import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.utils.IllegalDataException;
+import com.jd.blockchain.utils.jar.ContractJarUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +30,7 @@ public class GatewayInterceptServiceHandler implements GatewayInterceptService {
     }
 
     private void contractCheck(final ContractCodeDeployOperation contractOP) {
-        //
-        byte[] chainCode = contractOP.getChainCode();
-        if (chainCode == null || chainCode.length == 0) {
-            throw new IllegalDataException("Contract's content is empty !!!");
-        }
-
-
-
-
+        // 校验chainCode
+        ContractJarUtils.verify(contractOP.getChainCode());
     }
 }

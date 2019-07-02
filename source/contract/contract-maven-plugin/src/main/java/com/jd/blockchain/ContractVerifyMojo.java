@@ -3,37 +3,25 @@ package com.jd.blockchain;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.jd.blockchain.contract.ContractType;
-import com.jd.blockchain.utils.IllegalDataException;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-import java.util.stream.Collectors;
 
 import static com.jd.blockchain.ContractCheckMojo.CONTRACT_VERIFY;
 import static com.jd.blockchain.utils.decompiler.utils.DecompilerUtils.decompileJarFile;
@@ -78,11 +66,14 @@ public class ContractVerifyMojo extends AbstractMojo {
     private static final String BLACK_NAME_LIST = "black.name.list";
 
     @Override
-    public void execute() throws MojoFailureException {
+    public void execute() throws MojoExecutionException {
 
         try {
 
             File jarFile = copyAndManage();
+
+            // 首先校验MainClass
+            verifyMainClass(jarFile);
 
             Properties config = loadConfig();
 
@@ -193,21 +184,23 @@ public class ContractVerifyMojo extends AbstractMojo {
                 if (!isOK) {
                     throw new IllegalStateException("There are many Illegal information, please check !!!");
                 }
-
-                // 加载main-class，开始校验类型
-                URL jarURL = jarFile.toURI().toURL();
-                ClassLoader classLoader = new URLClassLoader(new URL[]{jarURL}, this.getClass().getClassLoader());
-                Attributes m = new JarFile(jarFile).getManifest().getMainAttributes();
-                String contractMainClass = m.getValue(Attributes.Name.MAIN_CLASS);
-                Class mainClass = classLoader.loadClass(contractMainClass);
-                ContractType.resolve(mainClass);
             } else {
                 throw new IllegalStateException("There is none class !!!");
             }
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            throw new MojoFailureException(e.getMessage());
+            throw new MojoExecutionException(e.getMessage());
         }
+    }
+
+    private void verifyMainClass(File jarFile) throws Exception {
+        // 加载main-class，开始校验类型
+        URL jarURL = jarFile.toURI().toURL();
+        ClassLoader classLoader = new URLClassLoader(new URL[]{jarURL}, this.getClass().getClassLoader());
+        Attributes m = new JarFile(jarFile).getManifest().getMainAttributes();
+        String contractMainClass = m.getValue(Attributes.Name.MAIN_CLASS);
+        Class mainClass = classLoader.loadClass(contractMainClass);
+        ContractType.resolve(mainClass);
     }
 
     private List<ContractPackage> blackNameList(Properties config) {
@@ -320,14 +313,14 @@ public class ContractVerifyMojo extends AbstractMojo {
         // 首先进行Copy处理
         copy(srcJar, dstJar);
 
-        byte[] txtBytes = jdChainTxt(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
+        byte[] txtBytes = contractMF(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
 
         String finalJarPath = project.getBuild().getDirectory() +
                 File.separator + finalName + "-jdchain.jar";
 
         File finalJar = new File(finalJarPath);
 
-        copy(dstJar, finalJar, jdChainMetaTxtJarEntry(), txtBytes, null);
+        copy(dstJar, finalJar, contractMFJarEntry(), txtBytes, null);
 
         // 删除临时文件
         FileUtils.forceDelete(dstJar);
@@ -423,8 +416,9 @@ public class ContractVerifyMojo extends AbstractMojo {
             if (totalPackage.endsWith("*")) {
                 this.packageName = totalPackage.substring(0, totalPackage.length() - 2).trim();
                 this.isTotal = true;
+            } else {
+                this.packageName = totalPackage;
             }
-            this.packageName = totalPackage;
         }
 
         public String getPackageName() {

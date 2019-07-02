@@ -18,7 +18,7 @@ public class ContractVerifyTest {
     @Before
     public void testInit() {
         project = mavenProjectInit();
-        finalName = "complex.jar";
+        finalName = "complex";
     }
 
     @Test

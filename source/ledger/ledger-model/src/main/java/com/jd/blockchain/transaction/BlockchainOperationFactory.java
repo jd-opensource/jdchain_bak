@@ -260,8 +260,6 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private class ContractCodeDeployOperationBuilderFilter implements ContractCodeDeployOperationBuilder {
 		@Override
 		public ContractCodeDeployOperation deploy(BlockchainIdentity id, byte[] chainCode) {
-			// 校验chainCode
-			ContractJarUtils.verify(chainCode);
 			// 校验成功后发布
 			ContractCodeDeployOperation op = CONTRACT_CODE_DEPLOY_OP_BUILDER.deploy(id, chainCode);
 			operationList.add(op);

@@ -15,13 +15,16 @@ import java.util.jar.JarOutputStream;
 
 public class ContractJarUtils {
 
-    private static final String JDCHAIN_META = "META-INF/CONTRACT.MF";
+    private static final String CONTRACT_MF = "META-INF/CONTRACT.MF";
 
     private static final int JDCHAIN_HASH_LENGTH = 69;
 
     private static final Random FILE_RANDOM = new Random();
 
     public static void verify(byte[] chainCode) {
+        if (chainCode == null || chainCode.length == 0) {
+            throw new IllegalStateException("ChainCode is empty !!!");
+        }
         // 首先生成合约文件
         File jarFile = newJarFile();
         try {
@@ -42,14 +45,14 @@ public class ContractJarUtils {
 
     private static void verify(File jarFile) throws Exception {
         // 首先判断jarFile中是否含有META-INF/JDCHAIN.TXT，并将其读出
-        URL jarUrl = new URL("jar:file:" + jarFile.getPath() + "!/" + JDCHAIN_META);
+        URL jarUrl = new URL("jar:file:" + jarFile.getPath() + "!/" + CONTRACT_MF);
         InputStream inputStream = jarUrl.openStream();
         if (inputStream == null) {
-            throw new IllegalStateException(JDCHAIN_META + " IS NULL !!!");
+            throw new IllegalStateException(CONTRACT_MF + " IS NULL !!!");
         }
         byte[] bytes = IOUtils.toByteArray(inputStream);
         if (bytes == null || bytes.length != JDCHAIN_HASH_LENGTH) {
-            throw new IllegalStateException(JDCHAIN_META + " IS Illegal !!!");
+            throw new IllegalStateException(CONTRACT_MF + " IS Illegal !!!");
         }
         // 获取对应的Hash内容
         String txt = new String(bytes, StandardCharsets.UTF_8);
@@ -58,10 +61,10 @@ public class ContractJarUtils {
         File tempJar = newJarFile();
 
         // 复制除JDCHAIN.TXT之外的部分
-        copy(jarFile, tempJar, null, null, JDCHAIN_META);
+        copy(jarFile, tempJar, null, null, CONTRACT_MF);
 
         // 生成新Jar包对应的Hash内容
-        String verifyTxt = jdChainTxt(FileUtils.readFileToByteArray(tempJar));
+        String verifyTxt = contractMF(FileUtils.readFileToByteArray(tempJar));
 
         // 删除临时文件
         FileUtils.forceDelete(tempJar);
@@ -103,13 +106,13 @@ public class ContractJarUtils {
         jarFile.close();
     }
 
-    public static String jdChainTxt(byte[] content) {
+    public static String contractMF(byte[] content) {
         // hash=Hex(hash(content))
         return "hash:" + DigestUtils.sha256Hex(content);
     }
 
-    public static JarEntry jdChainMetaTxtJarEntry() {
-        return new JarEntry(JDCHAIN_META);
+    public static JarEntry contractMFJarEntry() {
+        return new JarEntry(CONTRACT_MF);
     }
 
     private static byte[] readStream(InputStream inputStream) {

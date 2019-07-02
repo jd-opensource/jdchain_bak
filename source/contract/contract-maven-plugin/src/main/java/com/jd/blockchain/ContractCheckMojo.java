@@ -1,6 +1,5 @@
 package com.jd.blockchain;
 
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -8,6 +7,7 @@ import org.apache.maven.model.PluginExecution;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -22,11 +22,12 @@ import java.util.Collections;
 import java.util.List;
 
 
-@Mojo(name = "Contract.Check")
+@Mojo(name = "contractCheck")
 public class ContractCheckMojo extends AbstractMojo {
+
     Logger LOG = LoggerFactory.getLogger(ContractCheckMojo.class);
 
-    public static final String CONTRACT_VERIFY = "Contract.Verify";
+    public static final String CONTRACT_VERIFY = "contractVerify";
 
     private static final String CONTRACT_MAVEN_PLUGIN = "contract-maven-plugin";
 
@@ -36,11 +37,11 @@ public class ContractCheckMojo extends AbstractMojo {
 
     private static final String APACHE_MAVEN_PLUGINS = "org.apache.maven.plugins";
 
-    private static final String GOALS_VERIFY = "verify";
+    private static final String GOALS_VERIFY = "package";
 
     private static final String GOALS_PACKAGE = "package";
 
-    private static final String OUT_POM_XML = "OutPom.xml";
+    private static final String OUT_POM_XML = "ContractPom.xml";
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
@@ -50,7 +51,6 @@ public class ContractCheckMojo extends AbstractMojo {
      */
     @Parameter
     private String finalName;
-
 
     /**
      * mainClass;
@@ -73,11 +73,11 @@ public class ContractCheckMojo extends AbstractMojo {
      * first compile the class, then parse it;
      */
     @Override
-    public void execute() {
+    public void execute() throws MojoFailureException {
         compileFiles();
     }
 
-    private void compileFiles(){
+    private void compileFiles() throws MojoFailureException {
         try (FileInputStream fis = new FileInputStream(project.getFile())) {
 
             MavenXpp3Reader reader = new MavenXpp3Reader();
@@ -107,7 +107,7 @@ public class ContractCheckMojo extends AbstractMojo {
 
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            throw new IllegalStateException(e);
+            throw new MojoFailureException(e.getMessage());
         }
     }
 
@@ -185,7 +185,7 @@ public class ContractCheckMojo extends AbstractMojo {
         PluginExecution pluginExecution = new PluginExecution();
         pluginExecution.setId(id);
         pluginExecution.setPhase(phase);
-        List <String> goals = new ArrayList<>();
+        List<String> goals = new ArrayList<>();
         goals.add(goal);
         pluginExecution.setGoals(goals);
         List<PluginExecution> pluginExecutions = new ArrayList<>();

@@ -1,5 +1,6 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
+import com.jd.blockchain.utils.jar.ContractJarUtils;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.ledger.BytesValue;
@@ -22,8 +23,12 @@ public class ContractCodeDeployOperationHandle implements OperationHandle {
 		
 		// TODO: 请求者应该提供合约账户的公钥签名，已确定注册的地址的唯一性；
 
+		byte[] chainCode = contractOP.getChainCode();
+		// 校验合约代码，不通过会抛出异常
+		ContractJarUtils.verify(chainCode);
+
 		dataset.getContractAccountSet().deploy(contractOP.getContractID().getAddress(),
-				contractOP.getContractID().getPubKey(), contractOP.getAddressSignature(), contractOP.getChainCode());
+				contractOP.getContractID().getPubKey(), contractOP.getAddressSignature(), chainCode);
 
 		return null;
 	}
@@ -37,5 +42,4 @@ public class ContractCodeDeployOperationHandle implements OperationHandle {
 	public boolean support(Class<?> operationType) {
 		return ContractCodeDeployOperation.class.isAssignableFrom(operationType);
 	}
-
 }
