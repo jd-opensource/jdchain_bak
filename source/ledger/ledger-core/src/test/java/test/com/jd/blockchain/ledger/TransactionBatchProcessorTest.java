@@ -57,8 +57,6 @@ public class TransactionBatchProcessorTest {
 
 	private BlockchainKeypair[] participants = { parti0, parti1, parti2, parti3 };
 
-	private TransactionRequest transactionRequest;
-
 	// TODO: 验证无效签名会被拒绝；
 
 	@Test
@@ -88,7 +86,8 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair, ledgerHash, parti0, parti0);
+		TransactionRequest transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair, ledgerHash, parti0,
+				parti0);
 		TransactionResponse txResp = txbatchProcessor.schedule(transactionRequest);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();
@@ -132,18 +131,20 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash, parti0, parti0);
-		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
+		TransactionRequest transactionRequest1 = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash,
+				parti0, parti0);
+		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest1);
 
-//		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
-//		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(ledgerHash, userKeypair2, parti0);
-//		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest);
+		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
+		TransactionRequest transactionRequest2 = LedgerTestUtils.createTxRequest_UserReg(userKeypair2, ledgerHash,
+				parti0, parti0);
+		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest2);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
 		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
-//		assertEquals(TransactionState.SUCCESS, txResp2.getExecutionState());
+		assertEquals(TransactionState.SUCCESS, txResp2.getExecutionState());
 
 		// 验证正确性；
 		ledgerManager = new LedgerManager();
@@ -155,9 +156,9 @@ public class TransactionBatchProcessorTest {
 
 		LedgerDataSet ledgerDS = ledgerRepo.getDataSet(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
-//		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
+		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
 		assertTrue(existUser1);
-//		assertTrue(existUser2);
+		assertTrue(existUser2);
 	}
 
 	@Test
@@ -187,22 +188,25 @@ public class TransactionBatchProcessorTest {
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash, parti0, parti0);
-		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest);
+		TransactionRequest transactionRequest1 = LedgerTestUtils.createTxRequest_UserReg(userKeypair1, ledgerHash,
+				parti0, parti0);
+		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest1);
 
 		BlockchainKeypair userKeypair2 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_MultiOPs_WithError(userKeypair2, ledgerHash, parti0, parti0);
-		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest);
+		TransactionRequest transactionRequest2 = LedgerTestUtils
+				.createTxRequest_MultiOPs_WithNotExistedDataAccount(userKeypair2, ledgerHash, parti0, parti0);
+		TransactionResponse txResp2 = txbatchProcessor.schedule(transactionRequest2);
 
 		BlockchainKeypair userKeypair3 = BlockchainKeyGenerator.getInstance().generate();
-		transactionRequest = LedgerTestUtils.createTxRequest_UserReg(userKeypair3, ledgerHash, parti0, parti0);
-		TransactionResponse txResp3 = txbatchProcessor.schedule(transactionRequest);
+		TransactionRequest transactionRequest3 = LedgerTestUtils.createTxRequest_UserReg(userKeypair3, ledgerHash,
+				parti0, parti0);
+		TransactionResponse txResp3 = txbatchProcessor.schedule(transactionRequest3);
 
 		LedgerBlock newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
 		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
-		assertEquals(TransactionState.LEDGER_ERROR, txResp2.getExecutionState());
+		assertEquals(TransactionState.DATA_ACCOUNT_DOES_NOT_EXIST, txResp2.getExecutionState());
 		assertEquals(TransactionState.SUCCESS, txResp3.getExecutionState());
 
 		// 验证正确性；
@@ -212,6 +216,20 @@ public class TransactionBatchProcessorTest {
 		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
 		assertEquals(newBlock.getHash(), latestBlock.getHash());
 		assertEquals(1, newBlock.getHeight());
+
+		LedgerTransaction tx1 = ledgerRepo.getTransactionSet()
+				.get(transactionRequest1.getTransactionContent().getHash());
+		LedgerTransaction tx2 = ledgerRepo.getTransactionSet()
+				.get(transactionRequest2.getTransactionContent().getHash());
+		LedgerTransaction tx3 = ledgerRepo.getTransactionSet()
+				.get(transactionRequest3.getTransactionContent().getHash());
+		
+		assertNotNull(tx1);
+		assertEquals(TransactionState.SUCCESS, tx1.getExecutionState());
+		assertNotNull(tx2);
+		assertEquals(TransactionState.DATA_ACCOUNT_DOES_NOT_EXIST, tx2.getExecutionState());
+		assertNotNull(tx3);
+		assertEquals(TransactionState.SUCCESS, tx3.getExecutionState());
 
 		LedgerDataSet ledgerDS = ledgerRepo.getDataSet(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());

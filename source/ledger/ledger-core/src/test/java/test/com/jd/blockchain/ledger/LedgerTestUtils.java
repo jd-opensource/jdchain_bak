@@ -125,12 +125,20 @@ public class LedgerTestUtils {
 		return txReqBuilder.buildRequest();
 	}
 
-	public static TransactionRequest createTxRequest_MultiOPs_WithError(BlockchainKeypair userKeypair, HashDigest ledgerHash,
-			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+	/**
+	 * @param userKeypair 要注册的用户key；
+	 * @param ledgerHash  账本哈希；
+	 * @param nodeKeypair 节点key；
+	 * @param signers     签名者列表；
+	 * @return
+	 */
+	public static TransactionRequest createTxRequest_MultiOPs_WithNotExistedDataAccount(BlockchainKeypair userKeypair,
+			HashDigest ledgerHash, BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 
 		txBuilder.users().register(userKeypair.getIdentity());
 
+		// 故意构建一个错误的
 		BlockchainKeypair testKey = BlockchainKeyGenerator.getInstance().generate();
 		txBuilder.dataAccount(testKey.getAddress()).setBytes("AA", "Value".getBytes(), 1);
 

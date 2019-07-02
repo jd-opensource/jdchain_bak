@@ -14,9 +14,9 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 
 	private AccountSet accountSet;
 
-	public DataAccountSet(CryptoSetting cryptoSetting, String prefix,ExPolicyKVStorage exStorage,
+	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting,prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new AccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
 	}
 
 	public DataAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
@@ -26,7 +26,7 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 	}
 
 	public AccountHeader[] getAccounts(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex,count);
+		return accountSet.getAccounts(fromIndex, count);
 	}
 
 	public boolean isReadonly() {
@@ -56,8 +56,18 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		return new DataAccount(accBase);
 	}
 
+	/**
+	 * 返回数据账户； <br>
+	 * 如果不存在，则返回 null；
+	 * 
+	 * @param address
+	 * @return
+	 */
 	public DataAccount getDataAccount(Bytes address) {
 		BaseAccount accBase = accountSet.getAccount(address);
+		if (accBase == null) {
+			return null;
+		}
 		return new DataAccount(accBase);
 	}
 

@@ -123,6 +123,12 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		return ledgerHash;
 	}
 
+	/**
+	 * 检查当前账本是否是指定交易请求的账本；
+	 * 
+	 * @param txRequest
+	 * @return
+	 */
 	private boolean isRequestedLedger(TransactionRequest txRequest) {
 		HashDigest reqLedgerHash = txRequest.getTransactionContent().getLedgerHash();
 		if (ledgerHash == reqLedgerHash) {
@@ -142,8 +148,8 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 					+ txRequest.getTransactionContent().getHash() + "]!");
 		}
 
+		// 检查状态是否允许创建新的交易请求；；
 		checkState();
-		// TODO:验证交易签名；
 
 		BufferedKVStorage txBuffStorage = null;
 		LedgerDataSetImpl txDataset = null;

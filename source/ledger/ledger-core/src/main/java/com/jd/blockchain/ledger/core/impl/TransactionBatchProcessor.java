@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.ContractDoesNotExistException;
+import com.jd.blockchain.ledger.DataAccountDoesNotExistException;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
@@ -19,6 +21,7 @@ import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.UserDoesNotExistException;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerService;
@@ -111,10 +114,10 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 			// 处理交易；
 			resp = handleTx(request, txCtx);
-			
+
 			LOGGER.debug("Complete handling transaction.  --[BlockHeight={}][RequestHash={}][TxHash={}]",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
-			
+
 			responseList.add(resp);
 			return resp;
 		} catch (Exception e) {
@@ -124,7 +127,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					"Discard transaction rollback caused by the system exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
-			
+
 			responseList.add(resp);
 			return resp;
 		}
@@ -186,7 +189,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		} catch (LedgerException e) {
 			// TODO: 识别更详细的异常类型以及执行对应的处理；
 			result = TransactionState.LEDGER_ERROR;
-			txCtx.discardAndCommit(TransactionState.LEDGER_ERROR, operationResults);
+			if (e instanceof DataAccountDoesNotExistException) {
+				result = TransactionState.DATA_ACCOUNT_DOES_NOT_EXIST;
+			} else if (e instanceof UserDoesNotExistException) {
+				result = TransactionState.USER_DOES_NOT_EXIST;
+			} else if (e instanceof ContractDoesNotExistException) {
+				result = TransactionState.CONTRACT_DOES_NOT_EXIST;
+			}
+			txCtx.discardAndCommit(result, operationResults);
 			LOGGER.error(String.format(
 					"Transaction rollback caused by the ledger exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),

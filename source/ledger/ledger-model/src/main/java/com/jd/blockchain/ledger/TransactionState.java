@@ -33,11 +33,26 @@ public enum TransactionState {
 	 * 由于在错误的账本上执行交易而被丢弃；
 	 */
 	DISCARD_BY_WRONG_LEDGER((byte) 3),
-	
+
 	/**
 	 * 由于交易内容的验签失败而丢弃；
 	 */
 	DISCARD_BY_WRONG_CONTENT_SIGNATURE((byte) 4),
+
+	/**
+	 * 数据账户不存在；
+	 */
+	DATA_ACCOUNT_DOES_NOT_EXIST((byte) 5),
+	
+	/**
+	 * 用户不存在；
+	 */
+	USER_DOES_NOT_EXIST((byte) 6),
+	
+	/**
+	 * 合约不存在；
+	 */
+	CONTRACT_DOES_NOT_EXIST((byte) 6),
 
 	/**
 	 * 系统错误；
