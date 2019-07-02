@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.ContractVerifyMojo;
+import com.jd.blockchain.contract.maven.ContractVerifyMojo;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 
 import static com.jd.blockchain.ledger.ContractTestBase.mavenProjectInit;
 
-public class ContractVerifyTest {
+public class ContractVerifyTest_ {
 
     private MavenProject project;
 

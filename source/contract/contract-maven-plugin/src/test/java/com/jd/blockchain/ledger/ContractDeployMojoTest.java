@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.ContractDeployMojo;
+import com.jd.blockchain.contract.maven.ContractDeployMojo;
 
 import java.lang.reflect.Field;
 
