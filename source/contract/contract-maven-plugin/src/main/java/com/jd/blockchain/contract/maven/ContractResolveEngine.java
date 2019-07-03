@@ -6,13 +6,9 @@ import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.jd.blockchain.contract.ContractType;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,32 +20,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static com.jd.blockchain.contract.maven.ContractCheckMojo.CONTRACT_VERIFY;
+import static com.jd.blockchain.contract.maven.ContractCompileMojo.JAR_DEPENDENCE;
 import static com.jd.blockchain.utils.decompiler.utils.DecompilerUtils.decompileJarFile;
 import static com.jd.blockchain.utils.jar.ContractJarUtils.*;
 
-/**
- * first step, we want to parse the source code by javaParse. But it's repeated and difficult to parse the source.
- * This is a try of "from Initail to Abandoned".
- * Since we are good at the class, why not?
- * Now we change a way of thinking, first we pre-compile the source code, then parse the *.jar.
- *
- * by zhaogw
- * date 2019-06-05 16:17
- */
-@Mojo(name = CONTRACT_VERIFY)
-public class ContractVerifyMojo extends AbstractMojo {
-
-    Logger LOG = LoggerFactory.getLogger(ContractVerifyMojo.class);
-
-    @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    private MavenProject project;
-
-    /**
-     * jar's name;
-     */
-    @Parameter
-    private String finalName;
+public class ContractResolveEngine {
 
     private static final String JAVA_SUFFIX = ".java";
 
@@ -66,19 +41,49 @@ public class ContractVerifyMojo extends AbstractMojo {
 
     private static final String BLACK_NAME_LIST = "black.name.list";
 
-    @Override
-    public void execute() throws MojoExecutionException {
+    private Log LOGGER;
 
+    private MavenProject project;
+
+    private String finalName;
+
+    public ContractResolveEngine(Log LOGGER, MavenProject project, String finalName) {
+        this.LOGGER = LOGGER;
+        this.project = project;
+        this.finalName = finalName;
+    }
+
+    public void compileAndVerify() throws MojoFailureException {
         try {
+            jarCopy();
+            verify(compileCustomJar());
+        } catch (IOException e) {
+            throw new MojoFailureException("IO Error : " + e.getMessage(), e);
+        } catch (MojoFailureException ex) {
+            throw ex;
+        }
+    }
 
-            File jarFile = copyAndManage();
+    private void jarCopy() throws IOException {
+        String srcJarPath = project.getBuild().getDirectory() +
+                File.separator + finalName + "-" + JAR_DEPENDENCE + ".jar";
+        String dstJarPath = project.getBuild().getDirectory() +
+                File.separator + finalName + ".jar";
+        FileUtils.copyFile(new File(srcJarPath), new File(dstJarPath));
+    }
 
+    private File compileCustomJar() throws IOException {
+        return copyAndManage(project, finalName);
+    }
+
+    private void verify(File jarFile) throws MojoFailureException {
+        try {
             // 首先校验MainClass
             try {
                 verifyMainClass(jarFile);
             } catch (Exception e) {
                 jarFile.delete();
-                LOG.error(e.getMessage());
+                LOGGER.error(e.getMessage());
                 throw e;
             }
 
@@ -101,8 +106,12 @@ public class ContractVerifyMojo extends AbstractMojo {
                 boolean isOK = true;
 
                 for (String clazz : totalClassList) {
+
+                    LOGGER.debug(String.format("Verify Class[%s] start......", clazz));
                     // 获取其包名
                     String packageName = packageName(clazz);
+
+                    LOGGER.debug(String.format("Class[%s] 's package name = %s", clazz, packageName));
 
                     // 包的名字黑名单，不能打包该类进入Jar包中，或者合约不能命名这样的名字
                     boolean isNameBlack = false;
@@ -116,7 +125,7 @@ public class ContractVerifyMojo extends AbstractMojo {
                     // 假设是黑名单则打印日志
                     if (isNameBlack) {
                         // 打印信息供检查
-                        LOG.error(String.format("Class[%s]'s Package-Name belong to BlackNameList !!!", clazz));
+                        LOGGER.error(String.format("Class[%s]'s Package-Name belong to BlackNameList !!!", clazz));
                         isOK = false;
                         continue;
                     }
@@ -126,6 +135,7 @@ public class ContractVerifyMojo extends AbstractMojo {
 
                     boolean isNeedDelete = false;
                     if (!javaFile.exists()) {
+                        LOGGER.debug(String.format("Class[%s] -> Java[%s] is not exist, start decompile ...", clazz, jarFile.getPath()));
                         // 表明不是项目中的内容，需要通过反编译获取该文件
                         String source = null;
                         try {
@@ -134,15 +144,18 @@ public class ContractVerifyMojo extends AbstractMojo {
                                 throw new IllegalStateException();
                             }
                         } catch (Exception e) {
-                            LOG.warn(String.format("Decompile Jar[%s]->Class[%s] Fail !!!", jarFile.getPath(), clazz));
+                            LOGGER.warn(String.format("Decompile Jar[%s]->Class[%s] Fail !!!", jarFile.getPath(), clazz));
                         }
                         // 将source写入Java文件
                         File sourceTempJavaFile = new File(tempPath(codeBaseDir, clazz));
                         FileUtils.writeStringToFile(sourceTempJavaFile, source == null ? "" : source);
                         javaFile = sourceTempJavaFile;
                         isNeedDelete = true;
+                    } else {
+                        LOGGER.debug(String.format("Class[%s] -> Java[%s] is exist", clazz, jarFile.getPath()));
                     }
 
+                    LOGGER.info(String.format("Parse Java File [%s] start......", javaFile.getPath()));
                     // 解析文件中的内容
                     CompilationUnit compilationUnit = JavaParser.parse(javaFile);
 
@@ -154,13 +167,14 @@ public class ContractVerifyMojo extends AbstractMojo {
 
                     if (!imports.isEmpty()) {
                         for (String importClass : imports) {
+                            LOGGER.debug(String.format("Class[%s] read import -> [%s]", clazz, importClass));
                             if (importClass.endsWith("*")) {
                                 // 导入的是包
                                 for (ContractPackage blackPackage : blackPackageList) {
                                     String importPackageName = importClass.substring(0, importClass.length() - 2);
                                     if (verifyPackage(importPackageName, blackPackage)) {
                                         // 打印信息供检查
-                                        LOG.error(String.format("Class[%s]'s import class [%s] belong to BlackPackageList !!!", clazz, importClass));
+                                        LOGGER.error(String.format("Class[%s]'s import class [%s] belong to BlackPackageList !!!", clazz, importClass));
                                         isOK = false;
                                         break;
                                     }
@@ -169,13 +183,13 @@ public class ContractVerifyMojo extends AbstractMojo {
                                 // 导入的是具体的类，则判断类黑名单 + 包黑名单
                                 if (blackClassSet.contains(importClass)) {
                                     // 包含导入类，该方式无法通过验证
-                                    LOG.error(String.format("Class[%s]'s import class [%s] belong to BlackClassList !!!", clazz, importClass));
+                                    LOGGER.error(String.format("Class[%s]'s import class [%s] belong to BlackClassList !!!", clazz, importClass));
                                     isOK = false;
                                 } else {
                                     // 判断导入的该类与黑名单导入包的对应关系
                                     for (ContractPackage blackPackage : blackPackageList) {
                                         if (verifyClass(importClass, blackPackage)) {
-                                            LOG.error(String.format("Class[%s]'s import class [%s] belong to BlackPackageList !!!", clazz, importClass));
+                                            LOGGER.error(String.format("Class[%s]'s import class [%s] belong to BlackPackageList !!!", clazz, importClass));
                                             isOK = false;
                                             break;
                                         }
@@ -187,6 +201,7 @@ public class ContractVerifyMojo extends AbstractMojo {
                     if (isNeedDelete) {
                         javaFile.delete();
                     }
+                    LOGGER.debug(String.format("Verify Class[%s] end......", clazz));
                 }
                 if (!isOK) {
                     // 需要将该Jar删除
@@ -198,19 +213,21 @@ public class ContractVerifyMojo extends AbstractMojo {
                 throw new IllegalStateException("There is none class !!!");
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage());
-            throw new MojoExecutionException(e.getMessage());
+            LOGGER.error(e.getMessage());
+            throw new MojoFailureException(e.getMessage(), e);
         }
     }
 
     private void verifyMainClass(File jarFile) throws Exception {
         // 加载main-class，开始校验类型
+        LOGGER.debug(String.format("Verify Jar [%s] 's MainClass start...", jarFile.getName()));
         URL jarURL = jarFile.toURI().toURL();
         ClassLoader classLoader = new URLClassLoader(new URL[]{jarURL}, this.getClass().getClassLoader());
         Attributes m = new JarFile(jarFile).getManifest().getMainAttributes();
         String contractMainClass = m.getValue(Attributes.Name.MAIN_CLASS);
         Class mainClass = classLoader.loadClass(contractMainClass);
         ContractType.resolve(mainClass);
+        LOGGER.debug(String.format("Verify Jar [%s] 's MainClass end...", jarFile.getName()));
     }
 
     private List<ContractPackage> blackNameList(Properties config) {
@@ -223,6 +240,7 @@ public class ContractVerifyMojo extends AbstractMojo {
         if (attrProp != null && attrProp.length() > 0) {
             String[] attrPropArray = attrProp.split(",");
             for (String attr : attrPropArray) {
+                LOGGER.info(String.format("Config [%s] -> [%s]", BLACK_CLASS_LIST, attr));
                 blackClassSet.add(attr.trim());
             }
         }
@@ -239,6 +257,7 @@ public class ContractVerifyMojo extends AbstractMojo {
         if (attrProp != null || attrProp.length() > 0) {
             String[] attrPropArray = attrProp.split(",");
             for (String attr : attrPropArray) {
+                LOGGER.info(String.format("Config [%s] -> [%s]", attrName, attr));
                 list.add(new ContractPackage(attr));
             }
         }
@@ -310,7 +329,7 @@ public class ContractVerifyMojo extends AbstractMojo {
         return packageName.replaceAll("/", ".");
     }
 
-    private File copyAndManage() throws IOException {
+    private File copyAndManage(MavenProject project, String finalName) throws IOException {
         // 首先将Jar包转换为指定的格式
         String srcJarPath = project.getBuild().getDirectory() +
                 File.separator + finalName + ".jar";
@@ -320,8 +339,10 @@ public class ContractVerifyMojo extends AbstractMojo {
 
         File srcJar = new File(srcJarPath), dstJar = new File(dstJarPath);
 
+        LOGGER.debug(String.format("Jar from [%s] to [%s] Copying", srcJarPath, dstJarPath));
         // 首先进行Copy处理
         copy(srcJar, dstJar);
+        LOGGER.debug(String.format("Jar from [%s] to [%s] Copied", srcJarPath, dstJarPath));
 
         byte[] txtBytes = contractMF(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
 
@@ -375,24 +396,6 @@ public class ContractVerifyMojo extends AbstractMojo {
     private static class MethodVisitor extends VoidVisitorAdapter<Void> {
 
         private List<String> importClasses = new ArrayList<>();
-
-//        @Override
-//        public void visit(MethodDeclaration n, Void arg) {
-//            /* here you can access the attributes of the method.
-//             this method will be called for all methods in this
-//             CompilationUnit, including inner class methods */
-//            super.visit(n, arg);
-//        }
-//
-//        @Override
-//        public void visit(ClassOrInterfaceDeclaration n, Void arg) {
-//            super.visit(n, arg);
-//        }
-//
-//        @Override
-//        public void visit(PackageDeclaration n, Void arg) {
-//            super.visit(n, arg);
-//        }
 
         @Override
         public void visit(ImportDeclaration n, Void arg) {
