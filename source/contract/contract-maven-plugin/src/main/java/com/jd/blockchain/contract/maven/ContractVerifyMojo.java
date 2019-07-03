@@ -74,7 +74,13 @@ public class ContractVerifyMojo extends AbstractMojo {
             File jarFile = copyAndManage();
 
             // 首先校验MainClass
-            verifyMainClass(jarFile);
+            try {
+                verifyMainClass(jarFile);
+            } catch (Exception e) {
+                jarFile.delete();
+                LOG.error(e.getMessage());
+                throw e;
+            }
 
             Properties config = loadConfig();
 
