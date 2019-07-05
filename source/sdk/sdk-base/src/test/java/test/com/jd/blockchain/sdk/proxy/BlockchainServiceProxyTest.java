@@ -1,9 +1,5 @@
 package test.com.jd.blockchain.sdk.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-
 public class BlockchainServiceProxyTest {
 
 //	private static class ArgCaptorMatcher<T> extends CustomMatcher<T> {

@@ -131,9 +131,12 @@ public class IntegrationTest4Bftsmart {
             validKeyPair(dataAccountResponse, ledgerRepository, IntegrationBase.KeyPairType.DATAACCOUNT);
 
             if (isWriteKv) {
-                BlockchainKeypair da = dataAccountResponse.keyPair;
-                IntegrationBase.KvResponse kvResponse = IntegrationBase.testSDK_InsertData(adminKey, ledgerHash, blockchainService, da.getAddress());
-                validKvWrite(kvResponse, ledgerRepository, blockchainService);
+
+                for (int m = 0; m < 13; m++) {
+                    BlockchainKeypair da = dataAccountResponse.keyPair;
+                    IntegrationBase.KvResponse kvResponse = IntegrationBase.testSDK_InsertData(adminKey, ledgerHash, blockchainService, da.getAddress());
+                    validKvWrite(kvResponse, ledgerRepository, blockchainService);
+                }
             }
         }
 
