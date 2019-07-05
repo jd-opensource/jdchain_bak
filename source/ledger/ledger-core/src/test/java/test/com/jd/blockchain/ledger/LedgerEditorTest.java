@@ -138,7 +138,7 @@ public class LedgerEditorTest {
 
 		LedgerTransaction tx = genisisTxCtx.commit(TransactionState.SUCCESS);
 
-		TransactionRequest genesisTxReq = genisisTxCtx.getRequestTX();
+		TransactionRequest genesisTxReq = genisisTxCtx.getTransactionRequest();
 		assertEquals(genesisTxReq.getTransactionContent().getHash(), tx.getTransactionContent().getHash());
 		assertEquals(0, tx.getBlockHeight());
 

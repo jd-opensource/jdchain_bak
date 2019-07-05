@@ -8,18 +8,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.BlockRollbackException;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractDoesNotExistException;
 import com.jd.blockchain.ledger.DataAccountDoesNotExistException;
-import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.IllegalTransactionException;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.OperationResultData;
-import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionRollbackException;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserDoesNotExistException;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
@@ -31,8 +32,6 @@ import com.jd.blockchain.ledger.core.TransactionRequestContext;
 import com.jd.blockchain.service.TransactionBatchProcess;
 import com.jd.blockchain.service.TransactionBatchResult;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
-import com.jd.blockchain.transaction.TxBuilder;
-import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.Bytes;
 
@@ -70,18 +69,6 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		this.ledgerService = ledgerService;
 	}
 
-	private boolean isRequestedLedger(TransactionRequest txRequest) {
-		HashDigest currLedgerHash = newBlockEditor.getLedgerHash();
-		HashDigest reqLedgerHash = txRequest.getTransactionContent().getLedgerHash();
-		if (currLedgerHash == reqLedgerHash) {
-			return true;
-		}
-		if (currLedgerHash == null || reqLedgerHash == null) {
-			return false;
-		}
-		return currLedgerHash.equals(reqLedgerHash);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -93,19 +80,6 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	public TransactionResponse schedule(TransactionRequest request) {
 		TransactionResponse resp;
 		try {
-			if (!isRequestedLedger(request)) {
-				// 抛弃不属于当前账本的交易请求；
-				resp = discard(request, TransactionState.DISCARD_BY_WRONG_LEDGER);
-				responseList.add(resp);
-				return resp;
-			}
-			if (!verifyTxContent(request)) {
-				// 抛弃哈希和签名校验失败的交易请求；
-				resp = discard(request, TransactionState.DISCARD_BY_WRONG_CONTENT_SIGNATURE);
-				responseList.add(resp);
-				return resp;
-			}
-
 			LOGGER.debug("Start handling transaction... --[BlockHeight={}][RequestHash={}][TxHash={}]",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 			// 创建交易上下文；
@@ -118,19 +92,34 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			LOGGER.debug("Complete handling transaction.  --[BlockHeight={}][RequestHash={}][TxHash={}]",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 
-			responseList.add(resp);
-			return resp;
+		} catch (IllegalTransactionException e) {
+			// 抛弃发生处理异常的交易请求；
+			resp = discard(request, e.getTxState());
+			LOGGER.error(String.format(
+					"Ignore transaction caused by IllegalTransactionException! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
+					e.getMessage()), e);
+			
+		} catch (BlockRollbackException e) {
+			// 抛弃发生处理异常的交易请求；
+//			resp = discard(request, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
+			LOGGER.error(String.format(
+					"Ignore transaction caused by BlockRollbackException! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
+					e.getMessage()), e);
+			throw e;
 		} catch (Exception e) {
 			// 抛弃发生处理异常的交易请求；
 			resp = discard(request, TransactionState.SYSTEM_ERROR);
 			LOGGER.error(String.format(
-					"Discard transaction rollback caused by the system exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					"Ignore transaction caused by the system exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 
-			responseList.add(resp);
-			return resp;
 		}
+
+		responseList.add(resp);
+		return resp;
 	}
 
 	/**
@@ -186,6 +175,23 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			// 提交交易（事务）；
 			result = TransactionState.SUCCESS;
 			txCtx.commit(result, operationResults);
+		} catch (TransactionRollbackException e) {
+			result = TransactionState.IGNORED_BY_TX_FULL_ROLLBACK;
+			txCtx.rollback();
+			LOGGER.error(String.format(
+					"Transaction was full rolled back! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
+					e.getMessage()), e);
+		} catch (BlockRollbackException e) {
+			result = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
+			txCtx.rollback();
+			LOGGER.error(
+					String.format("Transaction was rolled back! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+							newBlockEditor.getBlockHeight(), request.getHash(),
+							request.getTransactionContent().getHash(), e.getMessage()),
+					e);
+			// 重新抛出由上层错误处理；
+			throw e;
 		} catch (LedgerException e) {
 			// TODO: 识别更详细的异常类型以及执行对应的处理；
 			result = TransactionState.LEDGER_ERROR;
@@ -198,14 +204,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			}
 			txCtx.discardAndCommit(result, operationResults);
 			LOGGER.error(String.format(
-					"Transaction rollback caused by the ledger exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					"Due to ledger exception, the data changes resulting from the transaction will be rolled back and the results of the transaction will be committed! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 		} catch (Exception e) {
 			result = TransactionState.SYSTEM_ERROR;
 			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR, operationResults);
 			LOGGER.error(String.format(
-					"Transaction rollback caused by the system exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					"Due to system exception, the data changes resulting from the transaction will be rolled back and the results of the transaction will be committed! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 		}
@@ -216,32 +222,6 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			resp.setOperationResults(operationResults.toArray(operationResultArray));
 		}
 		return resp;
-	}
-
-	private boolean verifyTxContent(TransactionRequest request) {
-		TransactionContent txContent = request.getTransactionContent();
-		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
-			return false;
-		}
-		DigitalSignature[] endpointSignatures = request.getEndpointSignatures();
-		if (endpointSignatures != null) {
-			for (DigitalSignature signature : endpointSignatures) {
-				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
-						signature.getPubKey())) {
-					return false;
-				}
-			}
-		}
-		DigitalSignature[] nodeSignatures = request.getNodeSignatures();
-		if (nodeSignatures != null) {
-			for (DigitalSignature signature : nodeSignatures) {
-				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
-						signature.getPubKey())) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	/**

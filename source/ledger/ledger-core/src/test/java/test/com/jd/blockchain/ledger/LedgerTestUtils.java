@@ -24,6 +24,7 @@ import com.jd.blockchain.transaction.ConsensusParticipantData;
 import com.jd.blockchain.transaction.LedgerInitSettingData;
 import com.jd.blockchain.transaction.TransactionService;
 import com.jd.blockchain.transaction.TxBuilder;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
@@ -122,6 +123,44 @@ public class LedgerTestUtils {
 			txReqBuilder.signAsNode(nodeKeypair);
 		}
 
+		return txReqBuilder.buildRequest();
+	}
+	
+	public static TransactionRequest createTxRequest_DataAccountReg(BlockchainKeypair dataAccountID, HashDigest ledgerHash,
+			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
+		
+		txBuilder.dataAccounts().register(dataAccountID.getIdentity());
+		
+		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
+		if (signers != null) {
+			for (BlockchainKeypair signer : signers) {
+				txReqBuilder.signAsEndpoint(signer);
+			}
+		}
+		if (nodeKeypair != null) {
+			txReqBuilder.signAsNode(nodeKeypair);
+		}
+		
+		return txReqBuilder.buildRequest();
+	}
+	
+	public static TransactionRequest createTxRequest_DataAccountWrite(Bytes dataAccountAddress, String key, String value, long version, HashDigest ledgerHash,
+			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+		TxBuilder txBuilder = new TxBuilder(ledgerHash);
+		
+		txBuilder.dataAccount(dataAccountAddress).setText(key, value, version);
+		
+		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
+		if (signers != null) {
+			for (BlockchainKeypair signer : signers) {
+				txReqBuilder.signAsEndpoint(signer);
+			}
+		}
+		if (nodeKeypair != null) {
+			txReqBuilder.signAsNode(nodeKeypair);
+		}
+		
 		return txReqBuilder.buildRequest();
 	}
 

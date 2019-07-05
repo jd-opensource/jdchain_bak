@@ -243,6 +243,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             messageHandle.commitBatch(realmName, batchId);
         } catch (Exception e) {
             // todo 需要处理应答码 404
+        	LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
             messageHandle.rollbackBatch(realmName, batchId, TransactionState.CONSENSUS_ERROR.CODE);
         }
 

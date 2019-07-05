@@ -12,6 +12,8 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -23,6 +25,7 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
@@ -44,6 +47,7 @@ public class TransactionBatchProcessorTest {
 		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(DataAccountRegisterOperation.class);
 	}
 
 	private static final String LEDGER_KEY_PREFIX = "LDG://";
@@ -223,7 +227,7 @@ public class TransactionBatchProcessorTest {
 				.get(transactionRequest2.getTransactionContent().getHash());
 		LedgerTransaction tx3 = ledgerRepo.getTransactionSet()
 				.get(transactionRequest3.getTransactionContent().getHash());
-		
+
 		assertNotNull(tx1);
 		assertEquals(TransactionState.SUCCESS, tx1.getExecutionState());
 		assertNotNull(tx2);
@@ -238,6 +242,131 @@ public class TransactionBatchProcessorTest {
 		assertTrue(existUser1);
 		assertFalse(existUser2);
 		assertTrue(existUser3);
+	}
+
+	@Test
+	public void testTxRollbackByVersionsConfliction() {
+		final MemoryKVStorage STORAGE = new MemoryKVStorage();
+
+		// 初始化账本到指定的存储库；
+		ledgerHash = initLedger(STORAGE, parti0, parti1, parti2, parti3);
+
+		// 加载账本；
+		LedgerManager ledgerManager = new LedgerManager();
+		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+
+		// 验证参与方账户的存在；
+		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		assertNotNull(user0);
+		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
+		assertTrue(partiRegistered);
+
+		// 注册数据账户；
+		// 生成新区块；
+		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
+
+		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
+				opReg, ledgerManager);
+
+		BlockchainKeypair dataAccountKeypair = BlockchainKeyGenerator.getInstance().generate();
+		TransactionRequest transactionRequest1 = LedgerTestUtils.createTxRequest_DataAccountReg(dataAccountKeypair,
+				ledgerHash, parti0, parti0);
+		TransactionResponse txResp1 = txbatchProcessor.schedule(transactionRequest1);
+		LedgerBlock newBlock = newBlockEditor.prepare();
+		newBlockEditor.commit();
+
+		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
+		DataAccount dataAccount = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress());
+		assertNotNull(dataAccount);
+
+		// 正确写入 KV 数据；
+		TransactionRequest txreq1 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K1", "V-1-1", -1, ledgerHash, parti0, parti0);
+		TransactionRequest txreq2 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K2", "V-2-1", -1, ledgerHash, parti0, parti0);
+		TransactionRequest txreq3 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K3", "V-3-1", -1, ledgerHash, parti0, parti0);
+		TransactionRequest txreq4 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K1", "V-1-2", 0, ledgerHash, parti0, parti0);
+
+		newBlockEditor = ledgerRepo.createNextBlock();
+		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset, opReg, ledgerManager);
+
+		txbatchProcessor.schedule(txreq1);
+		txbatchProcessor.schedule(txreq2);
+		txbatchProcessor.schedule(txreq3);
+		txbatchProcessor.schedule(txreq4);
+
+		newBlock = newBlockEditor.prepare();
+		newBlockEditor.commit();
+
+		BytesValue v1_0 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+				0);
+		BytesValue v1_1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+				1);
+		BytesValue v2 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K2",
+				0);
+		BytesValue v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3",
+				0);
+
+		assertNotNull(v1_0);
+		assertNotNull(v1_1);
+		assertNotNull(v2);
+		assertNotNull(v3);
+		
+		assertEquals("V-1-1", v1_0.getValue().toUTF8String());
+		assertEquals("V-1-2", v1_1.getValue().toUTF8String());
+		assertEquals("V-2-1", v2.getValue().toUTF8String());
+		assertEquals("V-3-1", v3.getValue().toUTF8String());
+
+		// 提交多笔数据写入的交易，包含存在数据版本冲突的交易，验证交易是否正确回滚；
+
+		TransactionRequest txreq5 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K3", "V-3-2", 0, ledgerHash, parti0, parti0);
+		// 指定冲突的版本号，正确的应该是版本1；
+		TransactionRequest txreq6 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
+				"K1", "V-1-3", 0, ledgerHash, parti0, parti0);
+
+		newBlockEditor = ledgerRepo.createNextBlock();
+		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset, opReg, ledgerManager);
+
+		txbatchProcessor.schedule(txreq5);
+		txbatchProcessor.schedule(txreq6);
+
+		newBlock = newBlockEditor.prepare();
+		newBlockEditor.commit();
+
+		BytesValue v1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1");
+		v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3");
+
+		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K1");
+		assertEquals(1, k1_version);
+		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K3");
+		assertEquals(1, k3_version);
+		
+		assertNotNull(v1);
+		assertNotNull(v3);
+		assertEquals("V-1-2", v1.getValue().toUTF8String());
+		assertEquals("V-3-2", v3.getValue().toUTF8String());
+
+//		// 验证正确性；
+//		ledgerManager = new LedgerManager();
+//		ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
+//
+//		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
+//		assertEquals(newBlock.getHash(), latestBlock.getHash());
+//		assertEquals(1, newBlock.getHeight());
+//
+//		LedgerTransaction tx1 = ledgerRepo.getTransactionSet()
+//				.get(transactionRequest1.getTransactionContent().getHash());
+//
+//		assertNotNull(tx1);
+//		assertEquals(TransactionState.SUCCESS, tx1.getExecutionState());
+
 	}
 
 	private HashDigest initLedger(MemoryKVStorage storage, BlockchainKeypair... partiKeys) {
@@ -269,7 +398,9 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(block.getHash());
 		assertNull(block.getPreviousHash());
 
-		assertEquals(block.getHash(), block.getLedgerHash());
+		// 创世区块的账本哈希为 null；
+		assertNull(block.getLedgerHash());
+		assertNotNull(block.getHash());
 
 		// 提交数据，写入存储；
 		ldgEdt.commit();

@@ -50,9 +50,11 @@ public interface LedgerEditor {
 	 * 每一次事务性的账本写入操作在提交后，都会记录该事务相关的系统全局快照，以交易对象 {@link LedgerTransaction} 进行保存；
 	 * <p>
 	 * 
-	 * 注：方法不解析、不执行交易中的操作；
 	 * 
-	 * @param txRequest
+	 * 
+	 * 注：方法不解析、不执行交易中的操作；<p>
+	 * 
+	 * @param txRequest 交易请求；
 	 * @return
 	 */
 	LedgerTransactionContext newTransaction(TransactionRequest txRequest);

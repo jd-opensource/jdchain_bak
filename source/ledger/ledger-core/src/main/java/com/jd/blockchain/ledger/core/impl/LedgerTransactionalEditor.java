@@ -1,19 +1,35 @@
 package com.jd.blockchain.ledger.core.impl;
 
 import java.util.List;
-import java.util.Stack;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockBody;
+import com.jd.blockchain.ledger.BlockRollbackException;
+import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.IllegalTransactionException;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerDataSnapshot;
+import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerSetting;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionRollbackException;
+import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.SettingContext;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
+import com.jd.blockchain.transaction.TxBuilder;
+import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 
@@ -35,9 +51,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	private CryptoSetting cryptoSetting;
 
-	private LedgerBlockData newlyBlock;
+	private LedgerBlockData currentBlock;
 
-	private Stack<StagedSnapshot> stagedSnapshots = new Stack<>();
+//	private Stack<StagedSnapshot> stagedSnapshots = new Stack<>();
 
 	private boolean prepared = false;
 
@@ -45,43 +61,70 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	private boolean committed = false;
 
-//	private BufferedKVStorage baseStorage;
-	private BufferedKVStorage bufferedStorage;
+	private StagedSnapshot startingPoint;
 
 	/**
-	 * 最近一个交易上下文；
+	 * 当前区块的存储；
 	 */
-	private LedgerDataContext lastTxCtx;
+	private BufferedKVStorage baseStorage;
 
-	private LedgerDataContext newTxCtx;
+	/**
+	 * 上一个交易的上下文；
+	 */
+//	private LedgerTransactionContextImpl previousTxCtx;
 
-	private LedgerTransactionalEditor(HashDigest ledgerHash, CryptoSetting cryptoSetting, LedgerBlockData newlyBlock,
+	private TxSnapshot previousTxSnapshot;
+
+	/**
+	 * 当前交易的上下文；
+	 */
+	private volatile LedgerTransactionContextImpl currentTxCtx;
+
+	/**
+	 * @param ledgerHash
+	 * @param cryptoSetting
+	 * @param currentBlock
+	 * @param startingPoint
+	 * @param ledgerKeyPrefix
+	 * @param bufferedStorage
+	 * @param verifyTx        是否校验交易请求；当外部调用者在调用前已经实施了验证时，将次参数设置为 false 能够提升性能；
+	 */
+	private LedgerTransactionalEditor(HashDigest ledgerHash, CryptoSetting cryptoSetting, LedgerBlockData currentBlock,
 			StagedSnapshot startingPoint, String ledgerKeyPrefix, BufferedKVStorage bufferedStorage) {
 		this.ledgerHash = ledgerHash;
 		this.ledgerKeyPrefix = ledgerKeyPrefix;
 		this.cryptoSetting = cryptoSetting;
-		this.newlyBlock = newlyBlock;
-		this.bufferedStorage = bufferedStorage;
+		this.currentBlock = currentBlock;
+		this.baseStorage = bufferedStorage;
 
-		this.stagedSnapshots.push(startingPoint);
+		this.startingPoint = startingPoint;
+
+//		this.stagedSnapshots.push(startingPoint);
 	}
 
 	/**
 	 * 创建账本新区块的编辑器；
 	 * 
-	 * @param ledgerHash
-	 * @param ledgerSetting
-	 * @param previousBlock
-	 * @param ledgerKeyPrefix
-	 * @param ledgerExStorage
-	 * @param ledgerVerStorage
+	 * @param ledgerHash       账本哈希；
+	 * @param ledgerSetting    账本设置；
+	 * @param previousBlock    前置区块；
+	 * @param ledgerKeyPrefix  账本数据前缀；
+	 * @param ledgerExStorage  账本数据存储；
+	 * @param ledgerVerStorage 账本数据版本化存储；
+	 * @param verifyTx         是否校验交易请求；当外部调用者在调用前已经实施了验证时，将次参数设置为 false 能够提升性能；
 	 * @return
 	 */
-	public static LedgerTransactionalEditor createEditor(HashDigest ledgerHash, LedgerSetting ledgerSetting,
-			LedgerBlock previousBlock, String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage,
-			VersioningKVStorage ledgerVerStorage) {
+	public static LedgerTransactionalEditor createEditor(LedgerBlock previousBlock, LedgerSetting ledgerSetting,
+			String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// new block;
-		LedgerBlockData currBlock = new LedgerBlockData(previousBlock.getHeight() + 1, previousBlock.getLedgerHash(),
+		HashDigest ledgerHash = previousBlock.getLedgerHash();
+		if (ledgerHash == null) {
+			ledgerHash = previousBlock.getHash();
+		}
+		if (ledgerHash == null) {
+			throw new IllegalArgumentException("Illegal previous block was specified!");
+		}
+		LedgerBlockData currBlock = new LedgerBlockData(previousBlock.getHeight() + 1, ledgerHash,
 				previousBlock.getHash());
 
 		// init storage;
@@ -101,6 +144,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	 * @param ledgerKeyPrefix
 	 * @param ledgerExStorage
 	 * @param ledgerVerStorage
+	 * @param verifyTx         是否校验交易请求；当外部调用者在调用前已经实施了验证时，将次参数设置为 false 能够提升性能；
 	 * @return
 	 */
 	public static LedgerTransactionalEditor createEditor(LedgerInitSetting initSetting, String ledgerKeyPrefix,
@@ -114,29 +158,21 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	}
 
 	private void commitTxSnapshot(TxSnapshot snapshot) {
-		lastTxCtx = newTxCtx;
-		newTxCtx = null;
-		stagedSnapshots.push(snapshot);
+		previousTxSnapshot = snapshot;
+		currentTxCtx = null;
 	}
 
-	private void rollbackNewTx() {
-		newTxCtx = null;
+	private void rollbackCurrentTx() {
+		currentTxCtx = null;
 	}
 
-	// public LedgerDataSet getLatestDataSet() {
-	// if (lastTxCtx == null) {
-	// return null;
-	// }
-	// return lastTxCtx.getDataSet();
-	// }
-
-	LedgerBlock getNewlyBlock() {
-		return newlyBlock;
+	LedgerBlock getCurrentBlock() {
+		return currentBlock;
 	}
 
 	@Override
 	public long getBlockHeight() {
-		return newlyBlock.getHeight();
+		return currentBlock.getHeight();
 	}
 
 	@Override
@@ -161,134 +197,182 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		return ledgerHash.equals(reqLedgerHash);
 	}
 
+	private boolean verifyTxContent(TransactionRequest request) {
+		TransactionContent txContent = request.getTransactionContent();
+		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
+			return false;
+		}
+		DigitalSignature[] endpointSignatures = request.getEndpointSignatures();
+		if (endpointSignatures != null) {
+			for (DigitalSignature signature : endpointSignatures) {
+				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
+						signature.getPubKey())) {
+					return false;
+				}
+			}
+		}
+		DigitalSignature[] nodeSignatures = request.getNodeSignatures();
+		if (nodeSignatures != null) {
+			for (DigitalSignature signature : nodeSignatures) {
+				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
+						signature.getPubKey())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	@Override
-	public LedgerTransactionContext newTransaction(TransactionRequest txRequest) {
-		// 验证账本是否；
-		if (!isRequestedLedger(txRequest)) {
-			throw new LedgerException("This ledger is not the target ledger of transaction request["
-					+ txRequest.getTransactionContent().getHash() + "]!");
+	public synchronized LedgerTransactionContext newTransaction(TransactionRequest txRequest) {
+		if (SettingContext.txSettings().verifyLedger() && !isRequestedLedger(txRequest)) {
+			throw new IllegalTransactionException(
+					"Transaction request is dispatched to a wrong ledger! --[TxHash="
+							+ txRequest.getTransactionContent().getHash() + "]!",
+					TransactionState.IGNORED_BY_WRONG_LEDGER);
+		}
+
+		// TODO: 把验签和创建交易并行化；
+		if (SettingContext.txSettings().verifySignature() && !verifyTxContent(txRequest)) {
+			// 抛弃哈希和签名校验失败的交易请求；
+			throw new IllegalTransactionException(
+					"Wrong  transaction signature! --[TxHash=" + txRequest.getTransactionContent().getHash() + "]!",
+					TransactionState.IGNORED_BY_WRONG_CONTENT_SIGNATURE);
+		}
+
+		if (currentTxCtx != null) {
+			throw new IllegalStateException(
+					"Unable to open another new transaction before the current transaction is completed! --[TxHash="
+							+ txRequest.getTransactionContent().getHash() + "]!");
 		}
 
 		// 检查状态是否允许创建新的交易请求；；
 		checkState();
 
-		BufferedKVStorage txBuffStorage = null;
+		// init storage of new transaction;
+		BufferedKVStorage txBufferedStorage = new BufferedKVStorage(baseStorage, baseStorage, false);
+
 		LedgerDataSetImpl txDataset = null;
 		TransactionSet txset = null;
-		if (lastTxCtx == null) {
-			// init storage of new transaction;
-			// txBuffStorage = new BufferedKVStorage(bufferedStorage, bufferedStorage,
-			// false);
-			txBuffStorage = bufferedStorage;
-
+		if (previousTxSnapshot == null) {
 			// load the starting point of the new transaction;
-			StagedSnapshot previousSnapshot = stagedSnapshots.peek();
-			if (previousSnapshot instanceof GenesisSnapshot) {
+			if (startingPoint instanceof GenesisSnapshot) {
 				// 准备生成创世区块；
-				GenesisSnapshot snpht = (GenesisSnapshot) previousSnapshot;
-				txDataset = LedgerRepositoryImpl.newDataSet(snpht.initSetting, ledgerKeyPrefix, txBuffStorage,
-						txBuffStorage);
+				GenesisSnapshot snpht = (GenesisSnapshot) startingPoint;
+				txDataset = LedgerRepositoryImpl.newDataSet(snpht.initSetting, ledgerKeyPrefix, txBufferedStorage,
+						txBufferedStorage);
 				txset = LedgerRepositoryImpl.newTransactionSet(txDataset.getAdminAccount().getSetting(),
-						ledgerKeyPrefix, txBuffStorage, txBuffStorage);
-			} else {
+						ledgerKeyPrefix, txBufferedStorage, txBufferedStorage);
+			} else if (startingPoint instanceof TxSnapshot) {
 				// 新的区块；
 				// TxSnapshot; reload dataset and txset;
-				TxSnapshot snpht = (TxSnapshot) previousSnapshot;
+				TxSnapshot snpht = (TxSnapshot) startingPoint;
 				// load dataset;
-				txDataset = LedgerRepositoryImpl.loadDataSet(snpht.dataSnapshot, ledgerKeyPrefix, txBuffStorage,
-						txBuffStorage, false);
+				txDataset = LedgerRepositoryImpl.loadDataSet(snpht.dataSnapshot, ledgerKeyPrefix, txBufferedStorage,
+						txBufferedStorage, false);
 
-				// load tx set;
-				txset = LedgerRepositoryImpl.loadTransactionSet(snpht.transactionSetHash, this.cryptoSetting,
-						ledgerKeyPrefix, txBuffStorage, txBuffStorage, false);
+				// load txset;
+				txset = LedgerRepositoryImpl.loadTransactionSet(snpht.txsetHash, this.cryptoSetting, ledgerKeyPrefix,
+						txBufferedStorage, txBufferedStorage, false);
+			} else {
+				// Unreachable;
+				throw new IllegalStateException("Unreachable code was accidentally executed!");
 			}
 
-			lastTxCtx = new LedgerDataContext(txDataset, txset, txBuffStorage);
 		} else {
 			// Reuse previous object to optimize performance;
-			txBuffStorage = lastTxCtx.storage;
-			txDataset = lastTxCtx.dataset;
-			txset = lastTxCtx.txset;
+			// load dataset;
+			txDataset = LedgerRepositoryImpl.loadDataSet(previousTxSnapshot.dataSnapshot, ledgerKeyPrefix,
+					txBufferedStorage, txBufferedStorage, false);
+
+			// load txset;
+			txset = LedgerRepositoryImpl.loadTransactionSet(previousTxSnapshot.txsetHash, this.cryptoSetting,
+					ledgerKeyPrefix, txBufferedStorage, txBufferedStorage, false);
 		}
 
-		// newTxCtx = new LedgerTransactionContextImpl(newlyBlock.getHeight(),
-		// txRequest, txDataset, txset, txBuffStorage,
-		// this);
-		// return newTxCtx;
+		currentTxCtx = new LedgerTransactionContextImpl(txRequest, txDataset, txset, txBufferedStorage, this);
 
-		return new LedgerTransactionContextImpl(newlyBlock.getHeight(), txRequest, txDataset, txset, txBuffStorage,
-				this);
+		return currentTxCtx;
 	}
 
 	@Override
 	public LedgerBlock prepare() {
 		checkState();
 
-		if (newTxCtx != null) {
-			throw new IllegalStateException("There is a opening transaction which isn't committed or rollbacked!");
+		if (currentTxCtx != null) {
+			// 有进行中的交易尚未提交或回滚；
+			throw new IllegalStateException(
+					"There is an ongoing transaction that has been not committed or rolled back!");
 		}
-		if (lastTxCtx == null) {
-			// Genesis;
-			throw new IllegalStateException("No transaction to prepare!");
+		if (previousTxSnapshot == null) {
+			// 当前区块没有加入过交易，不允许产生空区块；
+			throw new IllegalStateException(
+					"There is no transaction in the current block, and no empty blocks is allowed!");
 		}
 
 		// do commit when transaction isolation level is BLOCK;
-		lastTxCtx.dataset.commit();
-		lastTxCtx.txset.commit();
+		currentBlock.setAdminAccountHash(previousTxSnapshot.getAdminAccountHash());
+		currentBlock.setUserAccountSetHash(previousTxSnapshot.getUserAccountSetHash());
+		currentBlock.setDataAccountSetHash(previousTxSnapshot.getDataAccountSetHash());
+		currentBlock.setContractAccountSetHash(previousTxSnapshot.getContractAccountSetHash());
+		currentBlock.setTransactionSetHash(previousTxSnapshot.getTransactionSetHash());
 
-		newlyBlock.setAdminAccountHash(lastTxCtx.dataset.getAdminAccount().getHash());
-		newlyBlock.setContractAccountSetHash(lastTxCtx.dataset.getContractAccountSet().getRootHash());
-		newlyBlock.setDataAccountSetHash(lastTxCtx.dataset.getDataAccountSet().getRootHash());
-		newlyBlock.setUserAccountSetHash(lastTxCtx.dataset.getUserAccountSet().getRootHash());
-		newlyBlock.setTransactionSetHash(lastTxCtx.txset.getRootHash());
+		// TODO: 根据所有交易的时间戳的平均值来生成区块的时间戳；
+//		long timestamp = 
+//		currentBlock.setTimestamp(timestamp);
 
 		// compute block hash;
-		byte[] blockBodyBytes = BinaryProtocol.encode(newlyBlock, BlockBody.class);
+		byte[] blockBodyBytes = BinaryProtocol.encode(currentBlock, BlockBody.class);
 		HashDigest blockHash = Crypto.getHashFunction(cryptoSetting.getHashAlgorithm()).hash(blockBodyBytes);
-		newlyBlock.setHash(blockHash);
-		if (newlyBlock.getLedgerHash() == null) {
-			// init GenesisBlock's ledger hash;
-			newlyBlock.setLedgerHash(blockHash);
-		}
+		currentBlock.setHash(blockHash);
+
+//		if (currentBlock.getLedgerHash() == null) {
+//			// init GenesisBlock's ledger hash;
+//			currentBlock.setLedgerHash(blockHash);
+//		}
 
 		// persist block bytes;
 		// only one version per block;
-		byte[] blockBytes = BinaryProtocol.encode(newlyBlock, LedgerBlock.class);
-		Bytes blockStorageKey = LedgerRepositoryImpl.encodeBlockStorageKey(newlyBlock.getHash());
-		long v = bufferedStorage.set(blockStorageKey, blockBytes, -1);
+		byte[] blockBytes = BinaryProtocol.encode(currentBlock, LedgerBlock.class);
+		Bytes blockStorageKey = LedgerRepositoryImpl.encodeBlockStorageKey(currentBlock.getHash());
+		long v = baseStorage.set(blockStorageKey, blockBytes, -1);
 		if (v < 0) {
 			throw new IllegalStateException(
-					"Block already exist! --[BlockHash=" + Base58Utils.encode(newlyBlock.getHash().toBytes()) + "]");
+					"Block already exist! --[BlockHash=" + Base58Utils.encode(currentBlock.getHash().toBytes()) + "]");
 		}
 
 		// persist block hash to ledger index;
-		HashDigest ledgerHash = newlyBlock.getLedgerHash();
+		HashDigest ledgerHash = currentBlock.getLedgerHash();
+		if (ledgerHash == null) {
+			ledgerHash = blockHash;
+		}
 		Bytes ledgerIndexKey = LedgerRepositoryImpl.encodeLedgerIndexKey(ledgerHash);
-		long expectedVersion = newlyBlock.getHeight() - 1;
-		v = bufferedStorage.set(ledgerIndexKey, newlyBlock.getHash().toBytes(), expectedVersion);
+		long expectedVersion = currentBlock.getHeight() - 1;
+		v = baseStorage.set(ledgerIndexKey, currentBlock.getHash().toBytes(), expectedVersion);
 		if (v < 0) {
-			throw new IllegalStateException("Index of BlockHash already exist! --[BlockHash="
-					+ Base58Utils.encode(newlyBlock.getHash().toBytes()) + "]");
+			throw new IllegalStateException(
+					String.format("Index of BlockHash already exist! --[BlockHeight=%s][BlockHash=%s]",
+							currentBlock.getHeight(), currentBlock.getHash()));
 		}
 
 		prepared = true;
-		return newlyBlock;
+		return currentBlock;
 	}
 
 	@Override
 	public void commit() {
 		if (committed) {
-			throw new IllegalStateException("LedgerEditor had been committed!");
+			throw new IllegalStateException("The current block has been committed!");
 		}
 		if (canceled) {
-			throw new IllegalStateException("LedgerEditor had been canceled!");
+			throw new IllegalStateException("The current block has been canceled!");
 		}
 		if (!prepared) {
 			// 未就绪；
-			throw new IllegalStateException("LedgerEditor has not prepared!");
+			throw new IllegalStateException("The current block is not ready yet!");
 		}
 
-		bufferedStorage.flush();
+		baseStorage.flush();
 
 		committed = true;
 	}
@@ -296,38 +380,47 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	@Override
 	public void cancel() {
 		if (committed) {
-			throw new IllegalStateException("LedgerEditor had been committed!");
+			throw new IllegalStateException("The current block has been committed!");
 		}
 		if (canceled) {
 			return;
 		}
 
 		canceled = true;
-		// if (newTxCtx != null) {
-		// newTxCtx.rollback();
-		// newTxCtx = null;
-		// }
-		bufferedStorage.cancel();
+
+		baseStorage.cancel();
 	}
 
 	private void checkState() {
 		if (prepared) {
-			throw new IllegalStateException("LedgerEditor has been prepared!");
+			throw new IllegalStateException("The current block is ready!");
 		}
 		if (committed) {
-			throw new IllegalStateException("LedgerEditor has been committed!");
+			throw new IllegalStateException("The current block has been committed!");
 		}
 		if (canceled) {
-			throw new IllegalStateException("LedgerEditor has been canceled!");
+			throw new IllegalStateException("The current block has been canceled!");
 		}
 	}
 
 	// --------------------------- inner type --------------------------
 
+	/**
+	 * 用于暂存交易上下文数据的快照对象；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
 	private static interface StagedSnapshot {
 
 	}
 
+	/**
+	 * 创世区块的快照对象；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
 	private static class GenesisSnapshot implements StagedSnapshot {
 
 		private LedgerInitSetting initSetting;
@@ -337,6 +430,12 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		}
 	}
 
+	/**
+	 * 交易执行完毕后的快照对象；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
 	private static class TxSnapshot implements StagedSnapshot {
 
 		/**
@@ -347,58 +446,90 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		/**
 		 * 交易集合的快照（根哈希）；
 		 */
-		private HashDigest transactionSetHash;
+		private HashDigest txsetHash;
 
-		public TxSnapshot(LedgerDataSnapshot dataSnapshot, HashDigest txSetHash) {
+		public HashDigest getAdminAccountHash() {
+			return dataSnapshot.getAdminAccountHash();
+		}
+
+		public HashDigest getUserAccountSetHash() {
+			return dataSnapshot.getUserAccountSetHash();
+		}
+
+		public HashDigest getDataAccountSetHash() {
+			return dataSnapshot.getDataAccountSetHash();
+		}
+
+		public HashDigest getContractAccountSetHash() {
+			return dataSnapshot.getContractAccountSetHash();
+		}
+
+		public HashDigest getTransactionSetHash() {
+			return txsetHash;
+		}
+
+		public TxSnapshot(LedgerDataSnapshot dataSnapshot, HashDigest txsetHash) {
 			this.dataSnapshot = dataSnapshot;
-			this.transactionSetHash = txSetHash;
+			this.txsetHash = txsetHash;
 		}
 
 	}
 
-	private static class LedgerDataContext {
+//	/**
+//	 * 账本的数据上下文；
+//	 * 
+//	 * @author huanghaiquan
+//	 *
+//	 */
+//	private static class LedgerDataContext {
+//
+//		protected LedgerDataSetImpl dataset;
+//
+//		protected TransactionSet txset;
+//
+//		protected BufferedKVStorage storage;
+//
+//		public LedgerDataContext(LedgerDataSetImpl dataset, TransactionSet txset, BufferedKVStorage storage) {
+//			this.dataset = dataset;
+//			this.txset = txset;
+//			this.storage = storage;
+//		}
+//
+//	}
 
-		protected LedgerDataSetImpl dataset;
+	/**
+	 * 交易的上下文；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
+	private static class LedgerTransactionContextImpl implements LedgerTransactionContext {
 
-		protected TransactionSet txset;
-
-		protected BufferedKVStorage storage;
-
-		public LedgerDataContext(LedgerDataSetImpl dataset, TransactionSet txset, BufferedKVStorage storage) {
-			this.dataset = dataset;
-			this.txset = txset;
-			this.storage = storage;
-		}
-
-	}
-
-	private static class LedgerTransactionContextImpl extends LedgerDataContext implements LedgerTransactionContext {
-
-		private long blockHeight;
-
-		private LedgerTransactionalEditor editor;
+		private LedgerTransactionalEditor blockEditor;
 
 		private TransactionRequest txRequest;
 
-		// private LedgerDataSetImpl dataset;
-		//
-		// private TransactionSet txset;
-		//
-		// private BufferedKVStorage storage;
+		private LedgerDataSetImpl dataset;
+
+		private TransactionSet txset;
+
+		private BufferedKVStorage storage;
 
 		private boolean committed = false;
 
 		private boolean rollbacked = false;
 
-		private LedgerTransactionContextImpl(long blockHeight, TransactionRequest txRequest, LedgerDataSetImpl dataset,
+		private LedgerTransaction transaction;
+
+		private HashDigest txRootHash;
+
+		private LedgerTransactionContextImpl(TransactionRequest txRequest, LedgerDataSetImpl dataset,
 				TransactionSet txset, BufferedKVStorage storage, LedgerTransactionalEditor editor) {
-			super(dataset, txset, storage);
 			this.txRequest = txRequest;
-			// this.dataset = dataset;
-			// this.txset = txset;
-			// this.storage = storage;
-			this.editor = editor;
-			this.blockHeight = blockHeight;
+			this.dataset = dataset;
+			this.txset = txset;
+			this.storage = storage;
+			this.blockEditor = editor;
 		}
 
 		@Override
@@ -407,7 +538,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		}
 
 		@Override
-		public TransactionRequest getRequestTX() {
+		public TransactionRequest getTransactionRequest() {
 			return txRequest;
 		}
 
@@ -421,24 +552,28 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			checkTxState();
 
 			// capture snapshot
-			// this.dataset.commit();
-			// TransactionStagedSnapshot txDataSnapshot = takeSnapshot();
+			this.dataset.commit();
+			TransactionStagedSnapshot txDataSnapshot = takeDataSnapshot();
 
-			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
-			// txResult, txDataSnapshot);
+			LedgerTransactionData tx;
+			try {
+				tx = new LedgerTransactionData(blockEditor.getBlockHeight(), txRequest, txResult, txDataSnapshot,
+						operationResultArray(operationResults));
+				this.txset.add(tx);
+				this.txset.commit();
+			} catch (Exception e) {
+				throw new TransactionRollbackException(e.getMessage(), e);
+			}
 
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null,
-					operationResultArray(operationResults));
-			this.txset.add(tx);
-			// this.txset.commit();
-
-			// this.storage.flush();
-
-			// TODO: 未处理出错时 dataset 和 txset 的内部状态恢复，有可能出现不一致的情况；
+			try {
+				this.storage.flush();
+			} catch (Exception e) {
+				throw new BlockRollbackException(e.getMessage(), e);
+			}
 
 			// put snapshot into stack;
-			// TxSnapshot snapshot = new TxSnapshot(txDataSnapshot, txset.getRootHash());
-			// editor.commitTxSnapshot(snapshot);
+			TxSnapshot snapshot = new TxSnapshot(txDataSnapshot, txset.getRootHash());
+			blockEditor.commitTxSnapshot(snapshot);
 
 			committed = true;
 			return tx;
@@ -454,29 +589,35 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			checkTxState();
 
 			// 未处理
-			// dataset.cancel();
+			dataset.cancel();
 
-			// TransactionStagedSnapshot txDataSnapshot = takeSnapshot();
-			// LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest,
-			// txResult, txDataSnapshot);
-			LedgerTransactionData tx = new LedgerTransactionData(blockHeight, txRequest, txResult, null,
-					operationResultArray(operationResults));
-			this.txset.add(tx);
-			// this.txset.commit();
+			TransactionStagedSnapshot txDataSnapshot = takeDataSnapshot();
 
-			// this.storage.flush();
+			LedgerTransactionData tx;
+			try {
+				tx = new LedgerTransactionData(blockEditor.getBlockHeight(), txRequest, txResult, txDataSnapshot,
+						operationResultArray(operationResults));
+				this.txset.add(tx);
+				this.txset.commit();
+			} catch (Exception e) {
+				throw new TransactionRollbackException(e.getMessage(), e);
+			}
 
-			// TODO: 未处理出错时 dataset 和 txset 的内部状态恢复，有可能出现不一致的情况；
+			try {
+				this.storage.flush();
+			} catch (Exception e) {
+				throw new BlockRollbackException(e.getMessage(), e);
+			}
 
 			// put snapshot into stack;
-			// TxSnapshot snapshot = new TxSnapshot(txDataSnapshot, txset.getRootHash());
-			// editor.commitTxSnapshot(snapshot);
+			TxSnapshot snapshot = new TxSnapshot(txDataSnapshot, txset.getRootHash());
+			blockEditor.commitTxSnapshot(snapshot);
 
 			committed = true;
 			return tx;
 		}
 
-		private TransactionStagedSnapshot takeSnapshot() {
+		private TransactionStagedSnapshot takeDataSnapshot() {
 			TransactionStagedSnapshot txDataSnapshot = new TransactionStagedSnapshot();
 			txDataSnapshot.setAdminAccountHash(dataset.getAdminAccount().getHash());
 			txDataSnapshot.setContractAccountSetHash(dataset.getContractAccountSet().getRootHash());
@@ -500,22 +641,22 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 				return;
 			}
 			if (this.committed) {
-				throw new IllegalStateException("Transaction had been committed!");
+				throw new IllegalStateException("This transaction had been committed!");
 			}
-			// dataset.cancel();
-			// storage.cancel();
+			dataset.cancel();
+			storage.cancel();
 
-			// editor.rollbackNewTx();
+			blockEditor.rollbackCurrentTx();
 
 			rollbacked = true;
 		}
 
 		private void checkTxState() {
 			if (this.committed) {
-				throw new IllegalStateException("Transaction had been committed!");
+				throw new IllegalStateException("This transaction had been committed!");
 			}
 			if (this.rollbacked) {
-				throw new IllegalStateException("Transaction had been rollbacked!");
+				throw new IllegalStateException("This transaction had been rollbacked!");
 			}
 		}
 	}

@@ -59,8 +59,8 @@ public interface VersioningKVStorage extends BatchStorageService {
 	/**
 	 * Update the value of the key;<br>
 	 * 
-	 * If key exist, and the specified version equals to latest , then the value is
-	 * updated and version is increased by 1;<br>
+	 * If key exist, and the specified version equals to it's latest version, then the value will be
+	 * updated and version will be increased by 1;<br>
 	 * If key not exist, and the specified version is -1, then the value will be
 	 * created and initialized it's version by 0; <br>
 	 * 

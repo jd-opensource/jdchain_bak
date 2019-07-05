@@ -33,7 +33,9 @@ public class LedgerBlockData implements LedgerBlock {
 	// private HashDigest contractPrivilegeHash;
 
 	private HashDigest transactionSetHash;
-
+	
+	private long timestamp;
+	
 	public LedgerBlockData() {
 	}
 
@@ -154,5 +156,15 @@ public class LedgerBlockData implements LedgerBlock {
 	public void setLedgerHash(HashDigest ledgerHash) {
 		this.ledgerHash = ledgerHash;
 	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	
 
 }

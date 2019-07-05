@@ -116,7 +116,8 @@ public class LedgerManagerTest {
 		assertEquals(0, genesisBlock.getHeight());
 		assertNotNull(genesisBlock.getHash());
 		assertNull(genesisBlock.getPreviousHash());
-		assertEquals(ledgerHash, genesisBlock.getLedgerHash());
+		// 创世区块的账本hash 为null；创世区块本身的哈希就代表了账本的哈希；
+		assertNull(genesisBlock.getLedgerHash());
 
 		// 提交数据，写入存储；
 		ldgEdt.commit();
@@ -131,7 +132,8 @@ public class LedgerManagerTest {
 		LedgerBlock latestBlock = reloadLedgerRepo.getLatestBlock();
 		assertEquals(0, latestBlock.getHeight());
 		assertEquals(ledgerHash, latestBlock.getHash());
-		assertEquals(ledgerHash, latestBlock.getLedgerHash());
+		// 创世区块的账本hash 为null；创世区块本身的哈希就代表了账本的哈希；
+		assertNull(latestBlock.getLedgerHash());
 
 		LedgerEditor editor1 = reloadLedgerRepo.createNextBlock();
 

@@ -333,9 +333,9 @@ public class AccountSet implements Transactional, MerkleProvable {
 		if (!updated) {
 			return;
 		}
-		String[] addresses = new String[latestAccountsCache.size()];
+		Bytes[] addresses = new Bytes[latestAccountsCache.size()];
 		latestAccountsCache.keySet().toArray(addresses);
-		for (String address : addresses) {
+		for (Bytes address : addresses) {
 			VersioningAccount acc = latestAccountsCache.remove(address);
 			// cancel;
 			if (acc.isUpdated()) {

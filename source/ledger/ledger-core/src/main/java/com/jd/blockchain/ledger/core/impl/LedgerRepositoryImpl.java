@@ -15,6 +15,7 @@ import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.SettingContext;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.ledger.core.UserAccountSet;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
@@ -77,7 +78,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		this.ledgerIndexKey = encodeLedgerIndexKey(ledgerHash);
 
 		if (getLatestBlockHeight() < 0) {
-			throw new LedgerException("Ledger doesn't exist!");
+			throw new RuntimeException("Ledger doesn't exist!");
 		}
 	}
 
@@ -205,15 +206,14 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		LedgerBlockData block = new LedgerBlockData(deserialize(blockBytes));
 
 		if (!blockHash.equals(block.getHash())) {
-			throw new LedgerException("Block hash not equals to it's storage key!");
+			throw new RuntimeException("Block hash not equals to it's storage key!");
 		}
 
 		// verify hash;
 		// boolean requiredVerifyHash =
 		// adminAccount.getMetadata().getSetting().getCryptoSetting().getAutoVerifyHash();
 		// TODO: 未实现从配置中加载是否校验 Hash 的设置；
-		boolean requiredVerifyHash = false;
-		if (requiredVerifyHash) {
+		if (SettingContext.queryingSettings().verifyHash()) {
 			byte[] blockBodyBytes = null;
 			if (block.getHeight() == 0) {
 				// 计算创世区块的 hash 时，不包括 ledgerHash 字段；
@@ -227,14 +227,14 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 			HashFunction hashFunc = Crypto.getHashFunction(blockHash.getAlgorithm());
 			boolean pass = hashFunc.verify(blockHash, blockBodyBytes);
 			if (!pass) {
-				throw new LedgerException("Block hash verification fail!");
+				throw new RuntimeException("Block hash verification fail!");
 			}
 		}
 
 		// verify height;
 		HashDigest indexedHash = getBlockHash(block.getHeight());
 		if (indexedHash == null || !indexedHash.equals(blockHash)) {
-			throw new LedgerException(
+			throw new RuntimeException(
 					"Illegal ledger state in storage that ledger height index doesn't match it's block data in height["
 							+ block.getHeight() + "] and block hash[" + Base58Utils.encode(blockHash.toBytes())
 							+ "] !");
@@ -394,15 +394,15 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public synchronized LedgerEditor createNextBlock() {
 		if (closed) {
-			throw new LedgerException("Ledger repository has been closed!");
+			throw new RuntimeException("Ledger repository has been closed!");
 		}
 		if (this.nextBlockEditor != null) {
-			throw new LedgerException(
+			throw new RuntimeException(
 					"A new block is in process, cann't create another one until it finish by committing or canceling.");
 		}
 		LedgerBlock previousBlock = getLatestBlock();
-		LedgerTransactionalEditor editor = LedgerTransactionalEditor.createEditor(ledgerHash,
-				getAdminInfo().getMetadata().getSetting(), previousBlock, keyPrefix, exPolicyStorage,
+		LedgerTransactionalEditor editor = LedgerTransactionalEditor.createEditor(previousBlock, 
+				getAdminInfo().getMetadata().getSetting(), keyPrefix, exPolicyStorage,
 				versioningStorage);
 		NewBlockCommittingMonitor committingMonitor = new NewBlockCommittingMonitor(editor, this);
 		this.nextBlockEditor = committingMonitor;
@@ -420,7 +420,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 			return;
 		}
 		if (this.nextBlockEditor != null) {
-			throw new LedgerException("A new block is in process, cann't close the ledger repository!");
+			throw new RuntimeException("A new block is in process, cann't close the ledger repository!");
 		}
 		closed = true;
 	}
@@ -600,7 +600,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		public void commit() {
 			try {
 				editor.commit();
-				LedgerBlock latestBlock = editor.getNewlyBlock();
+				LedgerBlock latestBlock = editor.getCurrentBlock();
 				ledgerRepo.latestState = new LedgerState(latestBlock);
 			} finally {
 				ledgerRepo.nextBlockEditor = null;
