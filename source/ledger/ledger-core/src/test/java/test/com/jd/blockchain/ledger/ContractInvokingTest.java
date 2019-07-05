@@ -204,9 +204,8 @@ public class ContractInvokingTest {
 
 		assertEquals(0, block.getHeight());
 		assertNotNull(block.getHash());
+		assertNull(block.getLedgerHash());
 		assertNull(block.getPreviousHash());
-
-		assertEquals(block.getHash(), block.getLedgerHash());
 
 		// 提交数据，写入存储；
 		ldgEdt.commit();
