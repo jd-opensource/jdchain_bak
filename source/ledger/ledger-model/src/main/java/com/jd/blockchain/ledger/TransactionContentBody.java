@@ -40,6 +40,6 @@ public interface TransactionContentBody {
 	 * @return
 	 */
 	@DataField(order = 3, primitiveType = PrimitiveType.INT64)
-	long getTime();
+	long getTimestamp();
 
 }

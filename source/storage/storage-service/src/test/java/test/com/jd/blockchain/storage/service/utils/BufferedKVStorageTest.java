@@ -1,9 +1,9 @@
 package test.com.jd.blockchain.storage.service.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,14 +15,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.mockito.verification.VerificationMode;
 
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
-import com.jd.blockchain.storage.service.utils.ExistancePolicyKVStorageMap;
-import com.jd.blockchain.storage.service.utils.VersioningKVStorageMap;
 import com.jd.blockchain.utils.Bytes;
 
 public class BufferedKVStorageTest {
@@ -77,82 +74,4 @@ public class BufferedKVStorageTest {
 		verify(exStorage, times(1)).set(eq(Bytes.fromString("C")), any(), eq(ExPolicy.NOT_EXISTING));
 		verify(exStorage, times(1)).set(eq(Bytes.fromString("D")), any(), eq(ExPolicy.NOT_EXISTING));
 	}
-
-	// 改变了存储结构，此测试用例不再适合；
-	// @Test
-	// public void testDataSet() {
-	//
-	// ExistancePolicyKVStorageMap memoryExStorage = new
-	// ExistancePolicyKVStorageMap();
-	//
-	// VersioningKVStorageMap memoryVerStorage = new VersioningKVStorageMap();
-	//
-	// long v = memoryVerStorage.set("A", "A1".getBytes(), -1);
-	// assertEquals(0, v);
-	// v = memoryVerStorage.set("A", "A2".getBytes(), 0);
-	// assertEquals(1, v);
-	// v = memoryVerStorage.set("A", "A3".getBytes(), 1);
-	// assertEquals(2, v);
-	// v = memoryVerStorage.set("B", "B1".getBytes(), -1);
-	// assertEquals(0, v);
-	//
-	// BufferedKVStorage bufferedStorage = new BufferedKVStorage(memoryExStorage,
-	// memoryVerStorage, false);
-	//
-	// // test versioning get;
-	// byte[] value = bufferedStorage.get("A", 0);
-	// assertEquals("A1", new String(value));
-	//
-	// value = bufferedStorage.get("A", -1);
-	// assertEquals("A3", new String(value));
-	//
-	// value = bufferedStorage.get("A", 2);
-	// assertEquals("A3", new String(value));
-	//
-	// value = bufferedStorage.get("B", 0);
-	// assertEquals("B1", new String(value));
-	//
-	//
-	// // test versioning buffered set;
-	// v = bufferedStorage.set("C", "C1".getBytes(), -1);
-	// assertEquals(v, 0);
-	//
-	// v = bufferedStorage.set("C", "C2".getBytes(), 0);
-	// assertEquals(v, 1);
-	//
-	// v = bufferedStorage.set("D", "D1".getBytes(), -1);
-	// assertEquals(v, 0);
-	//
-	// v = bufferedStorage.set("E", "E1".getBytes(), 0);
-	// assertEquals(v, -1);
-	//
-	//
-	// value = bufferedStorage.get("C", 0);
-	// assertEquals("C1", new String(value));
-	// value = bufferedStorage.get("C", 1);
-	// assertEquals("C2", new String(value));
-	// value = bufferedStorage.get("D", 0);
-	// assertEquals("D1", new String(value));
-	// value = bufferedStorage.get("E", 0);
-	// assertNull(value);
-	//
-	// value = memoryVerStorage.get("C", 0);
-	// assertNull(value);
-	// value = memoryVerStorage.get("D", 0);
-	// assertNull(value);
-	// value = memoryVerStorage.get("E", 0);
-	// assertNull(value);
-	//
-	// bufferedStorage.flush();
-	//
-	// value = memoryVerStorage.get("C", 0);
-	// assertEquals("C1", new String(value));
-	// value = memoryVerStorage.get("C", 1);
-	// assertEquals("C2", new String(value));
-	// value = memoryVerStorage.get("D", 0);
-	// assertEquals("D1", new String(value));
-	// value = memoryVerStorage.get("E", 0);
-	// assertNull(value);
-	// }
-
 }

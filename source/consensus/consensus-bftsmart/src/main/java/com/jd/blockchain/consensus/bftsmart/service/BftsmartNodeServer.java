@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import bftsmart.tom.*;
+import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.jd.blockchain.consensus.ConsensusManageService;
@@ -49,12 +50,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private BftsmartConsensusManageService manageService;
 
-
     private volatile BftsmartTopology topology;
 
     private volatile BftsmartConsensusSettings setting;
 
     private TOMConfiguration tomConfig;
+    private TOMConfiguration outerTomConfig;
 
     private HostsConfig hostsConfig;
     private Properties systemConfig;
@@ -123,14 +124,11 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return;
     }
 
-    protected void initConfig(int id, String systemConfig, String hostsConfig) {
-
-        this.tomConfig = new TOMConfiguration(id, systemConfig, hostsConfig);
-
-    }
-
     protected void initConfig(int id, Properties systemsConfig, HostsConfig hostConfig) {
+        byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
+        Properties sysConfClone = (Properties)systemsConfig.clone();
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
+        this.outerTomConfig = new TOMConfiguration(id, sysConfClone, BinarySerializeUtils.deserialize(serialHostConf));
     }
 
     @Override
@@ -149,7 +147,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     public TOMConfiguration getTomConfig() {
-        return tomConfig;
+        return outerTomConfig;
     }
 
     public int getId() {
@@ -161,7 +159,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             throw new IllegalArgumentException("ReplicaID is negative!");
         }
         this.tomConfig.setProcessId(id);
-
+        this.outerTomConfig.setProcessId(id);
     }
 
     public BftsmartConsensusSettings getConsensusSetting() {
@@ -243,6 +241,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             messageHandle.commitBatch(realmName, batchId);
         } catch (Exception e) {
             // todo 需要处理应答码 404
+        	LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
             messageHandle.rollbackBatch(realmName, batchId, TransactionState.CONSENSUS_ERROR.CODE);
         }
 

@@ -58,6 +58,7 @@ public class MerkleDataSetTest {
 		mds.setValue("C", "C".getBytes(), -1);
 
 		mds.commit();
+		HashDigest root1 = mds.getRootHash();
 
 		// 1个KV项的存储KEY的数量= 1 + 1(保存SN) + Merkle节点数量;
 		// 所以：3 项;
@@ -68,6 +69,8 @@ public class MerkleDataSetTest {
 		mds.setValue("B", "B".getBytes(), 0);
 		mds.setValue("C", "C".getBytes(), 0);
 		mds.commit();
+		HashDigest root2 = mds.getRootHash();
+		assertNotEquals(root1, root2);
 
 		// Version changed only;仅仅增加 merkle 节点，此时 Merkle 树只有 1 层路径节点，因此只更新2个数据节点和 1
 		// 个路径节点；(注：版本值是在同一个 key 下按序列保存的)；
@@ -76,6 +79,9 @@ public class MerkleDataSetTest {
 
 		mds.setValue("D", "DValue".getBytes(), -1);
 		mds.commit();
+		HashDigest root3 = mds.getRootHash();
+		assertNotEquals(root2, root3);
+		assertNotEquals(root1, root3);
 
 		// New key added, include 1 versioning kv, 1 sn key, 2 merkle nodes;
 		// String[] keys = StringUtils.toStringArray(storage.keySet());

@@ -55,11 +55,21 @@ public class TxBuilder implements TransactionBuilder {
 		txContent.addOperations(opFactory.getOperations());
 		txContent.setTime(time);
 
-		byte[] contentBodyBytes = BinaryProtocol.encode(txContent, TransactionContentBody.class);
-		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
+		HashDigest contentHash = computeTxContentHash(txContent);
 		txContent.setHash(contentHash);
 
 		return txContent;
+	}
+	
+	public static HashDigest computeTxContentHash(TransactionContent txContent) {
+		byte[] contentBodyBytes = BinaryProtocol.encode(txContent, TransactionContentBody.class);
+		HashDigest contentHash = Crypto.getHashFunction(DEFAULT_HASH_ALGORITHM).hash(contentBodyBytes);
+		return contentHash;
+	}
+	
+	public static boolean verifyTxContentHash(TransactionContent txContent, HashDigest verifiedHash) {
+		HashDigest hash = computeTxContentHash(txContent);
+		return hash.equals(verifiedHash);
 	}
 
 	public Collection<OperationResultHandle> getReturnValuehandlers() {

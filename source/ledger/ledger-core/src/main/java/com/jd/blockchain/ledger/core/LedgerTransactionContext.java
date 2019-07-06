@@ -24,7 +24,7 @@ public interface LedgerTransactionContext {
 	 * 
 	 * @return
 	 */
-	TransactionRequest getRequestTX();
+	TransactionRequest getTransactionRequest();
 
 	/**
 	 * 提交对账本数据的修改，以指定的交易状态提交交易；

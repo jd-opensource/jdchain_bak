@@ -20,4 +20,7 @@ public interface BlockBody extends  LedgerDataSnapshot{
 
 	@DataField(order=5, primitiveType = PrimitiveType.BYTES)
 	HashDigest getTransactionSetHash();
+	
+	@DataField(order=6, primitiveType = PrimitiveType.INT64)
+	long getTimestamp();
 }

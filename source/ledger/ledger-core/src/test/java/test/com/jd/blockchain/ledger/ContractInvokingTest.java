@@ -1,45 +1,10 @@
 package test.com.jd.blockchain.ledger;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Random;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesData;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.OperationResult;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
-import com.jd.blockchain.ledger.core.LedgerEditor;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.LedgerTransactionContext;
-import com.jd.blockchain.ledger.core.UserAccount;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionalEditor;
@@ -48,6 +13,15 @@ import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import java.util.Random;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class ContractInvokingTest {
 	static {
@@ -184,7 +158,7 @@ public class ContractInvokingTest {
 		// 创建账本；
 		LedgerEditor ldgEdt = LedgerTransactionalEditor.createEditor(initSetting, LEDGER_KEY_PREFIX, storage, storage);
 
-		TransactionRequest genesisTxReq = LedgerTestUtils.createTxRequest_UserReg(null);
+		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(partiKeys);
 		LedgerTransactionContext genisisTxCtx = ldgEdt.newTransaction(genesisTxReq);
 		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
 
@@ -204,9 +178,8 @@ public class ContractInvokingTest {
 
 		assertEquals(0, block.getHeight());
 		assertNotNull(block.getHash());
+		assertNull(block.getLedgerHash());
 		assertNull(block.getPreviousHash());
-
-		assertEquals(block.getHash(), block.getLedgerHash());
 
 		// 提交数据，写入存储；
 		ldgEdt.commit();

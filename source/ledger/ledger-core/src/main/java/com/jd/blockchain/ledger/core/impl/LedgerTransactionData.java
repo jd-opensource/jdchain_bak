@@ -1,8 +1,5 @@
 package com.jd.blockchain.ledger.core.impl;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -29,48 +26,27 @@ public class LedgerTransactionData implements LedgerTransaction {
 
 	private OperationResult[] operationResults;
 
-	// private HashDigest adminAccountHash;
-	//
-	// private HashDigest userAccountSetHash;
-	//
-	// private HashDigest dataAccountSetHash;
-	//
-	// private HashDigest contractAccountSetHash;
-
 	/**
 	 * Declare a private no-arguments constructor for deserializing purpose；
 	 */
+	@SuppressWarnings("unused")
 	private LedgerTransactionData() {
-//		this.txSnapshot = new TransactionStagedSnapshot();
 	}
 
 	/**
-	 * @param blockHeight
-	 *            区块链高度；
-	 * @param txReq
-	 *            交易请求；
-	 * @param execState
-	 *            执行状态；
-	 * @param txSnapshot
-	 *            交易级的系统快照；
+	 * @param blockHeight 区块链高度；
+	 * @param txReq       交易请求；
+	 * @param execState   执行状态；
+	 * @param txSnapshot  交易级的系统快照；
 	 */
 	public LedgerTransactionData(long blockHeight, TransactionRequest txReq, TransactionState execState,
 			TransactionStagedSnapshot txSnapshot, OperationResult... opResults) {
 		this.blockHeight = blockHeight;
-//		this.txSnapshot = txSnapshot == null ? new TransactionStagedSnapshot() : txSnapshot;
 		this.txSnapshot = txSnapshot;
 		this.transactionContent = txReq.getTransactionContent();
 		this.endpointSignatures = txReq.getEndpointSignatures();
 		this.nodeSignatures = txReq.getNodeSignatures();
 		this.executionState = execState;
-		if (opResults != null) {
-			Arrays.sort(opResults, new Comparator<OperationResult>() {
-				@Override
-				public int compare(OperationResult o1, OperationResult o2) {
-					return o1.getIndex() - o2.getIndex();
-				}
-			});
-		}
 		this.operationResults = opResults;
 	}
 
@@ -116,17 +92,17 @@ public class LedgerTransactionData implements LedgerTransaction {
 
 	@Override
 	public HashDigest getUserAccountSetHash() {
-		return txSnapshot == null ? null :txSnapshot.getUserAccountSetHash();
+		return txSnapshot == null ? null : txSnapshot.getUserAccountSetHash();
 	}
 
 	@Override
 	public HashDigest getDataAccountSetHash() {
-		return txSnapshot == null ? null :txSnapshot.getDataAccountSetHash();
+		return txSnapshot == null ? null : txSnapshot.getDataAccountSetHash();
 	}
 
 	@Override
 	public HashDigest getContractAccountSetHash() {
-		return txSnapshot == null ? null :txSnapshot.getContractAccountSetHash();
+		return txSnapshot == null ? null : txSnapshot.getContractAccountSetHash();
 	}
 
 	public void setTxSnapshot(TransactionStagedSnapshot txSnapshot) {
@@ -140,20 +116,22 @@ public class LedgerTransactionData implements LedgerTransaction {
 		this.transactionContent = content;
 	}
 
-	public void setEndpointSignatures(Object[] participantSignatures) {
-		int length = participantSignatures.length;
-		this.endpointSignatures = new DigitalSignature[length];
-		for (int i = 0; i < length; i++) {
-			this.endpointSignatures[i] = (DigitalSignature) participantSignatures[i];
-		}
+	public void setEndpointSignatures(DigitalSignature[] participantSignatures) {
+		this.endpointSignatures = participantSignatures;
+//		int length = participantSignatures.length;
+//		this.endpointSignatures = new DigitalSignature[length];
+//		for (int i = 0; i < length; i++) {
+//			this.endpointSignatures[i] = (DigitalSignature) participantSignatures[i];
+//		}
 	}
 
-	public void setNodeSignatures(Object[] nodeSignatures) {
-		int length = nodeSignatures.length;
-		this.nodeSignatures = new DigitalSignature[length];
-		for (int i = 0; i < length; i++) {
-			this.nodeSignatures[i] = (DigitalSignature) nodeSignatures[i];
-		}
+	public void setNodeSignatures(DigitalSignature[] nodeSignatures) {
+		this.nodeSignatures = nodeSignatures;
+//		int length = nodeSignatures.length;
+//		this.nodeSignatures = new DigitalSignature[length];
+//		for (int i = 0; i < length; i++) {
+//			this.nodeSignatures[i] = (DigitalSignature) nodeSignatures[i];
+//		}
 	}
 
 	public void setExecutionState(TransactionState executionState) {

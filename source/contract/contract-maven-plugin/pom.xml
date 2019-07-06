@@ -87,6 +87,13 @@
 			<version>3.6.0</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-invoker</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -110,31 +117,6 @@
 					<showWarnings>false</showWarnings>
 				</configuration>
 			</plugin>
-			<!--<plugin> -->
-			<!--<artifactId>maven-assembly-plugin</artifactId> -->
-			<!--<configuration> -->
-			<!--<archive> -->
-			<!--<manifest> -->
-			<!--&lt;!&ndash;这里要替换成jar包main方法所在类 &ndash;&gt; -->
-			<!--<mainClass>com.jd.blockchain.ContractDeployMojo</mainClass> -->
-			<!--</manifest> -->
-			<!--</archive> -->
-			<!--<descriptorRefs> -->
-			<!--<descriptojar-rRef>jar-with-dependencies</descriptojar-rRef> -->
-			<!--</descriptorRefs> -->
-			<!--</configuration> -->
-			<!--<executions> -->
-			<!--<execution> -->
-			<!--<id>make-assembly</id> &lt;!&ndash; this is used for inheritance merges 
-				&ndash;&gt; -->
-			<!--<phase>package</phase> &lt;!&ndash; 指定在打包节点执行jar包合并操作 &ndash;&gt; -->
-			<!--<goals> -->
-			<!--<goal>single</goal> -->
-			<!--</goals> -->
-			<!--</execution> -->
-			<!--</executions> -->
-			<!--</plugin> -->
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -142,29 +124,6 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
-			</plugin>
-
-			<!-- 配置Maven插件(mvn jetty:run可以运行项目) -->
-			<!--<plugin> -->
-			<!--<groupId>org.mortbay.jetty</groupId> -->
-			<!--<artifactId>maven-jetty-plugin</artifactId> -->
-			<!--<version>6.1.26</version> -->
-			<!--<configuration> -->
-			<!--<connectors> -->
-			<!--<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector"> -->
-			<!--<port>8000</port> -->
-			<!--</connector> -->
-			<!--</connectors> -->
-			<!--</configuration> -->
-			<!--</plugin> -->
-
 		</plugins>
 	</build>
 </project>

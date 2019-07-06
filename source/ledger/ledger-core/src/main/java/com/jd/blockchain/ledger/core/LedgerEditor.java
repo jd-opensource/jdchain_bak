@@ -1,5 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -19,6 +20,20 @@ import com.jd.blockchain.ledger.TransactionRequest;
 public interface LedgerEditor {
 
 	/**
+	 * 账本Hash；
+	 * 
+	 * @return
+	 */
+	HashDigest getLedgerHash();
+
+	/**
+	 * 新区块的高度；
+	 * 
+	 * @return
+	 */
+	long getBlockHeight();
+
+	/**
 	 * 开始新事务；<br>
 	 * 
 	 * 方法返回之前，将会校验交易请求的用户签名列表和节点签名列表，并在后续对数据集
@@ -32,11 +47,14 @@ public interface LedgerEditor {
 	 * 或者全部回滚（通过方法 {@link LedgerTransactionContext#rollback()}），以此实现原子性写入；
 	 * <p>
 	 * 
-	 * 每一次事务性的账本写入操作在提交后，都会记录该事务相关的系统全局快照，以交易对象 {@link LedgerTransaction} 进行保存；<p>
+	 * 每一次事务性的账本写入操作在提交后，都会记录该事务相关的系统全局快照，以交易对象 {@link LedgerTransaction} 进行保存；
+	 * <p>
 	 * 
-	 * 注：方法不解析、不执行交易中的操作；
 	 * 
-	 * @param txRequest
+	 * 
+	 * 注：方法不解析、不执行交易中的操作；<p>
+	 * 
+	 * @param txRequest 交易请求；
 	 * @return
 	 */
 	LedgerTransactionContext newTransaction(TransactionRequest txRequest);

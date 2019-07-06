@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.DataAccountDoesNotExistException;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
 import com.jd.blockchain.ledger.Operation;
@@ -26,9 +27,11 @@ public class DataAccountKVSetOperationHandle implements OperationHandle {
 			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountKVSetOperation kvWriteOp = (DataAccountKVSetOperation) op;
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
+		if (account == null) {
+			throw new DataAccountDoesNotExistException("DataAccount doesn't exist!");
+		}
 		KVWriteEntry[] writeSet = kvWriteOp.getWriteSet();
 		for (KVWriteEntry kvw : writeSet) {
-//			byte[] value = BinaryProtocol.encode(kvw.getValue(), BytesValue.class);
 			account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
 		}
 		return null;
