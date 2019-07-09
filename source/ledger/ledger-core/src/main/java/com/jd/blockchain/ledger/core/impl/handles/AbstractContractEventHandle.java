@@ -18,7 +18,7 @@ import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
 @Service
-public abstract class AbtractContractEventHandle implements OperationHandle {
+public abstract class AbstractContractEventHandle implements OperationHandle {
 
 	@Override
 	public boolean support(Class<?> operationType) {

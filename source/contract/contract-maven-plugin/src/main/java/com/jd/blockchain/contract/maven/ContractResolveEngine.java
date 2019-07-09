@@ -20,9 +20,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static com.jd.blockchain.contract.ContractJarUtils.*;
 import static com.jd.blockchain.contract.maven.ContractCompileMojo.JAR_DEPENDENCE;
 import static com.jd.blockchain.utils.decompiler.utils.DecompilerUtils.decompileJarFile;
-import static com.jd.blockchain.utils.jar.ContractJarUtils.*;
 
 public class ContractResolveEngine {
 

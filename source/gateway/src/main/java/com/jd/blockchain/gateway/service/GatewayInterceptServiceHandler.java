@@ -1,11 +1,10 @@
 package com.jd.blockchain.gateway.service;
 
+import com.jd.blockchain.contract.ContractJarUtils;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.utils.IllegalDataException;
-import com.jd.blockchain.utils.jar.ContractJarUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

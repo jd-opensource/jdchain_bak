@@ -1,5 +1,9 @@
-package com.jd.blockchain.utils.jar;
+package com.jd.blockchain.contract;
 
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.utils.io.BytesUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -17,13 +21,15 @@ public class ContractJarUtils {
 
     private static final String CONTRACT_MF = "META-INF/CONTRACT.MF";
 
-    private static final int JDCHAIN_HASH_LENGTH = 69;
+    private static final HashFunction HASH_FUNCTION = Crypto.getHashFunction("SHA256");
 
     private static final Random FILE_RANDOM = new Random();
 
+    private static final byte[] JDCHAIN_MARK = "JDChain".getBytes(StandardCharsets.UTF_8);
+
     public static void verify(byte[] chainCode) {
         if (chainCode == null || chainCode.length == 0) {
-            throw new IllegalStateException("ChainCode is empty !!!");
+            throw new IllegalStateException("Contract's chaincode is empty !!!");
         }
         // 首先生成合约文件
         File jarFile = newJarFile();
@@ -51,7 +57,7 @@ public class ContractJarUtils {
             throw new IllegalStateException(CONTRACT_MF + " IS NULL !!!");
         }
         byte[] bytes = IOUtils.toByteArray(inputStream);
-        if (bytes == null || bytes.length != JDCHAIN_HASH_LENGTH) {
+        if (bytes == null || bytes.length == 0) {
             throw new IllegalStateException(CONTRACT_MF + " IS Illegal !!!");
         }
         // 获取对应的Hash内容
@@ -107,8 +113,8 @@ public class ContractJarUtils {
     }
 
     public static String contractMF(byte[] content) {
-        // hash=Hex(hash(content))
-        return "hash:" + DigestUtils.sha256Hex(content);
+        HashDigest hashDigest = HASH_FUNCTION.hash(BytesUtils.concat(content, JDCHAIN_MARK));
+        return "hash:" + hashDigest.toBase58();
     }
 
     public static JarEntry contractMFJarEntry() {

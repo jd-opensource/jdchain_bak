@@ -1,31 +1,11 @@
 package com.jd.blockchain.transaction;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.utils.Bytes;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueList;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.jar.ContractJarUtils;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author huanghaiquan

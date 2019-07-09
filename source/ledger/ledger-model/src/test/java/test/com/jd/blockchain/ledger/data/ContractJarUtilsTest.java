@@ -1,4 +1,4 @@
-package test.my.utils;
+package test.com.jd.blockchain.ledger.data;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import static com.jd.blockchain.utils.jar.ContractJarUtils.*;
+import static com.jd.blockchain.contract.ContractJarUtils.*;
 import static org.junit.Assert.fail;
 
 public class ContractJarUtilsTest {
@@ -59,6 +59,11 @@ public class ContractJarUtilsTest {
         } catch (Exception e) {
             fail("Verify Fail !!");
         }
+    }
 
+    @Test
+    public void testSign() {
+        byte[] test = "zhangsan".getBytes(StandardCharsets.UTF_8);
+        System.out.println(contractMF(test));
     }
 }

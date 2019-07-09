@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
-import com.jd.blockchain.utils.jar.ContractJarUtils;
+import com.jd.blockchain.contract.ContractJarUtils;
 import org.springframework.stereotype.Service;
 
 import com.jd.blockchain.ledger.BytesValue;
