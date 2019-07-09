@@ -16,10 +16,7 @@ import com.jd.blockchain.tools.initializer.*;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitDecisionData;
-import com.jd.blockchain.transaction.DigitalSignatureBlob;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
-import com.jd.blockchain.transaction.TxBuilder;
-import com.jd.blockchain.transaction.TxRequestBuilder;
+import com.jd.blockchain.transaction.*;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.InvocationResult;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -251,7 +248,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 		this.initTxContent = initTxBuilder.prepareContent();
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
-		SignatureDigest permissionSign = TxRequestBuilder.sign(initTxContent, privKey);
+		SignatureDigest permissionSign = SignatureUtils.sign(initTxContent, privKey);
 		localPermission = new LedgerInitPermissionData(currentId, permissionSign);
 
 		this.currentId = currentId;
