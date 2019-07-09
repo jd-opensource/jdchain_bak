@@ -68,11 +68,7 @@ public class PreparedTx implements PreparedTransaction {
 
 	@Override
 	public DigitalSignature sign(AsymmetricKeypair keyPair) {
-		SignatureFunction signatureFunction = Crypto.getSignatureFunction(keyPair.getAlgorithm());
-		PrivKey privKey = keyPair.getPrivKey();
-		byte[] content = BinaryProtocol.encode(getTransactionContent(), TransactionContent.class);
-		SignatureDigest signatureDigest = signatureFunction.sign(privKey, content);
-		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
+		DigitalSignature signature = SignatureUtils.sign(getTransactionContent(), keyPair);
 		addSignature(signature);
 		return signature;
 	}

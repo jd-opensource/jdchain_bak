@@ -10,10 +10,12 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
+import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.transaction.TransactionService;
 import com.jd.blockchain.transaction.TxRequestMessage;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
@@ -62,13 +64,16 @@ public class NodeSigningAppender implements TransactionService {
 	public TransactionResponse process(TransactionRequest txRequest) {
 		TxRequestMessage txMessage = new TxRequestMessage(txRequest);
 
-		// 生成网关签名；
-		byte[] endpointRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);
+//		// 生成网关签名；
+//		byte[] endpointRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);
+//
+//		short signAlgorithm = nodeKeyPair.getAlgorithm();
+//		SignatureFunction signFunc = Crypto.getSignatureFunction(signAlgorithm);
+//		SignatureDigest signDigest = signFunc.sign(nodeKeyPair.getPrivKey(), endpointRequestBytes);
 
-		short signAlgorithm = nodeKeyPair.getAlgorithm();
-		SignatureFunction signFunc = Crypto.getSignatureFunction(signAlgorithm);
-		SignatureDigest signDigest = signFunc.sign(nodeKeyPair.getPrivKey(), endpointRequestBytes);
-		txMessage.addNodeSignatures(new DigitalSignatureBlob(nodeKeyPair.getPubKey(), signDigest));
+		DigitalSignature nodeSign = SignatureUtils.sign(txRequest.getTransactionContent(), nodeKeyPair);
+
+		txMessage.addNodeSignatures(nodeSign);
 
 		// 计算交易哈希；
 		byte[] nodeRequestBytes = BinaryProtocol.encode(txMessage, TransactionRequest.class);

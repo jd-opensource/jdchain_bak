@@ -42,14 +42,14 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 
 	@Override
 	public DigitalSignature signAsEndpoint(AsymmetricKeypair keyPair) {
-		DigitalSignature signature = sign(txContent, keyPair);
+		DigitalSignature signature = SignatureUtils.sign(txContent, keyPair);
 		addEndpointSignature(signature);
 		return signature;
 	}
 
 	@Override
 	public DigitalSignature signAsNode(AsymmetricKeypair keyPair) {
-		DigitalSignature signature = sign(txContent, keyPair);
+		DigitalSignature signature = SignatureUtils.sign(txContent, keyPair);
 		addNodeSignature(signature);
 		return signature;
 	}
@@ -64,26 +64,26 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 		endpointSignatures.add(signature);
 	}
 
-	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {
-		SignatureDigest signatureDigest = sign(txContent, keyPair.getPrivKey());
-		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
-		return signature;
-	}
+//	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {
+//		SignatureDigest signatureDigest = sign(txContent, keyPair.getPrivKey());
+//		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
+//		return signature;
+//	}
+//
+//	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
+//		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
+//	}
 
-	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
-		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
-	}
-
-	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {
-		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
-			return false;
-		}
-		return verifyHashSignature(txContent.getHash(), signDigest, pubKey);
-	}
-
-	public static boolean verifyHashSignature(HashDigest hash, SignatureDigest signDigest, PubKey pubKey) {
-		return Crypto.getSignatureFunction(pubKey.getAlgorithm()).verify(signDigest, pubKey, hash.toBytes());
-	}
+//	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {
+//		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
+//			return false;
+//		}
+//		return verifyHashSignature(txContent.getHash(), signDigest, pubKey);
+//	}
+//
+//	public static boolean verifyHashSignature(HashDigest hash, SignatureDigest signDigest, PubKey pubKey) {
+//		return Crypto.getSignatureFunction(pubKey.getAlgorithm()).verify(signDigest, pubKey, hash.toBytes());
+//	}
 
 	@Override
 	public TransactionRequest buildRequest() {
