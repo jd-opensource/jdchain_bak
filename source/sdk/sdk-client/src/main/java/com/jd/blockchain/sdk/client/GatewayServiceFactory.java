@@ -16,10 +16,7 @@ import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.BlockchainServiceFactory;
 import com.jd.blockchain.sdk.proxy.HttpBlockchainQueryService;
-import com.jd.blockchain.transaction.BlockchainQueryService;
-import com.jd.blockchain.transaction.DigitalSignatureBlob;
-import com.jd.blockchain.transaction.TransactionService;
-import com.jd.blockchain.transaction.TxRequestMessage;
+import com.jd.blockchain.transaction.*;
 import com.jd.blockchain.utils.http.agent.HttpServiceAgent;
 import com.jd.blockchain.utils.http.agent.ServiceConnection;
 import com.jd.blockchain.utils.http.agent.ServiceConnectionManager;
@@ -163,15 +160,20 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 			//TODO: 未实现按不同的账本的密码参数配置，采用不同的哈希算法和签名算法；
 			if (!reqMsg.containsEndpointSignature(userKey.getAddress())) {
 				// TODO: 优化上下文对此 TransactionContent 的多次序列化带来的额外性能开销；
-				byte[] txContentBytes = BinaryProtocol.encode(txRequest.getTransactionContent(),
-						TransactionContent.class);
-				PrivKey userPrivKey = userKey.getPrivKey();
-				SignatureFunction signatureFunction = Crypto.getSignatureFunction(userKey.getAlgorithm());
-				if (signatureFunction != null) {
-					SignatureDigest signatureDigest = signatureFunction.sign(userPrivKey, txContentBytes);
-					DigitalSignature signature = new DigitalSignatureBlob(userKey.getPubKey(), signatureDigest);
-					reqMsg.addEndpointSignatures(signature);
-				}
+				DigitalSignature signature = SignatureUtils.sign(txRequest.getTransactionContent(), userKey);
+				reqMsg.addEndpointSignatures(signature);
+//
+//
+//
+//				byte[] txContentBytes = BinaryProtocol.encode(txRequest.getTransactionContent(),
+//						TransactionContent.class);
+//				PrivKey userPrivKey = userKey.getPrivKey();
+//				SignatureFunction signatureFunction = Crypto.getSignatureFunction(userKey.getAlgorithm());
+//				if (signatureFunction != null) {
+//					SignatureDigest signatureDigest = signatureFunction.sign(userPrivKey, txContentBytes);
+//					DigitalSignature signature = new DigitalSignatureBlob(userKey.getPubKey(), signatureDigest);
+//					reqMsg.addEndpointSignatures(signature);
+//				}
 			}
 			return innerService.process(txRequest);
 		}
