@@ -41,6 +41,20 @@ public class ContractResolveEngine {
 
     private static final String BLACK_NAME_LIST = "black.name.list";
 
+    private static List<ContractPackage> blackNameList;
+
+    private static List<ContractPackage> blackPackageList;
+
+    private static Set<String> blackClassSet;
+
+    static {
+        try {
+            configInit();
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private Log LOGGER;
 
     private MavenProject project;
@@ -86,14 +100,6 @@ public class ContractResolveEngine {
                 LOGGER.error(e.getMessage());
                 throw e;
             }
-
-            Properties config = loadConfig();
-
-            List<ContractPackage> blackNameList = blackNameList(config);
-
-            List<ContractPackage> blackPackageList = blackPackageList(config);
-
-            Set<String> blackClassSet = blackClassSet(config);
 
             LinkedList<String> totalClassList = loadAllClass(jarFile);
             // 该项目路径
@@ -230,34 +236,32 @@ public class ContractResolveEngine {
         LOGGER.debug(String.format("Verify Jar [%s] 's MainClass end...", jarFile.getName()));
     }
 
-    private List<ContractPackage> blackNameList(Properties config) {
+    private static List<ContractPackage> blackNameList(Properties config) {
         return blackList(config, BLACK_NAME_LIST);
     }
 
-    private Set<String> blackClassSet(Properties config) {
+    private static Set<String> blackClassSet(Properties config) {
         Set<String> blackClassSet = new HashSet<>();
         String attrProp = config.getProperty(BLACK_CLASS_LIST);
         if (attrProp != null && attrProp.length() > 0) {
             String[] attrPropArray = attrProp.split(",");
             for (String attr : attrPropArray) {
-                LOGGER.info(String.format("Config [%s] -> [%s]", BLACK_CLASS_LIST, attr));
                 blackClassSet.add(attr.trim());
             }
         }
         return blackClassSet;
     }
 
-    private List<ContractPackage> blackPackageList(Properties config) {
+    private static List<ContractPackage> blackPackageList(Properties config) {
         return blackList(config, BLACK_PACKAGE_LIST);
     }
 
-    private List<ContractPackage> blackList(Properties config, String attrName) {
+    private static List<ContractPackage> blackList(Properties config, String attrName) {
         List<ContractPackage> list = new ArrayList<>();
         String attrProp = config.getProperty(attrName);
         if (attrProp != null || attrProp.length() > 0) {
             String[] attrPropArray = attrProp.split(",");
             for (String attr : attrPropArray) {
-                LOGGER.info(String.format("Config [%s] -> [%s]", attrName, attr));
                 list.add(new ContractPackage(attr));
             }
         }
@@ -359,11 +363,21 @@ public class ContractResolveEngine {
         return finalJar;
     }
 
-    private Properties loadConfig() throws Exception {
+    private static void configInit() throws Exception {
+        Properties config = loadConfig();
+
+        blackNameList = blackNameList(config);
+
+        blackPackageList = blackPackageList(config);
+
+        blackClassSet = blackClassSet(config);
+    }
+
+    private static Properties loadConfig() throws Exception {
 
         Properties properties = new Properties();
 
-        properties.load(this.getClass().getClassLoader().getResourceAsStream(CONFIG));
+        properties.load(ContractResolveEngine.class.getResourceAsStream(File.separator + CONFIG));
 
         return properties;
     }

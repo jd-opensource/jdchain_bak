@@ -2,11 +2,10 @@ package com.jd.blockchain.runtime;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -16,7 +15,7 @@ import com.jd.blockchain.utils.io.RuntimeIOException;
 
 public abstract class RuntimeContext {
 	
-	public static interface Environment{
+	public static interface Environment {
 		
 		boolean isProductMode();
 		
@@ -24,6 +23,7 @@ public abstract class RuntimeContext {
 	
 
 	private static final Object mutex = new Object();
+
 	private static volatile RuntimeContext runtimeContext;
 
 	public static RuntimeContext get() {
@@ -202,8 +202,78 @@ public abstract class RuntimeContext {
 
 		@Override
 		protected URLClassLoader createDynamicModuleClassLoader(URL jarURL) {
-			return new URLClassLoader(new URL[] { jarURL }, RuntimeContext.class.getClassLoader());
+			return new ContractURLClassLoader(jarURL, RuntimeContext.class.getClassLoader());
 		}
 
+	}
+
+	static class ContractURLClassLoader extends URLClassLoader {
+
+		private static final String BLACK_CONFIG = "black.config";
+
+		private static final Set<String> BLACK_CLASSES = new HashSet<>();
+
+		private static final Set<String> BLACK_PACKAGES = new HashSet<>();
+
+		static {
+			initBlacks();
+		}
+
+		public ContractURLClassLoader(URL contractJarURL, ClassLoader parent) {
+			super(new URL[] { contractJarURL }, parent);
+		}
+
+		@Override
+		public Class<?> loadClass(String name) throws ClassNotFoundException {
+			if (BLACK_CLASSES.contains(name)) {
+				throw new IllegalStateException(String.format("Contract cannot use Class [%s]", name));
+			} else {
+				// 判断该包是否是黑名单
+				String trimName = name.trim();
+				String packageName = trimName.substring(0, trimName.length() - 2);
+				if (BLACK_PACKAGES.contains(packageName)) {
+					throw new IllegalStateException(String.format("Contract cannot use Class [%s]", name));
+				}
+			}
+			return super.loadClass(name);
+		}
+
+		private static void initBlacks() {
+			try {
+				InputStream inputStream = ContractURLClassLoader.class.getResourceAsStream(File.separator + BLACK_CONFIG);
+				String text = FileUtils.readText(inputStream);
+				String[] textArray = text.split("\n");
+				for (String setting : textArray) {
+					// 支持按照逗号分隔
+					if (setting == null || setting.length() == 0) {
+						continue;
+					}
+					String[] settingArray = setting.split(",");
+					for (String set : settingArray) {
+						String totalClass = set.trim();
+						if (totalClass.endsWith("*")) {
+							// 说明是包，获取具体包名
+							String packageName = totalClass.substring(0, totalClass.length() - 2);
+							BLACK_PACKAGES.add(packageName);
+						} else {
+							// 具体的类名，直接放入集合
+							BLACK_CLASSES.add(totalClass);
+						}
+					}
+				}
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		}
+
+		public static void main(String[] args) {
+			for (String s : BLACK_CLASSES) {
+				System.out.println(s);
+			}
+
+			for (String s : BLACK_PACKAGES) {
+				System.out.println(s);
+			}
+		}
 	}
 }
