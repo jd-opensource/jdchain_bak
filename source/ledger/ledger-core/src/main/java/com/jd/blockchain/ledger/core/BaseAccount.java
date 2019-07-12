@@ -64,13 +64,13 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 
 	/**
 	 * Create a account instance with the specified address and pubkey and load it's
-	 * merkle dataset with the specified root hash. which is used for storing data
+	 * merkle dataset from the specified root hash. This merkle dateset is used for storing data
 	 * of this account.<br>
 	 *
 	 * @param address
 	 * @param pubKey
-	 * @param dataRootHash  merkle root hash of account's data; if null be set,
-	 *                      create a new empty merkle dataset;
+	 * @param dataRootHash  merkle root hash of account's data; if set to a null value,
+	 *                      an empty merkle dataset is created;
 	 * @param cryptoSetting
 	 * @param exStorage
 	 * @param verStorage
