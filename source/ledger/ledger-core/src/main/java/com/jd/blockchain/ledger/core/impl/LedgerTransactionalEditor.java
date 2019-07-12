@@ -28,6 +28,7 @@ import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.utils.Bytes;
@@ -205,7 +206,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		DigitalSignature[] endpointSignatures = request.getEndpointSignatures();
 		if (endpointSignatures != null) {
 			for (DigitalSignature signature : endpointSignatures) {
-				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
+				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), signature.getDigest(),
 						signature.getPubKey())) {
 					return false;
 				}
@@ -214,7 +215,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		DigitalSignature[] nodeSignatures = request.getNodeSignatures();
 		if (nodeSignatures != null) {
 			for (DigitalSignature signature : nodeSignatures) {
-				if (!TxRequestBuilder.verifyHashSignature(txContent.getHash(), signature.getDigest(),
+				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), signature.getDigest(),
 						signature.getPubKey())) {
 					return false;
 				}

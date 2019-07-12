@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.jd.blockchain.transaction.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,10 +59,6 @@ import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.transaction.DigitalSignatureBlob;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
-import com.jd.blockchain.transaction.TxBuilder;
-import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.InvocationResult;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -385,7 +382,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		this.initTxContent = initTxBuilder.prepareContent(initSetting.getCreatedTime());
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
-		SignatureDigest permissionSign = TxRequestBuilder.sign(initTxContent, privKey);
+		SignatureDigest permissionSign = SignatureUtils.sign(initTxContent, privKey);
 		LedgerInitPermissionData permission = new LedgerInitPermissionData(currentId, permissionSign);
 
 		this.currentId = currentId;
@@ -504,7 +501,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 				continue;
 			}
 
-			if (!TxRequestBuilder.verifySignature(this.initTxContent, permission.getTransactionSignature(), pubKey)) {
+			if (!SignatureUtils.verifySignature(this.initTxContent, permission.getTransactionSignature(), pubKey)) {
 				prompter.error("Invalid permission from participant! --[Id=%s][name=%s]", participants[i].getAddress(),
 						participants[i].getName());
 				allPermitted = false;

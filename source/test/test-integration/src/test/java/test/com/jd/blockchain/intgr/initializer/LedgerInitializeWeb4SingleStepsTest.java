@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import com.jd.blockchain.transaction.SignatureUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -125,10 +126,10 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		TransactionContent initTxContent2 = node2.getInitTxContent();
 		TransactionContent initTxContent3 = node3.getInitTxContent();
 
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent0, permission0.getTransactionSignature(), pubKey0));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent1, permission1.getTransactionSignature(), pubKey1));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent2, permission2.getTransactionSignature(), pubKey2));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent3, permission3.getTransactionSignature(), pubKey3));
+		assertTrue(SignatureUtils.verifySignature(initTxContent0, permission0.getTransactionSignature(), pubKey0));
+		assertTrue(SignatureUtils.verifySignature(initTxContent1, permission1.getTransactionSignature(), pubKey1));
+		assertTrue(SignatureUtils.verifySignature(initTxContent2, permission2.getTransactionSignature(), pubKey2));
+		assertTrue(SignatureUtils.verifySignature(initTxContent3, permission3.getTransactionSignature(), pubKey3));
 
 		assertNotNull(initTxContent0.getHash());
 		if (!initTxContent0.getHash().equals(initTxContent1.getHash())) {

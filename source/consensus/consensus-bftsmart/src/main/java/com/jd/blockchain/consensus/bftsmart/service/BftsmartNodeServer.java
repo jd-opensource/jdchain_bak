@@ -33,6 +33,8 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private static Logger LOGGER = LoggerFactory.getLogger(BftsmartNodeServer.class);
 
+    private static final String DEFAULT_BINDING_HOST = "0.0.0.0";
+
     private List<StateHandle> stateHandles = new CopyOnWriteArrayList<>();
 
     // TODO 暂不处理队列溢出问题
@@ -127,6 +129,8 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     protected void initConfig(int id, Properties systemsConfig, HostsConfig hostConfig) {
         byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
         Properties sysConfClone = (Properties)systemsConfig.clone();
+        int port = hostConfig.getPort(id);
+        hostConfig.add(id, DEFAULT_BINDING_HOST, port);
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
         this.outerTomConfig = new TOMConfiguration(id, sysConfClone, BinarySerializeUtils.deserialize(serialHostConf));
     }
