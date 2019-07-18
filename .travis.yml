@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - openjdk8
+
+before_install:
+  - cd ./tools
+  - mvn install:install-file -Dfile=core-0.1.4.jar -DgroupId=com.yahoo.ycsb -DartifactId=core -Dversion=0.1.4 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+  - cd ../source
+
+script:
+  - mvn clean package
