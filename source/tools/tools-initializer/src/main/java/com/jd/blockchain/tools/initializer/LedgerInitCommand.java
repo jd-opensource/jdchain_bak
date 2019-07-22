@@ -46,7 +46,11 @@ public class LedgerInitCommand {
 	// 是否输出调试信息；
 	private static final String DEBUG_OPT = "-debug";
 
+	private static final String MONITOR_OPT = "-monitor";
+
 	private static final Prompter DEFAULT_PROMPTER = new ConsolePrompter();
+
+	private static final Prompter ANSWER_PROMPTER = new PresetAnswerPrompter("Y");
 
 	/**
 	 * 入口；
@@ -56,18 +60,22 @@ public class LedgerInitCommand {
 	public static void main(String[] args) {
 		Prompter prompter = DEFAULT_PROMPTER;
 
-		Setting argSetting = ArgumentSet.setting().prefix(LOCAL_ARG, INI_ARG).option(DEBUG_OPT);
-		ArgumentSet argset = ArgumentSet.resolve(args, argSetting);
+		Setting argSetting = ArgumentSet.setting().prefix(LOCAL_ARG, INI_ARG).option(DEBUG_OPT).option(MONITOR_OPT);
+		ArgumentSet argSet = ArgumentSet.resolve(args, argSetting);
 
 		try {
-			ArgEntry localArg = argset.getArg(LOCAL_ARG);
+			if (argSet.hasOption(MONITOR_OPT)) {
+				prompter = ANSWER_PROMPTER;
+			}
+
+			ArgEntry localArg = argSet.getArg(LOCAL_ARG);
 			if (localArg == null) {
 				prompter.info("Miss local config file which can be specified with arg [%s]!!!", LOCAL_ARG);
 
 			}
 			LocalConfig localConf = LocalConfig.resolve(localArg.getValue());
 
-			ArgEntry iniArg = argset.getArg(INI_ARG);
+			ArgEntry iniArg = argSet.getArg(INI_ARG);
 			if (iniArg == null) {
 				prompter.info("Miss ledger initializing config file which can be specified with arg [%s]!!!", INI_ARG);
 				return;
@@ -135,7 +143,7 @@ public class LedgerInitCommand {
 
 		} catch (Exception e) {
 			prompter.error("\r\nError!! -- %s\r\n", e.getMessage());
-			if (argset.hasOption(DEBUG_OPT)) {
+			if (argSet.hasOption(DEBUG_OPT)) {
 				e.printStackTrace();
 			}
 
