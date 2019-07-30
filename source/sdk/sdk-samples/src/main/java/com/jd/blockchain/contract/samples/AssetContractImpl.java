@@ -11,6 +11,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * 示例：一个“资产管理”智能合约的实现；
@@ -48,59 +49,54 @@ public class AssetContractImpl implements EventProcessingAware, AssetContract {
 		// 查询当前值；
 		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS, KEY_TOTAL,
 				assetHolderAddress);
-		
+
 		// 计算资产的发行总数；
 		KVDataObject currTotal = (KVDataObject) kvEntries[0];
 		long newTotal = currTotal.longValue() + amount;
-		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(KEY_TOTAL, newTotal,
-				currTotal.getVersion());
+		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(KEY_TOTAL, newTotal, currTotal.getVersion());
 
 		// 分配到持有者账户；
 		KVDataObject holderAmount = (KVDataObject) kvEntries[1];
 		long newHodlerAmount = holderAmount.longValue() + amount;
-		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(assetHolderAddress, newHodlerAmount,
-				holderAmount.getVersion()).setText("K2", "info2", -1).setText("k3", "info3", 3);
-		
+		eventContext.getLedger().dataAccount(ASSET_ADDRESS)
+				.setInt64(assetHolderAddress, newHodlerAmount, holderAmount.getVersion()).setText("K2", "info2", -1)
+				.setText("k3", "info3", 3);
+
 	}
 
 	@Override
-	public void transfer(String fromAddress, String toAddress, long amount) {
-		// if (amount < 0) {
-		// throw new ContractError("The amount is negative!");
-		// }
-		// if (amount == 0) {
-		// return;
-		// }
-		//
-		// //校验“转出账户”是否已签名；
-		// checkSignerPermission(fromAddress);
-		//
-		// // 查询现有的余额；
-		// Set<String> keys = new HashSet<>();
-		// keys.add(fromAddress);
-		// keys.add(toAddress);
-		// StateMap origBalances =
-		// eventContext.getLedger().getStates(currentLedgerHash(), ASSET_ADDRESS, keys);
-		// KVDataObject fromBalance = origBalances.get(fromAddress);
-		// KVDataObject toBalance = origBalances.get(toAddress);
-		//
-		// //检查是否余额不足；
-		// if ((fromBalance.longValue() - amount) < 0) {
-		// throw new ContractError("Insufficient balance!");
-		// }
-		//
-		// // 把数据的更改写入到账本；
-		// SimpleStateMap newBalances = new SimpleStateMap(origBalances.getAccount(),
-		// origBalances.getAccountVersion(),
-		// origBalances.getStateVersion());
-		// KVDataObject newFromBalance = fromBalance.newLong(fromBalance.longValue() -
-		// amount);
-		// KVDataObject newToBalance = toBalance.newLong(toBalance.longValue() +
-		// amount);
-		// newBalances.setValue(newFromBalance);
-		// newBalances.setValue(newToBalance);
-		//
-		// eventContext.getLedger().updateState(ASSET_ADDRESS).setStates(newBalances);
+	public long transfer(String fromAddress, String toAddress, long amount) {
+		if (amount < 0) {
+			throw new ContractException("The amount is negative!");
+		}
+		if (amount > 20000) {
+			throw new ContractException("The amount exceeds the limit of 20000!");
+		}
+
+		// 校验“转出账户”是否已签名；
+		checkSignerPermission(fromAddress);
+
+		// 查询现有的余额；
+		KVDataEntry[] origBalances = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS,
+				fromAddress, toAddress);
+		KVDataEntry fromBalanceKV = origBalances[0];
+		KVDataEntry toBalanceKV = origBalances[1];
+		long fromBalance = fromBalanceKV.getVersion() == -1 ? 0 : (long) fromBalanceKV.getValue();
+		long toBalance = toBalanceKV.getVersion() == -1 ? 0 : (long) toBalanceKV.getValue();
+
+		// 检查是否余额不足；
+
+		if ((fromBalance - amount) < 0) {
+			throw new ContractException("The balance is insufficient and the transfer failed!");
+		}
+		fromBalance = fromBalance + amount;
+		toBalance = toBalance + amount;
+		
+		// 把数据的更改写入到账本；
+		eventContext.getLedger().dataAccount(fromAddress).setInt64(ASSET_ADDRESS, fromBalance, fromBalanceKV.getVersion());
+		eventContext.getLedger().dataAccount(toAddress).setInt64(ASSET_ADDRESS, toBalance, toBalanceKV.getVersion());
+
+		return -1;
 	}
 
 	// -------------------------------------------------------------
@@ -117,9 +113,9 @@ public class AssetContractImpl implements EventProcessingAware, AssetContract {
 			throw new ContractException("Permission Error! -- The requestors is not exactlly being owners!");
 		}
 
-		Map<String, BlockchainIdentity> ownerMap = new HashMap<>();
+		Map<Bytes, BlockchainIdentity> ownerMap = new HashMap<>();
 		for (BlockchainIdentity o : owners) {
-			ownerMap.put(o.getAddress().toBase58(), o);
+			ownerMap.put(o.getAddress(), o);
 		}
 		for (BlockchainIdentity r : requestors) {
 			if (!ownerMap.containsKey(r.getAddress())) {
