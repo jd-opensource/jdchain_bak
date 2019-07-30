@@ -151,6 +151,10 @@ public class LedgerInitCommand {
 		}
 		prompter.confirm(InitializingStep.LEDGER_INIT_COMPLETED.toString(), "\r\n\r\n Press any key to quit. :>");
 
+		if (argSet.hasOption(MONITOR_OPT)) {
+			// 管理工具启动的方式下，需自动退出
+			System.exit(0);
+		}
 	}
 
 	private LedgerManager ledgerManager;
