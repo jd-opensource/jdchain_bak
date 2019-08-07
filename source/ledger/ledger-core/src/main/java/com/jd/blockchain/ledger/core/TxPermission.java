@@ -1,0 +1,34 @@
+package com.jd.blockchain.ledger.core;
+
+import com.jd.blockchain.binaryproto.EnumContract;
+import com.jd.blockchain.binaryproto.EnumField;
+import com.jd.blockchain.binaryproto.PrimitiveType;
+import com.jd.blockchain.consts.DataCodes;
+
+/**
+ * TxPermission 交易权限表示一个用户可以发起的交易类型；
+ * 
+ * @author huanghaiquan
+ *
+ */
+@EnumContract(code = DataCodes.ENUM_TX_PERMISSIONS)
+public enum TxPermission {
+
+	/**
+	 * 交易中包含指令操作；
+	 */
+	COMMAND((byte) 0x01),
+
+	/**
+	 * 交易中包含合约操作；
+	 */
+	CONTRACT((byte) 0x02);
+
+	@EnumField(type = PrimitiveType.INT8)
+	public final byte CODE;
+
+	private TxPermission(byte code) {
+		this.CODE = code;
+	}
+
+}

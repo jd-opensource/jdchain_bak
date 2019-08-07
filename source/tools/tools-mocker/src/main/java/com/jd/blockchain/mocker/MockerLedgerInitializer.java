@@ -45,7 +45,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 
 	private final SignatureFunction SIGN_FUNC;
 
-	private volatile LedgerInitPermission localPermission;
+	private volatile LedgerInitProposal localPermission;
 
 	private TransactionContent initTxContent;
 
@@ -92,7 +92,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 		return initTxContent;
 	}
 
-	public LedgerInitPermission getLocalPermission() {
+	public LedgerInitProposal getLocalPermission() {
 		return localPermission;
 	}
 
@@ -129,7 +129,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 
 		prompter.info("Init settings and sign permision...");
 
-		prepareLocalPermission(currentId, privKey, ledgerInitProps, null, cryptoSetting);
+		prepareLocalProposal(currentId, privKey, ledgerInitProps, null, cryptoSetting);
 
 		try {
 			// 连接数据库；
@@ -201,7 +201,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 		return defCryptoSetting;
 	}
 
-	public LedgerInitPermission prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
+	public LedgerInitProposal prepareLocalProposal(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
 			ConsensusSettings csSettings, CryptoSetting cryptoSetting) {
 		// 创建初始化配置；
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
@@ -249,7 +249,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
 		SignatureDigest permissionSign = SignatureUtils.sign(initTxContent, privKey);
-		localPermission = new LedgerInitPermissionData(currentId, permissionSign);
+		localPermission = new LedgerInitProposalData(currentId, permissionSign);
 
 		this.currentId = currentId;
 		return localPermission;
@@ -300,7 +300,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 	}
 
 	@Override
-	public LedgerInitPermission requestPermission(int requesterId, SignatureDigest signature) {
+	public LedgerInitProposal requestPermission(int requesterId, SignatureDigest signature) {
 		return localPermission;
 	}
 

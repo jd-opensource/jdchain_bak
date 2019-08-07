@@ -4,7 +4,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.mocker.config.LedgerInitWebConfiguration;
@@ -48,7 +48,7 @@ public class NodeWebContext {
         return controller.getInitTxContent();
     }
 
-    public LedgerInitPermission getLocalPermission() {
+    public LedgerInitProposal getLocalPermission() {
         return controller.getLocalPermission();
     }
 

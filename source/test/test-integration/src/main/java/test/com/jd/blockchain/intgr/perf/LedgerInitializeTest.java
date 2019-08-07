@@ -21,7 +21,7 @@ import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountSet;
@@ -251,10 +251,10 @@ public class LedgerInitializeTest {
 		}
 
 		@Override
-		public LedgerInitPermission requestPermission(int requesterId, SignatureDigest signature) {
-			ThreadInvoker<LedgerInitPermission> invoker = new ThreadInvoker<LedgerInitPermission>() {
+		public LedgerInitProposal requestPermission(int requesterId, SignatureDigest signature) {
+			ThreadInvoker<LedgerInitProposal> invoker = new ThreadInvoker<LedgerInitProposal>() {
 				@Override
-				protected LedgerInitPermission invoke() {
+				protected LedgerInitProposal invoke() {
 					return initCsService.requestPermission(requesterId, signature);
 				}
 			};

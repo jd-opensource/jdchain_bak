@@ -18,7 +18,7 @@ import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
@@ -202,10 +202,10 @@ public class Utils {
 		}
 
 		@Override
-		public LedgerInitPermission requestPermission(int requesterId, SignatureDigest signature) {
-			ThreadInvoker<LedgerInitPermission> invoker = new ThreadInvoker<LedgerInitPermission>() {
+		public LedgerInitProposal requestPermission(int requesterId, SignatureDigest signature) {
+			ThreadInvoker<LedgerInitProposal> invoker = new ThreadInvoker<LedgerInitProposal>() {
 				@Override
-				protected LedgerInitPermission invoke() {
+				protected LedgerInitProposal invoke() {
 					return initCsService.requestPermission(requesterId, signature);
 				}
 			};

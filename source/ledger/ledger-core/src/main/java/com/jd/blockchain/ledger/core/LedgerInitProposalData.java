@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.SignatureDigest;
 
-public class LedgerInitPermissionData implements LedgerInitPermission {
+public class LedgerInitProposalData implements LedgerInitProposal {
 
 	private int participantId;
 
@@ -11,10 +11,10 @@ public class LedgerInitPermissionData implements LedgerInitPermission {
 	/**
 	 * a private contructor for deserialize;
 	 */
-	private LedgerInitPermissionData() {
+	private LedgerInitProposalData() {
 	}
 
-	public LedgerInitPermissionData(int participantId, SignatureDigest initTxSignature) {
+	public LedgerInitProposalData(int participantId, SignatureDigest initTxSignature) {
 		this.participantId = participantId;
 		this.transactionSignature = initTxSignature;
 	}

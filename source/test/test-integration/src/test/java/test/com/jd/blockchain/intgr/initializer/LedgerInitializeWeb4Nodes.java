@@ -213,7 +213,7 @@ public class LedgerInitializeWeb4Nodes {
 			return controller.getInitTxContent();
 		}
 
-		public LedgerInitPermission getLocalPermission() {
+		public LedgerInitProposal getLocalPermission() {
 			return controller.getLocalPermission();
 		}
 

@@ -3,7 +3,7 @@ package com.jd.blockchain.tools.initializer.web;
 import java.io.InputStream;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.ledger.core.LedgerInitPermissionData;
+import com.jd.blockchain.ledger.core.LedgerInitProposalData;
 import com.jd.blockchain.tools.initializer.LedgerInitException;
 import com.jd.blockchain.utils.http.HttpServiceContext;
 import com.jd.blockchain.utils.http.ResponseConverter;

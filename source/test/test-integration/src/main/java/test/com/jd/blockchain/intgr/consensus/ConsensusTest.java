@@ -26,7 +26,7 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -326,7 +326,7 @@ public class ConsensusTest {
 			return controller.getInitTxContent();
 		}
 
-		public LedgerInitPermission getLocalPermission() {
+		public LedgerInitProposal getLocalPermission() {
 			return controller.getLocalPermission();
 		}
 
@@ -398,7 +398,7 @@ public class ConsensusTest {
 			return invoker.start();
 		}
 
-		public LedgerInitPermission preparePermision(PrivKey privKey, LedgerInitProperties setting,
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties setting,
 				ConsensusSettings csProps) {
 			return controller.prepareLocalPermission(id, privKey, setting, csProps);
 		}

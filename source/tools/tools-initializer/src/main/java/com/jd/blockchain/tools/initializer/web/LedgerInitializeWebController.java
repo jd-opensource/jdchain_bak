@@ -46,8 +46,8 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
-import com.jd.blockchain.ledger.core.LedgerInitPermissionData;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerInitProposalData;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -84,7 +84,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private final SignatureFunction SIGN_FUNC;
 
-	private volatile LedgerInitPermission localPermission;
+	private volatile LedgerInitProposal localPermission;
 
 	private TransactionContent initTxContent;
 
@@ -92,7 +92,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private volatile LedgerInitSetting ledgerInitSetting;
 
-	private volatile LedgerInitPermission[] permissions;
+	private volatile LedgerInitProposal[] permissions;
 
 	private volatile NetworkAddress[] initializerAddresses;
 
@@ -140,7 +140,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		return initTxContent;
 	}
 
-	public LedgerInitPermission getLocalPermission() {
+	public LedgerInitProposal getLocalPermission() {
 		return localPermission;
 	}
 
@@ -319,13 +319,13 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		return defCryptoSetting;
 	}
 
-	public LedgerInitPermission prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
+	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
 			ConsensusSettings consensusProps) {
 		CryptoSetting defCryptoSetting = createDefaultCryptoSetting();
 		return prepareLocalPermission(currentId, privKey, ledgerProps, consensusProps, defCryptoSetting);
 	}
 
-	public LedgerInitPermission prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
+	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
 			ConsensusSettings csSettings, CryptoSetting cryptoSetting) {
 		// 创建初始化配置；
 		LedgerInitSettingData initSetting = new LedgerInitSettingData();
@@ -383,10 +383,10 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
 		SignatureDigest permissionSign = SignatureUtils.sign(initTxContent, privKey);
-		LedgerInitPermissionData permission = new LedgerInitPermissionData(currentId, permissionSign);
+		LedgerInitProposalData permission = new LedgerInitProposalData(currentId, permissionSign);
 
 		this.currentId = currentId;
-		this.permissions = new LedgerInitPermission[initSetting.getConsensusParticipants().length];
+		this.permissions = new LedgerInitProposal[initSetting.getConsensusParticipants().length];
 		this.permissions[currentId] = permission;
 		this.localPermission = permission;
 
@@ -493,7 +493,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 				continue;
 			}
 			PubKey pubKey = participants[i].getPubKey();
-			LedgerInitPermission permission = (LedgerInitPermission) results[i].getValue();
+			LedgerInitProposal permission = (LedgerInitProposal) results[i].getValue();
 			if (permission.getParticipantId() != participants[i].getId()) {
 				prompter.error("\r\nThe id of received permission isn't equal to it's participant ! --[Id=%s][name=%s]",
 						participants[i].getAddress(), participants[i].getName());
@@ -534,16 +534,16 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	 * @param latch
 	 * @return
 	 */
-	private InvocationResult<LedgerInitPermission> doRequestPermission(int targetId, SignatureDigest reqAuthSign,
+	private InvocationResult<LedgerInitProposal> doRequestPermission(int targetId, SignatureDigest reqAuthSign,
 			CountDownLatch latch) {
-		InvocationResult<LedgerInitPermission> result = new InvocationResult<>();
+		InvocationResult<LedgerInitProposal> result = new InvocationResult<>();
 		try {
 			LedgerInitConsensusService initConsensus = connectToParticipant(targetId);
 			Thread thrd = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						LedgerInitPermission permission = initConsensus.requestPermission(currentId, reqAuthSign);
+						LedgerInitProposal permission = initConsensus.requestPermission(currentId, reqAuthSign);
 						result.setValue(permission);
 					} catch (Exception e) {
 						result.setError(e);
@@ -561,7 +561,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	@RequestMapping(path = "/legerinit/permission/{requesterId}", method = RequestMethod.POST, produces = LedgerInitMessageConverter.CONTENT_TYPE_VALUE, consumes = LedgerInitMessageConverter.CONTENT_TYPE_VALUE)
 	@Override
-	public LedgerInitPermission requestPermission(@PathVariable(name = "requesterId") int requesterId,
+	public LedgerInitProposal requestPermission(@PathVariable(name = "requesterId") int requesterId,
 			@RequestBody SignatureDigest signature) {
 		if (requesterId == currentId) {
 			throw new LedgerInitException("There is a id conflict!");

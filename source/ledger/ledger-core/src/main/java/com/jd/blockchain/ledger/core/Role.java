@@ -6,7 +6,7 @@ public class Role {
 	
 	private long version;
 	
-	private Privilege privilege;
+	private LedgerPrivilege privilege;
 	
 	
 
@@ -18,7 +18,7 @@ public class Role {
 		return version;
 	}
 
-	public Privilege getPrivilege() {
+	public LedgerPrivilege getPrivilege() {
 		return privilege;
 	}
 	

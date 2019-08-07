@@ -13,8 +13,8 @@ import com.jd.blockchain.ledger.LedgerInitOperation;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.METADATA_INIT_PERMISSION)
-public interface LedgerInitPermission {
+@DataContract(code = DataCodes.METADATA_INIT_PROPOSAL)
+public interface LedgerInitProposal {
 
 	/**
 	 * 做出许可的参与方 ID；

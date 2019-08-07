@@ -8,11 +8,11 @@ package com.jd.blockchain.consts;
  */
 public interface DataCodes {
 
-	public static final int BYTES_VALUE = 0x80;
+	public static final int BYTES_VALUE = 0x080;
 	
-	public static final int BYTES_VALUE_LIST = 0x81;
+	public static final int BYTES_VALUE_LIST = 0x081;
 
-	public static final int BLOCK_CHAIN_IDENTITY = 0x90;
+	public static final int BLOCK_CHAIN_IDENTITY = 0x090;
 
 	public static final int BLOCK = 0x100;
 
@@ -52,12 +52,17 @@ public interface DataCodes {
 	public static final int TX_RESPONSE = 0x350;
 
 	public static final int TX_OP_RESULT = 0x360;
+	
+	// enum types of permissions;
+	public static final int ENUM_TX_PERMISSIONS = 0x401;
+	public static final int ENUM_LEDGER_PERMISSIONS = 0x402;
 
+	// contract types of metadata;
 	public static final int METADATA = 0x600;
 
 	public static final int METADATA_INIT_SETTING = 0x610;
 
-	public static final int METADATA_INIT_PERMISSION = 0x611;
+	public static final int METADATA_INIT_PROPOSAL = 0x611;
 
 	public static final int METADATA_INIT_DECISION = 0x612;
 
