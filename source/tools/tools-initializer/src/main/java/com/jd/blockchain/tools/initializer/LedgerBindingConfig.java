@@ -35,6 +35,8 @@ public class LedgerBindingConfig {
 
 	// Participant Attribute Key;
 	public static final String PARTI_ADDRESS = PARTI_PREFIX + "address";
+	// 参与方名称
+	public static final String PARTI_NAME = PARTI_PREFIX + "name";
 	public static final String PARTI_PK_PATH = PARTI_PREFIX + "pk-path";
 	public static final String PARTI_PK = PARTI_PREFIX + "pk";
 	public static final String PARTI_PASSWORD = PARTI_PREFIX + "pwd";
@@ -46,6 +48,9 @@ public class LedgerBindingConfig {
 	// DB Connction Attribute Key;
 	public static final String DB_CONN = DB_PREFIX + "uri";
 	public static final String DB_PASSWORD = DB_PREFIX + "pwd";
+
+	// 账本名字
+	public static final String LEDGER_NAME = "name";
 
 	// ------------------------------
 
@@ -89,6 +94,7 @@ public class LedgerBindingConfig {
 		for (int i = 0; i < hashs.length; i++) {
 			writeLine(builder, "#第 %s 个账本[%s]的配置；", i + 1, hashs[i].toBase58());
 			BindingConfig binding = getLedger(hashs[i]);
+			writeLedger(builder, hashs[i], binding);
 			writeParticipant(builder, hashs[i], binding);
 			writeDB(builder, hashs[i], binding);
 			writeLine(builder);
@@ -113,11 +119,14 @@ public class LedgerBindingConfig {
 		// 参与方配置；
 		String partiAddressKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_ADDRESS);
 		String partiPkPathKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PK_PATH);
+		String partiNameKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_NAME);
 		String partiPKKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PK);
 		String partiPwdKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PASSWORD);
 
 		writeLine(builder, "#账本的当前共识参与方的节点地址 Address；");
 		writeLine(builder, "%s=%s", partiAddressKey, stringOf(binding.getParticipant().getAddress()));
+		writeLine(builder, "#账本的当前共识参与方的节点名称 NodeName；");
+		writeLine(builder, "%s=%s", partiNameKey, stringOf(binding.getParticipant().getName()));
 		writeLine(builder, "#账本的当前共识参与方的私钥文件的保存路径；");
 		writeLine(builder, "%s=%s", partiPkPathKey, stringOf(binding.getParticipant().getPkPath()));
 		writeLine(builder, "#账本的当前共识参与方的私钥内容（Base58编码）；如果指定了，优先选用此属性，其次是 pk-path 属性；");
@@ -137,6 +146,16 @@ public class LedgerBindingConfig {
 		writeLine(builder, "%s=%s", dbConnKey, stringOf(binding.getDbConnection().getUri()));
 		writeLine(builder, "#账本的存储数据库的连接口令；");
 		writeLine(builder, "%s=%s", dbPwdKey, stringOf(binding.getDbConnection().getPassword()));
+		writeLine(builder);
+	}
+
+	private void writeLedger(StringBuilder builder, HashDigest ledgerHash, BindingConfig binding) {
+		String ledgerPrefix = String.join(ATTR_SEPERATOR, BINDING_PREFIX, ledgerHash.toBase58());
+		// 账本相关信息配置；
+		String ledgerNameKey = String.join(ATTR_SEPERATOR, ledgerPrefix, LEDGER_NAME);
+
+		writeLine(builder, "#账本的名称；");
+		writeLine(builder, "%s=%s", ledgerNameKey, stringOf(binding.getLedgerName()));
 		writeLine(builder);
 	}
 
@@ -219,11 +238,12 @@ public class LedgerBindingConfig {
 		// 参与方配置；
 		String partiAddrKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_ADDRESS);
 		String partiPkPathKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PK_PATH);
+		String partiNameKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_NAME);
 		String partiPKKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PK);
 		String partiPwdKey = String.join(ATTR_SEPERATOR, ledgerPrefix, PARTI_PASSWORD);
 
-		String strPartiAddr = getProperty(props, partiAddrKey, true);
-		binding.participant.address = strPartiAddr;
+		binding.participant.address = getProperty(props, partiAddrKey, true);
+		binding.participant.name = getProperty(props, partiNameKey, true);
 		binding.participant.pkPath = getProperty(props, partiPkPathKey, false);
 		binding.participant.pk = getProperty(props, partiPKKey, false);
 		binding.participant.password = getProperty(props, partiPwdKey, false);
@@ -246,6 +266,10 @@ public class LedgerBindingConfig {
 			throw new IllegalArgumentException(
 					String.format("No db connection config of participant of ledger binding[%s]!", ledgerHash));
 		}
+
+		// 设置账本名称
+		String ledgerNameKey = String.join(ATTR_SEPERATOR, ledgerPrefix, LEDGER_NAME);
+		binding.ledgerName = getProperty(props, ledgerNameKey, true);
 
 		return binding;
 	}
@@ -296,6 +320,9 @@ public class LedgerBindingConfig {
 
 	public static class BindingConfig {
 
+		private String ledgerName;
+
+		// 账本名字
 		private ParticipantBindingConfig participant = new ParticipantBindingConfig();
 
 		private DBConnectionConfig dbConnection = new DBConnectionConfig();
@@ -308,17 +335,34 @@ public class LedgerBindingConfig {
 			return dbConnection;
 		}
 
+		public void setLedgerName(String ledgerName) {
+			this.ledgerName = ledgerName;
+		}
+
+		public String getLedgerName() {
+			return ledgerName;
+		}
 	}
 
 	public static class ParticipantBindingConfig {
 
 		private String address;
 
+		private String name;
+
 		private String pkPath;
 
 		private String pk;
 
 		private String password;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 
 		public String getAddress() {
 			return address;

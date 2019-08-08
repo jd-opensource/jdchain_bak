@@ -58,8 +58,12 @@ public class PeerServerBooter {
 			if (ledgerBindConfigFile == null) {
 				ConsoleUtils.info("Load build-in default configuration ...");
 				ClassPathResource configResource = new ClassPathResource("ledger-binding.conf");
-				InputStream in = configResource.getInputStream();
-				ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+
+				try (InputStream in = configResource.getInputStream()) {
+					ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+				} catch (Exception e) {
+					throw e;
+				}
 			} else {
 				ConsoleUtils.info("Load configuration,ledgerBindConfigFile position="+ledgerBindConfigFile);
 				File file = new File(ledgerBindConfigFile);

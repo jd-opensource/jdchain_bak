@@ -2,6 +2,8 @@ package com.jd.blockchain.tools.initializer;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -52,6 +54,8 @@ public class LedgerInitCommand {
 
 	private static final Prompter ANSWER_PROMPTER = new PresetAnswerPrompter("Y");
 
+	private static final Prompter LOG_PROMPTER = new LogPrompter();
+
 	/**
 	 * 入口；
 	 * 
@@ -65,7 +69,7 @@ public class LedgerInitCommand {
 
 		try {
 			if (argSet.hasOption(MONITOR_OPT)) {
-				prompter = ANSWER_PROMPTER;
+				prompter = LOG_PROMPTER;
 			}
 
 			ArgEntry localArg = argSet.getArg(LOCAL_ARG);
@@ -178,7 +182,14 @@ public class LedgerInitCommand {
 
 		// generate binding config;
 		BindingConfig bindingConf = new BindingConfig();
+
+		// 设置账本名称
+		bindingConf.setLedgerName(ledgerInitProperties.getLedgerName());
+
 		bindingConf.getParticipant().setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress());
+		// 设置参与方名称
+		bindingConf.getParticipant().setName(ledgerInitProperties.getConsensusParticipant(currId).getName());
+
 		String encodedPrivKey = KeyGenCommand.encodePrivKey(privKey, base58Pwd);
 		bindingConf.getParticipant().setPk(encodedPrivKey);
 		bindingConf.getParticipant().setPassword(base58Pwd);

@@ -25,6 +25,9 @@ public class LedgerInitProperties {
 	// 账本种子；
 	public static final String LEDGER_SEED = "ledger.seed";
 
+	// 账本名称
+	public static final String LEDGER_NAME = "ledger.name";
+
 	// 声明的账本建立时间；
 	public static final String CREATED_TIME = "created-time";
 	// 创建时间的格式；
@@ -61,6 +64,8 @@ public class LedgerInitProperties {
 
 	private byte[] ledgerSeed;
 
+	private String ledgerName;
+
 	private List<ConsensusParticipantConfig> consensusParticipants = new ArrayList<>();
 
 	private String consensusProvider;
@@ -73,6 +78,10 @@ public class LedgerInitProperties {
 
 	public byte[] getLedgerSeed() {
 		return ledgerSeed.clone();
+	}
+
+	public String getLedgerName() {
+		return ledgerName;
 	}
 
 	public long getCreatedTime() {
@@ -158,6 +167,10 @@ public class LedgerInitProperties {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
+
+		// 账本名称
+		String ledgerName = PropertiesUtils.getRequiredProperty(props, LEDGER_NAME);
+		initProps.ledgerName = ledgerName;
 
 		// 创建时间；
 		String strCreatedTime = PropertiesUtils.getRequiredProperty(props, CREATED_TIME);

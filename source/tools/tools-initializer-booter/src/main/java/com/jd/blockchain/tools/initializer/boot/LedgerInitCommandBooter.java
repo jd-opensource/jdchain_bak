@@ -11,6 +11,8 @@ import java.util.List;
 
 public class LedgerInitCommandBooter {
 
+	private static final String[] JAR_DIRS = new String[]{"libs", "system"};
+
 	public static void main(String[] args) {
 		// 加载当前包及../system包下的所有class
 		load();
@@ -32,7 +34,7 @@ public class LedgerInitCommandBooter {
 		Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
 		boolean accessible = method.isAccessible();
 		try {
-			if (accessible == false) {
+			if (!accessible) {
 				method.setAccessible(true);
 			}
 			// 获取系统类加载器
@@ -64,9 +66,12 @@ public class LedgerInitCommandBooter {
 			}
 			File file = new File(currPath);
 			loadJarFiles.addAll(dirJars(file));
-			// 获取上级路径
-			String systemPath = file.getParent() + File.separator + "system";
-			loadJarFiles.addAll(dirJars(new File(systemPath)));
+
+			for (String jarDir : JAR_DIRS) {
+				// 获取上级路径
+				String jarPath = file.getParent() + File.separator + jarDir;
+				loadJarFiles.addAll(dirJars(new File(jarPath)));
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
