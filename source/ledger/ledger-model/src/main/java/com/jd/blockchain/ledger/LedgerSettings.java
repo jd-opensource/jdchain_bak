@@ -8,7 +8,7 @@ import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.utils.Bytes;
 
 @DataContract(code = DataCodes.METADATA_LEDGER_SETTING)
-public interface LedgerSetting {
+public interface LedgerSettings {
 
     @DataField(order=0, primitiveType=PrimitiveType.TEXT)
     String getConsensusProvider();

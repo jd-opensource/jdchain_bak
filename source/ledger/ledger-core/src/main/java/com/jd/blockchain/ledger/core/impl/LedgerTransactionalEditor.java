@@ -13,7 +13,7 @@ import com.jd.blockchain.ledger.IllegalTransactionException;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.LedgerSetting;
+import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -115,7 +115,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	 * @param verifyTx         是否校验交易请求；当外部调用者在调用前已经实施了验证时，将次参数设置为 false 能够提升性能；
 	 * @return
 	 */
-	public static LedgerTransactionalEditor createEditor(LedgerBlock previousBlock, LedgerSetting ledgerSetting,
+	public static LedgerTransactionalEditor createEditor(LedgerBlock previousBlock, LedgerSettings ledgerSetting,
 			String ledgerKeyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// new block;
 		HashDigest ledgerHash = previousBlock.getLedgerHash();

@@ -478,7 +478,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		return newDataSet;
 	}
 
-	static TransactionSet newTransactionSet(LedgerSetting ledgerSetting, String keyPrefix,
+	static TransactionSet newTransactionSet(LedgerSettings ledgerSetting, String keyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		// TransactionSet transactionSet = new
 		// TransactionSet(ledgerSetting.getCryptoSetting(),

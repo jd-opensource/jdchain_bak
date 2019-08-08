@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import com.jd.blockchain.ledger.LedgerMetadata;
-import com.jd.blockchain.ledger.LedgerSetting;
+import com.jd.blockchain.ledger.LedgerSettings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -119,8 +119,8 @@ public class LedgerMetaDataTest {
 
 		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider, new Bytes(csSettingsBytes),
 				cryptoConfig);
-		byte[] encodeBytes = BinaryProtocol.encode(ledgerConfiguration, LedgerSetting.class);
-		LedgerSetting deLedgerConfiguration = BinaryProtocol.decode(encodeBytes);
+		byte[] encodeBytes = BinaryProtocol.encode(ledgerConfiguration, LedgerSettings.class);
+		LedgerSettings deLedgerConfiguration = BinaryProtocol.decode(encodeBytes);
 		// verify start
 		assertTrue(ledgerConfiguration.getConsensusSetting().equals(deLedgerConfiguration.getConsensusSetting()));
 		assertEquals(ledgerConfiguration.getCryptoSetting().getAutoVerifyHash(),
