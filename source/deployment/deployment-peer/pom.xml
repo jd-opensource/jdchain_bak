@@ -17,6 +17,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
+			<artifactId>manager</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
 			<artifactId>runtime-modular</artifactId>
 			<version>${project.version}</version>
 		</dependency>
