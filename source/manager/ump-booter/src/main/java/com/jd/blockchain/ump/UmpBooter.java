@@ -30,21 +30,11 @@ public class UmpBooter {
     private static final String CONFIG_PROP_DB_URL_DEFAULT = "rocksdb://#project#/jumpdb";
 
     public static void main(String[] args) {
-        try {
-            startServer(server(args));
-            System.out.println("Server Start SUCCESS !!!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.printf("Server Start FAIL -> %s, Exit JVM !!!", e.toString());
-            // 正常退出
-            System.exit(0);
-        }
+        startServer(server(args));
+        System.out.println("Unified Management Platform Server Start SUCCESS !!!");
     }
 
     private static void startServer(Server server) {
-
-        System.out.printf("server.address = %s, server.port = %s, db.url = %s \r\n",
-                server.host, server.port, server.dbUrl);
 
         List<String> argList = new ArrayList<>();
         argList.add(String.format("--server.address=%s", server.host));

@@ -17,11 +17,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>manager</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
 			<artifactId>runtime-modular</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -30,7 +25,11 @@
 			<artifactId>runtime-modular-booter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>ump-booter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-composite</artifactId>
