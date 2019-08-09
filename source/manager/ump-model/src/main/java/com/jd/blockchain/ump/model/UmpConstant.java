@@ -101,4 +101,17 @@ public class UmpConstant {
     public static final String PATH_LOCAL_CONFIG = PATH_CONFIG_INIT + File.separator + "local.conf";
 
     public static final String PATH_LEDGER_INIT_CONFIG = PATH_CONFIG_INIT + File.separator + "ledger.init";
+
+    public static final String PEER_HOST_IP = "peerHostIp";
+    public static final String INIT_PORT = "iPort";
+    public static final String CONSENSUS_PORT = "cPort";
+    public static final String DELIMETER_QUESTION = "?";   //逗号分隔符;
+    public static final String LEDGER_LIST = "ledger_list";   //the key that save all the ledger hash in the rocksdb;
+    public static final int MEMORY_MAP_MAX_COUNT=10000;
+    public static final int MEMORY_MAP_REMOVE_COUNT=50;
+    public static final String ALL_LEDGER="all_ledger";
+    public static final String DELIMETER_MINUS = "-";
+    public static final String SCHEMA_PREFIX = "schema_";
+    public static final String SCHEMA_RETRIEVAL_URL = "retrieval.schemaUrl";
+    public static final String TASK_RETRIEVAL_URL = "retrieval.taskUrl";
 }

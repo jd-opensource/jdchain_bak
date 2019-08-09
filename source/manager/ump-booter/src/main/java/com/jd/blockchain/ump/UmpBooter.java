@@ -1,8 +1,10 @@
 package com.jd.blockchain.ump;
 
+import com.jd.blockchain.ump.web.RetrievalConfigListener;
 import org.springframework.boot.SpringApplication;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class UmpBooter {
     private static final String ARG_HOST = "-h";
 
     private static final String CONFIG = "BOOT-INF" + File.separator + "classes" + File.separator + "config.properties";
+    private static final String CONFIG_APPLICATION = "BOOT-INF" + File.separator + "classes" + File.separator + "application.properties";
 
     private static final String CONFIG_PROP_HOST = "server.host";
 
@@ -44,7 +47,22 @@ public class UmpBooter {
         String[] args = argList.toArray(new String[argList.size()]);
 
         // 启动服务器；
-        SpringApplication.run(UmpConfiguration.class, args);
+//        SpringApplication.run(UmpConfiguration.class, args);
+        InputStream inputStream = UmpBooter.class.getResourceAsStream(File.separator + CONFIG_APPLICATION);
+        if (inputStream == null) {
+            System.err.println("InputStream is NULL !!!");
+        }
+        Properties props = new Properties();
+        try {
+            props.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 启动服务器；
+        SpringApplication springApplication = new SpringApplication(UmpConfiguration.class);
+        springApplication.addListeners(new RetrievalConfigListener(props));
+        springApplication.run(args);
     }
 
     private static Server server(String[] args) {
