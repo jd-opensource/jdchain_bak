@@ -245,6 +245,9 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 			realmLock.lock();
 			try {
 				batchResultHandle.cancel(TransactionState.valueOf((byte)reasonCode));
+				currBatchId = null;
+				txResponseMap = null;
+				txBatchProcess = null;
 			} finally {
 				realmLock.unlock();
 			}

@@ -34,11 +34,11 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>transfer</finalName>
+                    <finalName>random</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>com.jd.blockchain.contract.TransferContractImpl</mainClass>
+                            <mainClass>com.jd.blockchain.contract.RandomContractImpl</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

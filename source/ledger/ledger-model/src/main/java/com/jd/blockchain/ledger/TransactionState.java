@@ -74,6 +74,13 @@ public enum TransactionState {
 	IGNORED_BY_BLOCK_FULL_ROLLBACK((byte) 0x44),
 
 	/**
+	 *
+	 * 共识阶段加入新区块哈希预计算功能, 如果来自其他Peer的新区块哈希值不一致，本批次整体回滚
+	 *
+	 */
+	IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK((byte) 0x45),
+
+	/**
 	 * 系统错误；
 	 */
 	SYSTEM_ERROR((byte) 0x80),
