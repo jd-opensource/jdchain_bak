@@ -10,6 +10,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -19,7 +20,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class LedgerAdminAccount implements Transactional, LedgerAdministration {
+public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 	static {
 		DataContractRegistry.register(LedgerMetadata.class);
@@ -174,8 +175,8 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		}
 		Bytes key = encodeSettingsKey(settingsHash);
 		byte[] bytes = storage.get(key);
-		HashFunction hashFunc = Crypto.getHashFunction(adminAccountHash.getAlgorithm());
-		if (!hashFunc.verify(adminAccountHash, bytes)) {
+		HashFunction hashFunc = Crypto.getHashFunction(settingsHash.getAlgorithm());
+		if (!hashFunc.verify(settingsHash, bytes)) {
 			String errorMsg = "Verification of the hash for ledger setting failed! --[HASH=" + key + "]";
 			LOGGER.error(errorMsg);
 			throw new LedgerException(errorMsg);
@@ -240,7 +241,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 	 * 
 	 * @return
 	 */
-	public LedgerSettings getSetting() {
+	public LedgerSettings getSettings() {
 		return settings;
 	}
 

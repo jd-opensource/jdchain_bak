@@ -1,0 +1,6 @@
+
+
+1、网关节点移除查询接口 HTTP GET ledgers/{ledgerHash}/settings  （出于设计合理性原因）
+
+
+2、网关节点增加查询接口 HTTP GET ledgers/{ledgerHash}/admininfo  ，接口返回指定账本管理配置信息；

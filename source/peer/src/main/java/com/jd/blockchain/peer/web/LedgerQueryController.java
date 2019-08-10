@@ -17,7 +17,6 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountSet;
-import com.jd.blockchain.ledger.core.LedgerAdministration;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.ParticipantCertData;
@@ -57,7 +56,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 	@Override
 	public ParticipantNode[] getConsensusParticipants(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
-		LedgerAdministration ledgerAdministration = ledger.getAdminInfo();
+		LedgerAdminInfo ledgerAdministration = ledger.getAdminInfo();
 		long participantCount = ledgerAdministration.getParticipantCount();
 		if (participantCount <= 0) {
 			return null;
@@ -73,12 +72,20 @@ public class LedgerQueryController implements BlockchainQueryService {
 		}
 		return null;
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/admininfo")
+	@Override
+	public LedgerAdminInfo getLedgerAdminInfo(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerAdminInfo ledgerAdministration = ledger.getAdminInfo();
+		return ledgerAdministration;
+	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/metadata")
 	@Override
 	public LedgerMetadata getLedgerMetadata(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
-		LedgerAdministration ledgerAdministration = ledger.getAdminInfo();
+		LedgerAdminInfo ledgerAdministration = ledger.getAdminInfo();
 		LedgerMetadata ledgerMetadata = ledgerAdministration.getMetadata();
 		return ledgerMetadata;
 	}

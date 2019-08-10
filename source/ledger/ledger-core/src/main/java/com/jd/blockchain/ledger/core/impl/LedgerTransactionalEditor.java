@@ -262,7 +262,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 				GenesisSnapshot snpht = (GenesisSnapshot) startingPoint;
 				txDataset = LedgerRepositoryImpl.newDataSet(snpht.initSetting, ledgerKeyPrefix, txBufferedStorage,
 						txBufferedStorage);
-				txset = LedgerRepositoryImpl.newTransactionSet(txDataset.getAdminAccount().getSetting(),
+				txset = LedgerRepositoryImpl.newTransactionSet(txDataset.getAdminAccount().getSettings(),
 						ledgerKeyPrefix, txBufferedStorage, txBufferedStorage);
 			} else if (startingPoint instanceof TxSnapshot) {
 				// 新的区块；

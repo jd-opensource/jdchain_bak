@@ -38,6 +38,11 @@ public class ContractLedgerContext implements LedgerContext {
 	public LedgerInfo getLedger(HashDigest ledgerHash) {
 		return innerQueryService.getLedger(ledgerHash);
 	}
+	
+	@Override
+	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
+		return innerQueryService.getLedgerAdminInfo(ledgerHash);
+	}
 
 	@Override
 	public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash) {

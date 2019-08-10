@@ -69,7 +69,7 @@ public class LedgerManager implements LedgerManage {
 				ledgerVersioningStorage);
 
 		// 校验 crypto service provider ；
-		CryptoSetting cryptoSetting = ledgerRepo.getAdminAccount().getSetting().getCryptoSetting();
+		CryptoSetting cryptoSetting = ledgerRepo.getAdminAccount().getSettings().getCryptoSetting();
 		checkCryptoSetting(cryptoSetting, ledgerHash);
 
 		// 创建账本上下文；

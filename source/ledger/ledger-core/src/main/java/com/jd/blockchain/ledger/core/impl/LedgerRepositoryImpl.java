@@ -9,7 +9,6 @@ import com.jd.blockchain.ledger.core.AccountAccessPolicy;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccountSet;
 import com.jd.blockchain.ledger.core.LedgerAdminAccount;
-import com.jd.blockchain.ledger.core.LedgerAdministration;
 import com.jd.blockchain.ledger.core.LedgerConsts;
 import com.jd.blockchain.ledger.core.LedgerDataSet;
 import com.jd.blockchain.ledger.core.LedgerEditor;
@@ -244,7 +243,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public LedgerAdministration getAdminInfo() {
+	public LedgerAdminInfo getAdminInfo() {
 		return getAdminAccount(getLatestBlock());
 	}
 
@@ -263,7 +262,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 			if (transactionSet == null) {
 				LedgerAdminAccount adminAccount = getAdminAccount(block);
 				transactionSet = loadTransactionSet(block.getTransactionSetHash(),
-						adminAccount.getMetadata().getSetting().getCryptoSetting(), keyPrefix, exPolicyStorage,
+						adminAccount.getSettings().getCryptoSetting(), keyPrefix, exPolicyStorage,
 						versioningStorage, true);
 				state.transactionSet = transactionSet;
 			}
@@ -272,7 +271,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		LedgerAdminAccount adminAccount = getAdminAccount(block);
 		// All of existing block is readonly;
 		return loadTransactionSet(block.getTransactionSetHash(),
-				adminAccount.getMetadata().getSetting().getCryptoSetting(), keyPrefix, exPolicyStorage,
+				adminAccount.getSettings().getCryptoSetting(), keyPrefix, exPolicyStorage,
 				versioningStorage, true);
 	}
 
@@ -402,7 +401,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		}
 		LedgerBlock previousBlock = getLatestBlock();
 		LedgerTransactionalEditor editor = LedgerTransactionalEditor.createEditor(previousBlock, 
-				getAdminInfo().getMetadata().getSetting(), keyPrefix, exPolicyStorage,
+				getAdminInfo().getSettings(), keyPrefix, exPolicyStorage,
 				versioningStorage);
 		NewBlockCommittingMonitor committingMonitor = new NewBlockCommittingMonitor(editor, this);
 		this.nextBlockEditor = committingMonitor;
@@ -453,7 +452,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerExStorage),
 		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerVerStorage),
 		// DEFAULT_ACCESS_POLICY);
-		UserAccountSet userAccountSet = new UserAccountSet(adminAccount.getSetting().getCryptoSetting(),
+		UserAccountSet userAccountSet = new UserAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				usersetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
 		// DataAccountSet dataAccountSet = new
@@ -461,7 +460,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerExStorage),
 		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerVerStorage),
 		// DEFAULT_ACCESS_POLICY);
-		DataAccountSet dataAccountSet = new DataAccountSet(adminAccount.getSetting().getCryptoSetting(),
+		DataAccountSet dataAccountSet = new DataAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				datasetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
 		// ContractAccountSet contractAccountSet = new
@@ -469,7 +468,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerExStorage),
 		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerVerStorage),
 		// DEFAULT_ACCESS_POLICY);
-		ContractAccountSet contractAccountSet = new ContractAccountSet(adminAccount.getSetting().getCryptoSetting(),
+		ContractAccountSet contractAccountSet = new ContractAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				contractsetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
 		LedgerDataSetImpl newDataSet = new LedgerDataSetImpl(adminAccount, userAccountSet, dataAccountSet,

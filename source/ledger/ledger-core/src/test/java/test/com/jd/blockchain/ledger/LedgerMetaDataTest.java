@@ -16,6 +16,7 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
@@ -74,12 +75,14 @@ public class LedgerMetaDataTest {
 		cryptoConfig.setAutoVerifyHash(true);
 		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
-		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider,
-				new Bytes(consensusSettingBytes), cryptoConfig);
+//		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider,
+//				new Bytes(consensusSettingBytes), cryptoConfig);
+		HashDigest settingsHash = Crypto.getHashFunction("SHA256").hash(consensusSettingBytes);
+		
 		LedgerAdminAccount.LedgerMetadataImpl ledgerMetadata = new LedgerAdminAccount.LedgerMetadataImpl();
 
 		ledgerMetadata.setSeed(seed);
-		ledgerMetadata.setSetting(ledgerConfiguration);
+		ledgerMetadata.setSettingsHash(settingsHash);
 
 		HashDigest hashDigest = new HashDigest(ClassicAlgorithm.SHA256, rawDigestBytes);
 		ledgerMetadata.setParticipantsHash(hashDigest);
@@ -91,7 +94,7 @@ public class LedgerMetaDataTest {
 		// verify start
 		assertArrayEquals(ledgerMetadata.getSeed(), deLedgerMetaData.getSeed());
 		assertEquals(ledgerMetadata.getParticipantsHash(), deLedgerMetaData.getParticipantsHash());
-		assertNotEquals(ledgerMetadata.getSetting(), deLedgerMetaData.getSetting());
+		assertEquals(ledgerMetadata.getSettingsHash(), deLedgerMetaData.getSettingsHash());
 
 		return;
 	}

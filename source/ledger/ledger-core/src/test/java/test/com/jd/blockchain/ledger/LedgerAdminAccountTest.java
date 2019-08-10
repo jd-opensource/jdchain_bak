@@ -166,14 +166,15 @@ public class LedgerAdminAccountTest {
 
 		assertTrue(BytesUtils.equals(expMeta.getSeed(), rlmeta.getSeed()));
 
-		assertNotNull(rlmeta.getSetting());
-		assertTrue(expMeta.getSetting().getConsensusSetting().equals(rlmeta.getSetting().getConsensusSetting()));
-		assertEquals(expMeta.getSetting().getConsensusProvider(), rlmeta.getSetting().getConsensusProvider());
-
-		assertEquals(expMeta.getSetting().getCryptoSetting().getAutoVerifyHash(),
-				rlmeta.getSetting().getCryptoSetting().getAutoVerifyHash());
-		assertEquals(expMeta.getSetting().getCryptoSetting().getHashAlgorithm(),
-				rlmeta.getSetting().getCryptoSetting().getHashAlgorithm());
+		assertNotNull(rlmeta.getSettingsHash());
+		assertEquals(expMeta.getSettingsHash(), rlmeta.getSettingsHash());
+//		assertTrue(expMeta.getSettings().getConsensusSetting().equals(rlmeta.getSettings().getConsensusSetting()));
+//		assertEquals(expMeta.getSettings().getConsensusProvider(), rlmeta.getSettings().getConsensusProvider());
+//
+//		assertEquals(expMeta.getSettings().getCryptoSetting().getAutoVerifyHash(),
+//				rlmeta.getSettings().getCryptoSetting().getAutoVerifyHash());
+//		assertEquals(expMeta.getSettings().getCryptoSetting().getHashAlgorithm(),
+//				rlmeta.getSettings().getCryptoSetting().getHashAlgorithm());
 	}
 
 	private void verifyReadlingParities(LedgerAdminAccount actualAccount, ParticipantNode[] expParties) {
@@ -210,7 +211,7 @@ public class LedgerAdminAccountTest {
 
 		ex = null;
 		try {
-			LedgerConfiguration newLedgerSetting = new LedgerConfiguration(actualAccount.getSetting());
+			LedgerConfiguration newLedgerSetting = new LedgerConfiguration(actualAccount.getSettings());
 			actualAccount.setLedgerSetting(newLedgerSetting);
 		} catch (Exception e) {
 			ex = e;

@@ -31,14 +31,6 @@ public interface LedgerMetadata {
 	@DataField(order = 2, primitiveType = PrimitiveType.BYTES)
 	HashDigest getParticipantsHash();
 
-//	/**
-//	 * 账本配置；
-//	 *
-//	 * @return
-//	 */
-//	@DataField(order = 3, refContract = true)
-//	LedgerSetting getSetting();
-	
 	/**
 	 * 账本配置的哈希；
 	 *

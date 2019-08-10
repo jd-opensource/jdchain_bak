@@ -9,7 +9,6 @@ import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountSet;
-import com.jd.blockchain.ledger.core.LedgerAdministration;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.TransactionSet;
@@ -40,15 +39,23 @@ public class LedgerQueryService implements BlockchainQueryService {
 		ledgerInfo.setLatestBlockHeight(ledger.getLatestBlockHeight());
 		return ledgerInfo;
 	}
+	
+	@Override
+	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
+		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
+		LedgerBlock block = ledger.getLatestBlock();
+		LedgerAdminInfo administration = ledger.getAdminAccount(block);
+		return administration;
+	}
 
 	@Override
 	public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash) {
-		return ledgerAdministration(ledgerHash).getParticipants();
+		return getLedgerAdminInfo(ledgerHash).getParticipants();
 	}
 
 	@Override
 	public LedgerMetadata getLedgerMetadata(HashDigest ledgerHash) {
-		return ledgerAdministration(ledgerHash).getMetadata();
+		return getLedgerAdminInfo(ledgerHash).getMetadata();
 	}
 
 	@Override
@@ -390,10 +397,4 @@ public class LedgerQueryService implements BlockchainQueryService {
 		return contractAccountSet.getAccounts(pages[0], pages[1]);
 	}
 
-	private LedgerAdministration ledgerAdministration(HashDigest ledgerHash) {
-		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
-		LedgerBlock block = ledger.getLatestBlock();
-		LedgerAdministration administration = ledger.getAdminAccount(block);
-		return administration;
-	}
 }

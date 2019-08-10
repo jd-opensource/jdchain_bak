@@ -3,6 +3,7 @@ package com.jd.blockchain.ledger.core;
 import java.io.Closeable;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
 
 public interface LedgerRepository extends Closeable {
@@ -51,7 +52,7 @@ public interface LedgerRepository extends Closeable {
 	 */
 	LedgerBlock getBlock(long height);
 
-	LedgerAdministration getAdminInfo();
+	LedgerAdminInfo getAdminInfo();
 
 	LedgerBlock getBlock(HashDigest hash);
 
