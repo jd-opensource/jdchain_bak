@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.springframework.util.ResourceUtils;
-
+import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -31,7 +30,7 @@ public class LedgerInitProperties {
 	// 声明的账本建立时间；
 	public static final String CREATED_TIME = "created-time";
 	// 创建时间的格式；
-	public static final String CREATED_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSZ";
+	public static final String CREATED_TIME_FORMAT = Global.DEFAULT_TIME_FORMAT;
 
 	// 共识参与方的个数，后续以 part.id 分别标识每一个参与方的配置；
 	public static final String PART_COUNT = "cons_parti.count";
@@ -162,7 +161,7 @@ public class LedgerInitProperties {
 	public static LedgerInitProperties resolve(Properties props) {
 		return resolve(null, props);
 	}
-
+	
 	public static LedgerInitProperties resolve(String dir, Properties props) {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);

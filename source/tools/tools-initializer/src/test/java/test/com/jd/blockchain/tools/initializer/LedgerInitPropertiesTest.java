@@ -1,17 +1,18 @@
 package test.com.jd.blockchain.tools.initializer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
-import com.jd.blockchain.crypto.AddressEncoding;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
@@ -22,12 +23,21 @@ public class LedgerInitPropertiesTest {
 
 	private static String expectedCreatedTimeStr = "2019-08-01 14:26:58.069+0800";
 	
+	private static String expectedCreatedTimeStr1 = "2019-08-01 13:26:58.069+0700";
+	
 	@Test
 	public void testTimeFormat() throws ParseException {
 		SimpleDateFormat timeFormat = new SimpleDateFormat(LedgerInitProperties.CREATED_TIME_FORMAT);
+//		timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT+08:00"));
+		
 		Date time = timeFormat.parse(expectedCreatedTimeStr);
 		String actualTimeStr = timeFormat.format(time);
 		assertEquals(expectedCreatedTimeStr, actualTimeStr);
+		
+		Date time1 = timeFormat.parse(expectedCreatedTimeStr1);
+		String actualTimeStr1 = timeFormat.format(time1);
+		assertEquals(expectedCreatedTimeStr, actualTimeStr1);
 	}
 
 	@Test
@@ -43,6 +53,7 @@ public class LedgerInitPropertiesTest {
 			assertEquals(expectedLedgerSeed, actualLedgerSeed);
 
 			SimpleDateFormat timeFormat = new SimpleDateFormat(LedgerInitProperties.CREATED_TIME_FORMAT);
+			timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
 			long expectedTs = timeFormat.parse(expectedCreatedTimeStr).getTime();
 			assertEquals(expectedTs, initProps.getCreatedTime());
 			
