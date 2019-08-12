@@ -20,6 +20,13 @@ public class UmpKeyController {
     @Autowired
     private UmpStateService umpStateService;
 
+
+    /**
+     * 创建用户
+     *
+     * @param builder
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, path = "create")
     public UserKeysVv create(@RequestBody final UserKeyBuilder builder) {
 
@@ -54,6 +61,15 @@ public class UmpKeyController {
         throw new IllegalStateException(String.format("Can not find UserKeys by %s", pubKey));
     }
 
+    /**
+     * 解析UserKeys
+     *
+     * @param userId
+     *         用户ID
+     * @param pwd
+     *         密码（非编码后密码）
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, path = "resolve/{user}/{pwd}")
     public UserKeys resolve(@PathVariable(name = "user") int userId,
                            @PathVariable(name = "pwd") String pwd) {
