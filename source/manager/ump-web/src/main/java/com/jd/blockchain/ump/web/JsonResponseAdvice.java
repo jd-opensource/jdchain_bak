@@ -1,5 +1,7 @@
 package com.jd.blockchain.ump.web;
 
+import com.jd.blockchain.ump.controller.RetrievalController;
+import com.jd.blockchain.ump.controller.TaskRetrievalController;
 import com.jd.blockchain.ump.model.config.LedgerConfig;
 import com.jd.blockchain.ump.model.web.WebResponse;
 import org.springframework.core.MethodParameter;
@@ -20,6 +22,11 @@ public class JsonResponseAdvice implements ResponseBodyAdvice<Object> {
         if (MappingJackson2HttpMessageConverter.class == converterType
                 && (returnType.getContainingClass().getName().startsWith("com.jd.blockchain.ump")
                 || returnType.getDeclaringClass().getName().startsWith("com.jd.blockchain.ump"))) {
+
+            if (returnType.getContainingClass() == RetrievalController.class  || returnType.getContainingClass() == TaskRetrievalController.class) {
+                return false;
+            }
+
             return true;
         }
         return false;
