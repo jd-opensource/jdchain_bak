@@ -520,6 +520,31 @@ public class UmpStateServiceHandler implements UmpStateService, Closeable {
     }
 
     @Override
+    public int peerPort(String peerPath) {
+
+        String peerVerify = ledgerService.peerVerifyKey(peerPath);
+
+        try {
+            if (!CommandUtils.isActive(peerVerify)) {
+                // 进程不存在
+                LOGGER.info("Can not find Peer Process {} !!!", peerVerify);
+                return 0;
+            }
+            return listenPort(peerVerify);
+        } catch (Exception e) {
+            // 进程处理错误打印日志即可
+            LOGGER.error(String.format("Peer Port Check %s !!!", peerVerify), e);
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int peerPort() {
+        return peerPort(UmpConstant.PROJECT_PATH);
+    }
+
+    @Override
     public void close() throws IOException {
 //        writeRunner.close();
     }
@@ -643,7 +668,7 @@ public class UmpStateServiceHandler implements UmpStateService, Closeable {
 
                     if (listenPort > 0) {
 
-                        int maxSize = 5, checkIndex = 1;
+                        int maxSize = 3, checkIndex = 1;
 
                         boolean isRead = false;
 
@@ -670,7 +695,7 @@ public class UmpStateServiceHandler implements UmpStateService, Closeable {
                                 }
 
                                 // 6秒休眠
-                                Thread.sleep(6000);
+                                Thread.sleep(3000);
                             } catch (Exception e) {
                                 LOGGER.error(String.format("Request LedgerHashs from PeerNode [%s]", checkIndex++), e);
                             }

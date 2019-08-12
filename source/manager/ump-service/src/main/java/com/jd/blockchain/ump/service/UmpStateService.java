@@ -59,4 +59,8 @@ public interface UmpStateService {
     List<LedgerInited> readLedgerIniteds(String search);
 
     String readLedgerHash(String ledgerAndNodeKey);
+
+    int peerPort(String peerPath);
+
+    int peerPort();
 }
