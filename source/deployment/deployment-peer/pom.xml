@@ -25,11 +25,11 @@
 			<artifactId>runtime-modular-booter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>ump-booter</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-composite</artifactId>
