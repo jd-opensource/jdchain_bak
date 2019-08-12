@@ -8,6 +8,7 @@ import com.jd.blockchain.ump.model.penetrate.DataAccountSchema;
 import com.jd.blockchain.ump.model.penetrate.SchemaDomain;
 import com.jd.blockchain.ump.service.DataAccountUmpService;
 import com.jd.blockchain.ump.service.DataRetrievalService;
+import com.jd.blockchain.ump.service.UmpStateService;
 import com.jd.blockchain.ump.web.RetrievalConfig;
 import com.jd.blockchain.utils.ConsoleUtils;
 import org.apache.commons.logging.Log;
@@ -32,6 +33,8 @@ public class RetrievalController {
     @Autowired
     private DataAccountUmpService dataAccountUmpService;
 
+    @Autowired
+    private UmpStateService umpStateService;
 
     /**
      * add schema by web;
@@ -268,11 +271,11 @@ public class RetrievalController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/ledgers/ip/{gwIp}/port/{gwPort}")
-    public String getAllLedgers(@PathVariable(name = "gwIp") String gwIp,
-                                       @PathVariable(name = "gwPort") int gwPort) {
+    @RequestMapping(method = RequestMethod.GET, value = "/ledgers")
+    public String getAllLedgers() {
         //generate the url;
-        String url = "http://"+gwIp+":"+gwPort+"/ledgers";
+        int peerPort = umpStateService.peerPort();
+        String url = "http://localhost:"+peerPort+"/ledgers";
         try {
             return dataRetrievalService.retrieval(url);
         } catch (Exception e) {
@@ -280,12 +283,11 @@ public class RetrievalController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/ledger/{ledgerHash}/ip/{gwIp}/port/{gwPort}")
-    public String getAllDataAccounts(@PathVariable(name = "ledgerHash") String ledgerHash,
-                                       @PathVariable(name = "gwIp") String gwIp,
-                                       @PathVariable(name = "gwPort") int gwPort) {
+    @RequestMapping(method = RequestMethod.GET, value = "/ledger/{ledgerHash}")
+    public String getAllDataAccounts(@PathVariable(name = "ledgerHash") String ledgerHash) {
         //generate the url;
-        String url = "http://"+gwIp+":"+gwPort+"/ledgers/"+ledgerHash+"/accounts";
+        int peerPort = umpStateService.peerPort();
+        String url = "http://localhost:"+peerPort+"/ledgers/"+ledgerHash+"/accounts";
         try {
             return dataRetrievalService.retrieval(url);
         } catch (Exception e) {
