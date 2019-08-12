@@ -53,18 +53,18 @@
             	<exclude>com.jd.blockchain:runtime-modular-booter</exclude>
             	<exclude>com.jd.blockchain:peer</exclude>
             	<exclude>com.jd.blockchain:deployment-peer</exclude>
-                <!--<exclude>com.jd.blockchain:ump-booter</exclude>-->
+                <exclude>com.jd.blockchain:ump-booter</exclude>
             </excludes>
         </dependencySet>
 
-        <!--<dependencySet>
+        <dependencySet>
             <unpack>false</unpack>
             <useProjectArtifact>true</useProjectArtifact>
             <outputDirectory>ext</outputDirectory>
             <includes>
                 <include>com.jd.blockchain:ump-booter</include>
             </includes>
-        </dependencySet>-->
+        </dependencySet>
 
     </dependencySets>
 
