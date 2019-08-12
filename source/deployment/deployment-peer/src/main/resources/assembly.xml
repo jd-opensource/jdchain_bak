@@ -54,6 +54,10 @@
             	<exclude>com.jd.blockchain:peer</exclude>
             	<exclude>com.jd.blockchain:deployment-peer</exclude>
                 <exclude>com.jd.blockchain:ump-booter</exclude>
+                <exclude>com.jd.blockchain:ump-explorer</exclude>
+                <exclude>com.jd.blockchain:ump-model</exclude>
+                <exclude>com.jd.blockchain:ump-service</exclude>
+                <exclude>com.jd.blockchain:ump-web</exclude>
             </excludes>
         </dependencySet>
 
