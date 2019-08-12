@@ -267,4 +267,29 @@ public class RetrievalController {
             return new ApiResult(ErrorCode.SERVER_ERROR,e.getMessage());
         }
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/ledgers/ip/{gwIp}/port/{gwPort}")
+    public String getAllLedgers(@PathVariable(name = "gwIp") String gwIp,
+                                       @PathVariable(name = "gwPort") int gwPort) {
+        //generate the url;
+        String url = "http://"+gwIp+":"+gwPort+"/ledgers";
+        try {
+            return dataRetrievalService.retrieval(url);
+        } catch (Exception e) {
+            return  "{'success':false,'data':'" + e.getMessage() + "'}";
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/ledger/{ledgerHash}/ip/{gwIp}/port/{gwPort}")
+    public String getAllDataAccounts(@PathVariable(name = "ledgerHash") String ledgerHash,
+                                       @PathVariable(name = "gwIp") String gwIp,
+                                       @PathVariable(name = "gwPort") int gwPort) {
+        //generate the url;
+        String url = "http://"+gwIp+":"+gwPort+"/ledgers/"+ledgerHash+"/accounts";
+        try {
+            return dataRetrievalService.retrieval(url);
+        } catch (Exception e) {
+            return  "{'success':false,'data':'" + e.getMessage() + "'}";
+        }
+    }
 }
