@@ -41,6 +41,14 @@ public class UmpMasterController {
         return umpService.response(sharedConfigs, sharedConfig);
     }
 
+    /**
+     * 接收其他Peer节点发送的安装信息
+     *
+     * @param installSchedule
+     *         安装信息
+     *
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, path = "receive")
     public String receive(@RequestBody final InstallSchedule installSchedule) {
 
