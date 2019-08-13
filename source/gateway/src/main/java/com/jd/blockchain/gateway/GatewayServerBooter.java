@@ -115,6 +115,7 @@ public class GatewayServerBooter {
 		ConsoleUtils.info("\r\n\r\nStart connecting to peer ....");
 		BlockBrowserController blockBrowserController = appCtx.getBean(BlockBrowserController.class);
 		blockBrowserController.setDataRetrievalUrl(config.dataRetrievalUrl());
+		blockBrowserController.setSchemaRetrievalUrl(config.getSchemaRetrievalUrl());
 		PeerConnector peerConnector = appCtx.getBean(PeerConnector.class);
 		peerConnector.connect(config.masterPeerAddress(), defaultKeyPair, config.providerConfig().getProviders());
 		ConsoleUtils.info("Peer[%s] is connected success!", config.masterPeerAddress().toString());

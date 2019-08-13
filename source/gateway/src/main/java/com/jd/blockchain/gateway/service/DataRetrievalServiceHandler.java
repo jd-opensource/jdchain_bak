@@ -8,6 +8,7 @@
  */
 package com.jd.blockchain.gateway.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.utils.http.agent.HttpClientPool;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +24,10 @@ public class DataRetrievalServiceHandler implements DataRetrievalService {
     @Override
     public String retrieval(String url) throws Exception {
         return HttpClientPool.get(url);
+    }
+
+    @Override
+    public String retrievalPost(String url, String queryString) throws Exception {
+        return HttpClientPool.jsonPost(url,queryString);
     }
 }

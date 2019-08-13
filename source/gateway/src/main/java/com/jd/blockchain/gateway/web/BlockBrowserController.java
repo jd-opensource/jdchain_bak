@@ -1,5 +1,6 @@
 package com.jd.blockchain.gateway.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
@@ -37,6 +38,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
     private GatewayQueryService gatewayQueryService;
 
     private String dataRetrievalUrl;
+    private String schemaRetrievalUrl;
 
 	private static final long BLOCK_MAX_DISPLAY = 3L;
 
@@ -479,8 +481,39 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
         return result;
     }
 
+    /**
+     * querysql;
+     * @param request
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "schema/querysql")
+    public Object queryBySql(HttpServletRequest request,@RequestBody String queryString) {
+        String result;
+        if (schemaRetrievalUrl == null ||  schemaRetrievalUrl.length() <= 0) {
+            result = "{'message':'OK','data':'" + "schema.retrieval.url is empty" + "'}";
+        } else {
+            String queryParams = request.getQueryString() == null ? "": request.getQueryString();
+            String fullQueryUrl = new StringBuffer(schemaRetrievalUrl)
+                    .append(request.getRequestURI())
+                    .append(BaseConstant.DELIMETER_QUESTION)
+                    .append(queryParams)
+                    .toString();
+            try {
+                result = dataRetrievalService.retrievalPost(fullQueryUrl,queryString);
+                ConsoleUtils.info("request = {%s} \r\n result = {%s} \r\n", fullQueryUrl, result);
+            } catch (Exception e) {
+                result = "{'message':'error','data':'" + e.getMessage() + "'}";
+            }
+        }
+        return result;
+    }
+
     public void setDataRetrievalUrl(String dataRetrievalUrl) {
         this.dataRetrievalUrl = dataRetrievalUrl;
+    }
+
+    public void setSchemaRetrievalUrl(String schemaRetrievalUrl) {
+        this.schemaRetrievalUrl = schemaRetrievalUrl;
     }
 
     /**
