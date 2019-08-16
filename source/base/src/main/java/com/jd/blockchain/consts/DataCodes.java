@@ -56,8 +56,14 @@ public interface DataCodes {
 	public static final int TX_OP_RESULT = 0x360;
 
 	// enum types of permissions;
-	public static final int ENUM_TX_PERMISSIONS = 0x401;
-	public static final int ENUM_LEDGER_PERMISSIONS = 0x402;
+	public static final int ENUM_TX_PERMISSION = 0x401;
+	public static final int ENUM_LEDGER_PERMISSION = 0x402;
+	public static final int ENUM_MULTI_ROLES_POLICY = 0x403;
+	
+	public static final int ROLE_PRIVILEGE = 0x410;
+	
+	public static final int ROLE_SET = 0x411;
+	
 
 	// contract types of metadata;
 	public static final int METADATA = 0x600;

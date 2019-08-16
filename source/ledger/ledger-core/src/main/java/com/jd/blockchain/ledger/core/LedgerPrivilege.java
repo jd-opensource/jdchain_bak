@@ -8,6 +8,9 @@ package com.jd.blockchain.ledger.core;
  */
 public class LedgerPrivilege extends AbstractPrivilege<LedgerPermission> {
 
+	public LedgerPrivilege() {
+	}
+	
 	public LedgerPrivilege(byte[] codeBytes) {
 		super(codeBytes);
 	}

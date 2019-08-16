@@ -22,11 +22,11 @@ public class LedgerSecurityManager {
 		throw new IllegalStateException("Not implemented!");
 	}
 	
-	public Role setRole(String role, LedgerPrivilege privilege) {
+	public RolePrivilegeAuthorization setRole(String role, LedgerPrivilege privilege) {
 		throw new IllegalStateException("Not implemented!");
 	}
 
-	public Role getRole(String role) {
+	public RolePrivilegeAuthorization getRole(String role) {
 		throw new IllegalStateException("Not implemented!");
 	}
 	

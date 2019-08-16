@@ -11,7 +11,7 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@EnumContract(code = DataCodes.ENUM_LEDGER_PERMISSIONS)
+@EnumContract(code = DataCodes.ENUM_LEDGER_PERMISSION)
 public enum LedgerPermission {
 
 	/**

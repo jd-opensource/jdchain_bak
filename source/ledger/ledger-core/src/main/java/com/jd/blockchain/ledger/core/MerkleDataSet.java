@@ -149,6 +149,22 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 		}
 		return values;
 	}
+	
+	public VersioningKVEntry[] getLatestDataEntries(int fromIndex, int count) {
+		if (count > LedgerConsts.MAX_LIST_COUNT) {
+			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
+		}
+		if (fromIndex < 0 || (fromIndex + count) > merkleTree.getDataCount()) {
+			throw new IllegalArgumentException("Index out of bound!");
+		}
+		VersioningKVEntry[] values = new VersioningKVEntry[count];
+		for (int i = 0; i < count; i++) {
+			MerkleDataNode dataNode = merkleTree.getData(fromIndex + i);
+			Bytes dataKey = encodeDataKey(dataNode.getKey());
+			values[i] = valueStorage.getEntry(dataKey, dataNode.getVersion());
+		}
+		return values;
+	}
 
 	/**
 	 * get the data at the specific index;
@@ -404,6 +420,11 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 		return getDataEntry(Bytes.fromString(key));
 	}
 
+	/**
+	 * 
+	 * @param key
+	 * @return Null if the key doesn't exist!
+	 */
 	public VersioningKVEntry getDataEntry(Bytes key) {
 		long latestVersion = getMerkleVersion(key);
 		if (latestVersion < 0) {

@@ -12,52 +12,47 @@ import com.jd.blockchain.utils.io.BytesSerializable;
  */
 public abstract class AbstractPrivilege<E extends Enum<?>> implements Privilege<E>, BytesSerializable {
 
-	private BitSet permissions;
+	private BitSet permissionBits;
+	
+	public AbstractPrivilege() {
+		permissionBits = new BitSet();
+	}
 
 	public AbstractPrivilege(byte[] codeBytes) {
-		permissions = BitSet.valueOf(codeBytes);
+		permissionBits =  BitSet.valueOf(codeBytes);
 	}
 
 	public boolean isEnable(E permission) {
-		return permissions.get(getCodeIndex(permission));
+		return permissionBits.get(getCodeIndex(permission));
 	}
 
 	public void enable(E permission) {
-		permissions.set(getCodeIndex(permission));
+		permissionBits.set(getCodeIndex(permission));
 	}
 
 	public void disable(E permission) {
-		permissions.clear(getCodeIndex(permission));
+		permissionBits.clear(getCodeIndex(permission));
 	}
-
-//	private int getCodeIndex(E permission) {
-//		return permission.CODE & 0xFF;
-//	}
+	
+	@SuppressWarnings("unchecked")
+	public void enable(E... permissions) {
+		for (E p : permissions) {
+			permissionBits.set(getCodeIndex(p));
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void disable(E... permissions) {
+		for (E p : permissions) {
+			permissionBits.clear(getCodeIndex(p));
+		}
+	}
 
 	protected abstract int getCodeIndex(E permission);
 
 	@Override
 	public byte[] toBytes() {
-		return permissions.toByteArray();
+		return permissionBits.toByteArray();
 	}
 
-//	public boolean[] getPermissionStates() {
-//		LedgerPermission[] PMs = LedgerPermission.values();
-//
-//		LedgerPermission maxPermission = Arrays.stream(PMs).max(new Comparator<LedgerPermission>() {
-//			@Override
-//			public int compare(LedgerPermission o1, LedgerPermission o2) {
-//				return getCodeIndex(o1) - getCodeIndex(o2);
-//			}
-//		}).get();
-//
-//		boolean[] states = new boolean[getCodeIndex(maxPermission) + 1];
-//		int idx = -1;
-//		for (LedgerPermission pm : PMs) {
-//			idx = getCodeIndex(pm);
-//			states[idx] = permissions.get(idx);
-//		}
-//
-//		return states;
-//	}
 }

@@ -11,23 +11,23 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@EnumContract(code = DataCodes.ENUM_TX_PERMISSIONS)
-public enum TxPermission {
+@EnumContract(code = DataCodes.ENUM_TX_PERMISSION)
+public enum TransactionPermission {
 
 	/**
 	 * 交易中包含指令操作；
 	 */
-	COMMAND((byte) 0x01),
+	DIRECT_OPERATION((byte) 0x01),
 
 	/**
 	 * 交易中包含合约操作；
 	 */
-	CONTRACT((byte) 0x02);
+	CONTRACT_OPERATION((byte) 0x02);
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 
-	private TxPermission(byte code) {
+	private TransactionPermission(byte code) {
 		this.CODE = code;
 	}
 
