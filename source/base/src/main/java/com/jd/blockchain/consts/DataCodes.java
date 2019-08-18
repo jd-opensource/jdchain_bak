@@ -60,7 +60,7 @@ public interface DataCodes {
 	public static final int ENUM_LEDGER_PERMISSION = 0x402;
 	public static final int ENUM_MULTI_ROLES_POLICY = 0x403;
 	
-	public static final int ROLE_PRIVILEGE = 0x410;
+	public static final int PRIVILEGE_SET = 0x410;
 	
 	public static final int ROLE_SET = 0x411;
 	

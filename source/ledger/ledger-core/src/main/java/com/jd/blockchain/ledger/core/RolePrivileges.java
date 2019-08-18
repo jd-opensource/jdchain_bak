@@ -6,7 +6,7 @@ package com.jd.blockchain.ledger.core;
  * @author huanghaiquan
  *
  */
-public class RolePrivilegeAuthorization implements RolePrivilege {
+public class RolePrivileges implements PrivilegeSet {
 
 	private String roleName;
 
@@ -16,21 +16,21 @@ public class RolePrivilegeAuthorization implements RolePrivilege {
 
 	private TransactionPrivilege txPrivilege;
 
-	public RolePrivilegeAuthorization(String roleName, long version) {
+	public RolePrivileges(String roleName, long version) {
 		this.roleName = roleName;
 		this.version = version;
 		this.ledgerPrivilege = new LedgerPrivilege();
 		this.txPrivilege = new TransactionPrivilege();
 	}
 
-	public RolePrivilegeAuthorization(String roleName, long version, RolePrivilege privilege) {
+	public RolePrivileges(String roleName, long version, PrivilegeSet privilege) {
 		this.roleName = roleName;
 		this.version = version;
 		this.ledgerPrivilege = privilege.getLedgerPrivilege();
 		this.txPrivilege = privilege.getTransactionPrivilege();
 	}
 
-	public RolePrivilegeAuthorization(String roleName, long version, LedgerPrivilege ledgerPrivilege, TransactionPrivilege txPrivilege) {
+	public RolePrivileges(String roleName, long version, LedgerPrivilege ledgerPrivilege, TransactionPrivilege txPrivilege) {
 		this.roleName = roleName;
 		this.version = version;
 		this.ledgerPrivilege = ledgerPrivilege;

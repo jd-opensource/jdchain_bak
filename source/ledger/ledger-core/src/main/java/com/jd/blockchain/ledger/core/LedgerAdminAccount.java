@@ -1,7 +1,5 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.ledger.LedgerMetadata;
-import com.jd.blockchain.ledger.LedgerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +11,9 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerMetadata_V2;
+import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
@@ -31,11 +32,13 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	public static final String LEDGER_META_PREFIX = "MTA" + LedgerConsts.KEY_SEPERATOR;
 	public static final String LEDGER_PARTICIPANT_PREFIX = "PAR" + LedgerConsts.KEY_SEPERATOR;
 	public static final String LEDGER_SETTING_PREFIX = "SET" + LedgerConsts.KEY_SEPERATOR;
-	public static final String LEDGER_PRIVILEGE_PREFIX = "PRL" + LedgerConsts.KEY_SEPERATOR;
+	public static final String ROLE_PRIVILEGE_PREFIX = "RPV" + LedgerConsts.KEY_SEPERATOR;
+	public static final String USER_ROLE_PREFIX = "URO" + LedgerConsts.KEY_SEPERATOR;
 
 	private final Bytes metaPrefix;
 	private final Bytes settingPrefix;
-	private final Bytes privilegePrefix;
+	private final Bytes rolePrivilegePrefix;
+	private final Bytes userRolePrefix;
 
 	private LedgerMetadata origMetadata;
 
@@ -55,6 +58,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	 * 账本的参与节点；
 	 */
 	private ParticipantDataSet participants;
+
+	private RolePrivilegeDataSet rolePrivileges;
+
+	private UserRoleDataSet userRoles;
 
 	/**
 	 * 账本参数配置；
@@ -82,6 +89,14 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		return readonly;
 	}
 
+	public RolePrivilegeSettings getRolePrivileges() {
+		return rolePrivileges;
+	}
+
+	public UserRoleSettings getUserRoles() {
+		return userRoles;
+	}
+
 	/**
 	 * 初始化账本的管理账户；
 	 * 
@@ -99,7 +114,8 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			VersioningKVStorage versioningStorage) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);
-		this.privilegePrefix = Bytes.fromString(keyPrefix + LEDGER_PRIVILEGE_PREFIX);
+		this.rolePrivilegePrefix = Bytes.fromString(keyPrefix + ROLE_PRIVILEGE_PREFIX);
+		this.userRolePrefix = Bytes.fromString(keyPrefix + USER_ROLE_PREFIX);
 
 		ParticipantNode[] parties = initSetting.getConsensusParticipants();
 		if (parties.length == 0) {
@@ -134,6 +150,14 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			this.participants.addConsensusParticipant(p);
 		}
 
+		String rolePrivilegePrefix = keyPrefix + ROLE_PRIVILEGE_PREFIX;
+		this.rolePrivileges = new RolePrivilegeDataSet(this.settings.getCryptoSetting(), rolePrivilegePrefix,
+				exPolicyStorage, versioningStorage);
+
+		String userRolePrefix = keyPrefix + USER_ROLE_PREFIX;
+		this.userRoles = new UserRoleDataSet(this.settings.getCryptoSetting(), userRolePrefix, exPolicyStorage,
+				versioningStorage);
+
 		// 初始化其它属性；
 		this.storage = exPolicyStorage;
 		this.readonly = false;
@@ -143,7 +167,8 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			VersioningKVStorage versioningKVStorage, boolean readonly) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);
-		this.privilegePrefix = Bytes.fromString(keyPrefix + LEDGER_PRIVILEGE_PREFIX);
+		this.rolePrivilegePrefix = Bytes.fromString(keyPrefix + ROLE_PRIVILEGE_PREFIX);
+		this.userRolePrefix = Bytes.fromString(keyPrefix + USER_ROLE_PREFIX);
 		this.storage = kvStorage;
 		this.readonly = readonly;
 		this.origMetadata = loadAndVerifyMetadata(adminAccountHash);
@@ -167,6 +192,14 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		String partiPrefix = keyPrefix + LEDGER_PARTICIPANT_PREFIX;
 		this.participants = new ParticipantDataSet(metadata.getParticipantsHash(), previousSettings.getCryptoSetting(),
 				partiPrefix, kvStorage, versioningKVStorage, readonly);
+
+		String rolePrivilegePrefix = keyPrefix + ROLE_PRIVILEGE_PREFIX;
+		this.rolePrivileges = new RolePrivilegeDataSet(metadata.getRolePrivilegesHash(),
+				previousSettings.getCryptoSetting(), rolePrivilegePrefix, kvStorage, versioningKVStorage, readonly);
+
+		String userRolePrefix = keyPrefix + USER_ROLE_PREFIX;
+		this.userRoles = new UserRoleDataSet(metadata.getUserRolesHash(), previousSettings.getCryptoSetting(),
+				userRolePrefix, kvStorage, versioningKVStorage, readonly);
 	}
 
 	private LedgerSettings loadAndVerifySettings(HashDigest settingsHash) {
@@ -304,6 +337,15 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		participants.commit();
 		metadata.setParticipantsHash(participants.getRootHash());
 
+		// 计算并更新角色权限集合的根哈希；
+		rolePrivileges.commit();
+		metadata.setRolePrivilegesHash(rolePrivileges.getRootHash());
+
+		// 计算并更新用户角色授权集合的根哈希；
+		userRoles.commit();
+		metadata.setUserRolesHash(userRoles.getRootHash());
+
+		// 当前区块上下文的密码参数设置的哈希函数；
 		HashFunction hashFunc = Crypto.getHashFunction(previousSettings.getCryptoSetting().getHashAlgorithm());
 
 		// 计算并更新参数配置的哈希；
@@ -367,7 +409,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		metadata = new LedgerMetadataImpl(origMetadata);
 	}
 
-	public static class LedgerMetadataImpl implements LedgerMetadata {
+	public static class LedgerMetadataImpl implements LedgerMetadata_V2 {
 
 		private byte[] seed;
 
@@ -376,6 +418,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		private HashDigest participantsHash;
 
 		private HashDigest settingsHash;
+
+		private HashDigest rolePrivilegesHash;
+
+		private HashDigest userRolesHash;
 
 		public LedgerMetadataImpl() {
 		}
@@ -402,6 +448,16 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			return participantsHash;
 		}
 
+		@Override
+		public HashDigest getRolePrivilegesHash() {
+			return rolePrivilegesHash;
+		}
+
+		@Override
+		public HashDigest getUserRolesHash() {
+			return userRolesHash;
+		}
+
 		public void setSeed(byte[] seed) {
 			this.seed = seed;
 		}
@@ -412,6 +468,14 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 		public void setParticipantsHash(HashDigest participantsHash) {
 			this.participantsHash = participantsHash;
+		}
+
+		public void setRolePrivilegesHash(HashDigest rolePrivilegesHash) {
+			this.rolePrivilegesHash = rolePrivilegesHash;
+		}
+
+		public void setUserRolesHash(HashDigest userRolesHash) {
+			this.userRolesHash = userRolesHash;
 		}
 	}
 

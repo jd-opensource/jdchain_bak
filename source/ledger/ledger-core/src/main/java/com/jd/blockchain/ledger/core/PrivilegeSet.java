@@ -11,8 +11,8 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.ROLE_PRIVILEGE, name = "ROLE-PRIVILEGE")
-public interface RolePrivilege {
+@DataContract(code = DataCodes.PRIVILEGE_SET, name = "PRIVILEGE-SET")
+public interface PrivilegeSet {
 
 	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	LedgerPrivilege getLedgerPrivilege();

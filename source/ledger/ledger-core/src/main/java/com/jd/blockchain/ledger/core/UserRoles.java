@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import com.jd.blockchain.utils.Bytes;
 
-public class UserRolesAuthorization implements RoleSet {
+public class UserRoles implements RoleSet {
 
 	private Bytes userAddress;
 
@@ -15,14 +15,14 @@ public class UserRolesAuthorization implements RoleSet {
 
 	private long version;
 
-	public UserRolesAuthorization(Bytes userAddress, long version, RolesPolicy policy) {
+	public UserRoles(Bytes userAddress, long version, RolesPolicy policy) {
 		this.userAddress = userAddress;
 		this.version = version;
 		this.policy = policy;
 		this.roles = new TreeSet<String>();
 	}
 
-	public UserRolesAuthorization(Bytes userAddress, long version, RoleSet roleSet) {
+	public UserRoles(Bytes userAddress, long version, RoleSet roleSet) {
 		this.userAddress = userAddress;
 		this.version = version;
 		this.policy = roleSet.getPolicy();

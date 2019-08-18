@@ -10,7 +10,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class UserRoleDataSet implements Transactional, MerkleProvable {
+public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleSettings {
 
 	/**
 	 * 角色名称的最大 Unicode 字符数；
@@ -54,6 +54,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 		dataset.cancel();
 	}
 
+	@Override
 	public long getRoleCount() {
 		return dataset.getDataCount();
 	}
@@ -67,10 +68,11 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 	 * @param rolesPolicy
 	 * @param roles
 	 */
+	@Override
 	public void addUserRoles(Bytes userAddress, RolesPolicy rolesPolicy, String... roles) {
-		UserRolesAuthorization roleAuth = new UserRolesAuthorization(userAddress, -1, rolesPolicy);
+		UserRoles roleAuth = new UserRoles(userAddress, -1, rolesPolicy);
 		roleAuth.addRoles(roles);
-		long nv = innerSetUserRolesAuthorization(roleAuth);
+		long nv = setUserRolesAuthorization(roleAuth);
 		if (nv < 0) {
 			throw new LedgerException("Roles authorization of User[" + userAddress + "] already exists!");
 		}
@@ -83,7 +85,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 	 * @param userRoles
 	 * @return
 	 */
-	public long innerSetUserRolesAuthorization(UserRolesAuthorization userRoles) {
+	private long setUserRolesAuthorization(UserRoles userRoles) {
 		byte[] rolesetBytes = BinaryProtocol.encode(userRoles, RoleSet.class);
 		return dataset.setValue(userRoles.getUserAddress(), rolesetBytes, userRoles.getVersion());
 	}
@@ -94,8 +96,9 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 	 * 
 	 * @param userRoles
 	 */
-	public void updateUserRolesAuthorization(UserRolesAuthorization userRoles) {
-		long nv = innerSetUserRolesAuthorization(userRoles);
+	@Override
+	public void updateUserRoles(UserRoles userRoles) {
+		long nv = setUserRolesAuthorization(userRoles);
 		if (nv < 0) {
 			throw new LedgerException("Update to roles of user[" + userRoles.getUserAddress()
 					+ "] failed due to wrong version[" + userRoles.getVersion() + "] !");
@@ -111,14 +114,15 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 	 * @param roles       角色列表；
 	 * @return
 	 */
+	@Override
 	public long setRoles(Bytes userAddress, RolesPolicy policy, String... roles) {
-		UserRolesAuthorization userRoles = getUserRolesAuthorization(userAddress);
+		UserRoles userRoles = getUserRoles(userAddress);
 		if (userRoles == null) {
-			userRoles = new UserRolesAuthorization(userAddress, -1, policy);
+			userRoles = new UserRoles(userAddress, -1, policy);
 		}
 		userRoles.setPolicy(policy);
 		userRoles.setRoles(roles);
-		return innerSetUserRolesAuthorization(userRoles);
+		return setUserRolesAuthorization(userRoles);
 	}
 
 	/**
@@ -130,24 +134,25 @@ public class UserRoleDataSet implements Transactional, MerkleProvable {
 	 * @param address
 	 * @return
 	 */
-	public UserRolesAuthorization getUserRolesAuthorization(Bytes userAddress) {
+	@Override
+	public UserRoles getUserRoles(Bytes userAddress) {
 		// 只返回最新版本；
 		VersioningKVEntry kv = dataset.getDataEntry(userAddress);
 		if (kv == null) {
 			return null;
 		}
 		RoleSet roleSet = BinaryProtocol.decode(kv.getValue());
-		return new UserRolesAuthorization(userAddress, kv.getVersion(), roleSet);
+		return new UserRoles(userAddress, kv.getVersion(), roleSet);
 	}
 
-	public RolePrivilegeAuthorization[] getRoleAuthorizations() {
+	@Override
+	public UserRoles[] getRoleAuthorizations() {
 		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(0, (int) dataset.getDataCount());
-		RolePrivilegeAuthorization[] pns = new RolePrivilegeAuthorization[kvEntries.length];
-		RolePrivilege privilege;
+		UserRoles[] pns = new UserRoles[kvEntries.length];
+		RoleSet roleset;
 		for (int i = 0; i < pns.length; i++) {
-			privilege = BinaryProtocol.decode(kvEntries[i].getValue());
-			pns[i] = new RolePrivilegeAuthorization(kvEntries[i].getKey().toUTF8String(), kvEntries[i].getVersion(),
-					privilege);
+			roleset = BinaryProtocol.decode(kvEntries[i].getValue());
+			pns[i] = new UserRoles(kvEntries[i].getKey(), kvEntries[i].getVersion(), roleset);
 		}
 		return pns;
 	}

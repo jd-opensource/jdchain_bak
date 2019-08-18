@@ -8,7 +8,7 @@ import com.jd.blockchain.crypto.HashDigest;
 
 /**
  * {@link LedgerMetadata_V2} 是 {@link LedgerMetadata} 的升级版本，新增加了
- * {@link #getPrivilegeHash()} 属性；
+ * {@link #getRolePrivilegesHash()} 属性；
  * 
  * @author huanghaiquan
  *
@@ -17,11 +17,19 @@ import com.jd.blockchain.crypto.HashDigest;
 public interface LedgerMetadata_V2 extends LedgerMetadata {
 
 	/**
-	 * 加入新的版本；
+	 * 角色权限集合的根哈希；；
 	 * 
 	 * @return
 	 */
 	@DataField(order = 4, primitiveType = PrimitiveType.BYTES)
-	HashDigest getPrivilegeHash();
+	HashDigest getRolePrivilegesHash();
+
+	/**
+	 * 用户角色授权集合的根哈希；
+	 * 
+	 * @return
+	 */
+	@DataField(order = 5, primitiveType = PrimitiveType.BYTES)
+	HashDigest getUserRolesHash();
 
 }
