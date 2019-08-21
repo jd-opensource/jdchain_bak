@@ -2,7 +2,6 @@ package test.com.jd.blockchain.ledger;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -14,12 +13,12 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerPermission;
-import com.jd.blockchain.ledger.core.RolePrivilegeDataSet;
+import com.jd.blockchain.ledger.core.RolePrivilegeDataset;
 import com.jd.blockchain.ledger.core.RolePrivileges;
 import com.jd.blockchain.ledger.core.TransactionPermission;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 
-public class RolePrivilegeDataSetTest {
+public class RolePrivilegeDatasetTest {
 
 	private static final String[] SUPPORTED_PROVIDER_NAMES = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };
@@ -45,7 +44,7 @@ public class RolePrivilegeDataSetTest {
 
 		String roleName = "DEFAULT";
 		String prefix = "role-privilege/";
-		RolePrivilegeDataSet rolePrivilegeDataset = new RolePrivilegeDataSet(cryptoConfig, prefix, testStorage,
+		RolePrivilegeDataset rolePrivilegeDataset = new RolePrivilegeDataset(cryptoConfig, prefix, testStorage,
 				testStorage);
 		rolePrivilegeDataset.addRolePrivilege(roleName, new LedgerPermission[] { LedgerPermission.REGISTER_USER },
 				new TransactionPermission[] { TransactionPermission.CONTRACT_OPERATION });
@@ -56,7 +55,7 @@ public class RolePrivilegeDataSetTest {
 		assertNotNull(rolePrivilege);
 
 		HashDigest rootHash = rolePrivilegeDataset.getRootHash();
-		RolePrivilegeDataSet newRolePrivilegeDataset = new RolePrivilegeDataSet(rootHash, cryptoConfig, prefix,
+		RolePrivilegeDataset newRolePrivilegeDataset = new RolePrivilegeDataset(rootHash, cryptoConfig, prefix,
 				testStorage, testStorage, true);
 		rolePrivilege = newRolePrivilegeDataset.getRolePrivilege(roleName);
 		assertNotNull(rolePrivilege);

@@ -14,7 +14,7 @@ import com.jd.blockchain.utils.Bytes;
  *
  */
 @DataContract(code = DataCodes.METADATA_CONSENSUS_PARTICIPANT)
-public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
+public interface ParticipantNode {
 
 	/**
 	 * 节点的顺序编号；<br>

@@ -79,7 +79,7 @@ public class LedgerMetaDataTest {
 //				new Bytes(consensusSettingBytes), cryptoConfig);
 		HashDigest settingsHash = Crypto.getHashFunction("SHA256").hash(consensusSettingBytes);
 
-		LedgerAdminAccount.LedgerMetadataImpl ledgerMetadata = new LedgerAdminAccount.LedgerMetadataImpl();
+		LedgerAdminAccount.LedgerMetadataInfo ledgerMetadata = new LedgerAdminAccount.LedgerMetadataInfo();
 
 		ledgerMetadata.setSeed(seed);
 		ledgerMetadata.setSettingsHash(settingsHash);

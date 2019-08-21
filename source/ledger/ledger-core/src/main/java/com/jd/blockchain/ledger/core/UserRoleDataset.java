@@ -11,16 +11,22 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleSettings {
-	
+/**
+ * User-Role authorization data set;
+ * 
+ * @author huanghaiquan
+ *
+ */
+public class UserRoleDataset implements Transactional, MerkleProvable, UserRoleSettings {
+
 	private MerkleDataSet dataset;
 
-	public UserRoleDataSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
+	public UserRoleDataset(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage verStorage) {
 		dataset = new MerkleDataSet(cryptoSetting, prefix, exPolicyStorage, verStorage);
 	}
 
-	public UserRoleDataSet(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
+	public UserRoleDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
 		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
 	}

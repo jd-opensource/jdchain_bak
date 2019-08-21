@@ -11,7 +11,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class ParticipantDataSet implements Transactional, MerkleProvable {
+public class ParticipantDataset implements Transactional, MerkleProvable {
 
 	static {
 		DataContractRegistry.register(ParticipantNode.class);
@@ -19,12 +19,12 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 
 	private MerkleDataSet dataset;
 
-	public ParticipantDataSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
+	public ParticipantDataset(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage verStorage) {
 		dataset = new MerkleDataSet(cryptoSetting, prefix, exPolicyStorage, verStorage);
 	}
 
-	public ParticipantDataSet(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
+	public ParticipantDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
 		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
 	}

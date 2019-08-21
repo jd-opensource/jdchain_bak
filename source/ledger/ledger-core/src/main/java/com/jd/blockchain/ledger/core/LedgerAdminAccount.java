@@ -38,12 +38,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 	private final Bytes metaPrefix;
 	private final Bytes settingPrefix;
-	private final Bytes rolePrivilegePrefix;
-	private final Bytes userRolePrefix;
 
 	private LedgerMetadata_V2 origMetadata;
 
-	private LedgerMetadataImpl metadata;
+	private LedgerMetadataInfo metadata;
 
 	/**
 	 * 原来的账本设置；
@@ -58,21 +56,22 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	/**
 	 * 账本的参与节点；
 	 */
-	private ParticipantDataSet participants;
+	private ParticipantDataset participants;
 
-	private RolePrivilegeDataSet rolePrivileges;
+	/**
+	 * “角色-权限”数据集；
+	 */
+	private RolePrivilegeDataset rolePrivileges;
 
-	private UserRoleDataSet userRoles;
+	/**
+	 * “用户-角色”数据集；
+	 */
+	private UserRoleDataset userRoles;
 
 	/**
 	 * 账本参数配置；
 	 */
 	private LedgerSettings settings;
-
-	// /**
-	// * 账本的全局权限设置；
-	// */
-	// private PrivilegeDataSet privileges;
 
 	private ExPolicyKVStorage storage;
 
@@ -115,25 +114,14 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			VersioningKVStorage versioningStorage) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);
-		this.rolePrivilegePrefix = Bytes.fromString(keyPrefix + ROLE_PRIVILEGE_PREFIX);
-		this.userRolePrefix = Bytes.fromString(keyPrefix + USER_ROLE_PREFIX);
 
 		ParticipantNode[] parties = initSetting.getConsensusParticipants();
 		if (parties.length == 0) {
 			throw new LedgerException("No participant!");
 		}
 
-		// 检查参与者列表是否已经按照 id 升序排列，并且 id 不冲突；
-		// 注：参与者的 id 要求从 0 开始编号，顺序依次递增，不允许跳空；
-		for (int i = 0; i < parties.length; i++) {
-			// if (parties[i].getAddress() != i) {
-			// throw new LedgerException("The id of participant isn't match the order of the
-			// participant list!");
-			// }
-		}
-
 		// 初始化元数据；
-		this.metadata = new LedgerMetadataImpl();
+		this.metadata = new LedgerMetadataInfo();
 		this.metadata.setSeed(initSetting.getLedgerSeed());
 		// 新配置；
 		this.settings = new LedgerConfiguration(initSetting.getConsensusProvider(), initSetting.getConsensusSettings(),
@@ -144,7 +132,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 		// 基于原配置初始化参与者列表；
 		String partiPrefix = keyPrefix + LEDGER_PARTICIPANT_PREFIX;
-		this.participants = new ParticipantDataSet(previousSettings.getCryptoSetting(), partiPrefix, exPolicyStorage,
+		this.participants = new ParticipantDataset(previousSettings.getCryptoSetting(), partiPrefix, exPolicyStorage,
 				versioningStorage);
 
 		for (ParticipantNode p : parties) {
@@ -152,11 +140,11 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		}
 
 		String rolePrivilegePrefix = keyPrefix + ROLE_PRIVILEGE_PREFIX;
-		this.rolePrivileges = new RolePrivilegeDataSet(this.settings.getCryptoSetting(), rolePrivilegePrefix,
+		this.rolePrivileges = new RolePrivilegeDataset(this.settings.getCryptoSetting(), rolePrivilegePrefix,
 				exPolicyStorage, versioningStorage);
 
 		String userRolePrefix = keyPrefix + USER_ROLE_PREFIX;
-		this.userRoles = new UserRoleDataSet(this.settings.getCryptoSetting(), userRolePrefix, exPolicyStorage,
+		this.userRoles = new UserRoleDataset(this.settings.getCryptoSetting(), userRolePrefix, exPolicyStorage,
 				versioningStorage);
 
 		// 初始化其它属性；
@@ -168,38 +156,26 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			VersioningKVStorage versioningKVStorage, boolean readonly) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);
-		this.rolePrivilegePrefix = Bytes.fromString(keyPrefix + ROLE_PRIVILEGE_PREFIX);
-		this.userRolePrefix = Bytes.fromString(keyPrefix + USER_ROLE_PREFIX);
 		this.storage = kvStorage;
 		this.readonly = readonly;
 		this.origMetadata = loadAndVerifyMetadata(adminAccountHash);
-		this.metadata = new LedgerMetadataImpl(origMetadata);
+		this.metadata = new LedgerMetadataInfo(origMetadata);
 		this.settings = loadAndVerifySettings(metadata.getSettingsHash());
 		// 复制记录一份配置作为上一个区块的原始配置，该实例仅供读取，不做修改，也不会回写到存储；
 		this.previousSettings = new LedgerConfiguration(settings);
 		this.previousSettingHash = metadata.getSettingsHash();
 		this.adminAccountHash = adminAccountHash;
-		// this.privileges = new PrivilegeDataSet(metadata.getPrivilegesHash(),
-		// metadata.getSetting().getCryptoSetting(),
-		// PrefixAppender.prefix(LEDGER_PRIVILEGE_PREFIX, kvStorage),
-		// PrefixAppender.prefix(LEDGER_PRIVILEGE_PREFIX, versioningKVStorage),
-		// readonly);
 
-		// this.participants = new ParticipantDataSet(metadata.getParticipantsHash(),
-		// previousSetting.getCryptoSetting(),
-		// PrefixAppender.prefix(LEDGER_PARTICIPANT_PREFIX, kvStorage),
-		// PrefixAppender.prefix(LEDGER_PARTICIPANT_PREFIX, versioningKVStorage),
-		// readonly);
 		String partiPrefix = keyPrefix + LEDGER_PARTICIPANT_PREFIX;
-		this.participants = new ParticipantDataSet(metadata.getParticipantsHash(), previousSettings.getCryptoSetting(),
+		this.participants = new ParticipantDataset(metadata.getParticipantsHash(), previousSettings.getCryptoSetting(),
 				partiPrefix, kvStorage, versioningKVStorage, readonly);
 
 		String rolePrivilegePrefix = keyPrefix + ROLE_PRIVILEGE_PREFIX;
-		this.rolePrivileges = new RolePrivilegeDataSet(metadata.getRolePrivilegesHash(),
+		this.rolePrivileges = new RolePrivilegeDataset(metadata.getRolePrivilegesHash(),
 				previousSettings.getCryptoSetting(), rolePrivilegePrefix, kvStorage, versioningKVStorage, readonly);
 
 		String userRolePrefix = keyPrefix + USER_ROLE_PREFIX;
-		this.userRoles = new UserRoleDataSet(metadata.getUserRolesHash(), previousSettings.getCryptoSetting(),
+		this.userRoles = new UserRoleDataset(metadata.getUserRolesHash(), previousSettings.getCryptoSetting(),
 				userRolePrefix, kvStorage, versioningKVStorage, readonly);
 	}
 
@@ -297,19 +273,6 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		return participants.getParticipantCount();
 	}
 
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * @see
-	// *
-	// com.jd.blockchain.ledger.core.LedgerAdministration#getParticipant(java.lang.
-	// * String)
-	// */
-	// @Override
-	// public ParticipantNode getParticipant(int id) {
-	// return participants.getParticipant(id);
-	// }
-
 	@Override
 	public ParticipantNode[] getParticipants() {
 		return participants.getParticipants();
@@ -397,7 +360,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		return BinaryProtocol.decode(bytes);
 	}
 
-	private byte[] serializeMetadata(LedgerMetadataImpl config) {
+	private byte[] serializeMetadata(LedgerMetadataInfo config) {
 		return BinaryProtocol.encode(config, LedgerMetadata_V2.class);
 	}
 
@@ -407,10 +370,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 			return;
 		}
 		participants.cancel();
-		metadata = new LedgerMetadataImpl(origMetadata);
+		metadata = new LedgerMetadataInfo(origMetadata);
 	}
 
-	public static class LedgerMetadataImpl implements LedgerMetadata_V2 {
+	public static class LedgerMetadataInfo implements LedgerMetadata_V2 {
 
 		private byte[] seed;
 
@@ -424,10 +387,10 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 		private HashDigest userRolesHash;
 
-		public LedgerMetadataImpl() {
+		public LedgerMetadataInfo() {
 		}
 
-		public LedgerMetadataImpl(LedgerMetadata_V2 metadata) {
+		public LedgerMetadataInfo(LedgerMetadata_V2 metadata) {
 			this.seed = metadata.getSeed();
 			this.participantsHash = metadata.getParticipantsHash();
 			this.settingsHash = metadata.getSettingsHash();

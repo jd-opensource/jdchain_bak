@@ -10,16 +10,16 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class RolePrivilegeDataSet implements Transactional, MerkleProvable, RolePrivilegeSettings {
+public class RolePrivilegeDataset implements Transactional, MerkleProvable, RolePrivilegeSettings {
 
 	private MerkleDataSet dataset;
 
-	public RolePrivilegeDataSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
+	public RolePrivilegeDataset(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage verStorage) {
 		dataset = new MerkleDataSet(cryptoSetting, prefix, exPolicyStorage, verStorage);
 	}
 
-	public RolePrivilegeDataSet(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
+	public RolePrivilegeDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
 		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
 	}
