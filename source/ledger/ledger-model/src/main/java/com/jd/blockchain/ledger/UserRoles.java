@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
 import java.util.Set;
 import java.util.TreeSet;

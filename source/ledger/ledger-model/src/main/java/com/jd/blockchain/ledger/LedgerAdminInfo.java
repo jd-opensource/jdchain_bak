@@ -20,4 +20,10 @@ public interface LedgerAdminInfo {
 	@DataField(order = 4, refContract = true, list = true)
 	ParticipantNode[] getParticipants();
 
+	@DataField(order = 5, refContract = true)
+	UserRoleSettings getUserRoles();
+
+	@DataField(order = 6, refContract = true)
+	RolePrivilegeSettings getRolePrivileges();
+
 }

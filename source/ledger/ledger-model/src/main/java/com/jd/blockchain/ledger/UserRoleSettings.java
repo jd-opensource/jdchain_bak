@@ -1,6 +1,5 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.utils.Bytes;
 
 public interface UserRoleSettings {

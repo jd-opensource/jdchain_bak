@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
 /**
  * 对角色的授权；

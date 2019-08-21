@@ -2,6 +2,9 @@ package com.jd.blockchain.ledger.core;
 
 import java.util.Set;
 
+import com.jd.blockchain.ledger.LedgerPrivilege;
+import com.jd.blockchain.ledger.RolePrivileges;
+
 /**
  * 
  * {@link LedgerSecurityManager} implements the functions of security

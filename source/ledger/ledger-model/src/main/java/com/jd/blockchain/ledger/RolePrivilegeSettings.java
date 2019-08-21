@@ -1,6 +1,4 @@
-package com.jd.blockchain.ledger.core;
-
-import com.jd.blockchain.ledger.LedgerException;
+package com.jd.blockchain.ledger;
 
 public interface RolePrivilegeSettings {
 	

@@ -11,6 +11,7 @@ public class LedgerInitProposalData implements LedgerInitProposal {
 	/**
 	 * a private contructor for deserialize;
 	 */
+	@SuppressWarnings("unused")
 	private LedgerInitProposalData() {
 	}
 

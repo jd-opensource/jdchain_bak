@@ -47,7 +47,6 @@ import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerAdminAccount;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.peer.ConsensusRealm;
@@ -227,7 +226,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
 
 		// load provider;
-		LedgerAdminAccount ledgerAdminAccount = ledgerRepository.getAdminAccount();
+		LedgerAdminInfo ledgerAdminAccount = ledgerRepository.getAdminAccount();
 		String consensusProvider = ledgerAdminAccount.getSettings().getConsensusProvider();
 		ConsensusProvider provider = ConsensusProviders.getProvider(consensusProvider);
 		// find current node;

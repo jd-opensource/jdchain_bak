@@ -19,6 +19,4 @@ public interface LedgerSettings {
     @DataField(order=2, refContract=true)
     CryptoSetting getCryptoSetting();
 
-//	PrivilegeModelSetting getPrivilegesModelSetting();
-
 }

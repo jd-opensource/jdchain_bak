@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
 public class TransactionPrivilege extends AbstractPrivilege<TransactionPermission> {
 

@@ -13,10 +13,10 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.RolesPolicy;
+import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.RolesPolicy;
 import com.jd.blockchain.ledger.core.UserRoleDataset;
-import com.jd.blockchain.ledger.core.UserRoles;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 
 public class UserRoleDatasetTest {

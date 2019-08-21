@@ -11,11 +11,11 @@ import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
+import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.RolePrivileges;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.LedgerPermission;
 import com.jd.blockchain.ledger.core.RolePrivilegeDataset;
-import com.jd.blockchain.ledger.core.RolePrivileges;
-import com.jd.blockchain.ledger.core.TransactionPermission;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 
 public class RolePrivilegeDatasetTest {

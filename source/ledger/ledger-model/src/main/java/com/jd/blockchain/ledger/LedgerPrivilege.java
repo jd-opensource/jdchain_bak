@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core;
+package com.jd.blockchain.ledger;
 
 /**
  * LedgerPrivilege 账本特权是授权给特定角色的权限代码序列；

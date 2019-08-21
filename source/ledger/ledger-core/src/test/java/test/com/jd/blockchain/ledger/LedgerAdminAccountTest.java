@@ -21,19 +21,20 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerMetadata_V2;
+import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.RolePrivilegeSettings;
+import com.jd.blockchain.ledger.RolePrivileges;
+import com.jd.blockchain.ledger.RolesPolicy;
+import com.jd.blockchain.ledger.TransactionPermission;
+import com.jd.blockchain.ledger.UserRoleSettings;
+import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.LedgerAdminAccount;
+import com.jd.blockchain.ledger.core.LedgerAdminDataset;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
-import com.jd.blockchain.ledger.core.LedgerPermission;
-import com.jd.blockchain.ledger.core.RolePrivilegeSettings;
-import com.jd.blockchain.ledger.core.RolePrivileges;
-import com.jd.blockchain.ledger.core.RolesPolicy;
-import com.jd.blockchain.ledger.core.TransactionPermission;
-import com.jd.blockchain.ledger.core.UserRoleSettings;
-import com.jd.blockchain.ledger.core.UserRoles;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
 import com.jd.blockchain.transaction.LedgerInitSettingData;
@@ -87,7 +88,7 @@ public class LedgerAdminAccountTest {
 		MemoryKVStorage testStorage = new MemoryKVStorage();
 
 		// Create intance with init setting;
-		LedgerAdminAccount ledgerAdminAccount = new LedgerAdminAccount(initSetting, keyPrefix, testStorage,
+		LedgerAdminDataset ledgerAdminAccount = new LedgerAdminDataset(initSetting, keyPrefix, testStorage,
 				testStorage);
 
 		ledgerAdminAccount.getRolePrivileges().addRolePrivilege("DEFAULT",
@@ -126,7 +127,7 @@ public class LedgerAdminAccountTest {
 		// Reload account from storage with readonly mode, and check the integrity of
 		// data;
 		HashDigest adminAccHash = ledgerAdminAccount.getHash();
-		LedgerAdminAccount reloadAdminAccount1 = new LedgerAdminAccount(adminAccHash, keyPrefix, testStorage,
+		LedgerAdminDataset reloadAdminAccount1 = new LedgerAdminDataset(adminAccHash, keyPrefix, testStorage,
 				testStorage, true);
 		
 		LedgerMetadata_V2 meta2 = reloadAdminAccount1.getMetadata();
@@ -148,7 +149,7 @@ public class LedgerAdminAccountTest {
 
 		// --------------
 		// 重新加载，并进行修改;
-		LedgerAdminAccount reloadAdminAccount2 = new LedgerAdminAccount(adminAccHash, keyPrefix, testStorage, testStorage, false);
+		LedgerAdminDataset reloadAdminAccount2 = new LedgerAdminDataset(adminAccHash, keyPrefix, testStorage, testStorage, false);
 		LedgerConfiguration newSetting = new LedgerConfiguration(reloadAdminAccount2.getPreviousSetting());
 		byte[] newCsSettingBytes = new byte[64];
 		rand.nextBytes(newCsSettingBytes);
@@ -175,7 +176,7 @@ public class LedgerAdminAccountTest {
 		LedgerMetadata_V2 newMeta = reloadAdminAccount2.getMetadata();
 
 		// load the last version of account and verify again;
-		LedgerAdminAccount previousAdminAccount = new LedgerAdminAccount(adminAccHash, keyPrefix, testStorage,
+		LedgerAdminDataset previousAdminAccount = new LedgerAdminDataset(adminAccHash, keyPrefix, testStorage,
 				testStorage, true);
 		verifyRealoadingSettings(previousAdminAccount, adminAccHash, ledgerAdminAccount.getMetadata(),
 				ledgerAdminAccount.getSettings());
@@ -183,7 +184,7 @@ public class LedgerAdminAccountTest {
 		verifyReadonlyState(previousAdminAccount);
 
 		// load the hash of new committing;
-		LedgerAdminAccount newlyAdminAccount = new LedgerAdminAccount(newAccHash, keyPrefix, testStorage, testStorage,
+		LedgerAdminDataset newlyAdminAccount = new LedgerAdminDataset(newAccHash, keyPrefix, testStorage, testStorage,
 				true);
 		verifyRealoadingSettings(newlyAdminAccount, newAccHash, newMeta, newlyLedgerSettings);
 		verifyRealoadingParities(newlyAdminAccount, parties);
@@ -193,7 +194,7 @@ public class LedgerAdminAccountTest {
 //		testStorage.printStoragedKeys();
 	}
 
-	private void verifyRealoadingSettings(LedgerAdminAccount actualAccount, HashDigest expAccRootHash,
+	private void verifyRealoadingSettings(LedgerAdminDataset actualAccount, HashDigest expAccRootHash,
 			LedgerMetadata_V2 expMeta, LedgerSettings expLedgerSettings) {
 		// 验证基本信息；
 		assertFalse(actualAccount.isUpdated());
@@ -223,7 +224,7 @@ public class LedgerAdminAccountTest {
 				actualLedgerSettings.getCryptoSetting().getHashAlgorithm());
 	}
 
-	private void verifyRealoadingRoleAuthorizations(LedgerAdminAccount actualAccount,
+	private void verifyRealoadingRoleAuthorizations(LedgerAdminInfo actualAccount,
 			RolePrivilegeSettings expRolePrivilegeSettings, UserRoleSettings expUserRoleSettings) {
 		// 验证基本信息；
 		RolePrivilegeSettings actualRolePrivileges = actualAccount.getRolePrivileges();
@@ -254,7 +255,7 @@ public class LedgerAdminAccountTest {
 		}
 	}
 
-	private void verifyRealoadingParities(LedgerAdminAccount actualAccount, ParticipantNode[] expParties) {
+	private void verifyRealoadingParities(LedgerAdminInfo actualAccount, ParticipantNode[] expParties) {
 		assertEquals(expParties.length, actualAccount.getParticipantCount());
 		ParticipantNode[] actualPaticipants = actualAccount.getParticipants();
 		assertEquals(expParties.length, actualPaticipants.length);
@@ -273,7 +274,7 @@ public class LedgerAdminAccountTest {
 	 * 
 	 * @param readonlyAccount
 	 */
-	private void verifyReadonlyState(LedgerAdminAccount readonlyAccount) {
+	private void verifyReadonlyState(LedgerAdminDataset readonlyAccount) {
 		ConsensusParticipantData newParti = new ConsensusParticipantData();
 		newParti.setId((int) readonlyAccount.getParticipantCount());
 		newParti.setHostAddress(

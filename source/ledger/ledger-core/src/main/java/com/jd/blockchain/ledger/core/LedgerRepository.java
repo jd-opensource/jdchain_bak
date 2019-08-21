@@ -60,7 +60,7 @@ public interface LedgerRepository extends Closeable {
 
 	TransactionSet getTransactionSet(LedgerBlock block);
 
-	LedgerAdminAccount getAdminAccount(LedgerBlock block);
+	LedgerAdminInfo getAdminAccount(LedgerBlock block);
 
 	UserAccountSet getUserAccountSet(LedgerBlock block);
 
@@ -76,7 +76,7 @@ public interface LedgerRepository extends Closeable {
 		return getTransactionSet(getLatestBlock());
 	}
 
-	default LedgerAdminAccount getAdminAccount() {
+	default LedgerAdminInfo getAdminAccount() {
 		return getAdminAccount(getLatestBlock());
 	}
 

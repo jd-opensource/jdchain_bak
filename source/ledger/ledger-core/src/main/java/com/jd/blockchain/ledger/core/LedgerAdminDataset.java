@@ -15,20 +15,22 @@ import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerMetadata_V2;
 import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.RolePrivilegeSettings;
+import com.jd.blockchain.ledger.UserRoleSettings;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
+public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 
 	static {
 		DataContractRegistry.register(LedgerMetadata.class);
 		DataContractRegistry.register(LedgerMetadata_V2.class);
 	}
 
-	private static Logger LOGGER = LoggerFactory.getLogger(LedgerAdminAccount.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(LedgerAdminDataset.class);
 
 	public static final String LEDGER_META_PREFIX = "MTA" + LedgerConsts.KEY_SEPERATOR;
 	public static final String LEDGER_PARTICIPANT_PREFIX = "PAR" + LedgerConsts.KEY_SEPERATOR;
@@ -89,10 +91,12 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		return readonly;
 	}
 
+	@Override
 	public RolePrivilegeSettings getRolePrivileges() {
 		return rolePrivileges;
 	}
 
+	@Override
 	public UserRoleSettings getUserRoles() {
 		return userRoles;
 	}
@@ -110,7 +114,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	 * @param exPolicyStorage
 	 * @param versioningStorage
 	 */
-	public LedgerAdminAccount(LedgerInitSetting initSetting, String keyPrefix, ExPolicyKVStorage exPolicyStorage,
+	public LedgerAdminDataset(LedgerInitSetting initSetting, String keyPrefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage versioningStorage) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);
@@ -152,7 +156,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		this.readonly = false;
 	}
 
-	public LedgerAdminAccount(HashDigest adminAccountHash, String keyPrefix, ExPolicyKVStorage kvStorage,
+	public LedgerAdminDataset(HashDigest adminAccountHash, String keyPrefix, ExPolicyKVStorage kvStorage,
 			VersioningKVStorage versioningKVStorage, boolean readonly) {
 		this.metaPrefix = Bytes.fromString(keyPrefix + LEDGER_META_PREFIX);
 		this.settingPrefix = Bytes.fromString(keyPrefix + LEDGER_SETTING_PREFIX);

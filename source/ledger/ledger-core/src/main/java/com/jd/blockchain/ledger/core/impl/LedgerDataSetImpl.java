@@ -1,11 +1,12 @@
 package com.jd.blockchain.ledger.core.impl;
 
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.utils.Transactional;
 
 public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 
-	private LedgerAdminAccount adminAccount;
+	private LedgerAdminDataset adminAccount;
 
 	private UserAccountSet userAccountSet;
 
@@ -24,7 +25,7 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 	 * @param contractAccountSet
 	 * @param readonly
 	 */
-	public LedgerDataSetImpl(LedgerAdminAccount adminAccount,
+	public LedgerDataSetImpl(LedgerAdminDataset adminAccount,
 			UserAccountSet userAccountSet, DataAccountSet dataAccountSet, ContractAccountSet contractAccountSet,
 			boolean readonly) {
 		this.adminAccount = adminAccount;
@@ -36,7 +37,7 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 	}
 
 	@Override
-	public LedgerAdminAccount getAdminAccount() {
+	public LedgerAdminInfo getAdminAccount() {
 		return adminAccount;
 	}
 
