@@ -166,7 +166,8 @@ public class LedgerInitCommand {
 
 		// generate binding config;
 		BindingConfig bindingConf = new BindingConfig();
-		bindingConf.getParticipant().setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress());
+		bindingConf.getParticipant()
+				.setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress().toBase58());
 		String encodedPrivKey = KeyGenCommand.encodePrivKey(privKey, base58Pwd);
 		bindingConf.getParticipant().setPk(encodedPrivKey);
 		bindingConf.getParticipant().setPassword(base58Pwd);

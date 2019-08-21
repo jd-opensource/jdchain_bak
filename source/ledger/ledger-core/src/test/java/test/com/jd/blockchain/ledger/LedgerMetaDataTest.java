@@ -78,7 +78,7 @@ public class LedgerMetaDataTest {
 //		LedgerConfiguration ledgerConfiguration = new LedgerConfiguration(consensusProvider,
 //				new Bytes(consensusSettingBytes), cryptoConfig);
 		HashDigest settingsHash = Crypto.getHashFunction("SHA256").hash(consensusSettingBytes);
-		
+
 		LedgerAdminAccount.LedgerMetadataImpl ledgerMetadata = new LedgerAdminAccount.LedgerMetadataImpl();
 
 		ledgerMetadata.setSeed(seed);
@@ -188,7 +188,7 @@ public class LedgerMetaDataTest {
 		String name = "John";
 		// NetworkAddress consensusAddress = new NetworkAddress("192.168.1.1", 9001,
 		// false);
-		String address = AddressEncoding.generateAddress(pubKey).toBase58();
+		Bytes address = AddressEncoding.generateAddress(pubKey);
 		ParticipantCertData participantCertData = new ParticipantCertData(address, name, pubKey);
 
 		// encode and decode

@@ -209,7 +209,7 @@ public class LedgerManagerTest {
 		parties[0].setName("John");
 		AsymmetricKeypair kp0 = signatureFunction.generateKeypair();
 		parties[0].setPubKey(kp0.getPubKey());
-		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()).toBase58());
+		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()));
 		parties[0].setHostAddress(new NetworkAddress("127.0.0.1", 9000));
 
 		parties[1] = new ConsensusParticipantData();
@@ -217,7 +217,7 @@ public class LedgerManagerTest {
 		parties[1].setName("Mary");
 		AsymmetricKeypair kp1 = signatureFunction.generateKeypair();
 		parties[1].setPubKey(kp1.getPubKey());
-		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()).toBase58());
+		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()));
 		parties[1].setHostAddress(new NetworkAddress("127.0.0.1", 9010));
 
 		parties[2] = new ConsensusParticipantData();
@@ -225,7 +225,7 @@ public class LedgerManagerTest {
 		parties[2].setName("Jerry");
 		AsymmetricKeypair kp2 = signatureFunction.generateKeypair();
 		parties[2].setPubKey(kp2.getPubKey());
-		parties[2].setAddress(AddressEncoding.generateAddress(kp2.getPubKey()).toBase58());
+		parties[2].setAddress(AddressEncoding.generateAddress(kp2.getPubKey()));
 		parties[2].setHostAddress(new NetworkAddress("127.0.0.1", 9020));
 
 		parties[3] = new ConsensusParticipantData();
@@ -233,7 +233,7 @@ public class LedgerManagerTest {
 		parties[3].setName("Tom");
 		AsymmetricKeypair kp3 = signatureFunction.generateKeypair();
 		parties[3].setPubKey(kp3.getPubKey());
-		parties[3].setAddress(AddressEncoding.generateAddress(kp3.getPubKey()).toBase58());
+		parties[3].setAddress(AddressEncoding.generateAddress(kp3.getPubKey()));
 		parties[3].setHostAddress(new NetworkAddress("127.0.0.1", 9030));
 
 		initSetting.setConsensusParticipants(parties);

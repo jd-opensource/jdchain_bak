@@ -13,7 +13,7 @@ import com.jd.blockchain.crypto.HashDigest;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.METADATA, name = "LEDGER-METADATA-V2")
+@DataContract(code = DataCodes.METADATA_V2, name = "LEDGER-METADATA-V2")
 public interface LedgerMetadata_V2 extends LedgerMetadata {
 
 	/**

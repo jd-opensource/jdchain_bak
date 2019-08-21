@@ -17,7 +17,7 @@ public interface PrivilegeSet {
 	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
 	LedgerPrivilege getLedgerPrivilege();
 
-	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
+	@DataField(order = 2, primitiveType = PrimitiveType.BYTES)
 	TransactionPrivilege getTransactionPrivilege();
 
 }

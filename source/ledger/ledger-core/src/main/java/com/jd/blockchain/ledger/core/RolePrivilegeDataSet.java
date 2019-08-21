@@ -12,11 +12,6 @@ import com.jd.blockchain.utils.Transactional;
 
 public class RolePrivilegeDataSet implements Transactional, MerkleProvable, RolePrivilegeSettings {
 
-	/**
-	 * 角色名称的最大 Unicode 字符数；
-	 */
-	public static final int MAX_ROLE_NAME_LENGTH = 20;
-
 	private MerkleDataSet dataset;
 
 	public RolePrivilegeDataSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
@@ -60,22 +55,30 @@ public class RolePrivilegeDataSet implements Transactional, MerkleProvable, Role
 	}
 
 	/**
-	 * 加入新的角色授权； <br>
-	 * 
-	 * 如果指定的角色已经存在，则引发 {@link LedgerException} 异常；
-	 * 
-	 * @param roleName        角色名称；不能超过 {@link #MAX_ROLE_NAME_LENGTH} 个 Unicode 字符；
-	 * @param ledgerPrivilege
-	 * @param txPrivilege
+	 *
 	 */
 	@Override
-	public void addRolePrivilege(String roleName, LedgerPrivilege ledgerPrivilege, TransactionPrivilege txPrivilege) {
-		RolePrivileges roleAuth = new RolePrivileges(roleName, -1, ledgerPrivilege,
-				txPrivilege);
+	public long addRolePrivilege(String roleName, LedgerPrivilege ledgerPrivilege, TransactionPrivilege txPrivilege) {
+		RolePrivileges roleAuth = new RolePrivileges(roleName, -1, ledgerPrivilege, txPrivilege);
 		long nv = setRolePrivilege(roleAuth);
 		if (nv < 0) {
 			throw new LedgerException("Role[" + roleName + "] already exist!");
 		}
+		return nv;
+	}
+
+	@Override
+	public long addRolePrivilege(String roleName, LedgerPermission[] ledgerPermissions,
+			TransactionPermission[] txPermissions) {
+		LedgerPrivilege ledgerPrivilege = new LedgerPrivilege();
+		for (LedgerPermission lp : ledgerPermissions) {
+			ledgerPrivilege.enable(lp);
+		}
+		TransactionPrivilege txPrivilege = new TransactionPrivilege();
+		for (TransactionPermission tp : txPermissions) {
+			txPrivilege.enable(tp);
+		}
+		return addRolePrivilege(roleName, ledgerPrivilege, txPrivilege);
 	}
 
 	/**
@@ -144,7 +147,7 @@ public class RolePrivilegeDataSet implements Transactional, MerkleProvable, Role
 		roleAuth.getTransactionPrivilege().enable(permissions);
 		return setRolePrivilege(roleAuth);
 	}
-	
+
 	/**
 	 * 禁止角色指定的权限； <br>
 	 * 如果角色不存在，则返回 -1；
@@ -162,7 +165,7 @@ public class RolePrivilegeDataSet implements Transactional, MerkleProvable, Role
 		roleAuth.getLedgerPrivilege().disable(permissions);
 		return setRolePrivilege(roleAuth);
 	}
-	
+
 	/**
 	 * 禁止角色指定的权限； <br>
 	 * 如果角色不存在，则返回 -1；
@@ -248,7 +251,7 @@ public class RolePrivilegeDataSet implements Transactional, MerkleProvable, Role
 		PrivilegeSet privilege = BinaryProtocol.decode(kv.getValue());
 		return new RolePrivileges(roleName, kv.getVersion(), privilege);
 	}
-	
+
 	@Override
 	public RolePrivileges[] getRolePrivileges(int index, int count) {
 		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(index, count);
@@ -256,8 +259,7 @@ public class RolePrivilegeDataSet implements Transactional, MerkleProvable, Role
 		PrivilegeSet privilege;
 		for (int i = 0; i < pns.length; i++) {
 			privilege = BinaryProtocol.decode(kvEntries[i].getValue());
-			pns[i] = new RolePrivileges(kvEntries[i].getKey().toUTF8String(), kvEntries[i].getVersion(),
-					privilege);
+			pns[i] = new RolePrivileges(kvEntries[i].getKey().toUTF8String(), kvEntries[i].getVersion(), privilege);
 		}
 		return pns;
 	}

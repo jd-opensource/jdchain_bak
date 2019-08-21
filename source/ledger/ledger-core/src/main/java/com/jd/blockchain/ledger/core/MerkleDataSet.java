@@ -8,6 +8,7 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
 import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
+import com.jd.blockchain.storage.service.utils.VersioningKVData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -62,12 +63,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 	/**
 	 * 创建一个新的 MerkleDataSet；
 	 * 
-	 * @param setting
-	 *            密码设置；
-	 * @param exPolicyStorage
-	 *            默克尔树的存储；
-	 * @param versioningStorage
-	 *            数据的存储；
+	 * @param setting           密码设置；
+	 * @param exPolicyStorage   默克尔树的存储；
+	 * @param versioningStorage 数据的存储；
 	 */
 	public MerkleDataSet(CryptoSetting setting, String keyPrefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage versioningStorage) {
@@ -149,7 +147,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 		}
 		return values;
 	}
-	
+
 	public VersioningKVEntry[] getLatestDataEntries(int fromIndex, int count) {
 		if (count > LedgerConsts.MAX_LIST_COUNT) {
 			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
@@ -158,16 +156,19 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 			throw new IllegalArgumentException("Index out of bound!");
 		}
 		VersioningKVEntry[] values = new VersioningKVEntry[count];
+		byte[] bytesValue;
 		for (int i = 0; i < count; i++) {
 			MerkleDataNode dataNode = merkleTree.getData(fromIndex + i);
 			Bytes dataKey = encodeDataKey(dataNode.getKey());
-			values[i] = valueStorage.getEntry(dataKey, dataNode.getVersion());
+			bytesValue = valueStorage.get(dataKey, dataNode.getVersion());
+			values[i] = new VersioningKVData(dataNode.getKey(), dataNode.getVersion(), bytesValue);
 		}
 		return values;
 	}
 
 	/**
 	 * get the data at the specific index;
+	 * 
 	 * @param fromIndex
 	 * @return
 	 */
@@ -179,14 +180,14 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 
 	/**
 	 * get the key at the specific index;
+	 * 
 	 * @param fromIndex
 	 * @return
 	 */
 	public String getKeyAtIndex(int fromIndex) {
 		MerkleDataNode dataNode = merkleTree.getData(fromIndex);
-	    return new String(dataNode.getKey().toBytes());
+		return new String(dataNode.getKey().toBytes());
 	}
-
 
 	/**
 	 * Create or update the value associated the specified key if the version
@@ -199,12 +200,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 	 * If updating is performed, the version of the key increase by 1. <br>
 	 * If creating is performed, the version of the key initialize by 0. <br>
 	 * 
-	 * @param key
-	 *            The key of data;
-	 * @param value
-	 *            The value of data;
-	 * @param version
-	 *            The expected latest version of the key.
+	 * @param key     The key of data;
+	 * @param value   The value of data;
+	 * @param version The expected latest version of the key.
 	 * @return The new version of the key. <br>
 	 *         If the key is new created success, then return 0; <br>
 	 *         If the key is updated success, then return the new version;<br>
@@ -226,12 +224,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 	 * If updating is performed, the version of the key increase by 1. <br>
 	 * If creating is performed, the version of the key initialize by 0. <br>
 	 * 
-	 * @param key
-	 *            The key of data;
-	 * @param value
-	 *            The value of data;
-	 * @param version
-	 *            The expected latest version of the key.
+	 * @param key     The key of data;
+	 * @param value   The value of data;
+	 * @param version The expected latest version of the key.
 	 * @return The new version of the key. <br>
 	 *         If the key is new created success, then return 0; <br>
 	 *         If the key is updated success, then return the new version;<br>
@@ -430,7 +425,12 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 		if (latestVersion < 0) {
 			return null;
 		}
-		return valueStorage.getEntry(key, latestVersion);
+		Bytes dataKey = encodeDataKey(key);
+		byte[] value = valueStorage.get(dataKey, latestVersion);
+		if (value == null) {
+			return null;
+		}
+		return new VersioningKVData(key, latestVersion, value);
 	}
 
 	public VersioningKVEntry getDataEntry(Bytes key, long version) {
@@ -441,7 +441,12 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 			return null;
 		}
 		version = version < 0 ? latestVersion : version;
-		return valueStorage.getEntry(key, version);
+		Bytes dataKey = encodeDataKey(key);
+		byte[] value = valueStorage.get(dataKey, version);
+		if (value == null) {
+			return null;
+		}
+		return new VersioningKVData(key, version, value);
 	}
 
 	public MerkleDataEntry getMerkleEntry(Bytes key, long version) {

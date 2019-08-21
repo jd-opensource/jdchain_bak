@@ -15,10 +15,10 @@ import com.jd.blockchain.consts.DataCodes;
 public enum LedgerPermission {
 
 	/**
-	 * 设置角色权限；<br>
+	 * 授权角色权限；<br>
 	 * 包括：创建角色、设置角色的权限代码、分配用户角色；
 	 */
-	SET_ROLE_PERMISSION((byte) 0x01),
+	AUTHORIZE_ROLES((byte) 0x01),
 
 	/**
 	 * 设置共识协议；<br>

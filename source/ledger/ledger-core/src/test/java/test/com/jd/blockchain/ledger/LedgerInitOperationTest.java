@@ -76,7 +76,7 @@ public class LedgerInitOperationTest {
 			keys[i] = BlockchainKeyGenerator.getInstance().generate();
 			parties[i] = new ConsensusParticipantData();
 			// parties[i].setId(i);
-			parties[i].setAddress(AddressEncoding.generateAddress(keys[i].getPubKey()).toBase58());
+			parties[i].setAddress(AddressEncoding.generateAddress(keys[i].getPubKey()));
 			parties[i].setHostAddress(new NetworkAddress("192.168.10." + (10 + i), 10010 + 10 * i));
 			parties[i].setName("Participant[" + i + "]");
 			parties[i].setPubKey(keys[i].getPubKey());
@@ -117,7 +117,7 @@ public class LedgerInitOperationTest {
 
 		for (int i = 0; i < parties.length; i++) {
 			keys[i] = BlockchainKeyGenerator.getInstance().generate();
-			parties[i] = new ParticipantCertData(AddressEncoding.generateAddress(keys[i].getPubKey()).toBase58(),
+			parties[i] = new ParticipantCertData(AddressEncoding.generateAddress(keys[i].getPubKey()),
 					"Participant[" + i + "]", keys[i].getPubKey());
 		}
 

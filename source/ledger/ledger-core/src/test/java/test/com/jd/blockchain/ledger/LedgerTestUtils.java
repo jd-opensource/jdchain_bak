@@ -72,7 +72,7 @@ public class LedgerTestUtils {
 			parties[i].setId(0);
 			parties[i].setName("Parti-" + i);
 			parties[i].setPubKey(partiKeys[i].getPubKey());
-			parties[i].setAddress(AddressEncoding.generateAddress(partiKeys[i].getPubKey()).toBase58());
+			parties[i].setAddress(AddressEncoding.generateAddress(partiKeys[i].getPubKey()));
 			parties[i].setHostAddress(new NetworkAddress("192.168.1." + (10 + i), 9000));
 
 		}
@@ -125,13 +125,13 @@ public class LedgerTestUtils {
 
 		return txReqBuilder.buildRequest();
 	}
-	
-	public static TransactionRequest createTxRequest_DataAccountReg(BlockchainKeypair dataAccountID, HashDigest ledgerHash,
-			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+
+	public static TransactionRequest createTxRequest_DataAccountReg(BlockchainKeypair dataAccountID,
+			HashDigest ledgerHash, BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
-		
+
 		txBuilder.dataAccounts().register(dataAccountID.getIdentity());
-		
+
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 		if (signers != null) {
 			for (BlockchainKeypair signer : signers) {
@@ -141,16 +141,17 @@ public class LedgerTestUtils {
 		if (nodeKeypair != null) {
 			txReqBuilder.signAsNode(nodeKeypair);
 		}
-		
+
 		return txReqBuilder.buildRequest();
 	}
-	
-	public static TransactionRequest createTxRequest_DataAccountWrite(Bytes dataAccountAddress, String key, String value, long version, HashDigest ledgerHash,
-			BlockchainKeypair nodeKeypair, BlockchainKeypair... signers) {
+
+	public static TransactionRequest createTxRequest_DataAccountWrite(Bytes dataAccountAddress, String key,
+			String value, long version, HashDigest ledgerHash, BlockchainKeypair nodeKeypair,
+			BlockchainKeypair... signers) {
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
-		
+
 		txBuilder.dataAccount(dataAccountAddress).setText(key, value, version);
-		
+
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
 		if (signers != null) {
 			for (BlockchainKeypair signer : signers) {
@@ -160,7 +161,7 @@ public class LedgerTestUtils {
 		if (nodeKeypair != null) {
 			txReqBuilder.signAsNode(nodeKeypair);
 		}
-		
+
 		return txReqBuilder.buildRequest();
 	}
 

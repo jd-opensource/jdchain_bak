@@ -25,6 +25,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 	static {
 		DataContractRegistry.register(LedgerMetadata.class);
+		DataContractRegistry.register(LedgerMetadata_V2.class);
 	}
 
 	private static Logger LOGGER = LoggerFactory.getLogger(LedgerAdminAccount.class);
@@ -40,7 +41,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	private final Bytes rolePrivilegePrefix;
 	private final Bytes userRolePrefix;
 
-	private LedgerMetadata origMetadata;
+	private LedgerMetadata_V2 origMetadata;
 
 	private LedgerMetadataImpl metadata;
 
@@ -225,7 +226,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		return BinaryProtocol.encode(setting, LedgerSettings.class);
 	}
 
-	private LedgerMetadata loadAndVerifyMetadata(HashDigest adminAccountHash) {
+	private LedgerMetadata_V2 loadAndVerifyMetadata(HashDigest adminAccountHash) {
 		Bytes key = encodeMetadataKey(adminAccountHash);
 		byte[] bytes = storage.get(key);
 		HashFunction hashFunc = Crypto.getHashFunction(adminAccountHash.getAlgorithm());
@@ -253,7 +254,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 	 * @see com.jd.blockchain.ledger.core.LedgerAdministration#getMetadata()
 	 */
 	@Override
-	public LedgerMetadata getMetadata() {
+	public LedgerMetadata_V2 getMetadata() {
 		return metadata;
 	}
 
@@ -325,7 +326,7 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 
 	@Override
 	public boolean isUpdated() {
-		return updated || participants.isUpdated();
+		return updated || participants.isUpdated() || rolePrivileges.isUpdated() || userRoles.isUpdated();
 	}
 
 	@Override
@@ -392,12 +393,12 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		updated = false;
 	}
 
-	private LedgerMetadata deserializeMetadata(byte[] bytes) {
+	private LedgerMetadata_V2 deserializeMetadata(byte[] bytes) {
 		return BinaryProtocol.decode(bytes);
 	}
 
 	private byte[] serializeMetadata(LedgerMetadataImpl config) {
-		return BinaryProtocol.encode(config, LedgerMetadata.class);
+		return BinaryProtocol.encode(config, LedgerMetadata_V2.class);
 	}
 
 	@Override
@@ -426,11 +427,12 @@ public class LedgerAdminAccount implements Transactional, LedgerAdminInfo {
 		public LedgerMetadataImpl() {
 		}
 
-		public LedgerMetadataImpl(LedgerMetadata metadata) {
+		public LedgerMetadataImpl(LedgerMetadata_V2 metadata) {
 			this.seed = metadata.getSeed();
-//			this.setting = metadata.getSetting();
 			this.participantsHash = metadata.getParticipantsHash();
 			this.settingsHash = metadata.getSettingsHash();
+			this.rolePrivilegesHash = metadata.getRolePrivilegesHash();
+			this.userRolesHash = metadata.getUserRolesHash();
 		}
 
 		@Override

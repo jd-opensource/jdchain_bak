@@ -5,7 +5,17 @@ import com.jd.blockchain.utils.Bytes;
 
 public interface UserRoleSettings {
 
-	long getRoleCount();
+	/**
+	 * 单一用户可被授权的角色数量的最大值；
+	 */
+	public static final int MAX_ROLES_PER_USER = 20;
+
+	/**
+	 * 进行了授权的用户的数量；
+	 * 
+	 * @return
+	 */
+	long getUserCount();
 
 	/**
 	 * 加入新的用户角色授权； <br>
@@ -48,6 +58,11 @@ public interface UserRoleSettings {
 	 */
 	UserRoles getUserRoles(Bytes userAddress);
 
-	UserRoles[] getRoleAuthorizations();
+	/**
+	 * 返回全部的用户授权；
+	 * 
+	 * @return
+	 */
+	UserRoles[] getUserRoles();
 
 }

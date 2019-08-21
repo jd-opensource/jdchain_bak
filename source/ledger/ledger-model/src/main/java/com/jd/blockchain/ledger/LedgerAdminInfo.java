@@ -9,7 +9,7 @@ import com.jd.blockchain.consts.DataCodes;
 public interface LedgerAdminInfo {
 
 	@DataField(order = 1, refContract = true)
-	LedgerMetadata getMetadata();
+	LedgerMetadata_V2 getMetadata();
 
 	@DataField(order = 2, refContract = true)
 	LedgerSettings getSettings();

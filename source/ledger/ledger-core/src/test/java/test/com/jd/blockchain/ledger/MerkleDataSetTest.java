@@ -58,6 +58,18 @@ public class MerkleDataSetTest {
 		mds.setValue("C", "C".getBytes(), -1);
 
 		mds.commit();
+
+		byte[] va = mds.getValue("A");
+		assertNotNull(va);
+		assertEquals("A", new String(va));
+		
+		byte[] vc = mds.getValue("C");
+		VersioningKVEntry ventry = mds.getDataEntry("C");
+		assertNotNull(vc);
+		assertNotNull(ventry);
+		assertEquals("C", new String(vc));
+		assertEquals("C", ventry.getKey().toUTF8String());
+
 		HashDigest root1 = mds.getRootHash();
 
 		// 1个KV项的存储KEY的数量= 1 + 1(保存SN) + Merkle节点数量;

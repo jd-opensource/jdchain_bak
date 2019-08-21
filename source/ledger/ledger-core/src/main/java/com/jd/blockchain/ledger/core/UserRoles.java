@@ -79,6 +79,10 @@ public class UserRoles implements RoleSet {
 	 * @param roles
 	 */
 	public void setRoles(String[] roles) {
-
+		TreeSet<String> rs = new TreeSet<String>();
+		for (String r : roles) {
+			rs.add(r);
+		}
+		this.roles = rs;
 	}
 }

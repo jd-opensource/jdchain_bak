@@ -67,6 +67,7 @@ public interface DataCodes {
 
 	// contract types of metadata;
 	public static final int METADATA = 0x600;
+	public static final int METADATA_V2 = 0x601;
 	
 	public static final int METADATA_INIT_SETTING = 0x610;
 

@@ -73,9 +73,8 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 		}
 	}
 
-	private Bytes encodeKey(String address) {
-		// return id + "";
-		return Bytes.fromString(address);
+	private Bytes encodeKey(Bytes address) {
+		return address;
 	}
 
 	/**
@@ -87,7 +86,7 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 	 * @param address
 	 * @return
 	 */
-	public ParticipantNode getParticipant(String address) {
+	public ParticipantNode getParticipant(Bytes address) {
 		Bytes key = encodeKey(address);
 		byte[] bytes = dataset.getValue(key);
 		if (bytes == null) {
@@ -95,11 +94,11 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 		}
 		return BinaryProtocol.decode(bytes);
 	}
-	
+
 	public ParticipantNode[] getParticipants() {
-		byte[][] bytes = dataset.getLatestValues(0, (int)dataset.getDataCount());
+		byte[][] bytes = dataset.getLatestValues(0, (int) dataset.getDataCount());
 		ParticipantNode[] pns = new ParticipantNode[bytes.length];
-		
+
 		for (int i = 0; i < pns.length; i++) {
 			pns[i] = BinaryProtocol.decode(bytes[i]);
 		}

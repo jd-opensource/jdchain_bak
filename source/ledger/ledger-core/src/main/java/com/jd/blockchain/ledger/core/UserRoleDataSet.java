@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.AuthorizationException;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
@@ -11,12 +12,7 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
 public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleSettings {
-
-	/**
-	 * 角色名称的最大 Unicode 字符数；
-	 */
-	public static final int MAX_ROLE_NAME_LENGTH = 20;
-
+	
 	private MerkleDataSet dataset;
 
 	public UserRoleDataSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exPolicyStorage,
@@ -55,7 +51,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleS
 	}
 
 	@Override
-	public long getRoleCount() {
+	public long getUserCount() {
 		return dataset.getDataCount();
 	}
 
@@ -74,7 +70,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleS
 		roleAuth.addRoles(roles);
 		long nv = setUserRolesAuthorization(roleAuth);
 		if (nv < 0) {
-			throw new LedgerException("Roles authorization of User[" + userAddress + "] already exists!");
+			throw new AuthorizationException("Roles authorization of User[" + userAddress + "] already exists!");
 		}
 	}
 
@@ -86,6 +82,9 @@ public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleS
 	 * @return
 	 */
 	private long setUserRolesAuthorization(UserRoles userRoles) {
+		if (userRoles.getRoleCount() > MAX_ROLES_PER_USER) {
+			throw new AuthorizationException("The number of roles exceeds the maximum range!");
+		}
 		byte[] rolesetBytes = BinaryProtocol.encode(userRoles, RoleSet.class);
 		return dataset.setValue(userRoles.getUserAddress(), rolesetBytes, userRoles.getVersion());
 	}
@@ -100,7 +99,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleS
 	public void updateUserRoles(UserRoles userRoles) {
 		long nv = setUserRolesAuthorization(userRoles);
 		if (nv < 0) {
-			throw new LedgerException("Update to roles of user[" + userRoles.getUserAddress()
+			throw new AuthorizationException("Update to roles of user[" + userRoles.getUserAddress()
 					+ "] failed due to wrong version[" + userRoles.getVersion() + "] !");
 		}
 	}
@@ -146,7 +145,7 @@ public class UserRoleDataSet implements Transactional, MerkleProvable, UserRoleS
 	}
 
 	@Override
-	public UserRoles[] getRoleAuthorizations() {
+	public UserRoles[] getUserRoles() {
 		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(0, (int) dataset.getDataCount());
 		UserRoles[] pns = new UserRoles[kvEntries.length];
 		RoleSet roleset;

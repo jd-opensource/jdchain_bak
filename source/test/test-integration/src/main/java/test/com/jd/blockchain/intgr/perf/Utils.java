@@ -6,16 +6,23 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
-import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
+import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoProvider;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
@@ -29,6 +36,8 @@ import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.InitConsensusServiceFactory;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
+import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -229,7 +238,7 @@ public class Utils {
 
 		private int id;
 
-		private String address;
+		private Bytes address;
 
 		private String name;
 
@@ -243,7 +252,7 @@ public class Utils {
 			this.id = id;
 			this.name = name;
 			this.pubKey = pubKey;
-			this.address = pubKey.toBase58();
+			this.address = AddressEncoding.generateAddress(pubKey);
 		}
 
 		@Override
@@ -252,7 +261,7 @@ public class Utils {
 		}
 
 		@Override
-		public String getAddress() {
+		public Bytes getAddress() {
 			return address;
 		}
 
