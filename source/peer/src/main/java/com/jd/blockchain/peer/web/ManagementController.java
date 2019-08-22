@@ -226,7 +226,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
 
 		// load provider;
-		LedgerAdminInfo ledgerAdminAccount = ledgerRepository.getAdminAccount();
+		LedgerAdminInfo ledgerAdminAccount = ledgerRepository.getAdminInfo();
 		String consensusProvider = ledgerAdminAccount.getSettings().getConsensusProvider();
 		ConsensusProvider provider = ConsensusProviders.getProvider(consensusProvider);
 		// find current node;

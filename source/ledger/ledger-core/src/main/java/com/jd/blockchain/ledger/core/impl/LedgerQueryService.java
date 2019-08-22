@@ -44,7 +44,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
-		LedgerAdminInfo administration = ledger.getAdminAccount(block);
+		LedgerAdminInfo administration = ledger.getAdminInfo(block);
 		return administration;
 	}
 

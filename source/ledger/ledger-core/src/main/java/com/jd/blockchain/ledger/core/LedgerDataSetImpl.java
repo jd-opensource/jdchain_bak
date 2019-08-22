@@ -1,34 +1,31 @@
-package com.jd.blockchain.ledger.core.impl;
+package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.ledger.LedgerAdminInfo;
-import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.utils.Transactional;
 
-public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
+public class LedgerDataSetImpl implements LedgerDataset, Transactional {
 
-	private LedgerAdminDataset adminAccount;
+	private LedgerAdminDataset adminDataset;
 
 	private UserAccountSet userAccountSet;
 
 	private DataAccountSet dataAccountSet;
 
 	private ContractAccountSet contractAccountSet;
-	
-	private boolean readonly;
 
+	private boolean readonly;
 
 	/**
 	 * Create new block;
+	 * 
 	 * @param adminAccount
 	 * @param userAccountSet
 	 * @param dataAccountSet
 	 * @param contractAccountSet
 	 * @param readonly
 	 */
-	public LedgerDataSetImpl(LedgerAdminDataset adminAccount,
-			UserAccountSet userAccountSet, DataAccountSet dataAccountSet, ContractAccountSet contractAccountSet,
-			boolean readonly) {
-		this.adminAccount = adminAccount;
+	public LedgerDataSetImpl(LedgerAdminDataset adminAccount, UserAccountSet userAccountSet,
+			DataAccountSet dataAccountSet, ContractAccountSet contractAccountSet, boolean readonly) {
+		this.adminDataset = adminAccount;
 		this.userAccountSet = userAccountSet;
 		this.dataAccountSet = dataAccountSet;
 		this.contractAccountSet = contractAccountSet;
@@ -37,8 +34,8 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 	}
 
 	@Override
-	public LedgerAdminInfo getAdminAccount() {
-		return adminAccount;
+	public LedgerAdminDataset getAdminDataset() {
+		return adminDataset;
 	}
 
 	@Override
@@ -52,13 +49,13 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 	}
 
 	@Override
-	public ContractAccountSet getContractAccountSet() {
+	public ContractAccountSet getContractAccountset() {
 		return contractAccountSet;
 	}
 
 	@Override
 	public boolean isUpdated() {
-		return adminAccount.isUpdated() || userAccountSet.isUpdated() || dataAccountSet.isUpdated()
+		return adminDataset.isUpdated() || userAccountSet.isUpdated() || dataAccountSet.isUpdated()
 				|| contractAccountSet.isUpdated();
 	}
 
@@ -71,7 +68,7 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 			return;
 		}
 
-		adminAccount.commit();
+		adminDataset.commit();
 		userAccountSet.commit();
 		dataAccountSet.commit();
 		contractAccountSet.commit();
@@ -79,7 +76,7 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 
 	@Override
 	public void cancel() {
-		adminAccount.cancel();
+		adminDataset.cancel();
 		userAccountSet.cancel();
 		dataAccountSet.cancel();
 		contractAccountSet.cancel();
@@ -88,6 +85,14 @@ public class LedgerDataSetImpl implements LedgerDataSet, Transactional {
 	@Override
 	public boolean isReadonly() {
 		return readonly;
+	}
+
+	void setReadonly() {
+		this.readonly = true;
+		this.adminDataset.setReadonly();
+		this.userAccountSet.setReadonly();
+		this.dataAccountSet.setReadonly();
+		this.contractAccountSet.setReadonly();
 	}
 
 }

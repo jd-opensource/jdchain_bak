@@ -35,7 +35,7 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DataAccountSet;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
@@ -94,7 +94,7 @@ public class LedgerManagerTest {
 
 		// 记录交易，注册用户；
 		LedgerTransactionContext txCtx = ldgEdt.newTransaction(genesisTxReq);
-		LedgerDataSet ldgDS = txCtx.getDataSet();
+		LedgerDataset ldgDS = txCtx.getDataset();
 		BlockchainKeypair userKP = BlockchainKeyGenerator.getInstance().generate();
 
 		UserAccount userAccount = ldgDS.getUserAccountSet().register(userKP.getAddress(), userKP.getPubKey());
@@ -121,6 +121,9 @@ public class LedgerManagerTest {
 
 		// 提交数据，写入存储；
 		ldgEdt.commit();
+		
+		assertNull(genesisBlock.getLedgerHash());
+		assertNotNull(genesisBlock.getHash());
 
 		// 重新加载并校验结果；
 		LedgerManager reloadLedgerManager = new LedgerManager();
@@ -145,7 +148,7 @@ public class LedgerManagerTest {
 		TransactionRequest txRequest = txReqBuilder.buildRequest();
 
 		LedgerTransactionContext txCtx1 = editor1.newTransaction(txRequest);
-		txCtx1.getDataSet().getDataAccountSet().register(dataKey.getAddress(), dataKey.getPubKey(), null);
+		txCtx1.getDataset().getDataAccountSet().register(dataKey.getAddress(), dataKey.getPubKey(), null);
 		txCtx1.commit(TransactionState.SUCCESS);
 
 		LedgerBlock block1 = editor1.prepare();

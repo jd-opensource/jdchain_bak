@@ -53,14 +53,14 @@ public interface LedgerRepository extends Closeable {
 	LedgerBlock getBlock(long height);
 
 	LedgerAdminInfo getAdminInfo();
+	
+	LedgerAdminInfo getAdminInfo(LedgerBlock block);
 
 	LedgerBlock getBlock(HashDigest hash);
 
-	LedgerDataSet getDataSet(LedgerBlock block);
+	LedgerDataset getDataSet(LedgerBlock block);
 
 	TransactionSet getTransactionSet(LedgerBlock block);
-
-	LedgerAdminInfo getAdminAccount(LedgerBlock block);
 
 	UserAccountSet getUserAccountSet(LedgerBlock block);
 
@@ -68,16 +68,12 @@ public interface LedgerRepository extends Closeable {
 
 	ContractAccountSet getContractAccountSet(LedgerBlock block);
 
-	default LedgerDataSet getDataSet() {
+	default LedgerDataset getDataSet() {
 		return getDataSet(getLatestBlock());
 	}
 
 	default TransactionSet getTransactionSet() {
 		return getTransactionSet(getLatestBlock());
-	}
-
-	default LedgerAdminInfo getAdminAccount() {
-		return getAdminAccount(getLatestBlock());
 	}
 
 	default UserAccountSet getUserAccountSet() {

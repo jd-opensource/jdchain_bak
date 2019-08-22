@@ -7,7 +7,6 @@ import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.impl.LedgerManager;
-import com.jd.blockchain.ledger.core.impl.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.core.impl.TransactionBatchProcessor;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
@@ -72,7 +71,7 @@ public class ContractInvokingTest {
 
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
@@ -127,7 +126,7 @@ public class ContractInvokingTest {
 						BlockchainKeypair contractKey) {
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
@@ -160,7 +159,7 @@ public class ContractInvokingTest {
 
 		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(partiKeys);
 		LedgerTransactionContext genisisTxCtx = ldgEdt.newTransaction(genesisTxReq);
-		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
+		LedgerDataset ldgDS = genisisTxCtx.getDataset();
 
 		for (int i = 0; i < partiKeys.length; i++) {
 			UserAccount userAccount = ldgDS.getUserAccountSet().register(partiKeys[i].getAddress(),

@@ -9,7 +9,7 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.DataAccount;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
@@ -23,8 +23,8 @@ public class DataAccountKVSetOperationHandle implements OperationHandle {
 	}
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountKVSetOperation kvWriteOp = (DataAccountKVSetOperation) op;
 		DataAccount account = dataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
 		if (account == null) {

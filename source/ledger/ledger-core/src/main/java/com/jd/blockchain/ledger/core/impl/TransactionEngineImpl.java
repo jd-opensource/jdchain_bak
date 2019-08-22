@@ -7,7 +7,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerService;
@@ -44,7 +44,7 @@ public class TransactionEngineImpl implements TransactionEngine {
 
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
 		batch = new InnerTransactionBatchProcessor(ledgerHash, newBlockEditor, previousBlockDataset, opHdlRegs,
 				ledgerService, ledgerBlock.getHeight());
 		batchs.put(ledgerHash, batch);
@@ -79,7 +79,7 @@ public class TransactionEngineImpl implements TransactionEngine {
 		 *            操作处理对象注册表；
 		 */
 		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerEditor newBlockEditor,
-				LedgerDataSet previousBlockDataset, OperationHandleRegisteration opHandles,
+				LedgerDataset previousBlockDataset, OperationHandleRegisteration opHandles,
 				LedgerService ledgerService, long blockHeight) {
 			super(newBlockEditor, previousBlockDataset, opHandles, ledgerService);
 			this.ledgerHash = ledgerHash;

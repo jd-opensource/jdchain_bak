@@ -10,7 +10,7 @@ import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.ContractAccount;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
@@ -26,12 +26,12 @@ public abstract class AbtractContractEventHandle implements OperationHandle {
 	}
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+			LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 		// 先从账本校验合约的有效性；
 		// 注意：必须在前一个区块的数据集中进行校验，因为那是经过共识的数据；从当前新区块链数据集校验则会带来攻击风险：未经共识的合约得到执行；
-		ContractAccountSet contractSet = previousBlockDataset.getContractAccountSet();
+		ContractAccountSet contractSet = previousBlockDataset.getContractAccountset();
 		if (!contractSet.contains(contractOP.getContractAddress())) {
 			throw new LedgerException(String.format("Contract was not registered! --[ContractAddress=%s]",
 					contractOP.getContractAddress()));

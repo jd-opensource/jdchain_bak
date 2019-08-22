@@ -4,7 +4,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
@@ -15,8 +15,8 @@ import com.jd.blockchain.utils.Bytes;
 public class UserRegisterOperationHandle implements OperationHandle {
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 
 
 		UserRegisterOperation userRegOp = (UserRegisterOperation) op;

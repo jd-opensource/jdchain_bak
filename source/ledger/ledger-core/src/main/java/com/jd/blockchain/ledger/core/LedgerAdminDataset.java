@@ -77,18 +77,26 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 
 	private ExPolicyKVStorage storage;
 
-	private HashDigest adminAccountHash;
+	private HashDigest adminDataHash;
 
 	private boolean readonly;
 
 	private boolean updated;
 
 	public HashDigest getHash() {
-		return adminAccountHash;
+		return adminDataHash;
 	}
 
 	public boolean isReadonly() {
 		return readonly;
+	}
+
+	void setReadonly() {
+		this.readonly = true;
+	}
+
+	public LedgerSettings getPreviousSetting() {
+		return previousSettings;
 	}
 
 	@Override
@@ -132,7 +140,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 				initSetting.getCryptoSetting());
 		this.previousSettings = new LedgerConfiguration(settings);
 		this.previousSettingHash = null;
-		this.adminAccountHash = null;
+		this.adminDataHash = null;
 
 		// 基于原配置初始化参与者列表；
 		String partiPrefix = keyPrefix + LEDGER_PARTICIPANT_PREFIX;
@@ -168,7 +176,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 		// 复制记录一份配置作为上一个区块的原始配置，该实例仅供读取，不做修改，也不会回写到存储；
 		this.previousSettings = new LedgerConfiguration(settings);
 		this.previousSettingHash = metadata.getSettingsHash();
-		this.adminAccountHash = adminAccountHash;
+		this.adminDataHash = adminAccountHash;
 
 		String partiPrefix = keyPrefix + LEDGER_PARTICIPANT_PREFIX;
 		this.participants = new ParticipantDataset(metadata.getParticipantsHash(), previousSettings.getCryptoSetting(),
@@ -238,17 +246,17 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 		return metadata;
 	}
 
-	/**
-	 * 返回原来的账本配置；
-	 * 
-	 * <br>
-	 * 此方法总是返回从上一个区块加载的账本配置，即时调用 {@link #setLedgerSetting(LedgerSettings)} 做出了新的更改；
-	 * 
-	 * @return
-	 */
-	public LedgerSettings getPreviousSetting() {
-		return previousSettings;
-	}
+//	/**
+//	 * 返回原来的账本配置；
+//	 * 
+//	 * <br>
+//	 * 此方法总是返回从上一个区块加载的账本配置，即时调用 {@link #setLedgerSetting(LedgerSettings)} 做出了新的更改；
+//	 * 
+//	 * @return
+//	 */
+//	public LedgerSettings getPreviousSetting() {
+//		return previousSettings;
+//	}
 
 	/**
 	 * 返回当前设置的账本配置；
@@ -339,7 +347,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 		byte[] metadataBytes = serializeMetadata(metadata);
 
 		HashDigest metadataHash = hashFunc.hash(metadataBytes);
-		if (adminAccountHash == null || !adminAccountHash.equals(metadataHash)) {
+		if (adminDataHash == null || !adminDataHash.equals(metadataHash)) {
 			// update modify;
 			// String base58MetadataHash = metadataHash.toBase58();
 			// String metadataKey = encodeMetadataKey(base58MetadataHash);
@@ -354,7 +362,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 				throw new LedgerException(errMsg);
 			}
 
-			adminAccountHash = metadataHash;
+			adminDataHash = metadataHash;
 		}
 
 		updated = false;

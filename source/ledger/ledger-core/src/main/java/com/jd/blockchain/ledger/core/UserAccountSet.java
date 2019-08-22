@@ -46,6 +46,10 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
 	}
+	
+	void setReadonly() {
+		accountSet.setReadonly();
+	}
 
 	@Override
 	public HashDigest getRootHash() {

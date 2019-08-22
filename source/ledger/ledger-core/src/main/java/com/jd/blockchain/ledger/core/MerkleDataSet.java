@@ -124,6 +124,10 @@ public class MerkleDataSet implements Transactional, MerkleProvable {
 		return readonly;
 	}
 
+	void setReadonly() {
+		this.readonly = true;
+	}
+
 	public long getDataCount() {
 		return merkleTree.getDataCount();
 	}

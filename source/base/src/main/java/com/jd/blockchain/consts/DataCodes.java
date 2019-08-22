@@ -22,7 +22,7 @@ public interface DataCodes {
 
 	public static final int DATA_SNAPSHOT = 0x130;
 	
-	public static final int LEDGER_ADMIN_INFO = 0x131;
+//	public static final int LEDGER_ADMIN_DATA = 0x131;
 
 	public static final int TX = 0x200;
 

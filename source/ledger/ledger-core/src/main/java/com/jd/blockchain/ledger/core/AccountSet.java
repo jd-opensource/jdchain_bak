@@ -48,6 +48,10 @@ public class AccountSet implements Transactional, MerkleProvable {
 	public boolean isReadonly() {
 		return merkleDataset.isReadonly();
 	}
+	
+	void setReadonly() {
+		merkleDataset.setReadonly();
+	}
 
 	public AccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {

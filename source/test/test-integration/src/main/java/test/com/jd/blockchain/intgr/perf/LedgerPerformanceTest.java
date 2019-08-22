@@ -30,7 +30,7 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
@@ -278,7 +278,7 @@ public class LedgerPerformanceTest {
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [执行合约] =================");
 
 		LedgerBlock latestBlock = ledger.getLatestBlock();
-		LedgerDataSet previousDataSet = ledger.getDataSet(latestBlock);
+		LedgerDataset previousDataSet = ledger.getDataSet(latestBlock);
 		LedgerEditor newEditor = ledger.createNextBlock();
 		TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor, previousDataSet, opHandler,
 				ledgerManager);
@@ -311,7 +311,7 @@ public class LedgerPerformanceTest {
 		long batchStartTs = System.currentTimeMillis();
 		for (int i = 0; i < batchCount; i++) {
 			LedgerBlock latestBlock = ledger.getLatestBlock();
-			LedgerDataSet previousDataSet = ledger.getDataSet(latestBlock);
+			LedgerDataset previousDataSet = ledger.getDataSet(latestBlock);
 			if (statistic) {
 				ConsoleUtils.info("------ 开始执行交易, 即将生成区块[高度：%s] ------", (latestBlock.getHeight() + 1));
 			}

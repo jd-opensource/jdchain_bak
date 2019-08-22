@@ -30,8 +30,8 @@ public interface OperationHandle {
 	 *
 	 * @return 操作执行结果
 	 */
-	BytesValue process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
+	BytesValue process(Operation op, LedgerDataset newBlockDataset, TransactionRequestContext requestContext,
+			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
 
 //	/**
 //	 * 异步解析和执行操作；

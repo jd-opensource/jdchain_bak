@@ -27,11 +27,11 @@ import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DataAccount;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.core.UserAccount;
-import com.jd.blockchain.ledger.core.impl.LedgerTransactionalEditor;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
 import com.jd.blockchain.transaction.LedgerInitSettingData;
@@ -95,7 +95,7 @@ public class LedgerEditorTest {
 	public void testWriteDataAccoutKvOp() {
 		LedgerEditor ldgEdt = createLedgerInitEditor();
 		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt, participants);
-		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
+		LedgerDataset ldgDS = genisisTxCtx.getDataset();
 
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeypair dataKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());
@@ -128,7 +128,7 @@ public class LedgerEditorTest {
 	public void testGennesisBlockCreation() {
 		LedgerEditor ldgEdt = createLedgerInitEditor();
 		LedgerTransactionContext genisisTxCtx = createGenisisTx(ldgEdt, participants);
-		LedgerDataSet ldgDS = genisisTxCtx.getDataSet();
+		LedgerDataset ldgDS = genisisTxCtx.getDataset();
 
 		AsymmetricKeypair cryptoKeyPair = signatureFunction.generateKeypair();
 		BlockchainKeypair userKP = new BlockchainKeypair(cryptoKeyPair.getPubKey(), cryptoKeyPair.getPrivKey());

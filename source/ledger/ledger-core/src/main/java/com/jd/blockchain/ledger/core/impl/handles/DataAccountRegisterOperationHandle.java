@@ -6,7 +6,7 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.TransactionRequestContext;
@@ -16,8 +16,8 @@ import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 public class DataAccountRegisterOperationHandle implements OperationHandle {
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
 		DataAccountRegisterOperation dataAccountRegOp = (DataAccountRegisterOperation) op;
 		BlockchainIdentity bid = dataAccountRegOp.getAccountID();
 

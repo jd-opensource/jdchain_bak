@@ -423,7 +423,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		// TODO：暂时只支持注册用户的初始化操作；
 		for (int i = 1; i < ops.length; i++) {
 			UserRegisterOperation userRegOP = (UserRegisterOperation) ops[i];
-			txCtx.getDataSet().getUserAccountSet().register(userRegOP.getUserID().getAddress(),
+			txCtx.getDataset().getUserAccountSet().register(userRegOP.getUserID().getAddress(),
 					userRegOP.getUserID().getPubKey());
 		}
 

@@ -153,6 +153,10 @@ public class TransactionSet implements Transactional, MerkleProvable {
 	public boolean isReadonly() {
 		return txSet.isReadonly();
 	}
+	
+	void setReadonly() {
+		txSet.setReadonly();
+	}
 
 	@Override
 	public boolean isUpdated() {

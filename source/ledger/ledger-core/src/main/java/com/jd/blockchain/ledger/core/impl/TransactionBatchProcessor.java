@@ -23,7 +23,7 @@ import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionRollbackException;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserDoesNotExistException;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
@@ -43,7 +43,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private LedgerEditor newBlockEditor;
 
-	private LedgerDataSet previousBlockDataset;
+	private LedgerDataset previousBlockDataset;
 
 	private OperationHandleRegisteration opHandles;
 
@@ -61,7 +61,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
 	 * @param opHandles            操作处理对象注册表；
 	 */
-	public TransactionBatchProcessor(LedgerEditor newBlockEditor, LedgerDataSet previousBlockDataset,
+	public TransactionBatchProcessor(LedgerEditor newBlockEditor, LedgerDataset previousBlockDataset,
 			OperationHandleRegisteration opHandles, LedgerService ledgerService) {
 		this.newBlockEditor = newBlockEditor;
 		this.previousBlockDataset = previousBlockDataset;
@@ -135,7 +135,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		TransactionState result;
 		List<OperationResult> operationResults = new ArrayList<>();
 		try {
-			LedgerDataSet dataset = txCtx.getDataSet();
+			LedgerDataset dataset = txCtx.getDataset();
 			TransactionRequestContext reqCtx = new TransactionRequestContextImpl(request);
 			// TODO: 验证签名者的有效性；
 			for (Bytes edpAddr : reqCtx.getEndpoints()) {

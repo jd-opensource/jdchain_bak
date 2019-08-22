@@ -14,6 +14,8 @@ import com.jd.blockchain.ledger.core.LedgerConsts;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerRepositoryImpl;
+import com.jd.blockchain.ledger.core.LedgerTransactionalEditor;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
@@ -69,7 +71,7 @@ public class LedgerManager implements LedgerManage {
 				ledgerVersioningStorage);
 
 		// 校验 crypto service provider ；
-		CryptoSetting cryptoSetting = ledgerRepo.getAdminAccount().getSettings().getCryptoSetting();
+		CryptoSetting cryptoSetting = ledgerRepo.getAdminInfo().getSettings().getCryptoSetting();
 		checkCryptoSetting(cryptoSetting, ledgerHash);
 
 		// 创建账本上下文；

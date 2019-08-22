@@ -33,6 +33,10 @@ public class ContractAccountSet implements MerkleProvable, Transactional {
 		return accountSet.isReadonly();
 	}
 
+	void setReadonly() {
+		accountSet.setReadonly();
+	}
+	
 	@Override
 	public HashDigest getRootHash() {
 		return accountSet.getRootHash();
