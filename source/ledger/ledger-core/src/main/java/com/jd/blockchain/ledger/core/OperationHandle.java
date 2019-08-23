@@ -2,7 +2,6 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 
 
 public interface OperationHandle {

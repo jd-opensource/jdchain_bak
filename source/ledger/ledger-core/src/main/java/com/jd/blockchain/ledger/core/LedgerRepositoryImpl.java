@@ -12,8 +12,6 @@ import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.core.impl.LedgerBlockData;
-import com.jd.blockchain.ledger.core.impl.OpeningAccessPolicy;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
