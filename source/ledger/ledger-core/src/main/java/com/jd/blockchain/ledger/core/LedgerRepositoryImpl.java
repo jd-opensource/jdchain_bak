@@ -30,7 +30,7 @@ import com.jd.blockchain.utils.codec.Base58Utils;
  * @author huanghaiquan
  *
  */
-public class LedgerRepositoryImpl implements LedgerRepository {
+class LedgerRepositoryImpl implements LedgerRepository {
 
 	private static final Bytes LEDGER_PREFIX = Bytes.fromString("IDX" + LedgerConsts.KEY_SEPERATOR);
 
@@ -422,7 +422,7 @@ public class LedgerRepositoryImpl implements LedgerRepository {
 	private LedgerDataset innerGetLedgerDataset(LedgerBlock block) {
 		LedgerAdminDataset adminDataset = createAdminDataset(block);
 		CryptoSetting cryptoSetting = adminDataset.getSettings().getCryptoSetting();
-		
+
 		UserAccountSet userAccountSet = createUserAccountSet(block, cryptoSetting);
 		DataAccountSet dataAccountSet = createDataAccountSet(block, cryptoSetting);
 		ContractAccountSet contractAccountSet = createContractAccountSet(block, cryptoSetting);

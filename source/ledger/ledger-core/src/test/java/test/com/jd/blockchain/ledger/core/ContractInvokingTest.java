@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -65,15 +66,15 @@ public class ContractInvokingTest {
 		// 发布指定地址合约
 		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);
 
-
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
 		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
@@ -119,16 +120,16 @@ public class ContractInvokingTest {
 	}
 
 	private void deploy(LedgerRepository ledgerRepo, LedgerManager ledgerManager,
-						DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash,
-						BlockchainKeypair contractKey) {
+			DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash, BlockchainKeypair contractKey) {
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
 		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
@@ -188,5 +189,19 @@ public class ContractInvokingTest {
 		byte[] chainCode = new byte[1024];
 		new Random().nextBytes(chainCode);
 		return chainCode;
+	}
+
+	private static LedgerSecurityManager getSecurityManager() {
+		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
+
+		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
+		when(securityPolicy.isEnableToEndpoints(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToEndpoints(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
+
+		when(securityManager.getSecurityPolicy(any(), any())).thenReturn(securityPolicy);
+
+		return securityManager;
 	}
 }

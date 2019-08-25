@@ -5,8 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
@@ -17,10 +20,12 @@ import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
@@ -31,9 +36,11 @@ import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerSecurityManager;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
@@ -85,8 +92,9 @@ public class TransactionBatchProcessorTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
@@ -106,6 +114,20 @@ public class TransactionBatchProcessorTest {
 		assertEquals(1, newBlock.getHeight());
 
 		assertEquals(TransactionState.SUCCESS, txResp.getExecutionState());
+	}
+
+	private static LedgerSecurityManager getSecurityManager() {
+		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
+
+		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
+		when(securityPolicy.isEnableToEndpoints(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToEndpoints(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
+
+		when(securityManager.getSecurityPolicy(any(), any())).thenReturn(securityPolicy);
+
+		return securityManager;
 	}
 
 	@Test
@@ -130,8 +152,9 @@ public class TransactionBatchProcessorTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
@@ -187,8 +210,9 @@ public class TransactionBatchProcessorTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
@@ -267,8 +291,9 @@ public class TransactionBatchProcessorTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		LedgerSecurityManager securityManager = getSecurityManager();
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		BlockchainKeypair dataAccountKeypair = BlockchainKeyGenerator.getInstance().generate();
 		TransactionRequest transactionRequest1 = LedgerTestUtils.createTxRequest_DataAccountReg(dataAccountKeypair,
@@ -293,7 +318,8 @@ public class TransactionBatchProcessorTest {
 
 		newBlockEditor = ledgerRepo.createNextBlock();
 		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset, opReg, ledgerManager);
+		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, previousBlockDataset, opReg,
+				ledgerManager);
 
 		txbatchProcessor.schedule(txreq1);
 		txbatchProcessor.schedule(txreq2);
@@ -316,7 +342,7 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(v1_1);
 		assertNotNull(v2);
 		assertNotNull(v3);
-		
+
 		assertEquals("V-1-1", v1_0.getValue().toUTF8String());
 		assertEquals("V-1-2", v1_1.getValue().toUTF8String());
 		assertEquals("V-2-1", v2.getValue().toUTF8String());
@@ -332,7 +358,8 @@ public class TransactionBatchProcessorTest {
 
 		newBlockEditor = ledgerRepo.createNextBlock();
 		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset, opReg, ledgerManager);
+		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, previousBlockDataset, opReg,
+				ledgerManager);
 
 		txbatchProcessor.schedule(txreq5);
 		txbatchProcessor.schedule(txreq6);
@@ -343,11 +370,13 @@ public class TransactionBatchProcessorTest {
 		BytesValue v1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1");
 		v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3");
 
-		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K1");
+		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+				.getDataVersion("K1");
 		assertEquals(1, k1_version);
-		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K3");
+		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+				.getDataVersion("K3");
 		assertEquals(1, k3_version);
-		
+
 		assertNotNull(v1);
 		assertNotNull(v3);
 		assertEquals("V-1-2", v1.getValue().toUTF8String());

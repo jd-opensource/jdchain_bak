@@ -290,6 +290,10 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 		return participants.getParticipants();
 	}
 
+	ParticipantDataset getParticipantDataset() {
+		return participants;
+	}
+
 	/**
 	 * 加入新的参与方； 如果指定的参与方已经存在，则引发 LedgerException 异常；
 	 * 

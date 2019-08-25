@@ -1,42 +1,35 @@
 package com.jd.blockchain.ledger.core.handles;
 
-import org.springframework.stereotype.Service;
-
 import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.OperationHandle;
+import com.jd.blockchain.ledger.core.MultiIdsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
-import com.jd.blockchain.ledger.core.TransactionRequestContext;
+import com.jd.blockchain.ledger.core.SecurityContext;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 
-@Service
-public class DataAccountRegisterOperationHandle implements OperationHandle {
-
+public class DataAccountRegisterOperationHandle extends AbstractLedgerOperationHandle<DataAccountRegisterOperation> {
+	public DataAccountRegisterOperationHandle() {
+		super(DataAccountRegisterOperation.class);
+	}
+	
 	@Override
-	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
-			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+	protected void doProcess(DataAccountRegisterOperation op, LedgerDataset newBlockDataset,
+			TransactionRequestExtension requestContext, LedgerDataset previousBlockDataset,
+			OperationHandleContext handleContext, LedgerService ledgerService) {
+		// TODO: 请求者应该提供数据账户的公钥签名，以更好地确保注册人对该地址和公钥具有合法使用权；
+
+		// 权限校验；
+		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
+		securityPolicy.checkEndpoints(LedgerPermission.REGISTER_DATA_ACCOUNT, MultiIdsPolicy.AT_LEAST_ONE);
+
+		// 操作账本；
 		DataAccountRegisterOperation dataAccountRegOp = (DataAccountRegisterOperation) op;
 		BlockchainIdentity bid = dataAccountRegOp.getAccountID();
-
-		//TODO: 校验用户身份；
-
-		//TODO: 请求者应该提供数据账户的公钥签名，已确定注册的地址的唯一性；
-		dataset.getDataAccountSet().register(bid.getAddress(), bid.getPubKey(), null);
-
-		return null;
-	}
-
-//	@Override
-//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
-//		return null;
-//	}
-
-	@Override
-	public boolean support(Class<?> operationType) {
-		return DataAccountRegisterOperation.class.isAssignableFrom(operationType);
+		newBlockDataset.getDataAccountSet().register(bid.getAddress(), bid.getPubKey(), null);
 	}
 
 }

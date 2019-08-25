@@ -77,6 +77,12 @@ public class ParticipantDataset implements Transactional, MerkleProvable {
 		return address;
 	}
 
+	public boolean contains(Bytes address) {
+		Bytes key = encodeKey(address);
+		long latestVersion = dataset.getVersion(key);
+		return latestVersion > -1;
+	}
+
 	/**
 	 * 返回指定地址的参与方凭证；
 	 * 

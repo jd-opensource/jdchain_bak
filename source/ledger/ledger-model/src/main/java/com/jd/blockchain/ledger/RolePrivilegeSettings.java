@@ -8,6 +8,17 @@ public interface RolePrivilegeSettings {
 	public static final int MAX_ROLE_NAME_LENGTH = 20;
 
 	long getRoleCount();
+	
+	/**
+	 * 加入新的角色授权； <br>
+	 * 
+	 * 如果指定的角色已经存在，则引发 {@link LedgerException} 异常；
+	 * 
+	 * @param roleName        角色名称；不能超过 {@link #MAX_ROLE_NAME_LENGTH} 个 Unicode 字符；
+	 * @param ledgerPrivilege
+	 * @param txPrivilege
+	 */
+	long addRolePrivilege(String roleName, Privileges privileges);
 
 	/**
 	 * 加入新的角色授权； <br>

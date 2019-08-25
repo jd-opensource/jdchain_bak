@@ -8,14 +8,18 @@ import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.core.ContractAccount;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.MultiIdsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
-import com.jd.blockchain.ledger.core.TransactionRequestContext;
+import com.jd.blockchain.ledger.core.SecurityContext;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 
 @Service
 public abstract class AbtractContractEventHandle implements OperationHandle {
@@ -26,9 +30,22 @@ public abstract class AbtractContractEventHandle implements OperationHandle {
 	}
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataset newBlockDataset, TransactionRequestExtension requestContext,
 			LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
+		// 权限校验；
+		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
+		securityPolicy.checkEndpoints(TransactionPermission.CONTRACT_OPERATION, MultiIdsPolicy.AT_LEAST_ONE);
+
+		// 操作账本；
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
+
+		return doProcess(requestContext, contractOP, newBlockDataset, previousBlockDataset, opHandleContext,
+				ledgerService);
+	}
+
+	private BytesValue doProcess(TransactionRequestExtension request, ContractEventSendOperation contractOP,
+			LedgerDataset newBlockDataset, LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext,
+			LedgerService ledgerService) {
 		// 先从账本校验合约的有效性；
 		// 注意：必须在前一个区块的数据集中进行校验，因为那是经过共识的数据；从当前新区块链数据集校验则会带来攻击风险：未经共识的合约得到执行；
 		ContractAccountSet contractSet = previousBlockDataset.getContractAccountset();
@@ -50,19 +67,17 @@ public abstract class AbtractContractEventHandle implements OperationHandle {
 
 		// 创建合约上下文;
 		LocalContractEventContext localContractEventContext = new LocalContractEventContext(
-				requestContext.getRequest().getTransactionContent().getLedgerHash(), contractOP.getEvent());
-		localContractEventContext.setArgs(contractOP.getArgs()).setTransactionRequest(requestContext.getRequest())
+				request.getTransactionContent().getLedgerHash(), contractOP.getEvent());
+		localContractEventContext.setArgs(contractOP.getArgs()).setTransactionRequest(request)
 				.setLedgerContext(ledgerContext);
 
-		
 		// 装载合约；
 		ContractCode contractCode = loadContractCode(contract);
 
 		// 处理合约事件；
 		return contractCode.processEvent(localContractEventContext);
 	}
-	
-	protected abstract ContractCode loadContractCode(ContractAccount contract);
 
+	protected abstract ContractCode loadContractCode(ContractAccount contract);
 
 }

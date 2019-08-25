@@ -16,7 +16,7 @@ import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
-import com.jd.blockchain.ledger.core.TransactionRequestContext;
+import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 import com.jd.blockchain.ledger.core.handles.ContractLedgerContext;
 import com.jd.blockchain.mocker.proxy.ExecutorProxy;
 
@@ -29,7 +29,7 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestContext requestContext,
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension requestContext,
 			LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 

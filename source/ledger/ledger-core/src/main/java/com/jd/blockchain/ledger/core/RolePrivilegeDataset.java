@@ -7,6 +7,7 @@ import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerPrivilege;
 import com.jd.blockchain.ledger.PrivilegeSet;
+import com.jd.blockchain.ledger.Privileges;
 import com.jd.blockchain.ledger.RolePrivilegeSettings;
 import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.TransactionPermission;
@@ -61,9 +62,11 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 		return dataset.getDataCount();
 	}
 
-	/**
-	 *
-	 */
+	@Override
+	public long addRolePrivilege(String roleName, Privileges privileges) {
+		return addRolePrivilege(roleName, privileges.getLedgerPrivilege(), privileges.getTransactionPrivilege());
+	}
+
 	@Override
 	public long addRolePrivilege(String roleName, LedgerPrivilege ledgerPrivilege, TransactionPrivilege txPrivilege) {
 		RolePrivileges roleAuth = new RolePrivileges(roleName, -1, ledgerPrivilege, txPrivilege);

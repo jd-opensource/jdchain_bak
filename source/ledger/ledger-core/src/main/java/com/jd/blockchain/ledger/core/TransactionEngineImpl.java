@@ -41,8 +41,12 @@ public class TransactionEngineImpl implements TransactionEngine {
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
-		batch = new InnerTransactionBatchProcessor(ledgerHash, newBlockEditor, previousBlockDataset, opHdlRegs,
-				ledgerService, ledgerBlock.getHeight());
+
+		LedgerAdminDataset previousAdminDataset = previousBlockDataset.getAdminDataset();
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getRolePrivileges(),
+				previousAdminDataset.getUserRoles());
+		batch = new InnerTransactionBatchProcessor(ledgerHash, securityManager, newBlockEditor, previousBlockDataset,
+				opHdlRegs, ledgerService, ledgerBlock.getHeight());
 		batchs.put(ledgerHash, batch);
 		return batch;
 	}
@@ -65,19 +69,15 @@ public class TransactionEngineImpl implements TransactionEngine {
 		/**
 		 * 创建交易批处理器；
 		 * 
-		 * @param ledgerHash
-		 *            账本哈希；
-		 * @param newBlockEditor
-		 *            新区块的数据编辑器；
-		 * @param previousBlockDataset
-		 *            新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
-		 * @param opHandles
-		 *            操作处理对象注册表；
+		 * @param ledgerHash           账本哈希；
+		 * @param newBlockEditor       新区块的数据编辑器；
+		 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
+		 * @param opHandles            操作处理对象注册表；
 		 */
-		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerEditor newBlockEditor,
-				LedgerDataset previousBlockDataset, OperationHandleRegisteration opHandles,
+		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerSecurityManager securityManager,
+				LedgerEditor newBlockEditor, LedgerDataset previousBlockDataset, OperationHandleRegisteration opHandles,
 				LedgerService ledgerService, long blockHeight) {
-			super(newBlockEditor, previousBlockDataset, opHandles, ledgerService);
+			super(securityManager, newBlockEditor, previousBlockDataset, opHandles, ledgerService);
 			this.ledgerHash = ledgerHash;
 			this.blockHeight = blockHeight;
 		}

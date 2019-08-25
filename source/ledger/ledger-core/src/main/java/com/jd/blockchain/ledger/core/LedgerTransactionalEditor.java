@@ -214,32 +214,9 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		return ledgerHash.equals(reqLedgerHash);
 	}
 
-	private boolean verifyTxContent(TransactionRequest request) {
-		TransactionContent txContent = request.getTransactionContent();
-		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
-			return false;
-		}
-		DigitalSignature[] endpointSignatures = request.getEndpointSignatures();
-		if (endpointSignatures != null) {
-			for (DigitalSignature signature : endpointSignatures) {
-				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), signature.getDigest(),
-						signature.getPubKey())) {
-					return false;
-				}
-			}
-		}
-		DigitalSignature[] nodeSignatures = request.getNodeSignatures();
-		if (nodeSignatures != null) {
-			for (DigitalSignature signature : nodeSignatures) {
-				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), signature.getDigest(),
-						signature.getPubKey())) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
+	/**
+	 * 注：此方法不验证交易完整性和签名有效性，仅仅设计为进行交易记录的管理；调用者应在此方法之外进行数据完整性和签名有效性的检查；
+	 */
 	@Override
 	public synchronized LedgerTransactionContext newTransaction(TransactionRequest txRequest) {
 //		if (SettingContext.txSettings().verifyLedger() && !isRequestMatched(txRequest)) {
@@ -248,15 +225,6 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 					"Transaction request is dispatched to a wrong ledger! --[TxHash="
 							+ txRequest.getTransactionContent().getHash() + "]!",
 					TransactionState.IGNORED_BY_WRONG_LEDGER);
-		}
-
-		// TODO: 把验签和创建交易并行化；
-//			if (SettingContext.txSettings().verifySignature() && !verifyTxContent(txRequest)) {
-		if (!verifyTxContent(txRequest)) {
-			// 抛弃哈希和签名校验失败的交易请求；
-			throw new IllegalTransactionException(
-					"Wrong  transaction signature! --[TxHash=" + txRequest.getTransactionContent().getHash() + "]!",
-					TransactionState.IGNORED_BY_WRONG_CONTENT_SIGNATURE);
 		}
 
 		if (currentTxCtx != null) {

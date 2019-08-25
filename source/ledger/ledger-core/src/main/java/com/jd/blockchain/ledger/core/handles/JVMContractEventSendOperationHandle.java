@@ -26,12 +26,4 @@ public class JVMContractEventSendOperationHandle extends AbtractContractEventHan
 		return contractCode;
 	}
 
-//	@Override
-//	public AsyncFuture<byte[]> asyncProcess(Operation op, LedgerDataSet newBlockDataset,
-//			TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset,
-//			OperationHandleContext handleContext, LedgerService ledgerService) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 }
