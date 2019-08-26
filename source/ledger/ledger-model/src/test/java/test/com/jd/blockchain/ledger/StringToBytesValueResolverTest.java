@@ -1,4 +1,4 @@
-package test.com.jd.blockchain.ledger.data;
+package test.com.jd.blockchain.ledger;
 
 import com.alibaba.fastjson.JSON;
 import com.jd.blockchain.ledger.BytesValue;

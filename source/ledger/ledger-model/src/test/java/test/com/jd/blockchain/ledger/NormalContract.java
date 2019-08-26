@@ -1,4 +1,4 @@
-package test.com.jd.blockchain.ledger.data;
+package test.com.jd.blockchain.ledger;
 
 import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractEvent;

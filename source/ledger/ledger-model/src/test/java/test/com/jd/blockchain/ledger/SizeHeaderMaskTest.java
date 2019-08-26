@@ -1,4 +1,4 @@
-package test.com.jd.blockchain.ledger.data;
+package test.com.jd.blockchain.ledger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

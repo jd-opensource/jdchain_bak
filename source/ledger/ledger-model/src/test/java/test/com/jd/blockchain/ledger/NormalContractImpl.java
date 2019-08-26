@@ -1,4 +1,4 @@
-package test.com.jd.blockchain.ledger.data;
+package test.com.jd.blockchain.ledger;
 
 public class NormalContractImpl implements NormalContract{
 

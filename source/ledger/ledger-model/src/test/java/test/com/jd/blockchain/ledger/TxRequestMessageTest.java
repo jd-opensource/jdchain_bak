@@ -6,7 +6,7 @@
  * Date: 2018/9/3 下午3:07
  * Description:
  */
-package test.com.jd.blockchain.ledger.data;
+package test.com.jd.blockchain.ledger;
 
 import static org.junit.Assert.assertEquals;
 

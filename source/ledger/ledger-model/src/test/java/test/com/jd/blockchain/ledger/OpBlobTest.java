@@ -1,3 +1,4 @@
+package test.com.jd.blockchain.ledger;
 //package test.com.jd.blockchain.ledger.data;
 //
 //import static org.junit.Assert.*;
