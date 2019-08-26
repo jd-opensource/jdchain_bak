@@ -8,4 +8,4 @@ before_install:
   - cd ../source
 
 script:
-  - mvn clean package -Dmaven.test.skip=true
+  - mvn clean package
