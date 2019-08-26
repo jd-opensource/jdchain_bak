@@ -55,15 +55,16 @@ JD Chain 主要部署组件包括以下几种：
 ## 三、编译源代码
 
  1. 安装 Maven 环境
+
     JD Chain 当前版本以 Java 语言开发，需要安装配置 JVM 和 Maven，JDK 版本不低于1.8 。没有特殊的安装要求，请另行搜索安装方法，此处不赘述。
  
  2. 安装 Git 工具
     
     为了能够执行 git clone 命令获取代码仓库。没有特殊的安装要求，请另行搜索安装方法，此处不赘述。
  
- 3. 编译过程
+ 3. 工程代码
 
-    JD Chain 项目包括 3 个代码仓库
+    JD Chain 源代码包括 3 个代码仓库
 
     - jdchain
         - 这是当前仓库，也是核心仓库，包含了共识节点、网关节点、SDK等一切部署组件。依赖于 explorer 和 bftsmart 这两个仓库先进行编译安装；
@@ -73,7 +74,7 @@ JD Chain 主要部署组件包括以下几种：
         - 地址：git@github.com:blockchain-jd-com/explorer.git
 
     - bftsmart
-        - 这是bftsmart共识协议的工程，需要
+        - 这是bftsmart共识协议的工程，需要先编译安装到本地 maven 仓库；
 
 
 4. 命令操作
