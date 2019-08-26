@@ -166,4 +166,9 @@ public class UserRoleDataset implements Transactional, MerkleProvable, UserRoleS
 		return pns;
 	}
 
+	@Override
+	public boolean isReadonly() {
+		return dataset.isReadonly();
+	}
+
 }

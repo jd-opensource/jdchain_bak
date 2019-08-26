@@ -92,7 +92,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	}
 
 	/**
-	 * 设置角色授权； <br>
+	 * 设置角色权限； <br>
 	 * 如果版本校验不匹配，则返回 -1；
 	 * 
 	 * @param roleAuth
@@ -108,7 +108,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	}
 
 	/**
-	 * 更新角色授权； <br>
+	 * 更新角色权限； <br>
 	 * 如果指定的角色不存在，或者版本不匹配，则引发 {@link LedgerException} 异常；
 	 * 
 	 * @param participant
@@ -242,7 +242,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	}
 
 	/**
-	 * 查询角色授权；
+	 * 查询角色权限；
 	 * 
 	 * <br>
 	 * 如果不存在，则返回 null；
@@ -279,4 +279,8 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 		return getRolePrivileges(0, (int) getRoleCount());
 	}
 
+	@Override
+	public boolean isReadonly() {
+		return dataset.isReadonly();
+	}
 }

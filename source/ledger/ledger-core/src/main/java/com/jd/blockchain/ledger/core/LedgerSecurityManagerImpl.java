@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerSecurityException;
 import com.jd.blockchain.ledger.RolePrivilegeSettings;
@@ -29,9 +30,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 
 	private UserRoleSettings userRolesSettings;
 
-	//用户的权限配置
+	// 用户的权限配置
 	private Map<Bytes, UserRolesPrivileges> userPrivilegesCache = new ConcurrentHashMap<>();
-	
+
 	private Map<Bytes, UserRoles> userRolesCache = new ConcurrentHashMap<>();
 	private Map<String, RolePrivileges> rolesPrivilegeCache = new ConcurrentHashMap<>();
 
@@ -39,7 +40,13 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		this.rolePrivilegeSettings = rolePrivilegeSettings;
 		this.userRolesSettings = userRolesSettings;
 	}
-
+	
+	
+	public static void initSecuritySettings(LedgerInitSetting initSettings, LedgerEditor editor) {
+		
+	}
+	
+	
 	@Override
 	public SecurityPolicy createSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
 		Map<Bytes, UserRolesPrivileges> endpointPrivilegeMap = new HashMap<>();

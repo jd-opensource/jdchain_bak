@@ -17,6 +17,31 @@ public interface UserRoleSettings {
 	long getUserCount();
 
 	/**
+	 * 查询角色授权；
+	 * 
+	 * <br>
+	 * 如果不存在，则返回 null；
+	 * 
+	 * @param address
+	 * @return
+	 */
+	UserRoles getUserRoles(Bytes userAddress);
+
+	/**
+	 * 返回全部的用户授权；
+	 * 
+	 * @return
+	 */
+	UserRoles[] getUserRoles();
+
+	/**
+	 * 是否只读；
+	 * 
+	 * @return
+	 */
+	boolean isReadonly();
+
+	/**
 	 * 加入新的用户角色授权； <br>
 	 * 
 	 * 如果该用户的授权已经存在，则引发 {@link LedgerException} 异常；
@@ -45,23 +70,5 @@ public interface UserRoleSettings {
 	 * @return
 	 */
 	long setRoles(Bytes userAddress, RolesPolicy policy, String... roles);
-
-	/**
-	 * 查询角色授权；
-	 * 
-	 * <br>
-	 * 如果不存在，则返回 null；
-	 * 
-	 * @param address
-	 * @return
-	 */
-	UserRoles getUserRoles(Bytes userAddress);
-
-	/**
-	 * 返回全部的用户授权；
-	 * 
-	 * @return
-	 */
-	UserRoles[] getUserRoles();
 
 }

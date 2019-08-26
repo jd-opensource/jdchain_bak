@@ -88,45 +88,45 @@ public class LedgerAdminDatasetTest {
 		MemoryKVStorage testStorage = new MemoryKVStorage();
 
 		// Create intance with init setting;
-		LedgerAdminDataset ledgerAdminAccount = new LedgerAdminDataset(initSetting, keyPrefix, testStorage,
+		LedgerAdminDataset ledgerAdminDataset = new LedgerAdminDataset(initSetting, keyPrefix, testStorage,
 				testStorage);
 
-		ledgerAdminAccount.getRolePrivileges().addRolePrivilege("DEFAULT",
+		ledgerAdminDataset.getRolePrivileges().addRolePrivilege("DEFAULT",
 				new LedgerPermission[] { LedgerPermission.AUTHORIZE_ROLES, LedgerPermission.REGISTER_USER,
 						LedgerPermission.APPROVE_TX },
 				new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
 						TransactionPermission.CONTRACT_OPERATION });
 
-		ledgerAdminAccount.getUserRoles().addUserRoles(parties[0].getAddress(), RolesPolicy.UNION, "DEFAULT");
+		ledgerAdminDataset.getUserRoles().addUserRoles(parties[0].getAddress(), RolesPolicy.UNION, "DEFAULT");
 
 		// New created instance is updated until being committed;
-		assertTrue(ledgerAdminAccount.isUpdated());
+		assertTrue(ledgerAdminDataset.isUpdated());
 		// Hash of account is null until being committed;
-		assertNull(ledgerAdminAccount.getHash());
+		assertNull(ledgerAdminDataset.getHash());
 
-		LedgerMetadata_V2 meta = ledgerAdminAccount.getMetadata();
+		LedgerMetadata_V2 meta = ledgerAdminDataset.getMetadata();
 		assertNull(meta.getParticipantsHash());
 
 		// Commit, and check the storage keys;
-		ledgerAdminAccount.commit();
+		ledgerAdminDataset.commit();
 
 		// New created instance isn't updated after being committed;
-		assertFalse(ledgerAdminAccount.isUpdated());
+		assertFalse(ledgerAdminDataset.isUpdated());
 		// Hash of account isn't null after being committed;
-		assertNotNull(ledgerAdminAccount.getHash());
+		assertNotNull(ledgerAdminDataset.getHash());
 
-		meta = ledgerAdminAccount.getMetadata();
+		meta = ledgerAdminDataset.getMetadata();
 		assertNotNull(meta.getParticipantsHash());
 		assertNotNull(meta.getSettingsHash());
 		assertNotNull(meta.getRolePrivilegesHash());
 		assertNotNull(meta.getUserRolesHash());
 		
-		assertNotNull(ledgerAdminAccount.getRolePrivileges().getRolePrivilege("DEFAULT"));
+		assertNotNull(ledgerAdminDataset.getRolePrivileges().getRolePrivilege("DEFAULT"));
 
 		// ----------------------
 		// Reload account from storage with readonly mode, and check the integrity of
 		// data;
-		HashDigest adminAccHash = ledgerAdminAccount.getHash();
+		HashDigest adminAccHash = ledgerAdminDataset.getHash();
 		LedgerAdminDataset reloadAdminAccount1 = new LedgerAdminDataset(adminAccHash, keyPrefix, testStorage,
 				testStorage, true);
 		
@@ -137,15 +137,15 @@ public class LedgerAdminDatasetTest {
 		assertNotNull(meta2.getUserRolesHash());
 		
 		// verify realod settings of admin account;
-		verifyRealoadingSettings(reloadAdminAccount1, adminAccHash, ledgerAdminAccount.getMetadata(),
-				ledgerAdminAccount.getSettings());
+		verifyRealoadingSettings(reloadAdminAccount1, adminAccHash, ledgerAdminDataset.getMetadata(),
+				ledgerAdminDataset.getSettings());
 		// verify the consensus participant list；
 		verifyRealoadingParities(reloadAdminAccount1, parties1);
 		// It will throw exeception because of this account is readonly;
 		verifyReadonlyState(reloadAdminAccount1);
 
-		verifyRealoadingRoleAuthorizations(reloadAdminAccount1, ledgerAdminAccount.getRolePrivileges(),
-				ledgerAdminAccount.getUserRoles());
+		verifyRealoadingRoleAuthorizations(reloadAdminAccount1, ledgerAdminDataset.getRolePrivileges(),
+				ledgerAdminDataset.getUserRoles());
 
 		// --------------
 		// 重新加载，并进行修改;
@@ -178,8 +178,8 @@ public class LedgerAdminDatasetTest {
 		// load the last version of account and verify again;
 		LedgerAdminDataset previousAdminAccount = new LedgerAdminDataset(adminAccHash, keyPrefix, testStorage,
 				testStorage, true);
-		verifyRealoadingSettings(previousAdminAccount, adminAccHash, ledgerAdminAccount.getMetadata(),
-				ledgerAdminAccount.getSettings());
+		verifyRealoadingSettings(previousAdminAccount, adminAccHash, ledgerAdminDataset.getMetadata(),
+				ledgerAdminDataset.getSettings());
 		verifyRealoadingParities(previousAdminAccount, parties1);
 		verifyReadonlyState(previousAdminAccount);
 
