@@ -193,7 +193,7 @@ public class ClientResolveUtil {
                 JSONObject pubKeyObj = currConsensusParticipant.getJSONObject("pubKey");
                 String pubKeyBase58 = pubKeyObj.getString("value");
                 // 生成ParticipantNode对象
-                ParticipantCertData participantCertData = new ParticipantCertData(id, addressBase58, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
+                ParticipantCertData participantCertData = new ParticipantCertData(id, addressBase58, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()), ParticipantNodeState.CONSENSUSED);
                 participantNodes[i] = participantCertData;
             }
             ledgerInitSettingData.setConsensusParticipants(participantNodes);
@@ -275,6 +275,7 @@ public class ClientResolveUtil {
         private String address;
         private String name;
         private PubKey pubKey;
+        private ParticipantNodeState participantNodeState;
 
         public ParticipantCertData() {
         }
@@ -285,11 +286,12 @@ public class ClientResolveUtil {
             this.pubKey = participantNode.getPubKey();
         }
 
-        public ParticipantCertData(int id, String address, String name, PubKey pubKey) {
+        public ParticipantCertData(int id, String address, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
             this.id = id;
             this.address = address;
             this.name = name;
             this.pubKey = pubKey;
+            this.participantNodeState = participantNodeState;
         }
 
         @Override
@@ -314,6 +316,12 @@ public class ClientResolveUtil {
         public void setId(int id) {
             this.id = id;
         }
+
+        @Override
+        public ParticipantNodeState getParticipantNodeState() {
+            return participantNodeState;
+        }
+
     }
 
     public static class KvData implements KVDataEntry {

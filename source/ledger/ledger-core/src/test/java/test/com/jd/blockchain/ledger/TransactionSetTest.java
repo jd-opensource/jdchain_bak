@@ -9,28 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
+import com.jd.blockchain.ledger.*;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.BytesDataList;
-import com.jd.blockchain.ledger.BytesValueList;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.ledger.core.impl.LedgerTransactionData;
 import com.jd.blockchain.ledger.core.impl.TransactionStagedSnapshot;
@@ -51,6 +36,7 @@ public class TransactionSetTest {
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 		DataContractRegistry.register(ContractCodeDeployOperation.class);
 		DataContractRegistry.register(ContractEventSendOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
 		CryptoSetting defCryptoSetting = LedgerTestUtils.createDefaultCryptoSetting();
 
 		MemoryKVStorage testStorage = new MemoryKVStorage();

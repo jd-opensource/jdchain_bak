@@ -3,15 +3,11 @@ package com.jd.blockchain.ledger.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jd.blockchain.ledger.core.impl.handles.*;
 import org.springframework.stereotype.Component;
 
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.core.OperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.ContractCodeDeployOperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.JVMContractEventSendOperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.DataAccountKVSetOperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.DataAccountRegisterOperationHandle;
-import com.jd.blockchain.ledger.core.impl.handles.UserRegisterOperationHandle;
 
 @Component
 public class DefaultOperationHandleRegisteration implements OperationHandleRegisteration {
@@ -29,6 +25,7 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 		opHandles.add(new DataAccountKVSetOperationHandle());
 		opHandles.add(new DataAccountRegisterOperationHandle());
 		opHandles.add(new UserRegisterOperationHandle());
+		opHandles.add(new ParticipantRegisterOperationHandle());
 		opHandles.add(new ContractCodeDeployOperationHandle());
 		opHandles.add(new JVMContractEventSendOperationHandle());
 	}

@@ -4,17 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueList;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -33,6 +23,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 //	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
 
+	private static final ParticipantRegisterOperationBuilderImpl PARTICIPANT_REG_OP_BUILDER = new ParticipantRegisterOperationBuilderImpl();
+
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
 	private UserRegisterOperationBuilder userRegOpBuilder = new UserRegisterOperationBuilderFilter();
@@ -44,6 +36,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private ContractEventSendOperationBuilder contractEventSendOpBuilder = new ContractEventSendOperationBuilderFilter();
 
 	private ContractInvocationProxyBuilder contractInvoProxyBuilder = new ContractInvocationProxyBuilder();
+
+	private ParticipantRegisterOperationBuilder participantRegOpBuilder = new ParticipantRegisterOperationBuilderFilter();
 
 	// TODO: 暂时只支持单线程情形，未考虑多线程；
 	private List<Operation> operationList = new ArrayList<>();
@@ -81,6 +75,9 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	public ContractEventSendOperationBuilder contractEvents() {
 		return contractEventSendOpBuilder;
 	}
+
+	@Override
+	public ParticipantRegisterOperationBuilder participants() {return participantRegOpBuilder;}
 
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
@@ -251,6 +248,15 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		@Override
 		public ContractCodeDeployOperation deploy(BlockchainIdentity id, byte[] chainCode) {
 			ContractCodeDeployOperation op = CONTRACT_CODE_DEPLOY_OP_BUILDER.deploy(id, chainCode);
+			operationList.add(op);
+			return op;
+		}
+	}
+
+	private class ParticipantRegisterOperationBuilderFilter implements ParticipantRegisterOperationBuilder {
+		@Override
+		public ParticipantRegisterOperation register(ParticipantInfo participantInfo) {
+			ParticipantRegisterOperation op = PARTICIPANT_REG_OP_BUILDER.register(participantInfo);
 			operationList.add(op);
 			return op;
 		}

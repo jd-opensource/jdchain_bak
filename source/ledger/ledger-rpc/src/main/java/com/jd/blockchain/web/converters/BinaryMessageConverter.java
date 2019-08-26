@@ -46,6 +46,7 @@ public class BinaryMessageConverter extends AbstractHttpMessageConverter<Object>
         DataContractRegistry.register(ContractEventSendOperation.class);
         DataContractRegistry.register(DataAccountRegisterOperation.class);
         DataContractRegistry.register(UserRegisterOperation.class);
+        DataContractRegistry.register(ParticipantRegisterOperation.class);
 
         DataContractRegistry.register(ActionRequest.class);
         DataContractRegistry.register(ActionResponse.class);

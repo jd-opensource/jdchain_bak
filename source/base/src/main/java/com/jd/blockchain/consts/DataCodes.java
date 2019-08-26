@@ -49,9 +49,11 @@ public interface DataCodes {
 
 	public static final int TX_OP_CONTRACT_EVENT_SEND = 0x340;
 
-	public static final int TX_RESPONSE = 0x350;
+	public static final int TX_OP_PARTICIPANT_REG = 0x350;
 
-	public static final int TX_OP_RESULT = 0x360;
+	public static final int TX_RESPONSE = 0x360;
+
+	public static final int TX_OP_RESULT = 0x370;
 
 	public static final int METADATA = 0x600;
 
@@ -69,7 +71,7 @@ public interface DataCodes {
 
 	public static final int METADATA_CONSENSUS_SETTING = 0x631;
 
-	// public static final int METADATA_PARTICIPANT_INFO = 0x640;
+	 public static final int METADATA_PARTICIPANT_INFO = 0x640;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
 	
@@ -99,6 +101,8 @@ public interface DataCodes {
 	public static final int ENUM_TYPE_TRANSACTION_STATE = 0xB22;
 
 	public static final int ENUM_TYPE_BYTES_VALUE_TYPE = 0xB23;
+
+	public static final int ENUM_TYPE_PARTICIPANT_NODE_STATE = 0xB24;
 
 	public static final int DIGITALSIGNATURE = 0xB30;
 

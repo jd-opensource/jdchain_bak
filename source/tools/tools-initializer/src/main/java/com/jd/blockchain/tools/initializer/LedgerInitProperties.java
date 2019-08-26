@@ -13,6 +13,7 @@ import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.HexUtils;
@@ -272,6 +273,8 @@ public class LedgerInitProperties {
 
 		// private NetworkAddress consensusAddress;
 
+		private ParticipantNodeState participantNodeState;
+
 		private NetworkAddress initializerAddress;
 
 		public int getId() {
@@ -302,6 +305,14 @@ public class LedgerInitProperties {
 //		public void setPubKeyPath(String pubKeyPath) {
 //			this.pubKeyPath = pubKeyPath;
 //		}
+
+		public ParticipantNodeState getParticipantNodeState() {
+			return participantNodeState;
+		}
+
+		public void setParticipantNodeState(ParticipantNodeState participantNodeState) {
+			this.participantNodeState = participantNodeState;
+		}
 
 		public NetworkAddress getInitializerAddress() {
 			return initializerAddress;

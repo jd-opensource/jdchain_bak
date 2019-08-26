@@ -66,6 +66,12 @@ public class TxTemplate implements TransactionTemplate {
 	}
 
 	@Override
+	public ParticipantRegisterOperationBuilder participants() {
+		stateManager.operate();
+		return txBuilder.participants();
+	}
+
+	@Override
 	public <T> T contract(Bytes address, Class<T> contractIntf) {
 		stateManager.operate();
 		return txBuilder.contract(address, contractIntf);

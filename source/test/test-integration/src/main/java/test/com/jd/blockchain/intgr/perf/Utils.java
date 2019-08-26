@@ -10,6 +10,7 @@ import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import org.springframework.core.io.ClassPathResource;
 
@@ -77,7 +78,7 @@ public class Utils {
 	public static ParticipantNode[] loadParticipantNodes() {
 		ParticipantNode[] participantNodes = new ParticipantNode[PUB_KEYS.length];
 		for (int i = 0; i < PUB_KEYS.length; i++) {
-			participantNodes[i] = new PartNode(i, KeyGenCommand.decodePubKey(PUB_KEYS[i]));
+			participantNodes[i] = new PartNode(i, KeyGenCommand.decodePubKey(PUB_KEYS[i]), ParticipantNodeState.CONSENSUSED);
 		}
 		return participantNodes;
 	}
@@ -235,15 +236,18 @@ public class Utils {
 
 		private PubKey pubKey;
 
-		public PartNode(int id, PubKey pubKey) {
-			this(id, id + "", pubKey);
+		private ParticipantNodeState participantNodeState;
+
+		public PartNode(int id, PubKey pubKey, ParticipantNodeState participantNodeState) {
+			this(id, id + "", pubKey, participantNodeState);
 		}
 
-		public PartNode(int id, String name, PubKey pubKey) {
+		public PartNode(int id, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
 			this.id = id;
 			this.name = name;
 			this.pubKey = pubKey;
 			this.address = pubKey.toBase58();
+			this.participantNodeState = participantNodeState;
 		}
 
 		@Override
@@ -265,6 +269,12 @@ public class Utils {
 		public PubKey getPubKey() {
 			return pubKey;
 		}
+
+		@Override
+		public ParticipantNodeState getParticipantNodeState() {
+			return participantNodeState;
+		}
+
 	}
 
 }

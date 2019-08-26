@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.stream.Stream;
 
+import com.jd.blockchain.ledger.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,19 +20,6 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.BlockBody;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.ContractAccountSet;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DataAccountSet;
@@ -56,6 +44,7 @@ public class LedgerManagerTest {
 		DataContractRegistry.register(TransactionContent.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
 		DataContractRegistry.register(BlockBody.class);
 		DataContractRegistry.register(CryptoProvider.class);
 	}

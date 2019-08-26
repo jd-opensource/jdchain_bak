@@ -166,6 +166,35 @@ public class IntegrationBase {
 		return kvResponse;
 	}
 
+	public static KeyPairResponse testSDK_RegisterParticipant(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+															  BlockchainService blockchainService) {
+		// 注册参与方，并验证最终写入；
+		BlockchainKeypair participant = BlockchainKeyGenerator.getInstance().generate();
+
+		// 定义交易；
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+
+		ParticipantInfoData participantInfoData = new ParticipantInfoData("add", "peer4", participant.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
+
+		txTpl.participants().register(participantInfoData);
+
+		// 签名；
+		PreparedTransaction ptx = txTpl.prepare();
+
+		HashDigest transactionHash = ptx.getHash();
+
+		ptx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = ptx.commit();
+
+		KeyPairResponse keyPairResponse = new KeyPairResponse();
+		keyPairResponse.keyPair = participant;
+		keyPairResponse.txResp = txResp;
+		keyPairResponse.txHash = transactionHash;
+		return keyPairResponse;
+	}
+
 	public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerRepository ledgerRepository,
 			KeyPairType keyPairType) {
 		TransactionResponse txResp = keyPairResponse.txResp;
