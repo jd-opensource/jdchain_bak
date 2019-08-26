@@ -45,7 +45,9 @@ public enum LedgerPermission {
 	/**
 	 * 参与方核准交易；<br>
 	 * 
-	 * 如果不具备此项权限，则无法作为网关节点接入并签署由终端提交的交易；
+	 * 如果不具备此项权限，则无法作为节点签署由终端提交的交易；
+	 * <p>
+	 * 只对交易请求的节点签名列表{@link TransactionRequest#getNodeSignatures()}的用户产生影响；
 	 */
 	APPROVE_TX((byte) 0x06),
 

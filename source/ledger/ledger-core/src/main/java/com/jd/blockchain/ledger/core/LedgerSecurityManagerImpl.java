@@ -29,8 +29,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 
 	private UserRoleSettings userRolesSettings;
 
+	//用户的权限配置
 	private Map<Bytes, UserRolesPrivileges> userPrivilegesCache = new ConcurrentHashMap<>();
-
+	
 	private Map<Bytes, UserRoles> userRolesCache = new ConcurrentHashMap<>();
 	private Map<String, RolePrivileges> rolesPrivilegeCache = new ConcurrentHashMap<>();
 
@@ -40,8 +41,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 	}
 
 	@Override
-	public SecurityPolicy getSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
-
+	public SecurityPolicy createSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
 		Map<Bytes, UserRolesPrivileges> endpointPrivilegeMap = new HashMap<>();
 		Map<Bytes, UserRolesPrivileges> nodePrivilegeMap = new HashMap<>();
 

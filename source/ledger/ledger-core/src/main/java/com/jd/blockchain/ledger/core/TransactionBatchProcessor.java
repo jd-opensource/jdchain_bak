@@ -90,7 +90,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			TransactionRequestExtension reqExt = new TransactionRequestExtensionImpl(request);
 
 			// 初始化交易的用户安全策略；
-			SecurityPolicy securityPolicy = securityManager.getSecurityPolicy(reqExt.getEndpointAddresses(),
+			SecurityPolicy securityPolicy = securityManager.createSecurityPolicy(reqExt.getEndpointAddresses(),
 					reqExt.getNodeAddresses());
 			SecurityContext.setContextUsersPolicy(securityPolicy);
 

@@ -1,5 +1,6 @@
 package test.com.jd.blockchain.ledger.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,10 +19,8 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.Privileges;
-import com.jd.blockchain.ledger.RolePrivilegeSettings;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.UserRoleSettings;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerSecurityManager;
 import com.jd.blockchain.ledger.core.LedgerSecurityManagerImpl;
@@ -56,29 +55,17 @@ public class LedgerSecurityManagerTest {
 		CRYPTO_SETTINGS = cryptoConfig;
 	}
 
-	private RolePrivilegeSettings initRoles(MemoryKVStorage testStorage, String[] roles, Privileges[] privilege) {
+	private RolePrivilegeDataset createRolePrivilegeDataset(MemoryKVStorage testStorage) {
 		String prefix = "role-privilege/";
 		RolePrivilegeDataset rolePrivilegeDataset = new RolePrivilegeDataset(CRYPTO_SETTINGS, prefix, testStorage,
 				testStorage);
-		for (int i = 0; i < roles.length; i++) {
-			rolePrivilegeDataset.addRolePrivilege(roles[i], privilege[i]);
-		}
-
-		rolePrivilegeDataset.commit();
 
 		return rolePrivilegeDataset;
 	}
 
-	private UserRoleSettings initUserRoless(MemoryKVStorage testStorage, Bytes[] userAddresses, RolesPolicy[] policies,
-			String[][] roles) {
+	private UserRoleDataset createUserRoleDataset(MemoryKVStorage testStorage) {
 		String prefix = "user-roles/";
 		UserRoleDataset userRolesDataset = new UserRoleDataset(CRYPTO_SETTINGS, prefix, testStorage, testStorage);
-
-		for (int i = 0; i < userAddresses.length; i++) {
-			userRolesDataset.addUserRoles(userAddresses[i], policies[i], roles[i]);
-		}
-
-		userRolesDataset.commit();
 
 		return userRolesDataset;
 	}
@@ -87,55 +74,102 @@ public class LedgerSecurityManagerTest {
 	public void testGetSecurityPolicy() {
 		MemoryKVStorage testStorage = new MemoryKVStorage();
 
+		// 定义不同角色用户的 keypair；
 		final BlockchainKeypair kpManager = BlockchainKeyGenerator.getInstance().generate();
 		final BlockchainKeypair kpEmployee = BlockchainKeyGenerator.getInstance().generate();
 		final BlockchainKeypair kpDevoice = BlockchainKeyGenerator.getInstance().generate();
-		
-		final Map<Bytes, BlockchainKeypair> endpoints = new HashMap<>();
-		endpoints.put(kpManager.getAddress(), kpManager);
-		endpoints.put(kpEmployee.getAddress(), kpEmployee);
-		
-		final Map<Bytes, BlockchainKeypair> nodes = new HashMap<>();
-		nodes.put(kpDevoice.getAddress(), kpDevoice);
-		
+		final BlockchainKeypair kpPlatform = BlockchainKeyGenerator.getInstance().generate();
 
+		// 定义角色和权限；
 		final String ROLE_ADMIN = "ID_ADMIN";
 		final String ROLE_OPERATOR = "OPERATOR";
 		final String ROLE_DATA_COLLECTOR = "DATA_COLLECTOR";
+		final String ROLE_PLATFORM = "PLATFORM";
 
+		// 定义管理员角色的权限：【账本权限只允许：注册用户、注册数据账户】【交易权限只允许：调用账本直接操作】
 		final Privileges PRIVILEGES_ADMIN = Privileges.configure()
 				.enable(LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT)
-				.enable(TransactionPermission.DIRECT_OPERATION, TransactionPermission.CONTRACT_OPERATION);
+				.enable(TransactionPermission.DIRECT_OPERATION);
 
-		final Privileges PRIVILEGES_OPERATOR = Privileges.configure()
-				.enable(LedgerPermission.WRITE_DATA_ACCOUNT, LedgerPermission.APPROVE_TX)
+		// 定义操作员角色的权限：【账本权限只允许：写入数据账户】【交易权限只允许：调用合约】
+		final Privileges PRIVILEGES_OPERATOR = Privileges.configure().enable(LedgerPermission.WRITE_DATA_ACCOUNT)
 				.enable(TransactionPermission.CONTRACT_OPERATION);
 
+		// 定义数据收集器角色的权限：【账本权限只允许：写入数据账户】【交易权限只允许：调用账本直接操作】
 		final Privileges PRIVILEGES_DATA_COLLECTOR = Privileges.configure().enable(LedgerPermission.WRITE_DATA_ACCOUNT)
-				.enable(TransactionPermission.CONTRACT_OPERATION);
+				.enable(TransactionPermission.DIRECT_OPERATION);
 
-		RolePrivilegeSettings rolePrivilegeSettings = initRoles(testStorage,
-				new String[] { ROLE_ADMIN, ROLE_OPERATOR, ROLE_DATA_COLLECTOR },
-				new Privileges[] { PRIVILEGES_ADMIN, PRIVILEGES_OPERATOR, PRIVILEGES_DATA_COLLECTOR });
+		// 定义平台角色的权限：【账本权限只允许：签署合约】 (只允许作为节点签署交易，不允许作为终端发起交易指令)
+		final Privileges PRIVILEGES_PLATFORM = Privileges.configure().enable(LedgerPermission.APPROVE_TX);
 
+		RolePrivilegeDataset rolePrivilegeDataset = createRolePrivilegeDataset(testStorage);
+		long v = rolePrivilegeDataset.addRolePrivilege(ROLE_ADMIN, PRIVILEGES_ADMIN);
+		assertTrue(v > -1);
+		v = rolePrivilegeDataset.addRolePrivilege(ROLE_OPERATOR, PRIVILEGES_OPERATOR);
+		assertTrue(v > -1);
+		v = rolePrivilegeDataset.addRolePrivilege(ROLE_DATA_COLLECTOR, PRIVILEGES_DATA_COLLECTOR);
+		assertTrue(v > -1);
+		v = rolePrivilegeDataset.addRolePrivilege(ROLE_PLATFORM, PRIVILEGES_PLATFORM);
+		assertTrue(v > -1);
+		rolePrivilegeDataset.commit();
+
+		// 为用户分配角色；
 		String[] managerRoles = new String[] { ROLE_ADMIN, ROLE_OPERATOR };
 		String[] employeeRoles = new String[] { ROLE_OPERATOR };
 		String[] devoiceRoles = new String[] { ROLE_DATA_COLLECTOR };
-		UserRoleSettings userRolesSettings = initUserRoless(testStorage,
-				new Bytes[] { kpManager.getAddress(), kpEmployee.getAddress(), kpDevoice.getAddress() },
-				new RolesPolicy[] { RolesPolicy.UNION, RolesPolicy.UNION, RolesPolicy.UNION },
-				new String[][] { managerRoles, employeeRoles, devoiceRoles });
-		
-		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(rolePrivilegeSettings, userRolesSettings);
-		
-		SecurityPolicy policy = securityManager.getSecurityPolicy(endpoints.keySet(), nodes.keySet());
-		
-		assertTrue(policy.isEnableToEndpoints(LedgerPermission.REGISTER_USER, MultiIdsPolicy.AT_LEAST_ONE));
-		assertTrue(policy.isEnableToEndpoints(LedgerPermission.REGISTER_DATA_ACCOUNT, MultiIdsPolicy.AT_LEAST_ONE));
-		assertTrue(policy.isEnableToEndpoints(LedgerPermission.WRITE_DATA_ACCOUNT, MultiIdsPolicy.AT_LEAST_ONE));
-		assertTrue(policy.isEnableToEndpoints(LedgerPermission.APPROVE_TX, MultiIdsPolicy.AT_LEAST_ONE));
-		assertFalse(policy.isEnableToEndpoints(LedgerPermission.REGISTER_USER, MultiIdsPolicy.ALL));
-		assertFalse(policy.isEnableToEndpoints(LedgerPermission.AUTHORIZE_ROLES, MultiIdsPolicy.AT_LEAST_ONE));
+		String[] platformRoles = new String[] { ROLE_PLATFORM };
+		UserRoleDataset userRolesDataset = createUserRoleDataset(testStorage);
+		userRolesDataset.addUserRoles(kpManager.getAddress(), RolesPolicy.UNION, managerRoles);
+		userRolesDataset.addUserRoles(kpEmployee.getAddress(), RolesPolicy.UNION, employeeRoles);
+		userRolesDataset.addUserRoles(kpDevoice.getAddress(), RolesPolicy.UNION, devoiceRoles);
+		userRolesDataset.addUserRoles(kpPlatform.getAddress(), RolesPolicy.UNION, platformRoles);
+		userRolesDataset.commit();
+
+		// 创建安全管理器；
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(rolePrivilegeDataset, userRolesDataset);
+
+		// 定义终端用户列表；终端用户一起共同具有 ADMIN、OPERATOR 角色；
+		final Map<Bytes, BlockchainKeypair> endpoints = new HashMap<>();
+		endpoints.put(kpManager.getAddress(), kpManager);
+		endpoints.put(kpEmployee.getAddress(), kpEmployee);
+
+		// 定义节点参与方列表；
+		final Map<Bytes, BlockchainKeypair> nodes = new HashMap<>();
+		nodes.put(kpPlatform.getAddress(), kpPlatform);
+
+		// 创建一项与指定的终端用户和节点参与方相关的安全策略；
+		SecurityPolicy policy = securityManager.createSecurityPolicy(endpoints.keySet(), nodes.keySet());
+
+		// 校验安全策略的正确性；
+		LedgerPermission[] ledgerPermissions = LedgerPermission.values();
+		for (LedgerPermission p : ledgerPermissions) {
+			// 终端节点有 ADMIN 和 OPERATOR 两种角色的合并权限；
+			if (p == LedgerPermission.REGISTER_USER || p == LedgerPermission.REGISTER_DATA_ACCOUNT
+					|| p == LedgerPermission.WRITE_DATA_ACCOUNT) {
+				assertTrue(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+			} else {
+				assertFalse(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+			}
+
+			if (p == LedgerPermission.APPROVE_TX) {
+				// 共识参与方只有 PLATFORM 角色的权限：核准交易；
+				assertTrue(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+			} else {
+				assertFalse(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+			}
+		}
+
+		TransactionPermission[] transactionPermissions = TransactionPermission.values();
+		for (TransactionPermission p : transactionPermissions) {
+			// 终端节点有 ADMIN 和 OPERATOR 两种角色的合并权限；
+			if (p == TransactionPermission.DIRECT_OPERATION || p == TransactionPermission.CONTRACT_OPERATION) {
+				assertTrue(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+			} else {
+				assertFalse(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+			}
+
+			assertFalse(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+		}
 	}
 
 }

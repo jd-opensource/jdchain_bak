@@ -200,7 +200,7 @@ public class ContractInvokingTest {
 		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
 		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
 
-		when(securityManager.getSecurityPolicy(any(), any())).thenReturn(securityPolicy);
+		when(securityManager.createSecurityPolicy(any(), any())).thenReturn(securityPolicy);
 
 		return securityManager;
 	}
