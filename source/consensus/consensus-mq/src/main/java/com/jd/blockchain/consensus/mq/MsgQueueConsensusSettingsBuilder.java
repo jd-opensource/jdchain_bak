@@ -184,9 +184,9 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
         msgQueueConsensusConfig.setNetworkSettings(consensusSettings.getNetworkSettings());
 
 
-        for(int i = 0 ;i < msgQueueConsensusConfig.getNodes().length; i++) {
-            System.out.printf("node addr = %s\r\n", msgQueueConsensusConfig.getNodes()[i].getAddress());
-        }
+//        for(int i = 0 ;i < msgQueueConsensusConfig.getNodes().length; i++) {
+//            System.out.printf("node addr = %s\r\n", msgQueueConsensusConfig.getNodes()[i].getAddress());
+//        }
 
         return new Bytes(consensusEncoder.encode(msgQueueConsensusConfig));
 

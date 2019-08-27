@@ -185,13 +185,13 @@ public class BftsmartConsensusSettingsBuilder implements ConsensusSettingsBuilde
 
 		BftsmartConsensusConfig bftsmartConsensusConfig = new BftsmartConsensusConfig(nodeSettings, systemConfigs);
 
-		for(int i = 0 ;i < bftsmartConsensusConfig.getNodes().length; i++) {
-			System.out.printf("id = %d, host = %s, port = %d\r\n", bftsmartConsensusConfig.getNodes()[i].getId(), bftsmartConsensusConfig.getNodes()[i].getNetworkAddress().getHost(), bftsmartConsensusConfig.getNodes()[i].getNetworkAddress().getPort());
-		}
-
-		for(int i = 0 ;i < bftsmartConsensusConfig.getSystemConfigs().length; i++) {
-			System.out.printf("property name = %s, property value = %s\r\n",bftsmartConsensusConfig.getSystemConfigs()[i].getName(), bftsmartConsensusConfig.getSystemConfigs()[i].getValue());
-		}
+//		for(int i = 0 ;i < bftsmartConsensusConfig.getNodes().length; i++) {
+//			System.out.printf("id = %d, host = %s, port = %d\r\n", bftsmartConsensusConfig.getNodes()[i].getId(), bftsmartConsensusConfig.getNodes()[i].getNetworkAddress().getHost(), bftsmartConsensusConfig.getNodes()[i].getNetworkAddress().getPort());
+//		}
+//
+//		for(int i = 0 ;i < bftsmartConsensusConfig.getSystemConfigs().length; i++) {
+//			System.out.printf("property name = %s, property value = %s\r\n",bftsmartConsensusConfig.getSystemConfigs()[i].getName(), bftsmartConsensusConfig.getSystemConfigs()[i].getValue());
+//		}
 
 		return new Bytes(ConsensusProviders.getProvider(BFTSMART_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().encode(bftsmartConsensusConfig));
 

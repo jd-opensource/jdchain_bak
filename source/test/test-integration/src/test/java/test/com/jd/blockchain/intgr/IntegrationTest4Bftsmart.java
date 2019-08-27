@@ -30,6 +30,8 @@ public class IntegrationTest4Bftsmart {
 
     private static final boolean isRegisterDataAccount = true;
 
+    private static final boolean isRegisterParticipant = true;
+
     private static final boolean isWriteKv = true;
 
     private static final String DB_TYPE_MEM = "mem";
@@ -139,6 +141,23 @@ public class IntegrationTest4Bftsmart {
                 }
             }
         }
+
+        long participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+        long userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+        System.out.printf("before add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+        if (isRegisterParticipant) {
+            IntegrationBase.KeyPairResponse participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
+        }
+
+        participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+        userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+        System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
 
         try {
             System.out.println("----------------- Init Completed -----------------");

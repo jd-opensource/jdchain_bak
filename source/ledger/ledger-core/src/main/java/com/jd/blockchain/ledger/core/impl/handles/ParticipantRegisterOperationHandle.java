@@ -16,8 +16,6 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
 
         ParticipantRegisterOperation participantRegOp = (ParticipantRegisterOperation) op;
 
-        System.out.println("ParticipantRegisterOperationHandle start\r\n");
-
         LedgerAdminAccount adminAccount = dataset.getAdminAccount();
 
         ParticipantInfo participantInfo = participantRegOp.getParticipantInfo();
