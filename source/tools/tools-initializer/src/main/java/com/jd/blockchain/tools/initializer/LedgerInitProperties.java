@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
-import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -24,10 +24,13 @@ public class LedgerInitProperties {
 	// 账本种子；
 	public static final String LEDGER_SEED = "ledger.seed";
 
+	// 账本名称
+	public static final String LEDGER_NAME = "ledger.name";
+
 	// 声明的账本建立时间；
 	public static final String CREATED_TIME = "created-time";
 	// 创建时间的格式；
-	public static final String CREATED_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSZ";
+	public static final String CREATED_TIME_FORMAT = Global.DEFAULT_TIME_FORMAT;
 
 	// 共识参与方的个数，后续以 part.id 分别标识每一个参与方的配置；
 	public static final String PART_COUNT = "cons_parti.count";
@@ -60,6 +63,8 @@ public class LedgerInitProperties {
 
 	private byte[] ledgerSeed;
 
+	private String ledgerName;
+
 	private List<ConsensusParticipantConfig> consensusParticipants = new ArrayList<>();
 
 	private String consensusProvider;
@@ -72,6 +77,10 @@ public class LedgerInitProperties {
 
 	public byte[] getLedgerSeed() {
 		return ledgerSeed.clone();
+	}
+
+	public String getLedgerName() {
+		return ledgerName;
 	}
 
 	public long getCreatedTime() {
@@ -152,11 +161,15 @@ public class LedgerInitProperties {
 	public static LedgerInitProperties resolve(Properties props) {
 		return resolve(null, props);
 	}
-
+	
 	public static LedgerInitProperties resolve(String dir, Properties props) {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
+
+		// 账本名称
+		String ledgerName = PropertiesUtils.getRequiredProperty(props, LEDGER_NAME);
+		initProps.ledgerName = ledgerName;
 
 		// 创建时间；
 		String strCreatedTime = PropertiesUtils.getRequiredProperty(props, CREATED_TIME);
@@ -249,7 +262,7 @@ public class LedgerInitProperties {
 
 		private int id;
 
-		private Bytes address;
+		private String address;
 
 		private String name;
 
@@ -270,7 +283,7 @@ public class LedgerInitProperties {
 		}
 
 		@Override
-		public Bytes getAddress() {
+		public String getAddress() {
 			return address;
 		}
 
@@ -304,7 +317,7 @@ public class LedgerInitProperties {
 
 		public void setPubKey(PubKey pubKey) {
 			this.pubKey = pubKey;
-			this.address = AddressEncoding.generateAddress(pubKey);
+			this.address = AddressEncoding.generateAddress(pubKey).toBase58();
 		}
 
 	}

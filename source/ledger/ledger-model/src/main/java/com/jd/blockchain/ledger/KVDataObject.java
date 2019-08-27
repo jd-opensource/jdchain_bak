@@ -79,6 +79,8 @@ public class KVDataObject implements KVDataEntry {
 			return BytesUtils.toLong(bytesValue.getValue().toBytes());
 		case JSON:
 			return bytesValue.getValue().toUTF8String();
+		case XML:
+			return bytesValue.getValue().toUTF8String();
 
 		default:
 			throw new IllegalStateException("Unsupported value type[" + getType() + "] to resolve!");

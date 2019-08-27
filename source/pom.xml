@@ -32,6 +32,7 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
+		<module>manager</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
@@ -42,6 +43,8 @@
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
 		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
 		<explorer.version>0.7.0.RELEASE</explorer.version>
+		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
+		<commons-io.version>2.4</commons-io.version>
 		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
 		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
 			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
@@ -92,11 +95,6 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-log4j2</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -118,6 +116,18 @@
 				<groupId>com.jd.blockchain</groupId>
 				<artifactId>explorer</artifactId>
 				<version>${explorer.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>ump-explorer</artifactId>
+				<version>${ump-explorer.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
 			</dependency>
 
 			<!-- The test dependency -->

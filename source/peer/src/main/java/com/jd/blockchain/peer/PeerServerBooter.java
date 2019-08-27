@@ -1,5 +1,6 @@
 package com.jd.blockchain.peer;
 
+import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.utils.ArgumentSet;
@@ -41,6 +42,11 @@ public class PeerServerBooter {
 	private static final String DEBUG_OPT = "-debug";
 
 	public static String ledgerBindConfigFile;
+	
+	static {
+		// 加载 Global ，初始化全局设置；
+		Global.initialize();
+	}
 
 	public static void main(String[] args) {
 		PeerServerBooter peerServerBooter = new PeerServerBooter();
@@ -58,8 +64,12 @@ public class PeerServerBooter {
 			if (ledgerBindConfigFile == null) {
 				ConsoleUtils.info("Load build-in default configuration ...");
 				ClassPathResource configResource = new ClassPathResource("ledger-binding.conf");
-				InputStream in = configResource.getInputStream();
-				ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+
+				try (InputStream in = configResource.getInputStream()) {
+					ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+				} catch (Exception e) {
+					throw e;
+				}
 			} else {
 				ConsoleUtils.info("Load configuration,ledgerBindConfigFile position="+ledgerBindConfigFile);
 				File file = new File(ledgerBindConfigFile);

@@ -2,6 +2,8 @@ package com.jd.blockchain.tools.initializer;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,7 +16,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
@@ -46,7 +48,13 @@ public class LedgerInitCommand {
 	// 是否输出调试信息；
 	private static final String DEBUG_OPT = "-debug";
 
+	private static final String MONITOR_OPT = "-monitor";
+
 	private static final Prompter DEFAULT_PROMPTER = new ConsolePrompter();
+
+	private static final Prompter ANSWER_PROMPTER = new PresetAnswerPrompter("Y");
+
+	private static final Prompter LOG_PROMPTER = new LogPrompter();
 
 	/**
 	 * 入口；
@@ -56,18 +64,22 @@ public class LedgerInitCommand {
 	public static void main(String[] args) {
 		Prompter prompter = DEFAULT_PROMPTER;
 
-		Setting argSetting = ArgumentSet.setting().prefix(LOCAL_ARG, INI_ARG).option(DEBUG_OPT);
-		ArgumentSet argset = ArgumentSet.resolve(args, argSetting);
+		Setting argSetting = ArgumentSet.setting().prefix(LOCAL_ARG, INI_ARG).option(DEBUG_OPT).option(MONITOR_OPT);
+		ArgumentSet argSet = ArgumentSet.resolve(args, argSetting);
 
 		try {
-			ArgEntry localArg = argset.getArg(LOCAL_ARG);
+			if (argSet.hasOption(MONITOR_OPT)) {
+				prompter = LOG_PROMPTER;
+			}
+
+			ArgEntry localArg = argSet.getArg(LOCAL_ARG);
 			if (localArg == null) {
 				prompter.info("Miss local config file which can be specified with arg [%s]!!!", LOCAL_ARG);
 
 			}
 			LocalConfig localConf = LocalConfig.resolve(localArg.getValue());
 
-			ArgEntry iniArg = argset.getArg(INI_ARG);
+			ArgEntry iniArg = argSet.getArg(INI_ARG);
 			if (iniArg == null) {
 				prompter.info("Miss ledger initializing config file which can be specified with arg [%s]!!!", INI_ARG);
 				return;
@@ -135,7 +147,7 @@ public class LedgerInitCommand {
 
 		} catch (Exception e) {
 			prompter.error("\r\nError!! -- %s\r\n", e.getMessage());
-			if (argset.hasOption(DEBUG_OPT)) {
+			if (argSet.hasOption(DEBUG_OPT)) {
 				e.printStackTrace();
 			}
 
@@ -143,6 +155,10 @@ public class LedgerInitCommand {
 		}
 		prompter.confirm(InitializingStep.LEDGER_INIT_COMPLETED.toString(), "\r\n\r\n Press any key to quit. :>");
 
+		if (argSet.hasOption(MONITOR_OPT)) {
+			// 管理工具启动的方式下，需自动退出
+			System.exit(0);
+		}
 	}
 
 	private LedgerManager ledgerManager;
@@ -166,8 +182,14 @@ public class LedgerInitCommand {
 
 		// generate binding config;
 		BindingConfig bindingConf = new BindingConfig();
-		bindingConf.getParticipant()
-				.setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress().toBase58());
+
+		// 设置账本名称
+		bindingConf.setLedgerName(ledgerInitProperties.getLedgerName());
+
+		bindingConf.getParticipant().setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress());
+		// 设置参与方名称
+		bindingConf.getParticipant().setName(ledgerInitProperties.getConsensusParticipant(currId).getName());
+
 		String encodedPrivKey = KeyGenCommand.encodePrivKey(privKey, base58Pwd);
 		bindingConf.getParticipant().setPk(encodedPrivKey);
 		bindingConf.getParticipant().setPassword(base58Pwd);

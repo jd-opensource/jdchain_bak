@@ -168,4 +168,5 @@ public interface DataCodes {
 
 	public static final int CONSENSUS_MSGQUEUE_BLOCK_SETTINGS = CONSENSUS_MSGQUEUE | 0x05;
 
+	
 }
