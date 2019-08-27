@@ -1,12 +1,16 @@
 package com.jd.blockchain.mocker;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.mockito.Mockito;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIdentification;
@@ -443,11 +447,25 @@ public class MockerNodeContext implements BlockchainQueryService {
 		return reqBuilder.buildRequest();
 	}
 
+	private static LedgerSecurityManager getSecurityManager() {
+		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
+
+		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
+		when(securityPolicy.isEnableToEndpoints(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToEndpoints(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
+
+		when(securityManager.createSecurityPolicy(any(), any())).thenReturn(securityPolicy);
+
+		return securityManager;
+	}
+
 	public OperationResult[] txProcess(TransactionRequest txRequest) {
 		LedgerEditor newEditor = ledgerRepository.createNextBlock();
 		LedgerBlock latestBlock = ledgerRepository.getLatestBlock();
 		LedgerDataset previousDataSet = ledgerRepository.getDataSet(latestBlock);
-		TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor,
+		TransactionBatchProcessor txProc = new TransactionBatchProcessor(getSecurityManager(), newEditor,
 				previousDataSet, opHandler, ledgerManager);
 		TransactionResponse txResp = txProc.schedule(txRequest);
 		TransactionBatchResultHandle handle = txProc.prepare();

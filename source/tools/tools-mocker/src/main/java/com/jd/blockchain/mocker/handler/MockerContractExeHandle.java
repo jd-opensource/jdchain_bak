@@ -29,11 +29,11 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension requestContext,
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension request,
 			LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
-		HashDigest txHash = requestContext.getRequest().getTransactionContent().getHash();
+		HashDigest txHash = request.getTransactionContent().getHash();
 
 		ExecutorProxy executorProxy = executorProxyMap.get(txHash);
 
@@ -43,7 +43,7 @@ public class MockerContractExeHandle implements OperationHandle {
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
 			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
-					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
+					contractOP.getEvent(), request, ledgerContext);
 
 			Object instance = executorProxy.getInstance();
 			EventProcessingAware awire = null;

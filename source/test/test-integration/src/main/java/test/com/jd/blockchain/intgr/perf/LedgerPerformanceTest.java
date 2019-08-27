@@ -7,12 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.DoubleStream;
-
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 
 import org.springframework.core.io.ClassPathResource;
 
@@ -20,6 +17,11 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
@@ -28,14 +30,21 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.LedgerSecurityException;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerSecurityManager;
+import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
@@ -51,6 +60,7 @@ import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.ArgumentSet;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -89,6 +99,8 @@ public class LedgerPerformanceTest {
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 	}
+
+	public static final LedgerSecurityManager DEFAULT_SECURITY_MANAGER = new FreedomLedgerSecurityManager();
 
 	public static void test(String[] args) {
 		NodeContext[] nodes = null;
@@ -281,8 +293,8 @@ public class LedgerPerformanceTest {
 		LedgerBlock latestBlock = ledger.getLatestBlock();
 		LedgerDataset previousDataSet = ledger.getDataSet(latestBlock);
 		LedgerEditor newEditor = ledger.createNextBlock();
-		TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor, previousDataSet, opHandler,
-				ledgerManager);
+		TransactionBatchProcessor txProc = new TransactionBatchProcessor(DEFAULT_SECURITY_MANAGER, newEditor,
+				previousDataSet, opHandler, ledgerManager);
 
 		// 准备请求
 		int totalCount = batchSize * batchCount;
@@ -319,8 +331,8 @@ public class LedgerPerformanceTest {
 			long startTs = System.currentTimeMillis();
 
 			LedgerEditor newEditor = ledger.createNextBlock();
-			TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor, previousDataSet, opHandler,
-					ledgerManager);
+			TransactionBatchProcessor txProc = new TransactionBatchProcessor(DEFAULT_SECURITY_MANAGER, newEditor,
+					previousDataSet, opHandler, ledgerManager);
 
 			testTxExec(txList, i * batchSize, batchSize, txProc);
 
@@ -496,9 +508,8 @@ public class LedgerPerformanceTest {
 		LedgerInitProperties initSetting = loadInitSetting();
 		Properties props = loadConsensusSetting(config);
 		ConsensusProvider csProvider = getConsensusProvider(provider);
-		ConsensusSettings csProps = csProvider.getSettingsFactory()
-				.getConsensusSettingsBuilder()
-				.createSettings(props, Utils.loadParticipantNodes());
+		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props,
+				Utils.loadParticipantNodes());
 
 		DBSetting dbsetting0;
 		DBSetting dbsetting1;
@@ -629,6 +640,79 @@ public class LedgerPerformanceTest {
 			setting.connectionConfig = new DBConnectionConfig(uri);
 			setting.connectionFactory = new RocksDBConnectionFactory();
 			return setting;
+		}
+
+	}
+
+	private static class FreedomLedgerSecurityManager implements LedgerSecurityManager {
+
+		public static final FreedomLedgerSecurityManager INSTANCE = new FreedomLedgerSecurityManager();
+
+		@Override
+		public SecurityPolicy createSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
+			return new FreedomSecurityPolicy(endpoints, nodes);
+		}
+
+	}
+
+	private static class FreedomSecurityPolicy implements SecurityPolicy {
+
+		private Set<Bytes> endpoints;
+		private Set<Bytes> nodes;
+
+		public FreedomSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
+			this.endpoints = endpoints;
+			this.nodes = nodes;
+		}
+
+		@Override
+		public Set<Bytes> getEndpoints() {
+			return endpoints;
+		}
+
+		@Override
+		public Set<Bytes> getNodes() {
+			return nodes;
+		}
+
+		@Override
+		public boolean isEnableToEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy) {
+			return true;
+		}
+
+		@Override
+		public boolean isEnableToEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy) {
+			return true;
+		}
+
+		@Override
+		public boolean isEnableToNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) {
+			return true;
+		}
+
+		@Override
+		public boolean isEnableToNodes(TransactionPermission permission, MultiIdsPolicy midPolicy) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void checkEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy)
+				throws LedgerSecurityException {
+		}
+
+		@Override
+		public void checkEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy)
+				throws LedgerSecurityException {
+		}
+
+		@Override
+		public void checkNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) throws LedgerSecurityException {
+		}
+
+		@Override
+		public void checkNodes(TransactionPermission permission, MultiIdsPolicy midPolicy)
+				throws LedgerSecurityException {
 		}
 
 	}

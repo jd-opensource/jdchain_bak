@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.jd.blockchain.utils.io.BytesEncoding;
 import com.jd.blockchain.utils.io.NumberMask;
