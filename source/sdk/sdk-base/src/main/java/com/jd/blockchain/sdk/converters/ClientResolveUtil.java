@@ -37,7 +37,7 @@ import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
 import com.jd.blockchain.transaction.KVData;
 import com.jd.blockchain.transaction.LedgerInitOpTemplate;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
+import com.jd.blockchain.transaction.LedgerInitData;
 import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
@@ -173,7 +173,7 @@ public class ClientResolveUtil {
 
 	public static LedgerInitOperation convertLedgerInitOperation(JSONObject jsonObject) {
 		JSONObject legerInitObj = jsonObject.getJSONObject("initSetting");
-		LedgerInitSettingData ledgerInitSettingData = new LedgerInitSettingData();
+		LedgerInitData ledgerInitSettingData = new LedgerInitData();
 		String ledgerSeedStr = legerInitObj.getString("ledgerSeed");
 
 		// 种子需要做Base64转换

@@ -328,7 +328,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
 			ConsensusSettings csSettings, CryptoSetting cryptoSetting) {
 		// 创建初始化配置；
-		LedgerInitSettingData initSetting = new LedgerInitSettingData();
+		LedgerInitData initSetting = new LedgerInitData();
 		initSetting.setLedgerSeed(ledgerProps.getLedgerSeed());
 		initSetting.setCryptoSetting(cryptoSetting);
 

@@ -37,7 +37,7 @@ import com.jd.blockchain.ledger.core.LedgerAdminDataset;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
+import com.jd.blockchain.transaction.LedgerInitData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
@@ -51,7 +51,7 @@ public class LedgerAdminDatasetTest {
 	@Test
 	public void testSerialization() {
 		String keyPrefix = "";
-		LedgerInitSettingData initSetting = new LedgerInitSettingData();
+		LedgerInitData initSetting = new LedgerInitData();
 		ConsensusParticipantData[] parties = new ConsensusParticipantData[5];
 		BlockchainKeypair[] bckeys = new BlockchainKeypair[parties.length];
 		for (int i = 0; i < parties.length; i++) {

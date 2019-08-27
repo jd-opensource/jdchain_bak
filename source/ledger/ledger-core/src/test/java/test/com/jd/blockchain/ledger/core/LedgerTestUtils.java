@@ -21,7 +21,7 @@ import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.TransactionStagedSnapshot;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
+import com.jd.blockchain.transaction.LedgerInitData;
 import com.jd.blockchain.transaction.TransactionService;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
@@ -62,7 +62,7 @@ public class LedgerTestUtils {
 		defCryptoSetting.setAutoVerifyHash(true);
 		defCryptoSetting.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
-		LedgerInitSettingData initSetting = new LedgerInitSettingData();
+		LedgerInitData initSetting = new LedgerInitData();
 
 		initSetting.setLedgerSeed(BytesUtils.toBytes("A Test Ledger seed!", "UTF-8"));
 		initSetting.setCryptoSetting(defCryptoSetting);

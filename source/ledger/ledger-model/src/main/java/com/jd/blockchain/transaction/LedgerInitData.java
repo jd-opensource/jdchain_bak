@@ -5,7 +5,7 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 
-public  class LedgerInitSettingData implements LedgerInitSetting {
+public  class LedgerInitData implements LedgerInitSetting {
 
 	private byte[] ledgerSeed;
 

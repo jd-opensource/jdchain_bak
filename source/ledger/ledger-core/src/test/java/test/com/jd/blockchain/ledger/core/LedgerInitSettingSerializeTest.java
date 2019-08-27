@@ -24,14 +24,14 @@ import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.ParticipantCertData;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
 import com.jd.blockchain.transaction.LedgerInitOpTemplate;
-import com.jd.blockchain.transaction.LedgerInitSettingData;
+import com.jd.blockchain.transaction.LedgerInitData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class LedgerInitSettingSerializeTest {
 	byte[] seed = null;
 	byte[] csSysSettingBytes = null;
-	LedgerInitSettingData ledgerInitSettingData = new LedgerInitSettingData();
+	LedgerInitData ledgerInitSettingData = new LedgerInitData();
 	LedgerInitOpTemplate template = new LedgerInitOpTemplate();
 
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
