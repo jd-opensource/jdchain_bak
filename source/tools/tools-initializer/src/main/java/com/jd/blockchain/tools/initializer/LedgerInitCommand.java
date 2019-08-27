@@ -2,8 +2,6 @@ package com.jd.blockchain.tools.initializer;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,7 +14,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
@@ -186,7 +184,8 @@ public class LedgerInitCommand {
 		// 设置账本名称
 		bindingConf.setLedgerName(ledgerInitProperties.getLedgerName());
 
-		bindingConf.getParticipant().setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress());
+		bindingConf.getParticipant()
+				.setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress().toBase58());
 		// 设置参与方名称
 		bindingConf.getParticipant().setName(ledgerInitProperties.getConsensusParticipant(currId).getName());
 

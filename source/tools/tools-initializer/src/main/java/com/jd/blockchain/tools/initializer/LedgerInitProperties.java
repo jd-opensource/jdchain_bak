@@ -14,6 +14,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -262,7 +263,7 @@ public class LedgerInitProperties {
 
 		private int id;
 
-		private String address;
+		private Bytes address;
 
 		private String name;
 
@@ -283,7 +284,7 @@ public class LedgerInitProperties {
 		}
 
 		@Override
-		public String getAddress() {
+		public Bytes getAddress() {
 			return address;
 		}
 
@@ -317,7 +318,7 @@ public class LedgerInitProperties {
 
 		public void setPubKey(PubKey pubKey) {
 			this.pubKey = pubKey;
-			this.address = AddressEncoding.generateAddress(pubKey).toBase58();
+			this.address = AddressEncoding.generateAddress(pubKey);
 		}
 
 	}
