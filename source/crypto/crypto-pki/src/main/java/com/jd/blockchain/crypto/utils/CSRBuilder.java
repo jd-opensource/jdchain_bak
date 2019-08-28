@@ -16,6 +16,9 @@ import org.bouncycastle.util.encoders.Base64;
 
 import java.io.IOException;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  * @author zhanglin33
@@ -25,16 +28,18 @@ import java.security.*;
  */
 public class CSRBuilder {
 
-    private String BC = BouncyCastleProvider.PROVIDER_NAME;
+    private final String BC = BouncyCastleProvider.PROVIDER_NAME;
 
     private PublicKey pubKey;
     private PrivateKey privKey;
 
     private String algoName;
+    private int keyLength;
 
     public void init() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         algoName = "SHA1withRSA";
+        keyLength = 2048;
         KeyPairGenerator generator;
         try {
             generator = KeyPairGenerator.getInstance("RSA", BC);
@@ -47,10 +52,11 @@ public class CSRBuilder {
         }
     }
 
-    public void init(String algoName, int KeyLength) {
+    public void init(String algoName, int keyLength) {
 
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        this.algoName = algoName;
+        this.algoName  = algoName;
+        this.keyLength = keyLength;
 
         KeyPairGenerator generator;
         KeyPair keyPair;
@@ -60,32 +66,67 @@ public class CSRBuilder {
             switch (hashAndSignature[1]) {
                 case "RSA": {
                     generator = KeyPairGenerator.getInstance("RSA", BC);
-                    generator.initialize(KeyLength);
-                    keyPair = generator.generateKeyPair();
-                    pubKey = keyPair.getPublic();
-                    privKey = keyPair.getPrivate();
+                    generator.initialize(keyLength);
                     break;
                 }
 
                 case "SM2": {
                     generator = KeyPairGenerator.getInstance("EC", BC);
-                    if (KeyLength != 256) {
+                    if (keyLength != 256) {
                         throw new CryptoException("SM3withSM2 with unsupported key length [" +
-                                KeyLength +"] in CSR!");
+                                keyLength +"] in CSR!");
                     }
                     generator.initialize(new ECNamedCurveGenParameterSpec("sm2p256v1"));
-                    keyPair = generator.generateKeyPair();
-                    pubKey = keyPair.getPublic();
-                    privKey = keyPair.getPrivate();
                     break;
                 }
 
                 default: throw new CryptoException("Unsupported algorithm [" + algoName + "] with key length [" +
-                        KeyLength +"] in CSR!");
+                        keyLength +"] in CSR!");
             }
+            keyPair = generator.generateKeyPair();
+            pubKey = keyPair.getPublic();
+            privKey = keyPair.getPrivate();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new CryptoException(e.getMessage(), e);
         }
+    }
+
+    public void init(String algoName, byte[] pubKeyBytes, byte[] privKeyBytes) {
+
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        this.algoName = algoName;
+        String[] hashAndSignature = algoName.split("with");
+
+        X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubKeyBytes);
+        PKCS8EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(privKeyBytes);
+
+        KeyFactory keyFactory;
+
+        try {
+            switch (hashAndSignature[1]) {
+                case "RSA": {
+                    keyFactory = KeyFactory.getInstance("RSA");
+                    privKey = keyFactory.generatePrivate(privKeySpec);
+                    pubKey  = keyFactory.generatePublic(pubKeySpec);
+                    keyLength = (pubKey.getEncoded().length < 4096 / 8)? 2048: 4096;
+                    break;
+                }
+
+                case "SM2": {
+                    keyFactory = KeyFactory.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+                    privKey = keyFactory.generatePrivate(privKeySpec);
+                    pubKey  = keyFactory.generatePublic(pubKeySpec);
+                    keyLength = 256;
+                    break;
+                }
+
+                default: throw new CryptoException("Unsupported algorithm [" + algoName + "] with the given key pair!");
+            }
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchProviderException e) {
+            throw new CryptoException(e.getMessage(), e);
+        }
+
+
     }
 
     public String buildRequest(String countryName, String stateName, String cityName,
@@ -125,5 +166,13 @@ public class CSRBuilder {
 
     public PrivateKey getPrivKey() {
         return privKey;
+    }
+
+    public String getAlgoName() {
+        return algoName;
+    }
+
+    public int getKeyLength() {
+        return keyLength;
     }
 }
