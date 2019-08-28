@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SecurityInitData implements SecurityInitSettings {
 
-	private List<RoleInitSettings> roles = new ArrayList<RoleInitSettings>();
+	private List<RoleInitData> roles = new ArrayList<RoleInitData>();
 
 	@Override
 	public RoleInitData[] getRoles() {
@@ -13,8 +13,8 @@ public class SecurityInitData implements SecurityInitSettings {
 	}
 
 	public void setRoles(RoleInitData[] roles) {
-		List<RoleInitSettings> list = new ArrayList<RoleInitSettings>();
-		for (RoleInitSettings r : roles) {
+		List<RoleInitData> list = new ArrayList<RoleInitData>();
+		for (RoleInitData r : roles) {
 			list.add(r);
 		}
 		this.roles = list;

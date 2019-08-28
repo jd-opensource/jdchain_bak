@@ -263,6 +263,10 @@ public abstract class PropertiesUtils {
 	public static String getRequiredProperty(Properties props, String key) {
 		return getProperty(props, key, true);
 	}
+	
+	public static String getOptionalProperty(Properties props, String key) {
+		return getProperty(props, key, false);
+	}
 
 	/**
 	 * 返回指定的属性； <br>

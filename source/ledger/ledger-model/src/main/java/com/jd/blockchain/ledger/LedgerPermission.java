@@ -36,11 +36,36 @@ public enum LedgerPermission {
 	REGISTER_PARTICIPANT((byte) 0x04),
 
 	/**
-	 * 设置参与方的权限；<br>
+	 * 注册用户；<br>
 	 * 
-	 * 如果不具备此项权限，则无法设置参与方的“提交交易”、“参与共识”的权限；
+	 * 如果不具备此项权限，则无法注册用户；
 	 */
-	SET_PARTICIPANT_PERMISSION((byte) 0x05),
+	REGISTER_USER((byte) 0x05),
+
+	/**
+	 * 注册数据账户；<br>
+	 */
+	REGISTER_DATA_ACCOUNT((byte) 0x06),
+
+	/**
+	 * 注册合约；<br>
+	 */
+	REGISTER_CONTRACT((byte) 0x07),
+
+	/**
+	 * 升级合约
+	 */
+	UPGRADE_CONTRACT((byte) 0x08),
+
+	/**
+	 * 设置用户属性；<br>
+	 */
+	SET_USER_ATTRIBUTES((byte) 0x09),
+
+	/**
+	 * 写入数据账户；<br>
+	 */
+	WRITE_DATA_ACCOUNT((byte) 0x0A),
 
 	/**
 	 * 参与方核准交易；<br>
@@ -49,46 +74,16 @@ public enum LedgerPermission {
 	 * <p>
 	 * 只对交易请求的节点签名列表{@link TransactionRequest#getNodeSignatures()}的用户产生影响；
 	 */
-	APPROVE_TX((byte) 0x06),
+	APPROVE_TX((byte) 0x0B),
 
 	/**
 	 * 参与方共识交易；<br>
 	 * 
 	 * 如果不具备此项权限，则无法作为共识节点接入并对交易进行共识；
 	 */
-	CONSENSUS_TX((byte) 0x07),
-
-	/**
-	 * 注册用户；<br>
-	 * 
-	 * 如果不具备此项权限，则无法注册用户；
-	 */
-	REGISTER_USER((byte) 0x08),
-
-	/**
-	 * 设置用户属性；<br>
-	 */
-	SET_USER_ATTRIBUTES((byte) 0x09),
-
-	/**
-	 * 注册数据账户；<br>
-	 */
-	REGISTER_DATA_ACCOUNT((byte) 0x0A),
-
-	/**
-	 * 写入数据账户；<br>
-	 */
-	WRITE_DATA_ACCOUNT((byte) 0x0B),
-
-	/**
-	 * 注册合约；<br>
-	 */
-	REGISTER_CONTRACT((byte) 0x0C),
-
-	/**
-	 * 升级合约
-	 */
-	UPGRADE_CONTRACT((byte) 0x0D);
+	CONSENSUS_TX((byte) 0x0C);
+	
+	
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;

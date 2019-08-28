@@ -7,15 +7,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.RoleInitData;
+import com.jd.blockchain.ledger.RoleInitSettings;
+import com.jd.blockchain.ledger.RolesPolicy;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
+import com.jd.blockchain.utils.StringUtils;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -33,6 +41,13 @@ public class LedgerInitProperties {
 	// 创建时间的格式；
 	public static final String CREATED_TIME_FORMAT = Global.DEFAULT_TIME_FORMAT;
 
+	// 角色清单；
+	public static final String ROLES = "security.roles";
+	// 角色的账本权限；用角色名称替代占位符；
+	public static final String ROLE_LEDGER_PRIVILEGES_PATTERN = "security.role.%s.ledger-privileges";
+	// 角色的交易权限；用角色名称替代占位符；
+	public static final String ROLE_TX_PRIVILEGES_PATTERN = "security.role.%s.tx-privileges";
+
 	// 共识参与方的个数，后续以 part.id 分别标识每一个参与方的配置；
 	public static final String PART_COUNT = "cons_parti.count";
 	// 共识参与方的名称的模式；
@@ -43,6 +58,10 @@ public class LedgerInitProperties {
 	public static final String PART_PUBKEY_PATH = "pubkey-path";
 	// 参与方的公钥文件路径；
 	public static final String PART_PUBKEY = "pubkey";
+	// 参与方的角色清单；
+	public static final String PART_ROLES = "roles";
+	// 参与方的角色权限策略；
+	public static final String PART_ROLES_POLICY = "roles-policy";
 
 	// 共识参与方的账本初始服务的主机；
 	public static final String PART_INITIALIZER_HOST = "initializer.host";
@@ -65,6 +84,8 @@ public class LedgerInitProperties {
 	private byte[] ledgerSeed;
 
 	private String ledgerName;
+
+	private RoleInitData[] roles;
 
 	private List<ConsensusParticipantConfig> consensusParticipants = new ArrayList<>();
 
@@ -143,7 +164,7 @@ public class LedgerInitProperties {
 		consensusParticipants.add(participant);
 	}
 
-	private static String getKeyOfCsParti(int partId, String partPropKey) {
+	private static String getKeyOfParticipant(int partId, String partPropKey) {
 		String partAddrStr = String.format(PART_ID_PATTERN, partId);
 		return String.format("%s.%s", partAddrStr, partPropKey);
 	}
@@ -162,12 +183,20 @@ public class LedgerInitProperties {
 	public static LedgerInitProperties resolve(Properties props) {
 		return resolve(null, props);
 	}
-	
-	public static LedgerInitProperties resolve(String dir, Properties props) {
+
+	/**
+	 * 从属性表解析账本初始化参数；
+	 * 
+	 * @param baseDirectory 基础路径；属性中涉及文件位置的相对路径以此参数指定的目录为父目录；
+	 * @param props         要解析的属性表；
+	 * @return
+	 */
+	public static LedgerInitProperties resolve(String baseDirectory, Properties props) {
 		String hexLedgerSeed = PropertiesUtils.getRequiredProperty(props, LEDGER_SEED).replace("-", "");
 		byte[] ledgerSeed = HexUtils.decode(hexLedgerSeed);
 		LedgerInitProperties initProps = new LedgerInitProperties(ledgerSeed);
 
+		// 解析账本信息；
 		// 账本名称
 		String ledgerName = PropertiesUtils.getRequiredProperty(props, LEDGER_NAME);
 		initProps.ledgerName = ledgerName;
@@ -180,11 +209,35 @@ public class LedgerInitProperties {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 
+		// 解析角色清单；
+		String strRoleNames = PropertiesUtils.getOptionalProperty(props, ROLES);
+		String[] roles = StringUtils.splitToArray(strRoleNames, ",");
+
+		Map<String, RoleInitData> rolesInitSettingMap = new TreeMap<String, RoleInitData>();
+		// 解析角色权限表；
+		for (String role : roles) {
+			String ledgerPrivilegeKey = getKeyOfRoleLedgerPrivilege(role);
+			String strLedgerPermissions = PropertiesUtils.getOptionalProperty(props, ledgerPrivilegeKey);
+			LedgerPermission[] ledgerPermissions = resolveLedgerPermissions(strLedgerPermissions);
+
+			String txPrivilegeKey = getKeyOfRoleTxPrivilege(role);
+			String strTxPermissions = PropertiesUtils.getOptionalProperty(props, txPrivilegeKey);
+			TransactionPermission[] txPermissions = resolveTransactionPermissions(strTxPermissions);
+
+			if (ledgerPermissions.length > 0 || txPermissions.length > 0) {
+				RoleInitData rolesSettings = new RoleInitData(role, ledgerPermissions, txPermissions);
+				rolesInitSettingMap.put(role, rolesSettings);
+			}
+		}
+		RoleInitData[] rolesInitDatas = rolesInitSettingMap.values()
+				.toArray(new RoleInitData[rolesInitSettingMap.size()]);
+		initProps.setRoles(rolesInitDatas);
+		
 		// 解析共识相关的属性；
 		initProps.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);
 		String consensusConfigFilePath = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONFIG);
 		try {
-			File consensusConfigFile = FileUtils.getFile(dir, consensusConfigFilePath);
+			File consensusConfigFile = FileUtils.getFile(baseDirectory, consensusConfigFilePath);
 			initProps.consensusConfig = FileUtils.readProperties(consensusConfigFile);
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException(
@@ -212,13 +265,13 @@ public class LedgerInitProperties {
 
 			parti.setId(i);
 
-			String nameKey = getKeyOfCsParti(i, PART_NAME);
+			String nameKey = getKeyOfParticipant(i, PART_NAME);
 			parti.setName(PropertiesUtils.getRequiredProperty(props, nameKey));
 
-			String pubkeyPathKey = getKeyOfCsParti(i, PART_PUBKEY_PATH);
+			String pubkeyPathKey = getKeyOfParticipant(i, PART_PUBKEY_PATH);
 			String pubkeyPath = PropertiesUtils.getProperty(props, pubkeyPathKey, false);
 
-			String pubkeyKey = getKeyOfCsParti(i, PART_PUBKEY);
+			String pubkeyKey = getKeyOfParticipant(i, PART_PUBKEY);
 			String base58PubKey = PropertiesUtils.getProperty(props, pubkeyKey, false);
 			if (base58PubKey != null) {
 				PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
@@ -231,13 +284,27 @@ public class LedgerInitProperties {
 						String.format("Property[%s] and property[%s] are all empty!", pubkeyKey, pubkeyPathKey));
 			}
 
-			String initializerHostKey = getKeyOfCsParti(i, PART_INITIALIZER_HOST);
+			// 解析参与方的角色权限配置；
+			String partiRolesKey = getKeyOfParticipant(i, PART_ROLES);
+			String strPartiRoles = PropertiesUtils.getOptionalProperty(props, partiRolesKey);
+			String[] partiRoles = StringUtils.splitToArray(strPartiRoles, ",");
+			parti.setRoles(partiRoles);
+
+			String partiRolePolicyKey = getKeyOfParticipant(i, PART_ROLES_POLICY);
+			String strPartiPolicy = PropertiesUtils.getOptionalProperty(props, partiRolePolicyKey);
+			RolesPolicy policy = strPartiPolicy == null ? RolesPolicy.UNION
+					: RolesPolicy.valueOf(strPartiPolicy.trim());
+			policy = policy == null ? RolesPolicy.UNION : policy;
+			parti.setRolesPolicy(policy);
+
+			// 解析参与方的网络配置参数；
+			String initializerHostKey = getKeyOfParticipant(i, PART_INITIALIZER_HOST);
 			String initializerHost = PropertiesUtils.getRequiredProperty(props, initializerHostKey);
 
-			String initializerPortKey = getKeyOfCsParti(i, PART_INITIALIZER_PORT);
+			String initializerPortKey = getKeyOfParticipant(i, PART_INITIALIZER_PORT);
 			int initializerPort = getInt(PropertiesUtils.getRequiredProperty(props, initializerPortKey));
 
-			String initializerSecureKey = getKeyOfCsParti(i, PART_INITIALIZER_SECURE);
+			String initializerSecureKey = getKeyOfParticipant(i, PART_INITIALIZER_SECURE);
 			boolean initializerSecure = Boolean
 					.parseBoolean(PropertiesUtils.getRequiredProperty(props, initializerSecureKey));
 			NetworkAddress initializerAddress = new NetworkAddress(initializerHost, initializerPort, initializerSecure);
@@ -249,8 +316,52 @@ public class LedgerInitProperties {
 		return initProps;
 	}
 
+	private static TransactionPermission[] resolveTransactionPermissions(String strTxPermissions) {
+		String[] strPermissions = StringUtils.splitToArray(strTxPermissions, ",");
+		List<TransactionPermission> permissions = new ArrayList<TransactionPermission>();
+		if (strPermissions != null) {
+			for (String pm : strPermissions) {
+				TransactionPermission permission = TransactionPermission.valueOf(pm);
+				if (permission != null) {
+					permissions.add(permission);
+				}
+			}
+		}
+		return permissions.toArray(new TransactionPermission[permissions.size()]);
+	}
+
+	private static LedgerPermission[] resolveLedgerPermissions(String strLedgerPermissions) {
+		String[] strPermissions = StringUtils.splitToArray(strLedgerPermissions, ",");
+		List<LedgerPermission> permissions = new ArrayList<LedgerPermission>();
+		if (strPermissions != null) {
+			for (String pm : strPermissions) {
+				LedgerPermission permission = LedgerPermission.valueOf(pm);
+				if (permission != null) {
+					permissions.add(permission);
+				}
+			}
+		}
+		return permissions.toArray(new LedgerPermission[permissions.size()]);
+	}
+
+	private static String getKeyOfRoleLedgerPrivilege(String role) {
+		return String.format(ROLE_LEDGER_PRIVILEGES_PATTERN, role);
+	}
+
+	private static String getKeyOfRoleTxPrivilege(String role) {
+		return String.format(ROLE_TX_PRIVILEGES_PATTERN, role);
+	}
+
 	private static int getInt(String strInt) {
 		return Integer.parseInt(strInt.trim());
+	}
+
+	public RoleInitData[] getRoles() {
+		return roles;
+	}
+
+	public void setRoles(RoleInitData[] roles) {
+		this.roles = roles;
 	}
 
 	/**
@@ -267,9 +378,11 @@ public class LedgerInitProperties {
 
 		private String name;
 
-//		private String pubKeyPath;
-
 		private PubKey pubKey;
+
+		private String[] roles;
+
+		private RolesPolicy rolesPolicy;
 
 		// private NetworkAddress consensusAddress;
 
@@ -319,6 +432,22 @@ public class LedgerInitProperties {
 		public void setPubKey(PubKey pubKey) {
 			this.pubKey = pubKey;
 			this.address = AddressEncoding.generateAddress(pubKey);
+		}
+
+		public String[] getRoles() {
+			return roles;
+		}
+
+		public void setRoles(String[] roles) {
+			this.roles = roles;
+		}
+
+		public RolesPolicy getRolesPolicy() {
+			return rolesPolicy;
+		}
+
+		public void setRolesPolicy(RolesPolicy rolesPolicy) {
+			this.rolesPolicy = rolesPolicy;
 		}
 
 	}

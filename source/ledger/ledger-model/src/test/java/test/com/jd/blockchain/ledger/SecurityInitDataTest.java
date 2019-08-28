@@ -29,6 +29,18 @@ public class SecurityInitDataTest {
 		assertEquals(LedgerPermission.REGISTER_USER, permissions2[0]);
 		assertEquals(LedgerPermission.REGISTER_DATA_ACCOUNT, permissions2[1]);
 		
+		LedgerPermission[] allLedgerPermissions = LedgerPermission.values();
+		String jsonLedgerPersioms = JSONSerializeUtils.serializeToJSON(allLedgerPermissions);
+		
+		TransactionPermission[] allTransactionPermissions = TransactionPermission.values();
+		String jsonTransactionPersioms = JSONSerializeUtils.serializeToJSON(allTransactionPermissions);
+		
+		System.out.println("----------- Ledger Permissions JSON ------------");
+		System.out.println(jsonLedgerPersioms);
+		System.out.println("-----------------------");
+		System.out.println("----------- Transaction Permissions JSON ------------");
+		System.out.println(jsonTransactionPersioms);
+		System.out.println("-----------------------");
 	}
 
 	@Test
