@@ -54,6 +54,14 @@ public interface DataCodes {
 	public static final int TX_RESPONSE = 0x350;
 
 	public static final int TX_OP_RESULT = 0x360;
+	
+	public static final int TX_OP_ROLE_CONFIGURE = 0x370;
+	
+	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x371;
+	
+	public static final int TX_OP_USER_ROLE_AUTHORIZE = 0x372;
+	
+	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x373;
 
 	// enum types of permissions;
 	public static final int ENUM_TX_PERMISSION = 0x401;

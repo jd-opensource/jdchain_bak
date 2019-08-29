@@ -178,8 +178,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 		Properties csProps = ledgerInitProps.getConsensusConfig();
 		ConsensusProvider csProvider = ConsensusProviders.getProvider(ledgerInitProps.getConsensusProvider());
-		ConsensusSettings csSettings = csProvider.getSettingsFactory()
-				.getConsensusSettingsBuilder()
+		ConsensusSettings csSettings = csProvider.getSettingsFactory().getConsensusSettingsBuilder()
 				.createSettings(csProps, ledgerInitProps.getConsensusParticipantNodes());
 		setConsensusProvider(csProvider);
 
@@ -405,6 +404,12 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		return decision;
 	}
 
+	/**
+	 * 初始化账本数据，返回创始区块；
+	 * 
+	 * @param ledgerEditor
+	 * @return
+	 */
 	private LedgerBlock initLedgerDataset(LedgerEditor ledgerEditor) {
 		// 初始化时，自动将参与方注册为账本的用户；
 		TxRequestBuilder txReqBuilder = new TxRequestBuilder(this.initTxContent);

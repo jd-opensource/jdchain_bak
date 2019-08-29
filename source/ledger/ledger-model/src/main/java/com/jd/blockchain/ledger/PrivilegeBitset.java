@@ -86,6 +86,7 @@ public class PrivilegeBitset<E extends Enum<?>> implements Privilege<E>, BytesSe
 	 * @param privileges
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Privilege<E> union(PrivilegeBitset<E>... privileges) {
 		return union(privileges, 0, privileges.length);
 	}
@@ -112,6 +113,7 @@ public class PrivilegeBitset<E extends Enum<?>> implements Privilege<E>, BytesSe
 	 * @param privileges
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Privilege<E> intersect(PrivilegeBitset<E>... privileges) {
 		return intersect(privileges, 0, privileges.length);
 	}

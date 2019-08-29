@@ -75,6 +75,11 @@ public class TxBuilder implements TransactionBuilder {
 	public Collection<OperationResultHandle> getReturnValuehandlers() {
 		return opFactory.getReturnValuetHandlers();
 	}
+	
+	@Override
+	public SecurityOperationBuilder security() {
+		return opFactory.security();
+	}
 
 	@Override
 	public LedgerInitOperationBuilder ledgers() {

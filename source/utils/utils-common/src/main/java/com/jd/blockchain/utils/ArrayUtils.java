@@ -30,6 +30,13 @@ public abstract class ArrayUtils {
 		return array;
 	}
 	
+	public static <T> T[] toArray(Collection<T> collection, Class<T> clazz){
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) Array.newInstance(clazz, collection.size());
+		collection.toArray(array);
+		return array;
+	}
+	
 	public static <T> List<T> asList(T[] array){
 		return asList(array, 0, array.length);
 	}
