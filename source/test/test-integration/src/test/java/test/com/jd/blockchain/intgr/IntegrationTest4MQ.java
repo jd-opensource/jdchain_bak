@@ -159,8 +159,6 @@ public class IntegrationTest4MQ {
 
 		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
 
-		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
-
 		System.out.println("update participant state before \r\n");
 
 		for (int i = 0; i < participantCount; i++) {
