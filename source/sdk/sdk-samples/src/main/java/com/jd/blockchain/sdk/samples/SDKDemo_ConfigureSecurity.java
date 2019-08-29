@@ -66,10 +66,18 @@ public class SDKDemo_ConfigureSecurity {
 		// 注册
 		txTemp.users().register(user.getIdentity());
 
-		txTemp.security().roles().configure("ADMIN")
+		txTemp.security().roles()
+			.configure("ADMIN")
 				.enable(LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT)
-				.enable(TransactionPermission.DIRECT_OPERATION).configure("GUEST")
+				.enable(TransactionPermission.DIRECT_OPERATION)
+			.configure("GUEST")
 				.enable(TransactionPermission.CONTRACT_OPERATION);
+
+		txTemp.security().authorziations()
+			.forUser(user.getIdentity())
+				.authorize("ADMIN", "MANAGER")
+			.forUser(CLIENT_CERT.getAddress())
+				.authorize("GUEST");
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();

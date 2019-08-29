@@ -2,10 +2,8 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.ledger.RolesConfigureOperation;
 
-public interface RolesConfigurer {
+public interface RolesConfigurer extends RolesConfigure {
 	
 	RolesConfigureOperation getOperation();
-	
-	RolePrivilegeConfigurer configure(String roleName);
 
 }

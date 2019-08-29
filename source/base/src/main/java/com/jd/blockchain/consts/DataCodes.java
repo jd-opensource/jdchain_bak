@@ -59,7 +59,7 @@ public interface DataCodes {
 	
 	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x371;
 	
-	public static final int TX_OP_USER_ROLE_AUTHORIZE = 0x372;
+	public static final int TX_OP_USER_ROLES_AUTHORIZE = 0x372;
 	
 	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x373;
 

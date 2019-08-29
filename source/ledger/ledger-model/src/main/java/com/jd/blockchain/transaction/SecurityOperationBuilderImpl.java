@@ -7,4 +7,9 @@ public class SecurityOperationBuilderImpl implements SecurityOperationBuilder{
 		return new RolesConfigureOpTemplate();
 	}
 
+	@Override
+	public UserAuthorizer authorziations() {
+		return new UserAuthorizeOpTemplate();
+	}
+
 }

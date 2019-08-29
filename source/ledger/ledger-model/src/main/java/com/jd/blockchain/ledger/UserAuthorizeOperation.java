@@ -12,42 +12,46 @@ import com.jd.blockchain.utils.Bytes;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.TX_OP_USER_ROLE_AUTHORIZE)
-public interface UserRoleAuthorizeOperation extends Operation {
+@DataContract(code = DataCodes.TX_OP_USER_ROLES_AUTHORIZE)
+public interface UserAuthorizeOperation extends Operation {
 
 	@DataField(order = 2, refContract = true, list = true)
-	UserRoleAuthEntry[] getUserRoleAuthorizations();
+	UserRolesEntry[] getUserRolesAuthorizations();
 
 	@DataContract(code = DataCodes.TX_OP_USER_ROLE_AUTHORIZE_ENTRY)
-	public static interface UserRoleAuthEntry {
+	public static interface UserRolesEntry {
 
+		/**
+		 * 用户地址；
+		 * 
+		 * @return
+		 */
 		@DataField(order = 0, primitiveType = PrimitiveType.BYTES)
 		Bytes getUserAddress();
 
-		@DataField(order = 2, primitiveType = PrimitiveType.INT64)
-		long getExplectedVersion();
-		
 		/**
 		 * 要更新的多角色权限策略；
+		 * 
 		 * @return
 		 */
-		RolesPolicy getRolesPolicy();
+		@DataField(order = 2, refEnum = true)
+		RolesPolicy getPolicy();
 
 		/**
 		 * 授权的角色清单；
 		 * 
 		 * @return
 		 */
-		@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
-		String[] getAuthRoles();
-		
+		@DataField(order = 3, primitiveType = PrimitiveType.TEXT, list = true)
+		String[] getAuthorizedRoles();
+
 		/**
 		 * 取消授权的角色清单；
 		 * 
 		 * @return
 		 */
-		@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
-		String[] getUnauthRoles();
+		@DataField(order = 4, primitiveType = PrimitiveType.TEXT, list = true)
+		String[] getUnauthorizedRoles();
 
 	}
 }

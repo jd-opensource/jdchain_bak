@@ -175,7 +175,12 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			return rolesConfigurer;
 		}
 		
-		
+		@Override
+		public UserAuthorizer authorziations() {
+			UserAuthorizer userAuthorizer = SECURITY_OP_BUILDER.authorziations();
+			operationList.add(userAuthorizer.getOperation());
+			return userAuthorizer;
+		}
 	}
 
 	private class DataAccountRegisterOperationBuilderFilter implements DataAccountRegisterOperationBuilder {

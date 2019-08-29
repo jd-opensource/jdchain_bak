@@ -3,7 +3,7 @@ package com.jd.blockchain.transaction;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.TransactionPermission;
 
-public interface RolePrivilegeConfigurer {
+public interface RolePrivilegeConfigurer extends RolesConfigure {
 	
 	String getRoleName();
 	
@@ -15,5 +15,4 @@ public interface RolePrivilegeConfigurer {
 
 	RolePrivilegeConfigurer enable(LedgerPermission... permissions);
 
-	RolePrivilegeConfigurer configure(String roleName);
 }

@@ -7,13 +7,8 @@ import java.util.Comparator;
 
 import org.springframework.cglib.proxy.UndeclaredThrowableException;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.PreparedTransaction;
