@@ -6,6 +6,9 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.ParticipantNodeState;
+import com.jd.blockchain.ledger.ParticipantStateUpdateInfo;
+import com.jd.blockchain.ledger.ParticipantStateUpdateInfoData;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -31,6 +34,8 @@ public class IntegrationTest4Bftsmart {
     private static final boolean isRegisterDataAccount = true;
 
     private static final boolean isRegisterParticipant = true;
+
+    private static final boolean isParticipantStateUpdate = true;
 
     private static final boolean isWriteKv = true;
 
@@ -148,8 +153,9 @@ public class IntegrationTest4Bftsmart {
 
         System.out.printf("before add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
 
+        IntegrationBase.KeyPairResponse participantResponse;
         if (isRegisterParticipant) {
-            IntegrationBase.KeyPairResponse participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
+            participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
         }
 
         participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
@@ -158,6 +164,21 @@ public class IntegrationTest4Bftsmart {
 
         System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
 
+        System.out.println("update participant state before \r\n");
+
+        for (int i = 0; i < participantCount; i++) {
+            System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+        }
+
+        if (isParticipantStateUpdate) {
+            IntegrationBase.testSDK_UpdateParticipantState(adminKey, new BlockchainKeypair(participantResponse.getKeyPair().getPubKey(), participantResponse.getKeyPair().getPrivKey()), ledgerHash, blockchainService);
+        }
+
+        System.out.println("update participant state after\r\n");
+
+        for (int i = 0; i < participantCount; i++) {
+            System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+        }
 
         try {
             System.out.println("----------------- Init Completed -----------------");

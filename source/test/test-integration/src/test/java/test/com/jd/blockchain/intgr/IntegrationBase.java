@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -190,6 +191,32 @@ public class IntegrationBase {
 
 		KeyPairResponse keyPairResponse = new KeyPairResponse();
 		keyPairResponse.keyPair = participant;
+		keyPairResponse.txResp = txResp;
+		keyPairResponse.txHash = transactionHash;
+		return keyPairResponse;
+	}
+
+	public static KeyPairResponse testSDK_UpdateParticipantState(AsymmetricKeypair adminKey, BlockchainKeypair participantKeyPair, HashDigest ledgerHash,
+																 BlockchainService blockchainService) {
+		// 定义交易；
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+
+		ParticipantStateUpdateInfo stateUpdateInfo = new ParticipantStateUpdateInfoData(participantKeyPair.getPubKey(), ParticipantNodeState.CONSENSUSED);
+
+		txTpl.states().update(stateUpdateInfo);
+
+		// 签名；
+		PreparedTransaction ptx = txTpl.prepare();
+
+		HashDigest transactionHash = ptx.getHash();
+
+		ptx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = ptx.commit();
+
+		KeyPairResponse keyPairResponse = new KeyPairResponse();
+		keyPairResponse.keyPair = participantKeyPair;
 		keyPairResponse.txResp = txResp;
 		keyPairResponse.txHash = transactionHash;
 		return keyPairResponse;

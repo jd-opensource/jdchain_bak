@@ -50,6 +50,7 @@ public interface DataCodes {
 	public static final int TX_OP_CONTRACT_EVENT_SEND = 0x340;
 
 	public static final int TX_OP_PARTICIPANT_REG = 0x350;
+	public static final int TX_OP_PARTICIPANT_STATE_UPDATE = 0x351;
 
 	public static final int TX_RESPONSE = 0x360;
 
@@ -71,7 +72,9 @@ public interface DataCodes {
 
 	public static final int METADATA_CONSENSUS_SETTING = 0x631;
 
-	 public static final int METADATA_PARTICIPANT_INFO = 0x640;
+	public static final int METADATA_PARTICIPANT_INFO = 0x640;
+
+	public static final int METADATA_PARTICIPANT_STATE_INFO = 0x641;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
 	

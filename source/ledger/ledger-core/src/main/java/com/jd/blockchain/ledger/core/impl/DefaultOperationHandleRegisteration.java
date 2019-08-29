@@ -28,6 +28,7 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 		opHandles.add(new ParticipantRegisterOperationHandle());
 		opHandles.add(new ContractCodeDeployOperationHandle());
 		opHandles.add(new JVMContractEventSendOperationHandle());
+		opHandles.add(new ParticipantStateUpdateOperationHandle());
 	}
 
 	/**

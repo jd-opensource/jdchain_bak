@@ -32,6 +32,8 @@ public class IntegrationTest4MQ {
 
 	private static final boolean isRegisterParticipant = true;
 
+	private static final boolean isParticipantStateUpdate = true;
+
 	private static final boolean isWriteKv = true;
 	private static final boolean isContract = false;
 
@@ -146,8 +148,9 @@ public class IntegrationTest4MQ {
 
 		System.out.printf("before add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
 
+		IntegrationBase.KeyPairResponse participantResponse;
 		if (isRegisterParticipant) {
-			IntegrationBase.KeyPairResponse participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
+			participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
 		}
 
 		participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
@@ -155,6 +158,24 @@ public class IntegrationTest4MQ {
 		userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
 
 		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+		System.out.println("update participant state before \r\n");
+
+		for (int i = 0; i < participantCount; i++) {
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+		}
+
+		if (isParticipantStateUpdate) {
+			IntegrationBase.testSDK_UpdateParticipantState(adminKey, new BlockchainKeypair(participantResponse.getKeyPair().getPubKey(), participantResponse.getKeyPair().getPrivKey()), ledgerHash, blockchainService);
+		}
+
+		System.out.println("update participant state after\r\n");
+
+		for (int i = 0; i < participantCount; i++) {
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+		}
 
 		IntegrationBase.testConsistencyAmongNodes(ledgers);
 

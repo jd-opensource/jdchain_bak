@@ -25,6 +25,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private static final ParticipantRegisterOperationBuilderImpl PARTICIPANT_REG_OP_BUILDER = new ParticipantRegisterOperationBuilderImpl();
 
+	private static final ParticipantStateUpdateOperationBuilderImpl PARTICIPANT_STATE_UPDATE_OP_BUILDER = new ParticipantStateUpdateOperationBuilderImpl();
+
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
 	private UserRegisterOperationBuilder userRegOpBuilder = new UserRegisterOperationBuilderFilter();
@@ -38,6 +40,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private ContractInvocationProxyBuilder contractInvoProxyBuilder = new ContractInvocationProxyBuilder();
 
 	private ParticipantRegisterOperationBuilder participantRegOpBuilder = new ParticipantRegisterOperationBuilderFilter();
+
+	private ParticipantStateUpdateOperationBuilder participantStateModifyOpBuilder = new ParticipantStateUpdateOperationBuilderFilter();
 
 	// TODO: 暂时只支持单线程情形，未考虑多线程；
 	private List<Operation> operationList = new ArrayList<>();
@@ -78,6 +82,9 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	@Override
 	public ParticipantRegisterOperationBuilder participants() {return participantRegOpBuilder;}
+
+	@Override
+	public ParticipantStateUpdateOperationBuilder states() {return participantStateModifyOpBuilder;}
 
 	@Override
 	public <T> T contract(String address, Class<T> contractIntf) {
@@ -257,6 +264,15 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 		@Override
 		public ParticipantRegisterOperation register(ParticipantInfo participantInfo) {
 			ParticipantRegisterOperation op = PARTICIPANT_REG_OP_BUILDER.register(participantInfo);
+			operationList.add(op);
+			return op;
+		}
+	}
+
+	private class ParticipantStateUpdateOperationBuilderFilter implements ParticipantStateUpdateOperationBuilder {
+		@Override
+		public ParticipantStateUpdateOperation update(ParticipantStateUpdateInfo stateUpdateInfo) {
+			ParticipantStateUpdateOperation op = PARTICIPANT_STATE_UPDATE_OP_BUILDER.update(stateUpdateInfo);
 			operationList.add(op);
 			return op;
 		}

@@ -73,6 +73,25 @@ public class ParticipantDataSet implements Transactional, MerkleProvable {
 		}
 	}
 
+	/**
+	 * 更新共识参与方的状态信息； <br>
+	 *
+	 * @param participant
+	 */
+	public void updateConsensusParticipant(ParticipantNode participant) {
+		Bytes key = encodeKey(participant.getAddress());
+		byte[] participantBytes = BinaryProtocol.encode(participant, ParticipantNode.class);
+		long version = dataset.getVersion(key);
+		if (version < 0) {
+			throw new LedgerException("Participant not exist, update failed!");
+		}
+
+		long nv = dataset.setValue(key, participantBytes, version);
+		if (nv < 0) {
+			throw new LedgerException("Participant update failed!");
+		}
+	}
+
 	private Bytes encodeKey(String address) {
 		// return id + "";
 		return Bytes.fromString(address);

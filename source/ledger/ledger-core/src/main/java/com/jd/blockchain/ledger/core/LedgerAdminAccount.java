@@ -249,6 +249,15 @@ public class LedgerAdminAccount implements Transactional, LedgerAdministration {
 		participants.addConsensusParticipant(participant);
 	}
 
+	/**
+	 * 更新参与方的状态参数；
+	 *
+	 * @param participant
+	 */
+	public void updateParticipant(ParticipantNode participant) {
+		participants.updateConsensusParticipant(participant);
+	}
+
 	@Override
 	public boolean isUpdated() {
 		return updated || participants.isUpdated();

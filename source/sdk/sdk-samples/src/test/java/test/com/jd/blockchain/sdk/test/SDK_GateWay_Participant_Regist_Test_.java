@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
  * @since 1.0.0
  */
 
-public class SDK_GateWay_Participant_Test_ {
+public class SDK_GateWay_Participant_Regist_Test_ {
 
     private PrivKey privKey;
     private PubKey pubKey;
