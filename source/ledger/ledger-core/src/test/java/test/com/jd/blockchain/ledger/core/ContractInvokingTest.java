@@ -61,7 +61,7 @@ public class ContractInvokingTest {
 
 		// 注册合约处理器；
 		DefaultOperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		opReg.insertAsTopPriority(contractInvokingHandle);
+		opReg.registerHandle(contractInvokingHandle);
 
 		// 发布指定地址合约
 		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);

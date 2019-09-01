@@ -1,5 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
+import java.util.Collection;
+
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AuthorizationException;
@@ -7,8 +9,8 @@ import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.RoleSet;
 import com.jd.blockchain.ledger.RolesPolicy;
-import com.jd.blockchain.ledger.UserRoleSettings;
 import com.jd.blockchain.ledger.UserRoles;
+import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
@@ -21,7 +23,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class UserRoleDataset implements Transactional, MerkleProvable, UserRoleSettings {
+public class UserRoleDataset implements Transactional, MerkleProvable, UserRolesSettings {
 
 	private MerkleDataSet dataset;
 
@@ -76,6 +78,25 @@ public class UserRoleDataset implements Transactional, MerkleProvable, UserRoleS
 	 */
 	@Override
 	public void addUserRoles(Bytes userAddress, RolesPolicy rolesPolicy, String... roles) {
+		UserRoles roleAuth = new UserRoles(userAddress, -1, rolesPolicy);
+		roleAuth.addRoles(roles);
+		long nv = setUserRolesAuthorization(roleAuth);
+		if (nv < 0) {
+			throw new AuthorizationException("Roles authorization of User[" + userAddress + "] already exists!");
+		}
+	}
+
+	/**
+	 * 加入新的用户角色授权； <br>
+	 * 
+	 * 如果该用户的授权已经存在，则引发 {@link LedgerException} 异常；
+	 * 
+	 * @param userAddress
+	 * @param rolesPolicy
+	 * @param roles
+	 */
+	@Override
+	public void addUserRoles(Bytes userAddress, RolesPolicy rolesPolicy, Collection<String> roles) {
 		UserRoles roleAuth = new UserRoles(userAddress, -1, rolesPolicy);
 		roleAuth.addRoles(roles);
 		long nv = setUserRolesAuthorization(roleAuth);

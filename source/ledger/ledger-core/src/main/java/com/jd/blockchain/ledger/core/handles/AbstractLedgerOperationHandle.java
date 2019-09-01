@@ -32,9 +32,14 @@ public abstract class AbstractLedgerOperationHandle<T extends Operation> impleme
 		this.SUPPORTED_OPERATION_TYPE = supportedOperationType;
 	}
 
+//	@Override
+//	public final boolean support(Class<?> operationType) {
+//		return SUPPORTED_OPERATION_TYPE.isAssignableFrom(operationType);
+//	}
+	
 	@Override
-	public final boolean support(Class<?> operationType) {
-		return SUPPORTED_OPERATION_TYPE.isAssignableFrom(operationType);
+	public Class<?> getOperationType() {
+		return SUPPORTED_OPERATION_TYPE;
 	}
 
 	@Override

@@ -73,8 +73,8 @@ public class MockerContractExeHandle implements OperationHandle {
 	}
 
 	@Override
-	public boolean support(Class<?> operationType) {
-		return ContractEventSendOperation.class.isAssignableFrom(operationType);
+	public Class<?> getOperationType() {
+		return ContractEventSendOperation.class;
 	}
 
 	public void initLedger(LedgerManager ledgerManager, HashDigest ledgerHash) {

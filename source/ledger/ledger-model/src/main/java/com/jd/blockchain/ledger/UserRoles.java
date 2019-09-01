@@ -1,5 +1,6 @@
 package com.jd.blockchain.ledger;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -69,6 +70,24 @@ public class UserRoles implements RoleSet {
 	public void addRoles(String... roles) {
 		for (String r : roles) {
 			this.roles.add(r);
+		}
+	}
+
+	public void addRoles(Collection<String> roles) {
+		for (String r : roles) {
+			this.roles.add(r);
+		}
+	}
+
+	public void removeRoles(String... roles) {
+		for (String r : roles) {
+			this.roles.remove(r);
+		}
+	}
+	
+	public void removeRoles(Collection<String> roles) {
+		for (String r : roles) {
+			this.roles.remove(r);
 		}
 	}
 

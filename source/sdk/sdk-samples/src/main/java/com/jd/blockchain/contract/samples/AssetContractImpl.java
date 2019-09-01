@@ -54,7 +54,7 @@ public class AssetContractImpl implements EventProcessingAware, AssetContract {
 		KVDataObject currTotal = (KVDataObject) kvEntries[0];
 		long newTotal = currTotal.longValue() + amount;
 		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(KEY_TOTAL, newTotal, currTotal.getVersion());
-
+		
 		// 分配到持有者账户；
 		KVDataObject holderAmount = (KVDataObject) kvEntries[1];
 		long newHodlerAmount = holderAmount.longValue() + amount;

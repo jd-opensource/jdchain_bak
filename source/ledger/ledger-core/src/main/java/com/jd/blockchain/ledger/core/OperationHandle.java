@@ -11,7 +11,7 @@ public interface OperationHandle {
 	 * @param operationType
 	 * @return
 	 */
-	boolean support(Class<?> operationType);
+	Class<?> getOperationType();
 
 	/**
 	 * 同步解析和执行操作；

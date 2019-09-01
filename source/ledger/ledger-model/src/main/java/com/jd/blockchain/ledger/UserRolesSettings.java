@@ -1,8 +1,10 @@
 package com.jd.blockchain.ledger;
 
+import java.util.Collection;
+
 import com.jd.blockchain.utils.Bytes;
 
-public interface UserRoleSettings {
+public interface UserRolesSettings {
 
 	/**
 	 * 单一用户可被授权的角色数量的最大值；
@@ -51,6 +53,17 @@ public interface UserRoleSettings {
 	 * @param roles
 	 */
 	void addUserRoles(Bytes userAddress, RolesPolicy rolesPolicy, String... roles);
+	
+	/**
+	 * 加入新的用户角色授权； <br>
+	 * 
+	 * 如果该用户的授权已经存在，则引发 {@link LedgerException} 异常；
+	 * 
+	 * @param userAddress
+	 * @param rolesPolicy
+	 * @param roles
+	 */
+	void addUserRoles(Bytes userAddress, RolesPolicy rolesPolicy, Collection<String> roles);
 
 	/**
 	 * 更新用户角色授权； <br>

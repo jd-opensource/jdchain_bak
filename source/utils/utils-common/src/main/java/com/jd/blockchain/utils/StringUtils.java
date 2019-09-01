@@ -51,7 +51,7 @@ public class StringUtils {
 	 */
 	public static String[] splitToArray(String str, String delimiter, boolean trimElement, boolean ignoreEmptyElement) {
 		if (str == null) {
-			return null;
+			return EMPTY_ARRAY;
 		}
 		if (trimElement) {
 			str = str.trim();

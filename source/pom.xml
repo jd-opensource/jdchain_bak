@@ -8,11 +8,6 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.6.RELEASE</version>
 	</parent>
-	<!--<parent> -->
-	<!--<groupId>org.sonatype.oss</groupId> -->
-	<!--<artifactId>oss-parent</artifactId> -->
-	<!--<version>7</version> -->
-	<!--</parent> -->
 
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
@@ -45,9 +40,6 @@
 		<explorer.version>0.7.0.RELEASE</explorer.version>
 		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
-		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
-		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
-			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
 		<aspectj.version>1.8.8</aspectj.version>
@@ -85,6 +77,10 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

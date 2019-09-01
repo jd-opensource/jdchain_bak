@@ -22,11 +22,11 @@ import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 
 @Service
-public abstract class AbtractContractEventHandle implements OperationHandle {
-
+public abstract class AbtractContractEventSendOperationHandle implements OperationHandle {
+	
 	@Override
-	public boolean support(Class<?> operationType) {
-		return ContractEventSendOperation.class.isAssignableFrom(operationType);
+	public Class<?> getOperationType() {
+		return ContractEventSendOperation.class;
 	}
 
 	@Override

@@ -155,4 +155,6 @@ public interface RolePrivilegeSettings {
 	long disablePermissions(String roleName, LedgerPermission[] ledgerPermissions,
 			TransactionPermission[] txPermissions);
 
+	boolean contains(String r);
+
 }

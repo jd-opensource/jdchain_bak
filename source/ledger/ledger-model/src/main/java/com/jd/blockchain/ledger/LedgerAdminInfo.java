@@ -10,7 +10,7 @@ public interface LedgerAdminInfo {
 
 	ParticipantNode[] getParticipants();
 
-	UserRoleSettings getUserRoles();
+	UserRolesSettings getUserRoles();
 
 	RolePrivilegeSettings getRolePrivileges();
 

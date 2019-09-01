@@ -30,7 +30,7 @@ import com.jd.blockchain.ledger.RolePrivilegeSettings;
 import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.UserRoleSettings;
+import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminDataset;
@@ -92,7 +92,7 @@ public class LedgerAdminDatasetTest {
 				testStorage);
 
 		ledgerAdminDataset.getRolePrivileges().addRolePrivilege("DEFAULT",
-				new LedgerPermission[] { LedgerPermission.AUTHORIZE_ROLES, LedgerPermission.REGISTER_USER,
+				new LedgerPermission[] { LedgerPermission.CONFIGURE_ROLES, LedgerPermission.REGISTER_USER,
 						LedgerPermission.APPROVE_TX },
 				new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
 						TransactionPermission.CONTRACT_OPERATION });
@@ -225,7 +225,7 @@ public class LedgerAdminDatasetTest {
 	}
 
 	private void verifyRealoadingRoleAuthorizations(LedgerAdminInfo actualAccount,
-			RolePrivilegeSettings expRolePrivilegeSettings, UserRoleSettings expUserRoleSettings) {
+			RolePrivilegeSettings expRolePrivilegeSettings, UserRolesSettings expUserRoleSettings) {
 		// 验证基本信息；
 		RolePrivilegeSettings actualRolePrivileges = actualAccount.getRolePrivileges();
 		RolePrivileges[] expRPs = expRolePrivilegeSettings.getRolePrivileges();
@@ -239,7 +239,7 @@ public class LedgerAdminDatasetTest {
 			assertArrayEquals(expRP.getTransactionPrivilege().toBytes(), actualRP.getTransactionPrivilege().toBytes());
 		}
 
-		UserRoleSettings actualUserRoleSettings = actualAccount.getUserRoles();
+		UserRolesSettings actualUserRoleSettings = actualAccount.getUserRoles();
 		UserRoles[] expUserRoles = expUserRoleSettings.getUserRoles();
 		assertEquals(expUserRoles.length, actualUserRoleSettings.getUserCount());
 

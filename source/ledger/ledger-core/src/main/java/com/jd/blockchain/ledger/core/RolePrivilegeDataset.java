@@ -283,4 +283,10 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	public boolean isReadonly() {
 		return dataset.isReadonly();
 	}
+
+	@Override
+	public boolean contains(String roleName) {
+		Bytes key = encodeKey(roleName);
+		return dataset.getVersion(key) > -1;
+	}
 }

@@ -15,57 +15,61 @@ import com.jd.blockchain.consts.DataCodes;
 public enum LedgerPermission {
 
 	/**
-	 * 授权角色权限；<br>
-	 * 包括：创建角色、设置角色的权限代码、分配用户角色；
+	 * 配置角色的权限；<br>
 	 */
-	AUTHORIZE_ROLES((byte) 0x01),
+	CONFIGURE_ROLES((byte) 0x01),
+
+	/**
+	 * 授权用户角色；<br>
+	 */
+	AUTHORIZE_USER_ROLES((byte) 0x02),
 
 	/**
 	 * 设置共识协议；<br>
 	 */
-	SET_CONSENSUS((byte) 0x02),
+	SET_CONSENSUS((byte) 0x03),
 
 	/**
 	 * 设置密码体系；<br>
 	 */
-	SET_CRYPTO((byte) 0x03),
+	SET_CRYPTO((byte) 0x04),
 
 	/**
 	 * 注册参与方；<br>
 	 */
-	REGISTER_PARTICIPANT((byte) 0x04),
+	REGISTER_PARTICIPANT((byte) 0x05),
 
 	/**
 	 * 注册用户；<br>
 	 * 
 	 * 如果不具备此项权限，则无法注册用户；
 	 */
-	REGISTER_USER((byte) 0x05),
+	REGISTER_USER((byte) 0x11),
 
 	/**
 	 * 注册数据账户；<br>
 	 */
-	REGISTER_DATA_ACCOUNT((byte) 0x06),
+	REGISTER_DATA_ACCOUNT((byte) 0x12),
 
 	/**
 	 * 注册合约；<br>
 	 */
-	REGISTER_CONTRACT((byte) 0x07),
+	REGISTER_CONTRACT((byte) 0x13),
 
 	/**
 	 * 升级合约
 	 */
-	UPGRADE_CONTRACT((byte) 0x08),
+	UPGRADE_CONTRACT((byte) 0x14),
 
 	/**
 	 * 设置用户属性；<br>
 	 */
-	SET_USER_ATTRIBUTES((byte) 0x09),
+	SET_USER_ATTRIBUTES((byte) 0x15),
 
 	/**
 	 * 写入数据账户；<br>
 	 */
-	WRITE_DATA_ACCOUNT((byte) 0x0A),
+	WRITE_DATA_ACCOUNT((byte) 0x16),
 
 	/**
 	 * 参与方核准交易；<br>
@@ -74,16 +78,14 @@ public enum LedgerPermission {
 	 * <p>
 	 * 只对交易请求的节点签名列表{@link TransactionRequest#getNodeSignatures()}的用户产生影响；
 	 */
-	APPROVE_TX((byte) 0x0B),
+	APPROVE_TX((byte) 0x0C),
 
 	/**
 	 * 参与方共识交易；<br>
 	 * 
 	 * 如果不具备此项权限，则无法作为共识节点接入并对交易进行共识；
 	 */
-	CONSENSUS_TX((byte) 0x0C);
-	
-	
+	CONSENSUS_TX((byte) 0x0D);
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;

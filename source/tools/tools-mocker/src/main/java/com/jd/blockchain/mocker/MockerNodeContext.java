@@ -57,18 +57,19 @@ import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
+import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerSecurityManager;
+import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.mocker.config.MockerConstant;
 import com.jd.blockchain.mocker.config.PresetAnswerPrompter;
 import com.jd.blockchain.mocker.handler.MockerContractExeHandle;
-import com.jd.blockchain.mocker.handler.MockerOperationHandleRegister;
 import com.jd.blockchain.mocker.proxy.ContractProxy;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
@@ -91,7 +92,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 	private DbConnectionFactory dbConnFactory = new MemoryDBConnFactory();
 
-	private MockerOperationHandleRegister opHandler = new MockerOperationHandleRegister();
+	private DefaultOperationHandleRegisteration opHandler = new DefaultOperationHandleRegisteration();
 
 	private MockerContractExeHandle contractExeHandle = new MockerContractExeHandle();
 
@@ -194,7 +195,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 		contractExeHandle.initLedger(ledgerManager, ledgerHash);
 
-		opHandler.registerHandler(contractExeHandle);
+		opHandler.registerHandle(contractExeHandle);
 
 		return this;
 	}

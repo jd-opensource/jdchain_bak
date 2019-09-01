@@ -96,15 +96,18 @@ public class LedgerInitPropertiesTest {
 					TransactionPermission.CONTRACT_OPERATION }, roleDefault.getTransactionPermissions());
 
 			RoleInitData roleAdmin = rolesInitDatas.get("ADMIN");
-			assertArrayEquals(new LedgerPermission[] { LedgerPermission.AUTHORIZE_ROLES, LedgerPermission.SET_CONSENSUS,
-					LedgerPermission.SET_CRYPTO, LedgerPermission.REGISTER_PARTICIPANT,
-					LedgerPermission.REGISTER_USER }, roleAdmin.getLedgerPermissions());
+			assertArrayEquals(
+					new LedgerPermission[] { LedgerPermission.CONFIGURE_ROLES, LedgerPermission.AUTHORIZE_USER_ROLES,
+							LedgerPermission.SET_CONSENSUS, LedgerPermission.SET_CRYPTO,
+							LedgerPermission.REGISTER_PARTICIPANT, LedgerPermission.REGISTER_USER },
+					roleAdmin.getLedgerPermissions());
 			assertArrayEquals(new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION },
 					roleAdmin.getTransactionPermissions());
 
 			RoleInitData roleManager = rolesInitDatas.get("MANAGER");
 			assertArrayEquals(
-					new LedgerPermission[] { LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT,
+					new LedgerPermission[] { LedgerPermission.CONFIGURE_ROLES, LedgerPermission.AUTHORIZE_USER_ROLES,
+							LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT,
 							LedgerPermission.REGISTER_CONTRACT, LedgerPermission.UPGRADE_CONTRACT,
 							LedgerPermission.SET_USER_ATTRIBUTES, LedgerPermission.WRITE_DATA_ACCOUNT },
 					roleManager.getLedgerPermissions());
@@ -127,7 +130,7 @@ public class LedgerInitPropertiesTest {
 
 			// 验证参与方信息；
 			assertEquals(4, initProps.getConsensusParticipantCount());
-			
+
 			ConsensusParticipantConfig part0 = initProps.getConsensusParticipant(0);
 			assertEquals("jd.com", part0.getName());
 			PubKey pubKey0 = KeyGenCommand.decodePubKey("3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9");
@@ -135,26 +138,25 @@ public class LedgerInitPropertiesTest {
 			assertEquals("127.0.0.1", part0.getInitializerAddress().getHost());
 			assertEquals(8800, part0.getInitializerAddress().getPort());
 			assertEquals(true, part0.getInitializerAddress().isSecure());
-			assertArrayEquals(new String[] {"ADMIN", "MANAGER"}, part0.getRoles());
+			assertArrayEquals(new String[] { "ADMIN", "MANAGER" }, part0.getRoles());
 			assertEquals(RolesPolicy.UNION, part0.getRolesPolicy());
-			
 
 			ConsensusParticipantConfig part1 = initProps.getConsensusParticipant(1);
 			assertEquals(false, part1.getInitializerAddress().isSecure());
 			PubKey pubKey1 = KeyGenCommand.decodePubKey("3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX");
 			assertEquals(pubKey1, part1.getPubKey());
-			assertArrayEquals(new String[] { "MANAGER"}, part1.getRoles());
+			assertArrayEquals(new String[] { "MANAGER" }, part1.getRoles());
 			assertEquals(RolesPolicy.UNION, part1.getRolesPolicy());
 
 			ConsensusParticipantConfig part2 = initProps.getConsensusParticipant(2);
 			assertEquals("7VeRAr3dSbi1xatq11ZcF7sEPkaMmtZhV9shonGJWk9T4pLe", part2.getPubKey().toBase58());
-			assertArrayEquals(new String[] { "MANAGER"}, part2.getRoles());
+			assertArrayEquals(new String[] { "MANAGER" }, part2.getRoles());
 			assertEquals(RolesPolicy.UNION, part2.getRolesPolicy());
-			
+
 			ConsensusParticipantConfig part3 = initProps.getConsensusParticipant(3);
 			PubKey pubKey3 = KeyGenCommand.decodePubKey("3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk");
 			assertEquals(pubKey3, part3.getPubKey());
-			assertArrayEquals(new String[] { "GUEST"}, part3.getRoles());
+			assertArrayEquals(new String[] { "GUEST" }, part3.getRoles());
 			assertEquals(RolesPolicy.INTERSECT, part3.getRolesPolicy());
 
 		} finally {

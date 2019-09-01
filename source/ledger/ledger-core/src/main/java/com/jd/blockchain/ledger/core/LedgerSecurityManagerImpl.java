@@ -14,7 +14,7 @@ import com.jd.blockchain.ledger.RolePrivilegeSettings;
 import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.UserRoleSettings;
+import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.utils.Bytes;
 
@@ -28,7 +28,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 
 	private RolePrivilegeSettings rolePrivilegeSettings;
 
-	private UserRoleSettings userRolesSettings;
+	private UserRolesSettings userRolesSettings;
 
 	// 用户的权限配置
 	private Map<Bytes, UserRolesPrivileges> userPrivilegesCache = new ConcurrentHashMap<>();
@@ -36,7 +36,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 	private Map<Bytes, UserRoles> userRolesCache = new ConcurrentHashMap<>();
 	private Map<String, RolePrivileges> rolesPrivilegeCache = new ConcurrentHashMap<>();
 
-	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserRoleSettings userRolesSettings) {
+	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserRolesSettings userRolesSettings) {
 		this.rolePrivilegeSettings = rolePrivilegeSettings;
 		this.userRolesSettings = userRolesSettings;
 	}
