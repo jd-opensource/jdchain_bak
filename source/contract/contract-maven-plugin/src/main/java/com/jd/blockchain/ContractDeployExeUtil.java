@@ -95,6 +95,7 @@ public enum ContractDeployExeUtil {
         DataContractRegistry.register(DataAccountRegisterOperation.class);
         DataContractRegistry.register(UserRegisterOperation.class);
         DataContractRegistry.register(ParticipantRegisterOperation.class);
+        DataContractRegistry.register(ParticipantStateUpdateOperation.class);
     }
 
     public BlockchainService initBcsrv(String host, int port) {

@@ -77,6 +77,7 @@ public class LedgerPerformanceTest {
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 	}
 
 	public static void test(String[] args) {

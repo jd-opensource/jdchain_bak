@@ -33,6 +33,7 @@ public class ContractInvokingTest {
 		DataContractRegistry.register(TransactionResponse.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
 		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 	}
 
 	private static final String LEDGER_KEY_PREFIX = "LDG://";

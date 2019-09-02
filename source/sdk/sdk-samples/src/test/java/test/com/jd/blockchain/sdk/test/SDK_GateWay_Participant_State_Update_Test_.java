@@ -56,6 +56,9 @@ public class SDK_GateWay_Participant_State_Update_Test_ {
         DataContractRegistry.register(NodeRequest.class);
         DataContractRegistry.register(EndpointRequest.class);
         DataContractRegistry.register(TransactionResponse.class);
+        DataContractRegistry.register(ParticipantRegisterOperation.class);
+        DataContractRegistry.register(ParticipantStateUpdateOperation.class);
+        DataContractRegistry.register(ParticipantStateUpdateOperation.class);
     }
 
     @Test

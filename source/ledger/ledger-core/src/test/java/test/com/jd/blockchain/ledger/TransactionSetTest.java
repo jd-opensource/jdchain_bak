@@ -37,6 +37,7 @@ public class TransactionSetTest {
 		DataContractRegistry.register(ContractCodeDeployOperation.class);
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 		CryptoSetting defCryptoSetting = LedgerTestUtils.createDefaultCryptoSetting();
 
 		MemoryKVStorage testStorage = new MemoryKVStorage();
