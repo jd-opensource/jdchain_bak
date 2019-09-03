@@ -7,6 +7,7 @@ import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
 import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.utils.net.NetworkAddress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,8 +77,9 @@ public class SDK_GateWay_Participant_State_Update_Test_ {
 
         System.out.println("Address = "+AddressEncoding.generateAddress(pubKey));
 
+        NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
 
-        ParticipantStateUpdateInfo stateUpdateInfo = new ParticipantStateUpdateInfoData(pubKey, ParticipantNodeState.CONSENSUSED);
+        ParticipantStateUpdateInfo stateUpdateInfo = new ParticipantStateUpdateInfoData(pubKey, ParticipantNodeState.CONSENSUSED, networkAddress);
         txTemp.states().update(stateUpdateInfo);
 
         // TX 准备就绪；

@@ -1,10 +1,13 @@
 package com.jd.blockchain.ledger.core.impl.handles;
 
+import com.jd.blockchain.consensus.ConsensusProvider;
+import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
+import com.jd.blockchain.utils.Bytes;
 
 public class ParticipantStateUpdateOperationHandle implements OperationHandle {
 
@@ -20,6 +23,10 @@ public class ParticipantStateUpdateOperationHandle implements OperationHandle {
 
         LedgerAdminAccount adminAccount = newBlockDataset.getAdminAccount();
 
+        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccount.getSetting().getConsensusProvider());
+
+        LedgerAdminAccount.LedgerMetadataImpl metadata = (LedgerAdminAccount.LedgerMetadataImpl) adminAccount.getMetadata();
+
         ParticipantNode[] participants = adminAccount.getParticipants();
 
         ParticipantNode participantNode = null;
@@ -27,8 +34,19 @@ public class ParticipantStateUpdateOperationHandle implements OperationHandle {
         for(int i = 0; i < participants.length; i++) {
             if (stateUpdateOperation.getStateUpdateInfo().getPubKey().equals(participants[i].getPubKey())) {
                participantNode = new PartNode(participants[i].getId(), participants[i].getName(), participants[i].getPubKey(), ParticipantNodeState.CONSENSUSED);
+               break;
             }
         }
+
+        //update consensus setting
+        ParticipantInfo participantInfo = new ParticipantInfoData("", participantNode.getName(), participantNode.getPubKey(), stateUpdateOperation.getStateUpdateInfo().getNetworkAddress());
+
+        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(metadata.getSetting().getConsensusSetting(), participantInfo);
+
+        LedgerSetting ledgerSetting = new LedgerConfiguration(adminAccount.getSetting().getConsensusProvider(),
+                newConsensusSettings, metadata.getSetting().getCryptoSetting());
+
+        metadata.setSetting(ledgerSetting);
 
         adminAccount.updateParticipant(participantNode);
 

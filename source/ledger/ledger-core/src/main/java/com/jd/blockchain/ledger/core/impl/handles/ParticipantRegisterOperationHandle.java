@@ -20,11 +20,11 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
 
         ParticipantInfo participantInfo = participantRegOp.getParticipantInfo();
 
-        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccount.getSetting().getConsensusProvider());
+//        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccount.getSetting().getConsensusProvider());
 
         ParticipantNode participantNode = new PartNode((int)(adminAccount.getParticipantCount()), participantInfo.getName(), participantInfo.getPubKey(), ParticipantNodeState.REGISTED);
 
-        LedgerAdminAccount.LedgerMetadataImpl metadata = (LedgerAdminAccount.LedgerMetadataImpl) adminAccount.getMetadata();
+//        LedgerAdminAccount.LedgerMetadataImpl metadata = (LedgerAdminAccount.LedgerMetadataImpl) adminAccount.getMetadata();
 
 
         PubKey pubKey = participantNode.getPubKey();
@@ -32,12 +32,12 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
         BlockchainIdentityData identityData = new BlockchainIdentityData(pubKey);
 
         //update consensus setting
-        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(metadata.getSetting().getConsensusSetting(), participantInfo);
+//        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(metadata.getSetting().getConsensusSetting(), participantInfo);
 
-        LedgerSetting ledgerSetting = new LedgerConfiguration(adminAccount.getSetting().getConsensusProvider(),
-                newConsensusSettings, metadata.getSetting().getCryptoSetting());
+//        LedgerSetting ledgerSetting = new LedgerConfiguration(adminAccount.getSetting().getConsensusProvider(),
+//                newConsensusSettings, metadata.getSetting().getCryptoSetting());
 
-        metadata.setSetting(ledgerSetting);
+//        metadata.setSetting(ledgerSetting);
 //        metadata.setViewId(metadata.getViewId() + 1);
 
         //reg participant as user

@@ -1,14 +1,17 @@
 package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class ParticipantStateUpdateInfoData implements ParticipantStateUpdateInfo {
     private PubKey pubKey;
     private ParticipantNodeState state;
+    private NetworkAddress networkAddress;
 
-    public ParticipantStateUpdateInfoData(PubKey pubKey, ParticipantNodeState state) {
+    public ParticipantStateUpdateInfoData(PubKey pubKey, ParticipantNodeState state, NetworkAddress networkAddress) {
         this.pubKey = pubKey;
         this.state = state;
+        this.networkAddress = networkAddress;
     }
 
     public void setPubKey(PubKey pubKey) {
@@ -18,6 +21,15 @@ public class ParticipantStateUpdateInfoData implements ParticipantStateUpdateInf
     @Override
     public PubKey getPubKey() {
         return pubKey;
+    }
+
+    public void setNetworkAddress(NetworkAddress networkAddress) {
+        this.networkAddress = networkAddress;
+    }
+
+    @Override
+    public NetworkAddress getNetworkAddress() {
+        return networkAddress;
     }
 
     public void setState(ParticipantNodeState state) {
