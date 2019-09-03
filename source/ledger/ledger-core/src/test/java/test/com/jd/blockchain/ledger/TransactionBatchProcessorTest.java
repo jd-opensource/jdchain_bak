@@ -288,6 +288,8 @@ public class TransactionBatchProcessorTest {
 				"K2", "V-2-1", -1, ledgerHash, parti0, parti0);
 		TransactionRequest txreq3 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
 				"K3", "V-3-1", -1, ledgerHash, parti0, parti0);
+
+		// 连续写 K1，K1的版本将变为1；
 		TransactionRequest txreq4 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
 				"K1", "V-1-2", 0, ledgerHash, parti0, parti0);
 
@@ -316,14 +318,14 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(v1_1);
 		assertNotNull(v2);
 		assertNotNull(v3);
-		
+
 		assertEquals("V-1-1", v1_0.getValue().toUTF8String());
 		assertEquals("V-1-2", v1_1.getValue().toUTF8String());
 		assertEquals("V-2-1", v2.getValue().toUTF8String());
 		assertEquals("V-3-1", v3.getValue().toUTF8String());
 
 		// 提交多笔数据写入的交易，包含存在数据版本冲突的交易，验证交易是否正确回滚；
-
+		// 先写一笔正确的交易； k3 的版本将变为 1 ；
 		TransactionRequest txreq5 = LedgerTestUtils.createTxRequest_DataAccountWrite(dataAccountKeypair.getAddress(),
 				"K3", "V-3-2", 0, ledgerHash, parti0, parti0);
 		// 指定冲突的版本号，正确的应该是版本1；
@@ -343,11 +345,15 @@ public class TransactionBatchProcessorTest {
 		BytesValue v1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1");
 		v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3");
 
-		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K1");
+		// k1 的版本仍然为1，没有更新；
+		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+				.getDataVersion("K1");
 		assertEquals(1, k1_version);
-		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getDataVersion("K3");
+
+		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+				.getDataVersion("K3");
 		assertEquals(1, k3_version);
-		
+
 		assertNotNull(v1);
 		assertNotNull(v3);
 		assertEquals("V-1-2", v1.getValue().toUTF8String());

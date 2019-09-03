@@ -1,13 +1,19 @@
 package com.jd.blockchain.ledger;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.binaryproto.DataContract;
-import com.jd.blockchain.ledger.resolver.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.binaryproto.DataContract;
+import com.jd.blockchain.ledger.resolver.BooleanToBytesValueResolver;
+import com.jd.blockchain.ledger.resolver.BytesToBytesValueResolver;
+import com.jd.blockchain.ledger.resolver.BytesValueResolver;
+import com.jd.blockchain.ledger.resolver.IntegerToBytesValueResolver;
+import com.jd.blockchain.ledger.resolver.LongToBytesValueResolver;
+import com.jd.blockchain.ledger.resolver.ShortToBytesValueResolver;
+import com.jd.blockchain.ledger.resolver.StringToBytesValueResolver;
 
 public class BytesValueEncoding {
 
@@ -15,18 +21,16 @@ public class BytesValueEncoding {
 
 	private static final Map<DataType, BytesValueResolver> DATA_TYPE_RESOLVER_MAP = new ConcurrentHashMap<>();
 
+	private static final Object[] EMPTY_OBJECTS = {};
+
 	static {
 		init();
 	}
 
 	private static void init() {
-		BytesValueResolver[] resolvers = new BytesValueResolver[]{
-				new BytesToBytesValueResolver(),
-				new IntegerToBytesValueResolver(),
-				new LongToBytesValueResolver(),
-				new ShortToBytesValueResolver(),
-				new StringToBytesValueResolver()
-		};
+		BytesValueResolver[] resolvers = new BytesValueResolver[] { new BooleanToBytesValueResolver(),
+				new BytesToBytesValueResolver(), new IntegerToBytesValueResolver(), new LongToBytesValueResolver(),
+				new ShortToBytesValueResolver(), new StringToBytesValueResolver() };
 
 		for (BytesValueResolver currResolver : resolvers) {
 			// 填充classMAP
@@ -47,7 +51,6 @@ public class BytesValueEncoding {
 		}
 	}
 
-
 	public static BytesValue encodeSingle(Object value, Class<?> type) {
 		if (value == null) {
 			return null;
@@ -60,7 +63,8 @@ public class BytesValueEncoding {
 		if (type.isInterface()) {
 			// 判断是否含有DataContract注解
 			if (!type.isAnnotationPresent(DataContract.class)) {
-				throw new IllegalStateException(String.format("Interface[%s] can not be serialize !!!", type.getName()));
+				throw new IllegalStateException(
+						String.format("Interface[%s] can not be serialize !!!", type.getName()));
 			}
 			// 将对象序列化
 			byte[] serialBytes = BinaryProtocol.encode(value, type);
@@ -72,7 +76,7 @@ public class BytesValueEncoding {
 		}
 		return bytesValueResolver.encode(value, type);
 	}
-	
+
 	public static BytesValueList encodeArray(Object[] values, Class<?>[] types) {
 		if (values == null || values.length == 0) {
 			return null;
@@ -101,11 +105,14 @@ public class BytesValueEncoding {
 		}
 		return type == null ? valueResolver.decode(value) : valueResolver.decode(value, type);
 	}
-	
+
 	public static Object[] decode(BytesValueList values, Class<?>[] types) {
+		if (values == null) {
+			return EMPTY_OBJECTS;
+		}
 		BytesValue[] bytesValues = values.getValues();
 		if (bytesValues == null || bytesValues.length == 0) {
-			return null;
+			return EMPTY_OBJECTS;
 		}
 		// 允许types为null，此时每个BytesValue按照当前的对象来处理
 		// 若types不为null，则types's长度必须和bytesValues一致
@@ -120,7 +127,8 @@ public class BytesValueEncoding {
 				DataType dataType = bytesValue.getType();
 				BytesValueResolver valueResolver = DATA_TYPE_RESOLVER_MAP.get(dataType);
 				if (valueResolver == null) {
-					throw new IllegalStateException(String.format("DataType[%s] can not find encoder !!!", dataType.name()));
+					throw new IllegalStateException(
+							String.format("DataType[%s] can not find encoder !!!", dataType.name()));
 				}
 				resolveObjs[i] = valueResolver.decode(bytesValue);
 			}
@@ -132,7 +140,7 @@ public class BytesValueEncoding {
 		}
 		return resolveObjs;
 	}
-	
+
 	public static Object getDefaultValue(Class<?> type) {
 		if (type == void.class || type == Void.class) {
 			return null;
@@ -174,13 +182,13 @@ public class BytesValueEncoding {
 		if (currParamType.isInterface()) {
 			// 接口序列化必须实现DataContract注解
 			if (!currParamType.isAnnotationPresent(DataContract.class)) {
-				throw new IllegalStateException(String.format("Interface[%s] can not be serialize !!!", currParamType.getName()));
+				throw new IllegalStateException(
+						String.format("Interface[%s] can not be serialize !!!", currParamType.getName()));
 			}
 			return true;
 		}
 		return CLASS_RESOLVER_MAP.containsKey(currParamType);
 	}
-
 
 	public static class BytesValueListData implements BytesValueList {
 
