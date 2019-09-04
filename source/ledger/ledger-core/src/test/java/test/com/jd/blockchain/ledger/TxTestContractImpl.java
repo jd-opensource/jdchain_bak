@@ -33,18 +33,12 @@ public class TxTestContractImpl implements TxTestContract, ContractLifecycleAwar
 		String text2 = (String) v2.getValue();
 		return text1.equals(text2);
 	}
+	
+	@Override
+	public void testRollbackWhileVersionConfliction(String address, String key, String value, long version) {
+		eventContext.getLedger().dataAccount(address).setText(key, value, version);
+	}
 
-//	@Override
-//	public String[] prepareData(String address) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public void doVersionConflictedWritting(String key, String value, long version) {
-//		// TODO Auto-generated method stub
-//
-//	}
 
 	@Override
 	public void postConstruct() {
@@ -75,5 +69,6 @@ public class TxTestContractImpl implements TxTestContract, ContractLifecycleAwar
 	public void setDataAddress(Bytes dataAddress) {
 		this.dataAddress = dataAddress;
 	}
+
 
 }

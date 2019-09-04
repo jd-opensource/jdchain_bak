@@ -183,10 +183,23 @@ public class BytesValueEncoding {
 			// 接口序列化必须实现DataContract注解
 			if (!currParamType.isAnnotationPresent(DataContract.class)) {
 				throw new IllegalStateException(
-						String.format("Interface[%s] can not be serialize !!!", currParamType.getName()));
+						String.format("Interface[%s] can not be annotated as a DataContract!!!", currParamType.getName()));
 			}
 			return true;
 		}
+		
+		if (currParamType.isArray() ) {
+			Class<?> componentType = currParamType.getComponentType();
+			if (componentType.isInterface()) {
+				// 接口序列化必须实现DataContract注解
+				if (!componentType.isAnnotationPresent(DataContract.class)) {
+					throw new IllegalStateException(
+							String.format("Interface[%s] can not be annotated as a DataContract!!!", currParamType.getName()));
+				}
+				return true;
+			}
+		}
+		
 		return CLASS_RESOLVER_MAP.containsKey(currParamType);
 	}
 

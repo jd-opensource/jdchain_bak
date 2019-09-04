@@ -38,6 +38,11 @@ public enum TransactionState {
 	 * 合约不存在；
 	 */
 	CONTRACT_DOES_NOT_EXIST((byte) 0x04),
+	
+	/**
+	 * 数据写入时版本冲突；
+	 */
+	DATA_VERSION_CONFLICT((byte) 0x05),
 
 	/**
 	 * 由于在错误的账本上执行交易而被丢弃；

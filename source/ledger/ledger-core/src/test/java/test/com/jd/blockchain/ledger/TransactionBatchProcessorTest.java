@@ -14,6 +14,7 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.DataVersionConflictException;
 import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -245,7 +246,7 @@ public class TransactionBatchProcessorTest {
 	}
 
 	@Test
-	public void testTxRollbackByVersionsConfliction() {
+	public void testTxRollbackByVersionsConflict() {
 		final MemoryKVStorage STORAGE = new MemoryKVStorage();
 
 		// 初始化账本到指定的存储库；
@@ -337,7 +338,14 @@ public class TransactionBatchProcessorTest {
 		txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset, opReg, ledgerManager);
 
 		txbatchProcessor.schedule(txreq5);
-		txbatchProcessor.schedule(txreq6);
+		// 预期会产生版本冲突异常； DataVersionConflictionException;
+		DataVersionConflictException versionConflictionException = null;
+		try {
+			txbatchProcessor.schedule(txreq6);
+		} catch (DataVersionConflictException e) {
+			versionConflictionException = e;
+		}
+		assertNotNull(versionConflictionException);
 
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
