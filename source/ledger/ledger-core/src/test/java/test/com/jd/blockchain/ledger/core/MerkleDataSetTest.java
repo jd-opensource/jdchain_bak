@@ -32,6 +32,38 @@ public class MerkleDataSetTest {
 
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
 			SMCryptoService.class.getName() };
+	
+	/**
+	 * 测试存储的增长；
+	 */
+	@Test
+	public void testKeyIndex() {
+		
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+		
+		String keyPrefix = "";
+		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
+		cryptoConfig.setHashAlgorithm(ClassicAlgorithm.SHA256);
+		cryptoConfig.setAutoVerifyHash(true);
+		
+		MemoryKVStorage storage = new MemoryKVStorage();
+		
+		MerkleDataSet mds = new MerkleDataSet(cryptoConfig, keyPrefix, storage, storage);
+		mds.setValue("A", "A".getBytes(), -1);
+		mds.setValue("B", "B".getBytes(), -1);
+		mds.setValue("C", "C".getBytes(), -1);
+		
+		mds.commit();
+		
+		//校验 Key 的正确性；
+		assertEquals("A", mds.getKeyAtIndex(0));
+		assertEquals("B", mds.getKeyAtIndex(1));
+		assertEquals("C", mds.getKeyAtIndex(2));
+	}
 
 	/**
 	 * 测试存储的增长；
@@ -71,6 +103,7 @@ public class MerkleDataSetTest {
 		assertEquals("C", ventry.getKey().toUTF8String());
 
 		HashDigest root1 = mds.getRootHash();
+	
 
 		// 1个KV项的存储KEY的数量= 1 + 1(保存SN) + Merkle节点数量;
 		// 所以：3 项;

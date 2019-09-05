@@ -10,71 +10,79 @@ import java.util.Set;
 
 public interface BytesValueResolver {
 
-    /**
-     * Int相关的可转换Class集合
-     */
-    Class<?>[] supportIntConvertClasses = {
-            short.class, Short.class, int.class, Integer.class, long.class, Long.class};
+	/**
+	 * Boolean相关的可转换Class集合
+	 */
+	Class<?>[] supportBooleanConvertClasses = { boolean.class, Boolean.class };
 
-    /**
-     * 字节数组（字符串）相关可转换的Class集合
-     */
-    Class<?>[] supportByteConvertClasses = {
-            String.class, Bytes.class, byte[].class};
+	/**
+	 * Int相关的可转换Class集合
+	 */
+	Class<?>[] supportIntConvertClasses = { short.class, Short.class, int.class, Integer.class, long.class,
+			Long.class };
 
-    default Set<Class<?>> initIntConvertSet() {
-        return new HashSet<>(Arrays.asList(supportIntConvertClasses));
-    }
+	/**
+	 * 字节数组（字符串）相关可转换的Class集合
+	 */
+	Class<?>[] supportByteConvertClasses = { String.class, Bytes.class, byte[].class };
+	
+	default Set<Class<?>> initBooleanConvertSet() {
+		return new HashSet<>(Arrays.asList(supportBooleanConvertClasses));
+	}
 
-    default Set<Class<?>> initByteConvertSet() {
-        return new HashSet<>(Arrays.asList(supportByteConvertClasses));
-    }
+	default Set<Class<?>> initIntConvertSet() {
+		return new HashSet<>(Arrays.asList(supportIntConvertClasses));
+	}
 
-    /**
-     * 将对象转换为BytesValue
-     *
-     * @param value
-     * @return
-     */
-    BytesValue encode(Object value);
+	default Set<Class<?>> initByteConvertSet() {
+		return new HashSet<>(Arrays.asList(supportByteConvertClasses));
+	}
 
-    /**
-     * 将对象转换为BytesValue
-     *
-     * @param value
-     * @param type
-     * @return
-     */
-    BytesValue encode(Object value, Class<?> type);
+	/**
+	 * 将对象转换为BytesValue
+	 *
+	 * @param value
+	 * @return
+	 */
+	BytesValue encode(Object value);
 
-    /**
-     * 当前解析器支持的Class列表
-     *
-     * @return
-     */
-    Class<?>[] supportClasses();
+	/**
+	 * 将对象转换为BytesValue
+	 *
+	 * @param value
+	 * @param type
+	 * @return
+	 */
+	BytesValue encode(Object value, Class<?> type);
 
-    /**
-     * 当前解析器支持的DataType列表
-     *
-     * @return
-     */
-    DataType[] supportDataTypes();
+	/**
+	 * 当前解析器支持的Class列表
+	 *
+	 * @return
+	 */
+	Class<?>[] supportClasses();
 
-    /**
-     * 将BytesValue解析为对应的Object
-     *
-     * @param value
-     * @return
-     */
-    Object decode(BytesValue value);
+	/**
+	 * 当前解析器支持的DataType列表
+	 *
+	 * @return
+	 */
+	DataType[] supportDataTypes();
 
-    /**
-     * 将BytesValue转换为指定Class的Object
-     *
-     * @param value
-     * @param clazz
-     * @return
-     */
-    Object decode(BytesValue value, Class<?> clazz);
+	/**
+	 * 将BytesValue解析为对应的Object
+	 *
+	 * @param value
+	 * @return
+	 */
+	Object decode(BytesValue value);
+
+	/**
+	 * 将BytesValue转换为指定Class的Object
+	 *
+	 * @param value
+	 * @param clazz
+	 * @return
+	 */
+	Object decode(BytesValue value, Class<?> clazz);
 }
