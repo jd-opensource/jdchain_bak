@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.decompiler.utils.DecompilerUtils;
@@ -34,7 +35,6 @@ import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
 import com.jd.blockchain.sdk.ContractSettings;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.ConsoleUtils;
 
@@ -482,7 +482,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "utils/pubkey/{pubkey}/addr")
 	public String getAddrByPubKey(@PathVariable(name = "pubkey") String strPubKey) {
-		PubKey pubKey = KeyGenCommand.decodePubKey(strPubKey);
+		PubKey pubKey = KeyGenUtils.decodePubKey(strPubKey);
 		return AddressEncoding.generateAddress(pubKey).toBase58();
 	}
 

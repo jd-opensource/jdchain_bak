@@ -8,9 +8,9 @@
  */
 package com.jd.blockchain.sdk.samples;
 
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 
 /**
  *
@@ -33,13 +33,13 @@ public class SDKDemo_Params {
             "177gk2FpjufgEon92mf2oRRFXDBZkRy8SkFci7Jxc5pApZEJz3oeCoxieWatDD3Xg7i1QEN",
             "177gjvv7qvfCAXroFezSn23UFXLVLFofKS3y6DXkJ2DwVWS4LcRNtxRgiqWmQEeWNz4KQ3J" };
 
-    public static PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-    public static PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-    public static PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-    public static PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+    public static PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+    public static PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+    public static PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+    public static PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
-    public static PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
-    public static PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
-    public static PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
-    public static PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+    public static PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
+    public static PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
+    public static PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
+    public static PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 }

@@ -16,6 +16,7 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
@@ -24,6 +25,7 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
@@ -35,9 +37,7 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -99,7 +99,7 @@ public class IntegrationTestDataAccount {
 		peerStarting2.waitReturn();
 		peerStarting3.waitReturn();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(LedgerInitializeWeb4SingleStepsTest.PUB_KEYS[0]);
@@ -123,9 +123,9 @@ public class IntegrationTestDataAccount {
 		testConsistencyAmongNodes(context);
 
 		// temp test add
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[0],
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[0],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(LedgerInitializeWeb4SingleStepsTest.PUB_KEYS[0]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(LedgerInitializeWeb4SingleStepsTest.PUB_KEYS[0]);
 		AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
 		// regist data account
@@ -275,16 +275,16 @@ public class IntegrationTestDataAccount {
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		NodeWebContext nodeCtx3 = new NodeWebContext(3, initAddr3);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[0],
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[0],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[1],
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[1],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[2],
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[2],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[3],
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWeb4SingleStepsTest.PRIV_KEYS[3],
 				LedgerInitializeWeb4SingleStepsTest.PASSWORD);
 
-		String encodedPassword = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
+		String encodedPassword = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 

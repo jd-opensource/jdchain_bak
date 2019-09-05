@@ -19,14 +19,14 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.RoleInitData;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.utils.codec.HexUtils;
 
 public class LedgerInitPropertiesTest {
@@ -133,7 +133,7 @@ public class LedgerInitPropertiesTest {
 
 			ConsensusParticipantConfig part0 = initProps.getConsensusParticipant(0);
 			assertEquals("jd.com", part0.getName());
-			PubKey pubKey0 = KeyGenCommand.decodePubKey("3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9");
+			PubKey pubKey0 = KeyGenUtils.decodePubKey("3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9");
 			assertEquals(pubKey0, part0.getPubKey());
 			assertEquals("127.0.0.1", part0.getInitializerAddress().getHost());
 			assertEquals(8800, part0.getInitializerAddress().getPort());
@@ -143,7 +143,7 @@ public class LedgerInitPropertiesTest {
 
 			ConsensusParticipantConfig part1 = initProps.getConsensusParticipant(1);
 			assertEquals(false, part1.getInitializerAddress().isSecure());
-			PubKey pubKey1 = KeyGenCommand.decodePubKey("3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX");
+			PubKey pubKey1 = KeyGenUtils.decodePubKey("3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX");
 			assertEquals(pubKey1, part1.getPubKey());
 			assertArrayEquals(new String[] { "MANAGER" }, part1.getRoles());
 			assertEquals(RolesPolicy.UNION, part1.getRolesPolicy());
@@ -154,7 +154,7 @@ public class LedgerInitPropertiesTest {
 			assertEquals(RolesPolicy.UNION, part2.getRolesPolicy());
 
 			ConsensusParticipantConfig part3 = initProps.getConsensusParticipant(3);
-			PubKey pubKey3 = KeyGenCommand.decodePubKey("3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk");
+			PubKey pubKey3 = KeyGenUtils.decodePubKey("3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk");
 			assertEquals(pubKey3, part3.getPubKey());
 			assertArrayEquals(new String[] { "GUEST" }, part3.getRoles());
 			assertEquals(RolesPolicy.INTERSECT, part3.getRolesPolicy());
@@ -170,7 +170,7 @@ public class LedgerInitPropertiesTest {
 		int index = 0;
 		for (String pubKeyStr : pubKeys) {
 			System.out.println("[" + index + "][配置] = " + pubKeyStr);
-			PubKey pubKey = KeyGenCommand.decodePubKey(pubKeyStr);
+			PubKey pubKey = KeyGenUtils.decodePubKey(pubKeyStr);
 			System.out.println("[" + index + "][公钥Base58] = " + pubKey.toBase58());
 			System.out.println("[" + index + "][地址] = " + AddressEncoding.generateAddress(pubKey).toBase58());
 			System.out.println("--------------------------------------------------------------------");

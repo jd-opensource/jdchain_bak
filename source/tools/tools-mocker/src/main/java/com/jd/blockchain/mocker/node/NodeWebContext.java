@@ -2,6 +2,7 @@ package com.jd.blockchain.mocker.node;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
@@ -12,7 +13,6 @@ import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;

@@ -8,8 +8,8 @@
  */
 package test.com.jd.blockchain.intgr.batch.bftsmart;
 
-import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePrivKey;
-import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePubKey;
+import static com.jd.blockchain.crypto.KeyGenUtils.encodePrivKey;
+import static com.jd.blockchain.crypto.KeyGenUtils.encodePubKey;
 
 import org.junit.Test;
 

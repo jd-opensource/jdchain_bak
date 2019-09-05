@@ -9,7 +9,6 @@ import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
-import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
@@ -22,8 +21,6 @@ import com.jd.blockchain.utils.codec.Base58Utils;
  *
  */
 public class LedgerManager implements LedgerManage {
-
-	private static final String LEDGER_PREFIX = "LDG://";
 
 	// @Autowired
 	// private ExistentialKVStorage exPolicyStorage;
@@ -138,18 +135,18 @@ public class LedgerManager implements LedgerManage {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jd.blockchain.ledger.core.LedgerManager#newLedger(com.jd.blockchain.
-	 * ledger.core.ConsensusConfig, com.jd.blockchain.ledger.core.CryptoConfig)
-	 */
-	@Override
-	public LedgerEditor newLedger(LedgerInitSetting initSetting, KVStorageService storageService) {
-		LedgerEditor genesisBlockEditor = LedgerTransactionalEditor.createEditor(initSetting, LEDGER_PREFIX,
-				storageService.getExPolicyKVStorage(), storageService.getVersioningKVStorage());
-		return genesisBlockEditor;
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see com.jd.blockchain.ledger.core.LedgerManager#newLedger(com.jd.blockchain.
+//	 * ledger.core.ConsensusConfig, com.jd.blockchain.ledger.core.CryptoConfig)
+//	 */
+//	@Override
+//	public LedgerEditor newLedger(LedgerInitSetting initSetting, KVStorageService storageService) {
+//		LedgerEditor genesisBlockEditor = LedgerTransactionalEditor.createEditor(initSetting, LEDGER_PREFIX,
+//				storageService.getExPolicyKVStorage(), storageService.getVersioningKVStorage());
+//		return genesisBlockEditor;
+//	}
 
 	static String getLedgerStoragePrefix(HashDigest ledgerHash) {
 		String base58LedgerHash = Base58Utils.encode(ledgerHash.toBytes());

@@ -52,13 +52,21 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 	}
 
 	@Override
-	public void addNodeSignature(DigitalSignature signature) {
-		nodeSignatures.add(signature);
+	public void addNodeSignature(DigitalSignature... signatures) {
+		if (signatures != null) {
+			for (DigitalSignature s : signatures) {
+				nodeSignatures.add(s);
+			}
+		}
 	}
 
 	@Override
-	public void addEndpointSignature(DigitalSignature signature) {
-		endpointSignatures.add(signature);
+	public void addEndpointSignature(DigitalSignature... signatures) {
+		if (signatures != null) {
+			for (DigitalSignature s : signatures) {
+				endpointSignatures.add(s);
+			}
+		}
 	}
 
 //	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {

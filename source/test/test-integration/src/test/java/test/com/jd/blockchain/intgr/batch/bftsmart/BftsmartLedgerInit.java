@@ -10,6 +10,7 @@ package test.com.jd.blockchain.intgr.batch.bftsmart;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
@@ -21,7 +22,6 @@ import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitCommand;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -177,9 +177,9 @@ public class BftsmartLedgerInit {
 
         GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 
-        PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(BftsmartConfig.PRIV_KEY[0], IntegrationBase.PASSWORD);
+        PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(BftsmartConfig.PRIV_KEY[0], IntegrationBase.PASSWORD);
 
-        PubKey pubKey0 = KeyGenCommand.decodePubKey(BftsmartConfig.PUB_KEY[0]);
+        PubKey pubKey0 = KeyGenUtils.decodePubKey(BftsmartConfig.PUB_KEY[0]);
 
         AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
@@ -233,7 +233,7 @@ public class BftsmartLedgerInit {
     }
 
     public GatewayTestRunner initGateWay(PeerTestRunner peerNode) {
-        String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeTest.PASSWORD);
+        String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeTest.PASSWORD);
 
         GatewayConfigProperties.KeyPairConfig gwkey0 = new GatewayConfigProperties.KeyPairConfig();
         gwkey0.setPubKeyValue(BftsmartConfig.PUB_KEY[0]);

@@ -21,6 +21,7 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -30,6 +31,7 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerSecurityException;
 import com.jd.blockchain.ledger.TransactionPermission;
@@ -54,10 +56,8 @@ import com.jd.blockchain.storage.service.impl.redis.RedisStorageService;
 import com.jd.blockchain.storage.service.impl.rocksdb.RocksDBConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.ArgumentSet;
 import com.jd.blockchain.utils.Bytes;
@@ -559,19 +559,19 @@ public class LedgerPerformanceTest {
 		NodeContext node3 = new NodeContext(initSetting.getConsensusParticipant(3).getInitializerAddress(),
 				serviceRegisterMap, dbsetting3.connectionFactory);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
 		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, csProps, csProvider,
 				dbsetting0.connectionConfig, consolePrompter, !optimized, hashAlg);
 
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
 		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, csProps, csProvider,
 				dbsetting1.connectionConfig, consolePrompter, !optimized, hashAlg);
 
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
 		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, csProps, csProvider,
 				dbsetting2.connectionConfig, consolePrompter, !optimized, hashAlg);
 
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
 		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, csProps, csProvider,
 				dbsetting3.connectionConfig, consolePrompter, !optimized, hashAlg);
 

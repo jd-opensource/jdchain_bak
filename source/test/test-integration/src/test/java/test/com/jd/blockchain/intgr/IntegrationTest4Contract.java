@@ -2,6 +2,7 @@ package test.com.jd.blockchain.intgr;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
@@ -11,7 +12,6 @@ import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class IntegrationTest4Contract {
         DbConnectionFactory dbConnectionFactory2 = peerNodes[2].getDBConnectionFactory();
         DbConnectionFactory dbConnectionFactory3 = peerNodes[3].getDBConnectionFactory();
 
-        String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeTest.PASSWORD);
+        String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeTest.PASSWORD);
 
         GatewayConfigProperties.KeyPairConfig gwkey0 = new GatewayConfigProperties.KeyPairConfig();
         gwkey0.setPubKeyValue(IntegrationBase.PUB_KEYS[0]);
@@ -78,9 +78,9 @@ public class IntegrationTest4Contract {
 
         GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 
-        PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(IntegrationBase.PRIV_KEYS[0], IntegrationBase.PASSWORD);
+        PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(IntegrationBase.PRIV_KEYS[0], IntegrationBase.PASSWORD);
 
-        PubKey pubKey0 = KeyGenCommand.decodePubKey(IntegrationBase.PUB_KEYS[0]);
+        PubKey pubKey0 = KeyGenUtils.decodePubKey(IntegrationBase.PUB_KEYS[0]);
 
         AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 

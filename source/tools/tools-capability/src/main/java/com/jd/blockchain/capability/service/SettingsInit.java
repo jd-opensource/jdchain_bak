@@ -15,6 +15,7 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
@@ -30,7 +31,6 @@ import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.codec.Base58Utils;
 
 /**
@@ -116,8 +116,8 @@ public class SettingsInit {
         CapabilitySettings.ledgerHash = hash;
 
         // 处理用户
-        PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(settings.getPrivKey(), settings.getPwd());
-        PubKey pubKey = KeyGenCommand.decodePubKey(settings.getPubKey());
+        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(settings.getPrivKey(), settings.getPwd());
+        PubKey pubKey = KeyGenUtils.decodePubKey(settings.getPubKey());
         CapabilitySettings.adminKey = new AsymmetricKeypair(pubKey, privKey);
     }
 

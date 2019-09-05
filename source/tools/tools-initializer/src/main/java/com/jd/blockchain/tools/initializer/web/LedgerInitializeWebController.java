@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.jd.blockchain.transaction.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,34 +30,29 @@ import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.LedgerInitException;
+import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerInitProposalData;
-import com.jd.blockchain.ledger.core.LedgerManage;
-import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.LedgerInitializer;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.InitializingStep;
-import com.jd.blockchain.tools.initializer.LedgerInitException;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.tools.initializer.Prompter;
+import com.jd.blockchain.transaction.DigitalSignatureBlob;
+import com.jd.blockchain.transaction.LedgerInitData;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.InvocationResult;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -86,7 +80,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private volatile LedgerInitProposal localPermission;
 
-	private TransactionContent initTxContent;
+	private volatile LedgerInitializer initializer;
 
 	private volatile int currentId = -1;
 
@@ -100,18 +94,11 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	private volatile ConsensusProvider consensusProvider;
 
-	private volatile LedgerBlock genesisBlock;
-
 	private volatile LedgerInitDecision localDecision;
 
 	private volatile DecisionResultHandle[] decisions;
 
 	private volatile DbConnection dbConn;
-
-	private volatile LedgerEditor ledgerEditor;
-
-	@Autowired
-	private LedgerManage ledgerManager;
 
 	@Autowired
 	private DbConnectionFactory dbConnFactory;
@@ -123,11 +110,10 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		this.SIGN_FUNC = Crypto.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
 	}
 
-	public LedgerInitializeWebController(LedgerManage ledgerManager, DbConnectionFactory dbConnFactory,
+	public LedgerInitializeWebController(DbConnectionFactory dbConnFactory,
 			InitConsensusServiceFactory initCsServiceFactory) {
 		this.SIGN_FUNC = Crypto.getSignatureFunction(DEFAULT_SIGN_ALGORITHM);
 
-		this.ledgerManager = ledgerManager;
 		this.dbConnFactory = dbConnFactory;
 		this.initCsServiceFactory = initCsServiceFactory;
 	}
@@ -137,7 +123,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	public TransactionContent getInitTxContent() {
-		return initTxContent;
+		return initializer.getTransactionContent();
 	}
 
 	public LedgerInitProposal getLocalPermission() {
@@ -151,10 +137,6 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	public void setPrompter(Prompter prompter) {
 		this.prompter = prompter;
 	}
-
-//	private ConsensusProvider getConsensusProvider() {
-//		return consensusProvider;
-//	}
 
 	private void setConsensusProvider(ConsensusProvider consensusProvider) {
 		this.consensusProvider = consensusProvider;
@@ -226,11 +208,10 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 	public LedgerInitDecision makeLocalDecision(PrivKey privKey) {
 		// 生成账本；
-		this.ledgerEditor = ledgerManager.newLedger(this.ledgerInitSetting, dbConn.getStorageService());
-		this.genesisBlock = initLedgerDataset(ledgerEditor);
+		initializer.prepareLedger(dbConn.getStorageService(), getNodesSignatures());
 
 		// 生成签名决定；
-		this.localDecision = makeDecision(currentId, genesisBlock.getHash(), privKey);
+		this.localDecision = makeDecision(currentId, initializer.getLedgerHash(), privKey);
 		this.decisions = new DecisionResultHandle[this.ledgerInitSetting.getConsensusParticipants().length];
 		for (int i = 0; i < decisions.length; i++) {
 			// 参与者的 id 是依次递增的；
@@ -241,6 +222,18 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		return localDecision;
 	}
 
+	private DigitalSignature[] getNodesSignatures() {
+		ParticipantNode[] parties = this.ledgerInitSetting.getConsensusParticipants();
+		DigitalSignature[] signatures = new DigitalSignature[parties.length];
+		for (int i = 0; i < parties.length; i++) {
+			PubKey pubKey = parties[i].getPubKey();
+			SignatureDigest signDigest = this.permissions[i].getTransactionSignature();
+			signatures[i] = new DigitalSignatureBlob(pubKey, signDigest);
+		}
+
+		return signatures;
+	}
+
 	public HashDigest consensusDecisions(PrivKey privKey) {
 		// 获取其它参与方的账本生成结果；
 		boolean allDecided = startRequestDecisions(privKey, prompter);
@@ -248,13 +241,13 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			prompter.error(
 					"Rollback ledger initialization because of not all nodes make same decision! --[Current Participant=%s]",
 					currentId);
-			ledgerEditor.cancel();
+			initializer.cancel();
 			return null;
 		}
 
 		// 执行提交提交；
-		ledgerEditor.commit();
-		return genesisBlock.getHash();
+		initializer.commit();
+		return initializer.getLedgerHash();
 	}
 
 	public void closeDb() {
@@ -334,7 +327,6 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		List<ConsensusParticipantConfig> partiList = ledgerProps.getConsensusParticipants();
 		ConsensusParticipantConfig[] parties = new ConsensusParticipantConfig[partiList.size()];
 		parties = partiList.toArray(parties);
-//		ConsensusParticipantConfig[] parties = partiList.toArray(new ConsensusParticipantConfig[partiList.size()]);
 		ConsensusParticipantConfig[] orderedParties = sortAndVerify(parties);
 		initSetting.setConsensusParticipants(orderedParties);
 		initSetting.setCreatedTime(ledgerProps.getCreatedTime());
@@ -369,19 +361,11 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			initializerAddresses[i] = orderedParties[i].getInitializerAddress();
 		}
 
-		// 生成初始化交易，并签署许可；
-		TransactionBuilder initTxBuilder = new TxBuilder(null);// 账本初始化交易的账本 hash 为 null；
-		initTxBuilder.ledgers().create(initSetting);
-		for (ParticipantNode p : initSetting.getConsensusParticipants()) {
-			// TODO：暂时只支持注册用户的初始化操作；
-			BlockchainIdentity superUserId = new BlockchainIdentityData(p.getPubKey());
-			initTxBuilder.users().register(superUserId);
-		}
-		// 账本初始化配置声明的创建时间来初始化交易时间戳；注：不能用本地时间，因为共识节点之间的本地时间系统不一致；
-		this.initTxContent = initTxBuilder.prepareContent(initSetting.getCreatedTime());
+		// 初始化账本；
+		this.initializer = LedgerInitializer.create(ledgerInitSetting);
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
-		SignatureDigest permissionSign = SignatureUtils.sign(initTxContent, privKey);
+		SignatureDigest permissionSign = initializer.signTransaction(privKey);
 		LedgerInitProposalData permission = new LedgerInitProposalData(currentId, permissionSign);
 
 		this.currentId = currentId;
@@ -402,39 +386,6 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		decision.setLedgerHash(ledgerHash);
 		decision.setSignature(signature);
 		return decision;
-	}
-
-	/**
-	 * 初始化账本数据，返回创始区块；
-	 * 
-	 * @param ledgerEditor
-	 * @return
-	 */
-	private LedgerBlock initLedgerDataset(LedgerEditor ledgerEditor) {
-		// 初始化时，自动将参与方注册为账本的用户；
-		TxRequestBuilder txReqBuilder = new TxRequestBuilder(this.initTxContent);
-		ParticipantNode[] parties = this.ledgerInitSetting.getConsensusParticipants();
-		for (int i = 0; i < parties.length; i++) {
-			PubKey pubKey = parties[i].getPubKey();
-			SignatureDigest signDigest = this.permissions[i].getTransactionSignature();
-			DigitalSignatureBlob digitalSignature = new DigitalSignatureBlob(pubKey, signDigest);
-			txReqBuilder.addNodeSignature(digitalSignature);
-		}
-		TransactionRequest txRequest = txReqBuilder.buildRequest();
-
-		LedgerTransactionContext txCtx = ledgerEditor.newTransaction(txRequest);
-		Operation[] ops = txRequest.getTransactionContent().getOperations();
-		// 注册用户； 注：第一个操作是 LedgerInitOperation；
-		// TODO：暂时只支持注册用户的初始化操作；
-		for (int i = 1; i < ops.length; i++) {
-			UserRegisterOperation userRegOP = (UserRegisterOperation) ops[i];
-			txCtx.getDataset().getUserAccountSet().register(userRegOP.getUserID().getAddress(),
-					userRegOP.getUserID().getPubKey());
-		}
-
-		txCtx.commit(TransactionState.SUCCESS, null);
-
-		return ledgerEditor.prepare();
 	}
 
 	/**
@@ -506,7 +457,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 				continue;
 			}
 
-			if (!SignatureUtils.verifySignature(this.initTxContent, permission.getTransactionSignature(), pubKey)) {
+			if (!SignatureUtils.verifySignature(initializer.getTransactionContent(), permission.getTransactionSignature(), pubKey)) {
 				prompter.error("Invalid permission from participant! --[Id=%s][name=%s]", participants[i].getAddress(),
 						participants[i].getName());
 				allPermitted = false;
@@ -753,7 +704,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 					String.format("Reject decision because of self-synchronization! --[Id=%s]", remoteId));
 		}
 
-		if (this.genesisBlock == null) {
+		if (this.initializer == null) {
 			// 当前参与者尚未准备就绪,返回 null；
 			prompter.info("Not ready for genesis block! --[RemoteId=%s][CurrentId=%s]", remoteId, currentId);
 			return null;

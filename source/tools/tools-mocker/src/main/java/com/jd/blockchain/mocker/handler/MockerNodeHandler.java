@@ -1,8 +1,10 @@
 package com.jd.blockchain.mocker.handler;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.mocker.config.MockerConstant;
 import com.jd.blockchain.mocker.config.PresetAnswerPrompter;
 import com.jd.blockchain.mocker.node.GatewayNodeRunner;
@@ -10,9 +12,7 @@ import com.jd.blockchain.mocker.node.NodeWebContext;
 import com.jd.blockchain.mocker.node.PeerNodeRunner;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.net.NetworkAddress;
 import org.springframework.util.ResourceUtils;
@@ -93,7 +93,7 @@ public class MockerNodeHandler {
                 // 启动服务器；
                 NetworkAddress initAddr = initSetting.getConsensusParticipant(nodeIndex).getInitializerAddress();
                 NodeWebContext node = new NodeWebContext(nodeIndex, initAddr);
-                PrivKey privkey = KeyGenCommand.decodePrivKeyWithRawPassword(PRIVATE_KEYS[nodeIndex], PASSWORD);
+                PrivKey privkey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIVATE_KEYS[nodeIndex], PASSWORD);
                 DBConnectionConfig dbConn = new DBConnectionConfig();
                 dbConn.setConnectionUri(MockerConstant.DB_MEMS[nodeIndex]);
                 ThreadInvoker.AsyncCallback<HashDigest> nodeCallback = node.startInit(privkey, initSetting, dbConn, consolePrompter,

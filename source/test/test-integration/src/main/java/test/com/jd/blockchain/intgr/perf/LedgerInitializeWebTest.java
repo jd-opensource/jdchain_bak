@@ -16,12 +16,14 @@ import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.UserRegisterOperation;
@@ -38,12 +40,10 @@ import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.HttpInitConsensServiceFactory;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -101,15 +101,15 @@ public class LedgerInitializeWebTest {
 		node2.setPrompter(prompter);
 		node3.setPrompter(prompter);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 
 		// 测试生成“账本初始化许可”；
 		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initSetting, csProps);
@@ -259,10 +259,10 @@ public class LedgerInitializeWebTest {
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		NodeWebContext node3 = new NodeWebContext(3, initAddr3);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
@@ -300,19 +300,19 @@ public class LedgerInitializeWebTest {
 
 		UserAccountSet userset0 = ledger0.getUserAccountSet(genesisBlock);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
 		Bytes address0 = AddressEncoding.generateAddress(pubKey0);
 		UserAccount user0_0 = userset0.getUser(address0);
 
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
 		Bytes address1 = AddressEncoding.generateAddress(pubKey1);
 		UserAccount user1_0 = userset0.getUser(address1);
 
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
 		Bytes address2 = AddressEncoding.generateAddress(pubKey2);
 		UserAccount user2_0 = userset0.getUser(address2);
 
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 		Bytes address3 = AddressEncoding.generateAddress(pubKey3);
 		UserAccount user3_0 = userset0.getUser(address3);
 	}

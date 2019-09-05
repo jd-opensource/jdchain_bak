@@ -18,12 +18,14 @@ import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionTemplate;
@@ -38,10 +40,8 @@ import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -88,7 +88,7 @@ public class GlobalPerformanceTest {
 		peerStarting2.waitReturn();
 		peerStarting3.waitReturn();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(Utils.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(Utils.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(Utils.PUB_KEYS[0]);
@@ -203,12 +203,12 @@ public class GlobalPerformanceTest {
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		NodeInitContext nodeCtx3 = new NodeInitContext(3, initAddr3);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
 
-		String encodedPassword = KeyGenCommand.encodePasswordAsBase58(Utils.PASSWORD);
+		String encodedPassword = KeyGenUtils.encodePasswordAsBase58(Utils.PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 

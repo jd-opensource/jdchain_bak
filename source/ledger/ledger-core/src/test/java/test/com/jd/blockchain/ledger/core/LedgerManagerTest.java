@@ -37,6 +37,7 @@ import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DataAccountSet;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
+import com.jd.blockchain.ledger.core.LedgerInitializer;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
@@ -81,13 +82,12 @@ public class LedgerManagerTest {
 	public void testLedgerInit() {
 		// 创建账本初始化配置；
 		LedgerInitSetting initSetting = createLedgerInitSetting();
-
+		
 		// 采用基于内存的 Storage；
 		MemoryKVStorage storage = new MemoryKVStorage();
 
 		// 新建账本；
-		LedgerManager ledgerManager = new LedgerManager();
-		LedgerEditor ldgEdt = ledgerManager.newLedger(initSetting, storage);
+		LedgerEditor ldgEdt = LedgerInitializer.createLedgerEditor(initSetting, storage);
 
 		// 创建一个模拟的创世交易；
 		TransactionRequest genesisTxReq = LedgerTestUtils.createLedgerInitTxRequest(participants);

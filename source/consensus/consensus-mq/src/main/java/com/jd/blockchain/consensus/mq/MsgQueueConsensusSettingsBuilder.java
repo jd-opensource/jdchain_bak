@@ -20,9 +20,9 @@ import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNetworkSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNodeSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.Base58Utils;
@@ -129,7 +129,7 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
             String keyOfPubkey = nodeKey(PUBKEY_PATTERN, id);
 
             String base58PubKey = PropertiesUtils.getRequiredProperty(resolvingProps, keyOfPubkey);
-            PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
+            PubKey pubKey = KeyGenUtils.decodePubKey(base58PubKey);
 
 //            PubKey pubKey = new PubKey(Base58Utils.decode(base58PubKey));
             resolvingProps.remove(keyOfPubkey);

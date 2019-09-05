@@ -1,6 +1,7 @@
 package com.jd.blockchain.mocker.handler;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
@@ -9,7 +10,6 @@ import com.jd.blockchain.mocker.data.KvData;
 import com.jd.blockchain.mocker.data.ResponseData;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 
 public class MockerServiceHandler {
 
@@ -115,8 +115,8 @@ public class MockerServiceHandler {
     }
 
     private BlockchainKeypair defaultParticipant() {
-        PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[0], MockerConstant.PASSWORD);
-        PubKey pubKey = KeyGenCommand.decodePubKey(MockerConstant.PUBLIC_KEYS[0]);
+        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[0], MockerConstant.PASSWORD);
+        PubKey pubKey = KeyGenUtils.decodePubKey(MockerConstant.PUBLIC_KEYS[0]);
         return new BlockchainKeypair(pubKey, privKey);
     }
 

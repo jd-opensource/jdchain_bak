@@ -20,6 +20,7 @@ import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
@@ -40,6 +41,7 @@ import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -75,8 +77,6 @@ import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
@@ -164,16 +164,16 @@ public class MockerNodeContext implements BlockchainQueryService {
 				boolean isExist = false;
 				// 通过公钥进行判断
 				for (Map.Entry<String, BlockchainKeypair> entry : participants.entrySet()) {
-					String existPubKey = KeyGenCommand.encodePubKey(entry.getValue().getPubKey());
+					String existPubKey = KeyGenUtils.encodePubKey(entry.getValue().getPubKey());
 					if (pubKeyString.equals(existPubKey)) {
 						isExist = true;
 					}
 				}
 				if (!isExist) {
 					// 加入系统中
-					PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[i],
+					PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[i],
 							MockerConstant.PASSWORD);
-					PubKey pubKey = KeyGenCommand.decodePubKey(MockerConstant.PUBLIC_KEYS[i]);
+					PubKey pubKey = KeyGenUtils.decodePubKey(MockerConstant.PUBLIC_KEYS[i]);
 					participants(new BlockchainKeypair(pubKey, privKey));
 				}
 				if (participants.size() >= 4) {
@@ -524,7 +524,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_NAME, name);
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_PUBKEY_PATH, "");
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_PUBKEY,
-					KeyGenCommand.encodePubKey(keypair.getPubKey()));
+					KeyGenUtils.encodePubKey(keypair.getPubKey()));
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_INITIALIZER_HOST, MockerConstant.LOCAL_ADDRESS);
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_INITIALIZER_PORT,
 					String.valueOf(MockerConstant.LEDGER_INIT_PORT_START + partiIndex * 10));

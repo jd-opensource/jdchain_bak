@@ -1,4 +1,4 @@
-package com.jd.blockchain.tools.initializer;
+package com.jd.blockchain.ledger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,14 +13,8 @@ import java.util.TreeMap;
 
 import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.RoleInitData;
-import com.jd.blockchain.ledger.RoleInitSettings;
-import com.jd.blockchain.ledger.RolesPolicy;
-import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.StringUtils;
@@ -156,6 +150,11 @@ public class LedgerInitProperties {
 		return null;
 	}
 
+	/**
+	 * 私有的构造器；
+	 * 
+	 * @param ledgerSeed
+	 */
 	private LedgerInitProperties(byte[] ledgerSeed) {
 		this.ledgerSeed = ledgerSeed;
 	}
@@ -232,7 +231,7 @@ public class LedgerInitProperties {
 		RoleInitData[] rolesInitDatas = rolesInitSettingMap.values()
 				.toArray(new RoleInitData[rolesInitSettingMap.size()]);
 		initProps.setRoles(rolesInitDatas);
-		
+
 		// 解析共识相关的属性；
 		initProps.consensusProvider = PropertiesUtils.getRequiredProperty(props, CONSENSUS_SERVICE_PROVIDER);
 		String consensusConfigFilePath = PropertiesUtils.getRequiredProperty(props, CONSENSUS_CONFIG);
@@ -274,10 +273,10 @@ public class LedgerInitProperties {
 			String pubkeyKey = getKeyOfParticipant(i, PART_PUBKEY);
 			String base58PubKey = PropertiesUtils.getProperty(props, pubkeyKey, false);
 			if (base58PubKey != null) {
-				PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
+				PubKey pubKey = KeyGenUtils.decodePubKey(base58PubKey);
 				parti.setPubKey(pubKey);
 			} else if (pubkeyPath != null) {
-				PubKey pubKey = KeyGenCommand.readPubKey(pubkeyPath);
+				PubKey pubKey = KeyGenUtils.readPubKey(pubkeyPath);
 				parti.setPubKey(pubKey);
 			} else {
 				throw new IllegalArgumentException(
