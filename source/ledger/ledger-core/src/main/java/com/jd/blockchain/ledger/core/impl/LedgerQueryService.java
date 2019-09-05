@@ -20,6 +20,8 @@ import com.jd.blockchain.utils.QueryUtil;
 
 public class LedgerQueryService implements BlockchainQueryService {
 
+	private static final KVDataEntry[] EMPTY_ENTRIES = new KVDataEntry[0];
+
 	private LedgerService ledgerService;
 
 	public LedgerQueryService(LedgerService ledgerService) {
@@ -254,7 +256,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	@Override
 	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
 		if (keys == null || keys.length == 0) {
-			return null;
+			return EMPTY_ENTRIES;
 		}
 		LedgerRepository ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
@@ -266,7 +268,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 			final String currKey = keys[i];
 
-			ver = dataAccount.getDataVersion(Bytes.fromString(currKey));
+			ver = dataAccount == null ? -1 : dataAccount.getDataVersion(Bytes.fromString(currKey));
 
 			if (ver < 0) {
 				entries[i] = new KVDataObject(currKey, -1, null);
