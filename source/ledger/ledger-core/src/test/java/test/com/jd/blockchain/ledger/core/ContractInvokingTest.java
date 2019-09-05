@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -29,29 +30,39 @@ import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerSecurityManager;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.LedgerTransactionContext;
+import com.jd.blockchain.ledger.core.LedgerTransactionalEditor;
+import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.ledger.core.UserAccount;
-import com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.BooleanValueHolder;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
-import static org.mockito.Matchers.any;
+
+import test.com.jd.blockchain.ledger.TxTestContract;
+import test.com.jd.blockchain.ledger.TxTestContractImpl;
 
 public class ContractInvokingTest {
 	static {
@@ -172,19 +183,19 @@ public class ContractInvokingTest {
 
 		// 注册合约处理器；
 		DefaultOperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		opReg.insertAsTopPriority(contractInvokingHandle);
+		opReg.registerHandle(contractInvokingHandle);
 
 		// 发布指定地址合约
 		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);
 
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		String key = TxTestContractImpl.KEY;
 		String value = "VAL";
@@ -253,7 +264,7 @@ public class ContractInvokingTest {
 
 		// 注册合约处理器；
 		DefaultOperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
-		opReg.insertAsTopPriority(contractInvokingHandle);
+		opReg.registerHandle(contractInvokingHandle);
 
 		// 发布指定地址合约
 		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);
@@ -303,7 +314,7 @@ public class ContractInvokingTest {
 		assertEquals(1, kv2.getVersion());
 		assertEquals("V1-1", kv1.getValue());
 		assertEquals("V2-1", kv2.getValue());
-		
+
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		buildBlock(ledgerRepo, ledgerManager, opReg, new TxDefinitor() {
 			@Override
@@ -328,10 +339,10 @@ public class ContractInvokingTest {
 	private LedgerBlock buildBlock(LedgerRepository ledgerRepo, LedgerService ledgerService,
 			OperationHandleRegisteration opReg, TxDefinitor txDefinitor) {
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerService);
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
+				previousBlockDataset, opReg, ledgerService);
 
 		TxBuilder txBuilder = new TxBuilder(ledgerRepo.getHash());
 		txDefinitor.buildTx(txBuilder);
@@ -361,12 +372,12 @@ public class ContractInvokingTest {
 	private void registerDataAccount(LedgerRepository ledgerRepo, LedgerManager ledgerManager,
 			DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash, BlockchainKeypair kpDataAccount) {
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataSet previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(newBlockEditor, previousBlockDataset,
-				opReg, ledgerManager);
+		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
+				previousBlockDataset, opReg, ledgerManager);
 
 		// 注册数据账户；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
