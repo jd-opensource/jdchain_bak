@@ -4,14 +4,16 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantDataQuery;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class ParticipantDataset implements Transactional, MerkleProvable {
+public class ParticipantDataset implements Transactional, MerkleProvable, ParticipantDataQuery {
 
 	static {
 		DataContractRegistry.register(ParticipantNode.class);
@@ -54,6 +56,7 @@ public class ParticipantDataset implements Transactional, MerkleProvable {
 		dataset.cancel();
 	}
 
+	@Override
 	public long getParticipantCount() {
 		return dataset.getDataCount();
 	}
@@ -77,6 +80,7 @@ public class ParticipantDataset implements Transactional, MerkleProvable {
 		return address;
 	}
 
+	@Override
 	public boolean contains(Bytes address) {
 		Bytes key = encodeKey(address);
 		long latestVersion = dataset.getVersion(key);
@@ -92,6 +96,7 @@ public class ParticipantDataset implements Transactional, MerkleProvable {
 	 * @param address
 	 * @return
 	 */
+	@Override
 	public ParticipantNode getParticipant(Bytes address) {
 		Bytes key = encodeKey(address);
 		byte[] bytes = dataset.getValue(key);
@@ -101,6 +106,7 @@ public class ParticipantDataset implements Transactional, MerkleProvable {
 		return BinaryProtocol.decode(bytes);
 	}
 
+	@Override
 	public ParticipantNode[] getParticipants() {
 		byte[][] bytes = dataset.getLatestValues(0, (int) dataset.getDataCount());
 		ParticipantNode[] pns = new ParticipantNode[bytes.length];

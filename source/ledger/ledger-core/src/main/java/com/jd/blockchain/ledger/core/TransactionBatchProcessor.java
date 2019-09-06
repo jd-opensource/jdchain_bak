@@ -46,7 +46,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private LedgerEditor newBlockEditor;
 
-	private LedgerDataset previousBlockDataset;
+	private LedgerDataQuery previousBlockDataset;
 
 	private OperationHandleRegisteration opHandles;
 
@@ -65,7 +65,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	 * @param opHandles            操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerSecurityManager securityManager, LedgerEditor newBlockEditor,
-			LedgerDataset previousBlockDataset, OperationHandleRegisteration opHandles, LedgerService ledgerService) {
+			LedgerDataQuery previousBlockDataset, OperationHandleRegisteration opHandles, LedgerService ledgerService) {
 		this.securityManager = securityManager;
 		this.newBlockEditor = newBlockEditor;
 		this.previousBlockDataset = previousBlockDataset;

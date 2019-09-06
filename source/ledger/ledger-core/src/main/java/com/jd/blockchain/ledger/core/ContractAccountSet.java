@@ -5,12 +5,13 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class ContractAccountSet implements MerkleProvable, Transactional {
+public class ContractAccountSet implements MerkleProvable, Transactional, ContractAccountQuery {
 
 	private AccountSet accountSet;
 
@@ -25,6 +26,7 @@ public class ContractAccountSet implements MerkleProvable, Transactional {
 		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
+	@Override
 	public AccountHeader[] getAccounts(int fromIndex, int count) {
 		return accountSet.getAccounts(fromIndex,count);
 	}
@@ -47,6 +49,7 @@ public class ContractAccountSet implements MerkleProvable, Transactional {
 	 * 
 	 * @return
 	 */
+	@Override
 	public long getTotalCount() {
 		return accountSet.getTotalCount();
 	}
@@ -56,15 +59,18 @@ public class ContractAccountSet implements MerkleProvable, Transactional {
 		return accountSet.getProof(address);
 	}
 
+	@Override
 	public boolean contains(Bytes address) {
 		return accountSet.contains(address);
 	}
 
+	@Override
 	public ContractAccount getContract(Bytes address) {
 		BaseAccount accBase = accountSet.getAccount(address);
 		return new ContractAccount(accBase);
 	}
 
+	@Override
 	public ContractAccount getContract(Bytes address, long version) {
 		BaseAccount accBase = accountSet.getAccount(address, version);
 		return new ContractAccount(accBase);

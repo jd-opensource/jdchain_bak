@@ -27,6 +27,6 @@ public interface OperationHandle {
 	 * @return
 	 */
 	BytesValue process(Operation op, LedgerDataset newBlockDataset, TransactionRequestExtension requestContext,
-			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
+			LedgerDataQuery previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
 
 }

@@ -3,10 +3,10 @@ package com.jd.blockchain.ledger.core;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.LedgerBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.service.TransactionBatchProcess;
 import com.jd.blockchain.service.TransactionEngine;
 
@@ -40,11 +40,11 @@ public class TransactionEngineImpl implements TransactionEngine {
 
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
 
-		LedgerAdminDataset previousAdminDataset = previousBlockDataset.getAdminDataset();
-		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getRolePrivileges(),
-				previousAdminDataset.getUserRoles());
+		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
+				previousAdminDataset.getAdminInfo().getUserRoles());
 		batch = new InnerTransactionBatchProcessor(ledgerHash, securityManager, newBlockEditor, previousBlockDataset,
 				opHdlRegs, ledgerService, ledgerBlock.getHeight());
 		batchs.put(ledgerHash, batch);
@@ -75,7 +75,7 @@ public class TransactionEngineImpl implements TransactionEngine {
 		 * @param opHandles            操作处理对象注册表；
 		 */
 		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerSecurityManager securityManager,
-				LedgerEditor newBlockEditor, LedgerDataset previousBlockDataset, OperationHandleRegisteration opHandles,
+				LedgerEditor newBlockEditor, LedgerDataQuery previousBlockDataset, OperationHandleRegisteration opHandles,
 				LedgerService ledgerService, long blockHeight) {
 			super(securityManager, newBlockEditor, previousBlockDataset, opHandles, ledgerService);
 			this.ledgerHash = ledgerHash;

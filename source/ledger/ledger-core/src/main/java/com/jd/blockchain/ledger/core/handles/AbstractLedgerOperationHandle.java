@@ -4,6 +4,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionPermission;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.MultiIdsPolicy;
@@ -44,7 +45,7 @@ public abstract class AbstractLedgerOperationHandle<T extends Operation> impleme
 
 	@Override
 	public final BytesValue process(Operation op, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataset previousBlockDataset,
+			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
@@ -68,5 +69,5 @@ public abstract class AbstractLedgerOperationHandle<T extends Operation> impleme
 	 * @param ledgerService
 	 */
 	protected abstract void doProcess(T op, LedgerDataset newBlockDataset, TransactionRequestExtension requestContext,
-			LedgerDataset previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
+			LedgerDataQuery previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService);
 }

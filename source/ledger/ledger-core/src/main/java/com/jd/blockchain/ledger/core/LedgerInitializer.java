@@ -62,7 +62,8 @@ public class LedgerInitializer {
 	}
 
 	private static SecurityInitSettings createDefaultSecurityInitSettings() {
-		throw new IllegalStateException("Not implemented!");
+		// TODO throw new IllegalStateException("Not implemented!");
+		return null;
 	}
 
 	public static LedgerInitializer create(LedgerInitSetting initSetting) {

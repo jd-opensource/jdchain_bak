@@ -7,6 +7,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AuthorizationException;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.RoleSet;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.UserRoles;

@@ -2,10 +2,11 @@ package com.jd.blockchain.ledger.core.handles;
 
 import com.jd.blockchain.ledger.DataAccountDoesNotExistException;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataVersionConflictException;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
+import com.jd.blockchain.ledger.DataVersionConflictException;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.core.DataAccount;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.MultiIdsPolicy;
@@ -22,7 +23,7 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 
 	@Override
 	protected void doProcess(DataAccountKVSetOperation kvWriteOp, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataset previousBlockDataset,
+			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();

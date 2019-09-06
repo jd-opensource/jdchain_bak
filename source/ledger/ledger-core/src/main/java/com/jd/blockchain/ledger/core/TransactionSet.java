@@ -6,6 +6,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;

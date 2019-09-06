@@ -5,12 +5,13 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class DataAccountSet implements MerkleProvable, Transactional {
+public class DataAccountSet implements MerkleProvable, Transactional, DataAccountQuery {
 
 	private AccountSet accountSet;
 
@@ -25,6 +26,7 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
+	@Override
 	public AccountHeader[] getAccounts(int fromIndex, int count) {
 		return accountSet.getAccounts(fromIndex, count);
 	}
@@ -42,6 +44,7 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		return accountSet.getRootHash();
 	}
 
+	@Override
 	public long getTotalCount() {
 		return accountSet.getTotalCount();
 	}
@@ -67,6 +70,7 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 	 * @param address
 	 * @return
 	 */
+	@Override
 	public DataAccount getDataAccount(Bytes address) {
 		BaseAccount accBase = accountSet.getAccount(address);
 		if (accBase == null) {
@@ -75,6 +79,7 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		return new DataAccount(accBase);
 	}
 
+	@Override
 	public DataAccount getDataAccount(Bytes address, long version) {
 		BaseAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);

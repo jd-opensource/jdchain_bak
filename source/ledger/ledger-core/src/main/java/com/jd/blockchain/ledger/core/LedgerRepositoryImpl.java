@@ -313,7 +313,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public UserAccountSet getUserAccountSet(LedgerBlock block) {
+	public UserAccountQuery getUserAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 //		UserAccountSet userAccountSet = null;
 		if (height == block.getHeight()) {
@@ -341,7 +341,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public DataAccountSet getDataAccountSet(LedgerBlock block) {
+	public DataAccountQuery getDataAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 //		DataAccountSet dataAccountSet = null;
 		if (height == block.getHeight()) {
@@ -370,7 +370,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public ContractAccountSet getContractAccountSet(LedgerBlock block) {
+	public ContractAccountQuery getContractAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 //		ContractAccountSet contractAccountSet = null;
 		if (height == block.getHeight()) {
@@ -426,7 +426,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		UserAccountSet userAccountSet = createUserAccountSet(block, cryptoSetting);
 		DataAccountSet dataAccountSet = createDataAccountSet(block, cryptoSetting);
 		ContractAccountSet contractAccountSet = createContractAccountSet(block, cryptoSetting);
-		return new LedgerDataSetImpl(adminDataset, userAccountSet, dataAccountSet, contractAccountSet, true);
+		return new LedgerDataset(adminDataset, userAccountSet, dataAccountSet, contractAccountSet, true);
 	}
 
 	@Override
@@ -475,7 +475,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		return BLOCK_PREFIX.concat(blockHash);
 	}
 
-	static LedgerDataSetImpl newDataSet(LedgerInitSetting initSetting, String keyPrefix,
+	static LedgerDataset newDataSet(LedgerInitSetting initSetting, String keyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
 		LedgerAdminDataset adminAccount = new LedgerAdminDataset(initSetting, keyPrefix, ledgerExStorage,
 				ledgerVerStorage);
@@ -509,7 +509,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		ContractAccountSet contractAccountSet = new ContractAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				contractsetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
-		LedgerDataSetImpl newDataSet = new LedgerDataSetImpl(adminAccount, userAccountSet, dataAccountSet,
+		LedgerDataset newDataSet = new LedgerDataset(adminAccount, userAccountSet, dataAccountSet,
 				contractAccountSet, false);
 
 		return newDataSet;
@@ -529,7 +529,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		return transactionSet;
 	}
 
-	static LedgerDataSetImpl loadDataSet(LedgerDataSnapshot dataSnapshot, CryptoSetting cryptoSetting, String keyPrefix,
+	static LedgerDataset loadDataSet(LedgerDataSnapshot dataSnapshot, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage, boolean readonly) {
 		LedgerAdminDataset adminAccount = new LedgerAdminDataset(dataSnapshot.getAdminAccountHash(), keyPrefix,
 				ledgerExStorage, ledgerVerStorage, readonly);
@@ -545,7 +545,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		ContractAccountSet contractAccountSet = loadContractAccountSet(dataSnapshot.getContractAccountSetHash(),
 				cryptoSetting, keyPrefix, ledgerExStorage, ledgerVerStorage, readonly);
 
-		LedgerDataSetImpl dataset = new LedgerDataSetImpl(adminAccount, userAccountSet, dataAccountSet,
+		LedgerDataset dataset = new LedgerDataset(adminAccount, userAccountSet, dataAccountSet,
 				contractAccountSet, readonly);
 
 		return dataset;
@@ -695,15 +695,15 @@ class LedgerRepositoryImpl implements LedgerRepository {
 			return ledgerDataset;
 		}
 
-		public ContractAccountSet getContractAccountSet() {
+		public ContractAccountQuery getContractAccountSet() {
 			return ledgerDataset.getContractAccountset();
 		}
 
-		public DataAccountSet getDataAccountSet() {
+		public DataAccountQuery getDataAccountSet() {
 			return ledgerDataset.getDataAccountSet();
 		}
 
-		public UserAccountSet getUserAccountSet() {
+		public UserAccountQuery getUserAccountSet() {
 			return ledgerDataset.getUserAccountSet();
 		}
 

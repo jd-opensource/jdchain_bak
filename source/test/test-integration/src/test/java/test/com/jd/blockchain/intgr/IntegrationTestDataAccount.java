@@ -29,7 +29,7 @@ import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -187,7 +187,7 @@ public class IntegrationTestDataAccount {
 
 		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHashs[0], memoryBasedDb.getStorageService());
 
-		DataAccountSet dataAccountSet = ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock());
+		DataAccountQuery dataAccountSet = ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock());
 
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHashs[0]);
 

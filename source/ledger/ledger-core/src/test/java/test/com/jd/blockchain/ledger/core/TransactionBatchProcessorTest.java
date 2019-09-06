@@ -33,6 +33,7 @@ import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
@@ -83,7 +84,7 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
 		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
@@ -143,7 +144,7 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
 		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
@@ -182,7 +183,7 @@ public class TransactionBatchProcessorTest {
 		assertEquals(newBlock.getHash(), latestBlock.getHash());
 		assertEquals(1, newBlock.getHeight());
 
-		LedgerDataset ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		LedgerDataQuery ledgerDS = ledgerRepo.getDataSet(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
 		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
 		assertTrue(existUser1);
@@ -201,7 +202,7 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
 		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
@@ -260,7 +261,7 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(tx3);
 		assertEquals(TransactionState.SUCCESS, tx3.getExecutionState());
 
-		LedgerDataset ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		LedgerDataQuery ledgerDS = ledgerRepo.getDataSet(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
 		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
 		boolean existUser3 = ledgerDS.getUserAccountSet().contains(userKeypair3.getAddress());
@@ -281,7 +282,7 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataset previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
 		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());

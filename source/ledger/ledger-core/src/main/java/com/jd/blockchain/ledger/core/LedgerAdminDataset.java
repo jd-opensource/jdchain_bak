@@ -23,7 +23,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
+public class LedgerAdminDataset implements Transactional, LedgerAdminDataQuery, LedgerAdminInfo {
 
 	static {
 		DataContractRegistry.register(LedgerMetadata.class);
@@ -107,6 +107,11 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 	@Override
 	public UserRolesSettings getUserRoles() {
 		return userRoles;
+	}
+	
+	@Override
+	public LedgerAdminInfo getAdminInfo() {
+		return this;
 	}
 
 	/**
@@ -290,7 +295,8 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminInfo {
 		return participants.getParticipants();
 	}
 
-	ParticipantDataset getParticipantDataset() {
+	@Override
+	public ParticipantDataset getParticipantDataset() {
 		return participants;
 	}
 

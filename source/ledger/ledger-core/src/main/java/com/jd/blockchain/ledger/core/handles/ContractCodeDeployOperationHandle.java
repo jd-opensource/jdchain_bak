@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core.handles;
 
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.MultiIdsPolicy;
@@ -17,7 +18,7 @@ public class ContractCodeDeployOperationHandle extends AbstractLedgerOperationHa
 
 	@Override
 	protected void doProcess(ContractCodeDeployOperation op, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataset previousBlockDataset,
+			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// TODO: 校验合约代码的正确性；
 

@@ -10,6 +10,7 @@ import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserAuthorizeOperation.UserRolesEntry;
 import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.MultiIdsPolicy;
@@ -25,7 +26,7 @@ public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<
 
 	@Override
 	protected void doProcess(UserAuthorizeOperation operation, LedgerDataset newBlockDataset,
-			TransactionRequestExtension request, LedgerDataset previousBlockDataset,
+			TransactionRequestExtension request, LedgerDataQuery previousBlockDataset,
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();

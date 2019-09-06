@@ -72,7 +72,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 	/**
 	 * 最后提交的账本数据集；
 	 */
-	private volatile LedgerDataSetImpl latestLedgerDataset;
+	private volatile LedgerDataset latestLedgerDataset;
 
 	/**
 	 * 最后提交的交易集合；
@@ -235,7 +235,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		// init storage of new transaction;
 		BufferedKVStorage txBufferedStorage = new BufferedKVStorage(baseStorage, baseStorage, false);
 
-		LedgerDataSetImpl txDataset = null;
+		LedgerDataset txDataset = null;
 		TransactionSet txset = null;
 		if (previousTxSnapshot == null) {
 			// load the starting point of the new transaction;
@@ -470,7 +470,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 		private TransactionRequest txRequest;
 
-		private LedgerDataSetImpl dataset;
+		private LedgerDataset dataset;
 
 		private TransactionSet txset;
 
@@ -484,7 +484,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 		private HashDigest txRootHash;
 
-		private LedgerTransactionContextImpl(TransactionRequest txRequest, LedgerDataSetImpl dataset,
+		private LedgerTransactionContextImpl(TransactionRequest txRequest, LedgerDataset dataset,
 				TransactionSet txset, BufferedKVStorage storage, LedgerTransactionalEditor editor) {
 			this.txRequest = txRequest;
 			this.dataset = dataset;
@@ -494,7 +494,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		}
 
 		@Override
-		public LedgerDataSetImpl getDataset() {
+		public LedgerDataset getDataset() {
 			return dataset;
 		}
 

@@ -60,13 +60,12 @@ import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
-import com.jd.blockchain.ledger.core.LedgerDataset;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerSecurityManager;
-import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.mocker.config.MockerConstant;
@@ -465,7 +464,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 	public OperationResult[] txProcess(TransactionRequest txRequest) {
 		LedgerEditor newEditor = ledgerRepository.createNextBlock();
 		LedgerBlock latestBlock = ledgerRepository.getLatestBlock();
-		LedgerDataset previousDataSet = ledgerRepository.getDataSet(latestBlock);
+		LedgerDataQuery previousDataSet = ledgerRepository.getDataSet(latestBlock);
 		TransactionBatchProcessor txProc = new TransactionBatchProcessor(getSecurityManager(), newEditor,
 				previousDataSet, opHandler, ledgerManager);
 		TransactionResponse txResp = txProc.schedule(txRequest);

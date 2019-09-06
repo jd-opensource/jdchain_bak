@@ -9,7 +9,14 @@ import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEncoding;
+import com.jd.blockchain.ledger.BytesValueList;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
@@ -30,7 +37,7 @@ public class MockerContractExeHandle implements OperationHandle {
 
 	@Override
 	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension request,
-			LedgerDataset previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
+			LedgerDataQuery previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
 		HashDigest txHash = request.getTransactionContent().getHash();

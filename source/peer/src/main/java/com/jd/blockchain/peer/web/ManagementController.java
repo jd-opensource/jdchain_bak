@@ -47,6 +47,7 @@ import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.core.LedgerAdminDataQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.peer.ConsensusRealm;
@@ -122,7 +123,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		DataContractRegistry.register(BftsmartConsensusSettings.class);
 		DataContractRegistry.register(BftsmartNodeSettings.class);
 		
-		DataContractRegistry.register(LedgerAdminInfo.class);
+		DataContractRegistry.register(LedgerAdminDataQuery.class);
 
 	}
 

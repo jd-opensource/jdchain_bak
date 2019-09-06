@@ -6,6 +6,7 @@ import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerPrivilege;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.PrivilegeSet;
 import com.jd.blockchain.ledger.Privileges;
 import com.jd.blockchain.ledger.RolePrivilegeSettings;
