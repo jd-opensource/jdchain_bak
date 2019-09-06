@@ -13,7 +13,6 @@
 	<!--<artifactId>oss-parent</artifactId> -->
 	<!--<version>7</version> -->
 	<!--</parent> -->
-
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
@@ -36,11 +35,12 @@
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
+		<!--<module>bftsmart</module>-->
 	</modules>
 
 	<properties>
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
-		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
+		<bft-smart.version>0.1.1-SNAPSHOT</bft-smart.version>
 		<explorer.version>0.7.0.RELEASE</explorer.version>
 		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
 		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
