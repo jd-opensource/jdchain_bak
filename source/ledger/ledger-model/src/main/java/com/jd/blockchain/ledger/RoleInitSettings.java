@@ -11,7 +11,7 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.METADATA_ROLE_INIT_SETTING)
+@DataContract(code = DataCodes.SECURITY_ROLE_INIT_SETTING)
 public interface RoleInitSettings {
 
 	/**

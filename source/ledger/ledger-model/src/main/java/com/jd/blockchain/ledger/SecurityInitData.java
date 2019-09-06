@@ -25,4 +25,10 @@ public class SecurityInitData implements SecurityInitSettings {
 		RoleInitData roleInitData = new RoleInitData(roleName, ledgerPermissions, transactionPermissions);
 		roles.add(roleInitData);
 	}
+
+	@Override
+	public UserAuthInitSettings[] getUserAuthorizations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

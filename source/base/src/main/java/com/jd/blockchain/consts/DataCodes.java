@@ -71,6 +71,12 @@ public interface DataCodes {
 	public static final int PRIVILEGE_SET = 0x410;
 
 	public static final int ROLE_SET = 0x411;
+	
+	public static final int SECURITY_INIT_SETTING = 0x420;
+
+	public static final int SECURITY_ROLE_INIT_SETTING = 0x421;
+	
+	public static final int SECURITY_USER_AUTH_INIT_SETTING = 0x422;
 
 	// contract types of metadata;
 	public static final int METADATA = 0x600;
@@ -85,10 +91,6 @@ public interface DataCodes {
 	public static final int METADATA_LEDGER_SETTING = 0x620;
 
 	public static final int METADATA_CONSENSUS_PARTICIPANT = 0x621;
-
-	public static final int METADATA_SECURITY_INIT_SETTING = 0x622;
-
-	public static final int METADATA_ROLE_INIT_SETTING = 0x623;
 
 // public static final int METADATA_CONSENSUS_NODE = 0x630;
 //

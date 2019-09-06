@@ -11,6 +11,7 @@ import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.SecurityInitSettings;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
@@ -60,8 +61,16 @@ public class LedgerInitializer {
 		return initTxContent;
 	}
 
+	private static SecurityInitSettings createDefaultSecurityInitSettings() {
+		throw new IllegalStateException("Not implemented!");
+	}
+
 	public static LedgerInitializer create(LedgerInitSetting initSetting) {
-		// 生成初始化交易，并签署许可；
+		return create(initSetting, createDefaultSecurityInitSettings());
+	}
+
+	public static LedgerInitializer create(LedgerInitSetting initSetting, SecurityInitSettings securityInitSettings) {
+		// 生成初始化交易；
 		TransactionBuilder initTxBuilder = new TxBuilder(null);// 账本初始化交易的账本 hash 为 null；
 		initTxBuilder.ledgers().create(initSetting);
 		for (ParticipantNode p : initSetting.getConsensusParticipants()) {
@@ -71,6 +80,7 @@ public class LedgerInitializer {
 		}
 		// 账本初始化配置声明的创建时间来初始化交易时间戳；注：不能用本地时间，因为共识节点之间的本地时间系统不一致；
 		TransactionContent initTxContent = initTxBuilder.prepareContent(initSetting.getCreatedTime());
+
 		return new LedgerInitializer(initSetting, initTxContent);
 	}
 

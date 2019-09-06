@@ -1,8 +1,7 @@
-package test.com.jd.blockchain.tools.initializer;
+package test.com.jd.blockchain.ledger;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -18,18 +17,41 @@ import java.util.TimeZone;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.RoleInitData;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.utils.codec.HexUtils;
 
 public class LedgerInitPropertiesTest {
+	
+
+	static {
+		DataContractRegistry.register(LedgerInitOperation.class);
+		DataContractRegistry.register(UserRegisterOperation.class);
+	}
+
+	public static final String PASSWORD = "abc";
+
+	public static final String[] PUB_KEYS = { "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
+			"3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX",
+			"3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x",
+			"3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk" };
+
+	public static final String[] PRIV_KEYS = {
+			"177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x",
+			"177gju9p5zrNdHJVEQnEEKF4ZjDDYmAXyfG84V5RPGVc5xFfmtwnHA7j51nyNLUFffzz5UT",
+			"177gjtwLgmSx5v1hFb46ijh7L9kdbKUpJYqdKVf9afiEmAuLgo8Rck9yu5UuUcHknWJuWaF",
+			"177gk1pudweTq5zgJTh8y3ENCTwtSFsKyX7YnpuKPo7rKgCkCBXVXh5z2syaTCPEMbuWRns" };
+
 
 	private static String expectedCreatedTimeStr = "2019-08-01 14:26:58.069+0800";
 
@@ -166,7 +188,7 @@ public class LedgerInitPropertiesTest {
 
 	@Test
 	public void testPubKeyAddress() {
-		String[] pubKeys = TestConsts.PUB_KEYS;
+		String[] pubKeys = PUB_KEYS;
 		int index = 0;
 		for (String pubKeyStr : pubKeys) {
 			System.out.println("[" + index + "][配置] = " + pubKeyStr);

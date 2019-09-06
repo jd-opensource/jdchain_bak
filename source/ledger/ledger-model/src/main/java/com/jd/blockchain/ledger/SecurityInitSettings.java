@@ -10,7 +10,7 @@ import com.jd.blockchain.consts.DataCodes;
  * @author huanghaiquan
  *
  */
-@DataContract(code = DataCodes.METADATA_SECURITY_INIT_SETTING)
+@DataContract(code = DataCodes.SECURITY_INIT_SETTING)
 public interface SecurityInitSettings {
 
 	/**
@@ -20,5 +20,8 @@ public interface SecurityInitSettings {
 	 */
 	@DataField(order = 0, refContract = true, list = true)
 	RoleInitSettings[] getRoles();
+	
+	@DataField(order = 1, refContract = true, list = true)
+	UserAuthInitSettings[] getUserAuthorizations();
 
 }
