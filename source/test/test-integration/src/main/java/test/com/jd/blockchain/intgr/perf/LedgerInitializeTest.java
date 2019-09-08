@@ -203,19 +203,18 @@ public class LedgerInitializeTest {
 			return invoker.start();
 		}
 
-		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties setting,
+		public AsyncCallback<HashDigest> startInit(int currentId, PrivKey privKey, LedgerInitProperties initProps,
 				DBConnectionConfig dbConnConfig, Prompter prompter, boolean autoVerifyHash) {
 
-			CryptoConfig cryptoSetting = new CryptoConfig();
-			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
-			cryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
+			initProps.getCryptoProperties().setVerifyHash(autoVerifyHash);
+			initProps.getCryptoProperties().setHashAlgorithm("SHA256");
 
-			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
+			partiKey = new AsymmetricKeypair(initProps.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
+					return initProcess.initialize(currentId, privKey, initProps, dbConnConfig, prompter);
 				}
 			};
 

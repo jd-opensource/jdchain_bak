@@ -16,7 +16,7 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.LedgerInitProperties;
-import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
+import com.jd.blockchain.ledger.LedgerInitProperties.ParticipantProperties;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
 import com.jd.blockchain.utils.ArgumentSet;
@@ -94,7 +94,7 @@ public class LedgerInitCommand {
 			// 加载全部公钥;
 			int currId = -1;
 			for (int i = 0; i < ledgerInitProperties.getConsensusParticipantCount(); i++) {
-				ConsensusParticipantConfig partiConf = ledgerInitProperties.getConsensusParticipant(i);
+				ParticipantProperties partiConf = ledgerInitProperties.getConsensusParticipant(i);
 //				String partiAddress = partiConf.getAddress();
 //				if (partiAddress == null) {
 //					if (partiConf.getPubKeyPath() != null) {

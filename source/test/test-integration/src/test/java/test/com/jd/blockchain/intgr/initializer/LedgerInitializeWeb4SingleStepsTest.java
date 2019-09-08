@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import com.jd.blockchain.transaction.SignatureUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -40,9 +39,10 @@ import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.HttpInitConsensServiceFactory;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.transaction.TxRequestBuilder;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -79,9 +79,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		// 加载共识配置；
 		Properties props = loadConsensusSetting(consensusConfig.getConfigPath());
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(consensusConfig.getProvider());
-		ConsensusSettings csProps = csProvider.getSettingsFactory()
-				.getConsensusSettingsBuilder()
-				.createSettings(props, Utils.loadParticipantNodes());
+		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props,
+				Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();
@@ -116,10 +115,12 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 
 		// 测试生成“账本初始化许可”；
-		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initSetting, csProps);
-		LedgerInitProposal permission1 = testPreparePermisssion(node1, privkey1, initSetting, csProps);
-		LedgerInitProposal permission2 = testPreparePermisssion(node2, privkey2, initSetting, csProps);
-		LedgerInitProposal permission3 = testPreparePermisssion(node3, privkey3, initSetting, csProps);
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(initSetting);
+		initConfig.setConsensusSettings(csProvider, csProps);
+		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initConfig);
+		LedgerInitProposal permission1 = testPreparePermisssion(node1, privkey1, initConfig);
+		LedgerInitProposal permission2 = testPreparePermisssion(node2, privkey2, initConfig);
+		LedgerInitProposal permission3 = testPreparePermisssion(node3, privkey3, initConfig);
 
 		TransactionContent initTxContent0 = node0.getInitTxContent();
 		TransactionContent initTxContent1 = node1.getInitTxContent();
@@ -241,8 +242,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 	}
 
 	private LedgerInitProposal testPreparePermisssion(NodeWebContext node, PrivKey privKey,
-			LedgerInitProperties setting, ConsensusSettings csProps) {
-		LedgerInitProposal permission = node.preparePermision(privKey, setting, csProps);
+			LedgerInitConfiguration setting) {
+		LedgerInitProposal permission = node.preparePermision(privKey, setting);
 
 		assertEquals(node.getId(), permission.getParticipantId());
 		assertNotNull(permission.getTransactionSignature());
@@ -385,9 +386,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			return invoker.start();
 		}
 
-		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitConfiguration setting) {
+			return controller.prepareLocalPermission(id, privKey, setting);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

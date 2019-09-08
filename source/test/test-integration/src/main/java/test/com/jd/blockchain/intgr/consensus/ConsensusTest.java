@@ -398,9 +398,8 @@ public class ConsensusTest {
 			return invoker.start();
 		}
 
-		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties initProps) {
+			return controller.prepareLocalPermission(id, privKey, initProps);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

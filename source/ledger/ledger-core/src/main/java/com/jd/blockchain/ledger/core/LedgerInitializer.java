@@ -8,12 +8,18 @@ import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitException;
+import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.RoleInitSettings;
+import com.jd.blockchain.ledger.RolesConfigureOperation;
 import com.jd.blockchain.ledger.SecurityInitSettings;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.UserAuthInitSettings;
+import com.jd.blockchain.ledger.UserAuthorizeOperation;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.transaction.SignatureUtils;
@@ -74,23 +80,64 @@ public class LedgerInitializer {
 		return null;
 	}
 
-	public static LedgerInitializer create(LedgerInitSetting initSetting) {
-		return create(initSetting, createDefaultSecurityInitSettings());
-	}
+//	public static LedgerInitializer create(LedgerInitSetting initSetting) {
+//		return create(initSetting, createDefaultSecurityInitSettings());
+//	}
 
 	public static LedgerInitializer create(LedgerInitSetting initSetting, SecurityInitSettings securityInitSettings) {
-		// 生成初始化交易；
-		TransactionBuilder initTxBuilder = new TxBuilder(null);// 账本初始化交易的账本 hash 为 null；
+		// 生成创世交易；
+		TransactionContent initTxContent = buildGenesisTransaction(initSetting, securityInitSettings);
+
+		return new LedgerInitializer(initSetting, initTxContent);
+	}
+
+	/**
+	 * 根据初始化配置，生成创始交易；
+	 * <p>
+	 * 
+	 * “创世交易”按顺序由以下操作组成：<br>
+	 * (1) 账本初始化 {@link LedgerInitOperation}：此操作仅用于锚定了原始的交易配置，对应的
+	 * {@link OperationHandle} 执行空操作，由“创世交易”其余的操作来表达对账本的实际修改；<br>
+	 * (2) 注册用户 {@link UserRegisterOperation}：有一项或者多项；<br>
+	 * (3) 配置角色 {@link RolesConfigureOperation}：有一项或者多项；<br>
+	 * (4) 授权用户 {@link UserAuthorizeOperation}：有一项或者多项；<br>
+	 * 
+	 * @param initSetting
+	 * @param securityInitSettings
+	 * @return
+	 */
+	public static TransactionContent buildGenesisTransaction(LedgerInitSetting initSetting,
+			SecurityInitSettings securityInitSettings) {
+		// 账本初始化交易的账本 hash 为 null；
+		TransactionBuilder initTxBuilder = new TxBuilder(null);
+
+		// 定义账本初始化操作；
 		initTxBuilder.ledgers().create(initSetting);
+
+		// TODO: 注册参与方; 目前由 LedgerInitSetting 定义，在 LedgerAdminDataset 中解释执行；
+
+		//  注册用户；
 		for (ParticipantNode p : initSetting.getConsensusParticipants()) {
 			// TODO：暂时只支持注册用户的初始化操作；
 			BlockchainIdentity superUserId = new BlockchainIdentityData(p.getPubKey());
 			initTxBuilder.users().register(superUserId);
 		}
-		// 账本初始化配置声明的创建时间来初始化交易时间戳；注：不能用本地时间，因为共识节点之间的本地时间系统不一致；
-		TransactionContent initTxContent = initTxBuilder.prepareContent(initSetting.getCreatedTime());
 
-		return new LedgerInitializer(initSetting, initTxContent);
+		// 配置角色；
+		for (RoleInitSettings roleSettings : securityInitSettings.getRoles()) {
+			initTxBuilder.security().roles().configure(roleSettings.getRoleName())
+					.enable(roleSettings.getLedgerPermissions()).enable(roleSettings.getTransactionPermissions());
+		}
+
+		// 授权用户；
+		for (UserAuthInitSettings userAuthSettings : securityInitSettings.getUserAuthorizations()) {
+			initTxBuilder.security().authorziations().forUser(userAuthSettings.getUserAddress())
+					.authorize(userAuthSettings.getRoles())
+					.setPolicy(userAuthSettings.getPolicy());
+		}
+
+		// 账本初始化配置声明的创建时间来初始化交易时间戳；注：不能用本地时间，因为共识节点之间的本地时间系统不一致；
+		return initTxBuilder.prepareContent(initSetting.getCreatedTime());
 	}
 
 	public SignatureDigest signTransaction(PrivKey privKey) {

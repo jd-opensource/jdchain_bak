@@ -1,22 +1,22 @@
 package com.jd.blockchain.transaction;
 
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.utils.Bytes;
 
-public  class LedgerInitData implements LedgerInitSetting {
+public class LedgerInitData implements LedgerInitSetting {
 
 	private byte[] ledgerSeed;
 
 	private ParticipantNode[] consensusParticipants;
 
 	private CryptoSetting cryptoSetting;
-	
+
 	private String consensusProvider;
 
 	private Bytes consensusSettings;
-	
+
 	private long createdTime;
 
 	@Override
@@ -55,11 +55,15 @@ public  class LedgerInitData implements LedgerInitSetting {
 		this.consensusSettings = consensusSettings;
 	}
 
+	public void setConsensusSettings(byte[] consensusSettings) {
+		this.consensusSettings = new Bytes(consensusSettings);
+	}
+
 	@Override
 	public String getConsensusProvider() {
 		return consensusProvider;
 	}
-	
+
 	public void setConsensusProvider(String consensusProvider) {
 		this.consensusProvider = consensusProvider;
 	}
@@ -68,7 +72,7 @@ public  class LedgerInitData implements LedgerInitSetting {
 	public long getCreatedTime() {
 		return createdTime;
 	}
-	
+
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}

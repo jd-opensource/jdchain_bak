@@ -76,6 +76,7 @@ import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
@@ -185,8 +186,11 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 		MockerLedgerInitializer mockLedgerInitializer = new MockerLedgerInitializer(dbConnFactory, ledgerManager);
 
-		ledgerHash = mockLedgerInitializer.initialize(0, defaultKeypair.getPrivKey(), ledgerInitProperties,
-				dbConnectionConfig, new PresetAnswerPrompter("N"), cryptoConfig());
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(ledgerInitProperties);
+		initConfig.getLedgerSettings().setCryptoSetting(cryptoConfig());
+
+		ledgerHash = mockLedgerInitializer.initialize(0, defaultKeypair.getPrivKey(), initConfig, dbConnectionConfig,
+				new PresetAnswerPrompter("N"));
 
 		ledgerRepository = registerLedger(ledgerHash, dbConnectionConfig);
 

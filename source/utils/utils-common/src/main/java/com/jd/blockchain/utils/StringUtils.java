@@ -72,4 +72,8 @@ public class StringUtils {
 		}
 		return tokens.toArray(new String[tokens.size()]);
 	}
+
+	public static String trim(String str) {
+		return str == null ? "" : str.trim();
+	}
 }

@@ -26,6 +26,7 @@ import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
+import com.jd.blockchain.ledger.core.LedgerConfiguration;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
@@ -35,6 +36,7 @@ import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.InitConsensusServiceFactory;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
 import com.jd.blockchain.utils.Bytes;
@@ -169,12 +171,16 @@ public class Utils {
 				ConsensusSettings csProps, ConsensusProvider consensusProvider, DBConnectionConfig dbConnConfig,
 				Prompter prompter, CryptoSetting cryptoSetting) {
 
+			LedgerInitConfiguration ledgerInitConfig = LedgerInitConfiguration.create(setting);
+			ledgerInitConfig.getLedgerSettings().setCryptoSetting(cryptoSetting);
+			
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
+
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 

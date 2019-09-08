@@ -24,7 +24,7 @@ import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitProperties;
-import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
+import com.jd.blockchain.ledger.LedgerInitProperties.ParticipantProperties;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -40,6 +40,7 @@ import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.Prompter;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitDecisionData;
 import com.jd.blockchain.transaction.DigitalSignatureBlob;
@@ -74,7 +75,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 
 	private volatile int currentId = -1;
 
-	private volatile LedgerInitSetting ledgerInitSetting;
+	private volatile LedgerInitConfiguration ledgerInitConfig;
 
 //	private volatile LedgerInitPermission[] permissions;
 //	private volatile LedgerInitPermission permission;
@@ -130,25 +131,22 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 	@Override
 	public HashDigest initialize(int currentId, PrivKey privKey, LedgerInitProperties ledgerInitProps,
 			DBConnectionConfig dbConnConfig, Prompter prompter) {
-		return initialize(currentId, privKey, ledgerInitProps, dbConnConfig, prompter, createDefaultCryptoSetting());
+		LedgerInitConfiguration ledgerInitConfig = LedgerInitConfiguration.create(ledgerInitProps);
+		return initialize(currentId, privKey, ledgerInitConfig, dbConnConfig, prompter);
 	}
 
 	@Override
-	public synchronized HashDigest initialize(int currentId, PrivKey privKey, LedgerInitProperties ledgerInitProps,
-			DBConnectionConfig dbConnConfig, Prompter prompter, CryptoSetting cryptoSetting) {
-
-		if (this.ledgerInitSetting != null) {
+	public synchronized HashDigest initialize(int currentId, PrivKey privKey, LedgerInitConfiguration ledgerInitProps,
+			DBConnectionConfig dbConnConfig, Prompter prompter) {
+		if (this.ledgerInitConfig != null) {
 			throw new IllegalStateException("ledger init process has already started.");
 		}
 
 		setPrompter(prompter);
 
-		ConsensusProvider csProvider = ConsensusProviders.getProvider(ledgerInitProps.getConsensusProvider());
-		setConsensusProvider(csProvider);
-
 		prompter.info("Init settings and sign permision...");
 
-		prepareLocalProposal(currentId, privKey, ledgerInitProps, null, cryptoSetting);
+		prepareLocalProposal(currentId, privKey, ledgerInitProps);
 
 		try {
 			// 连接数据库；
@@ -180,7 +178,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 
 		// 生成签名决定；
 		this.localDecision = makeDecision(currentId, initializer.getLedgerHash(), privKey);
-		this.decisions = new DecisionResultHandle[this.ledgerInitSetting.getConsensusParticipants().length];
+		this.decisions = new DecisionResultHandle[this.ledgerInitConfig.getParticipantCount()];
 		for (int i = 0; i < decisions.length; i++) {
 			// 参与者的 id 是依次递增的；
 			this.decisions[i] = new DecisionResultHandle(i);
@@ -191,7 +189,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 	}
 
 	private DigitalSignature getNodeSignatures() {
-		ParticipantNode parti = this.ledgerInitSetting.getConsensusParticipants()[currentId];
+		ParticipantNode parti = this.ledgerInitConfig.getParticipant(currentId);
 		PubKey pubKey = parti.getPubKey();
 		SignatureDigest signDigest = this.localPermission.getTransactionSignature();
 		DigitalSignatureBlob digitalSignature = new DigitalSignatureBlob(pubKey, signDigest);
@@ -230,44 +228,24 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 		return defCryptoSetting;
 	}
 
-	public LedgerInitProposal prepareLocalProposal(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
-			ConsensusSettings csSettings, CryptoSetting cryptoSetting) {
-		// 创建初始化配置；
-		LedgerInitData initSetting = new LedgerInitData();
-		initSetting.setLedgerSeed(ledgerProps.getLedgerSeed());
-		initSetting.setCryptoSetting(cryptoSetting);
+	public LedgerInitProposal prepareLocalProposal(int currentId, PrivKey privKey,
+			LedgerInitConfiguration ledgerInitConfig) {
 
-		List<ConsensusParticipantConfig> partiList = ledgerProps.getConsensusParticipants();
-		ConsensusParticipantConfig[] parties = partiList.toArray(new ConsensusParticipantConfig[partiList.size()]);
-		ConsensusParticipantConfig[] orderedParties = sortAndVerify(parties);
-		initSetting.setConsensusParticipants(orderedParties);
-
-		// 创建默认的共识配置；
-		try {
-			byte[] csSettingBytes = new byte[1024];
-			new Random().nextBytes(csSettingBytes);
-
-			initSetting.setConsensusProvider(consensusProvider.getName());
-			initSetting.setConsensusSettings(new Bytes(csSettingBytes));
-		} catch (Exception e) {
-			throw new LedgerInitException("Create default consensus config failed! --" + e.getMessage(), e);
-		}
-
-		if (currentId < 0 || currentId >= orderedParties.length) {
+		if (currentId < 0 || currentId >= ledgerInitConfig.getParticipantCount()) {
 			throw new LedgerInitException("Your id is out of bound of participant list!");
 		}
 		this.currentId = currentId;
-		this.ledgerInitSetting = initSetting;
 
 		// 校验当前的公钥、私钥是否匹配；
 		byte[] testBytes = BytesUtils.toBytes(currentId);
 		SignatureDigest testSign = SIGN_FUNC.sign(privKey, testBytes);
-		PubKey myPubKey = orderedParties[currentId].getPubKey();
+		PubKey myPubKey = ledgerInitConfig.getParticipant(currentId).getPubKey();
 		if (!SIGN_FUNC.verify(testSign, myPubKey, testBytes)) {
 			throw new LedgerInitException("Your pub-key specified in the init-settings isn't match your priv-key!");
 		}
 		// 初始化；
-		this.initializer = LedgerInitializer.create(ledgerInitSetting);
+		this.initializer = LedgerInitializer.create(ledgerInitConfig.getLedgerSettings(),
+				ledgerInitConfig.getSecuritySettings());
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
 		SignatureDigest permissionSign = SignatureUtils.sign(initializer.getTransactionContent(), privKey);
@@ -337,7 +315,7 @@ public class MockerLedgerInitializer implements LedgerInitProcess, LedgerInitCon
 	 * @param parties
 	 * @return
 	 */
-	private ConsensusParticipantConfig[] sortAndVerify(ConsensusParticipantConfig[] parties) {
+	private ParticipantProperties[] sortAndVerify(ParticipantProperties[] parties) {
 		Arrays.sort(parties, (o1, o2) -> o1.getId() - o2.getId());
 		for (int i = 0; i < parties.length; i++) {
 			if (parties[i].getId() != i) {

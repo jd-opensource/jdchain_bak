@@ -3,9 +3,7 @@ package com.jd.blockchain.tools.initializer.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -18,28 +16,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.consensus.ConsensusProvider;
-import com.jd.blockchain.consensus.ConsensusProviders;
-import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
-import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitProperties;
-import com.jd.blockchain.ledger.LedgerInitProperties.ConsensusParticipantConfig;
-import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerInitProperties.ParticipantProperties;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerInitProposalData;
@@ -51,9 +40,7 @@ import com.jd.blockchain.tools.initializer.InitializingStep;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.transaction.DigitalSignatureBlob;
-import com.jd.blockchain.transaction.LedgerInitData;
 import com.jd.blockchain.transaction.SignatureUtils;
-import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.InvocationResult;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -71,28 +58,23 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		DataContractRegistry.register(TransactionRequest.class);
 	}
 
-	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
-			SMCryptoService.class.getName() };
-
 	private static final String DEFAULT_SIGN_ALGORITHM = "ED25519";
 
 	private final SignatureFunction SIGN_FUNC;
 
-	private volatile LedgerInitProposal localPermission;
+	private volatile LedgerInitConfiguration ledgerInitConfig;
 
 	private volatile LedgerInitializer initializer;
 
-	private volatile int currentId = -1;
+	private volatile LedgerInitProposal localPermission;
 
-	private volatile LedgerInitSetting ledgerInitSetting;
+	private volatile int currentId = -1;
 
 	private volatile LedgerInitProposal[] permissions;
 
 	private volatile NetworkAddress[] initializerAddresses;
 
 	private volatile Prompter prompter;
-
-	private volatile ConsensusProvider consensusProvider;
 
 	private volatile LedgerInitDecision localDecision;
 
@@ -138,35 +120,36 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		this.prompter = prompter;
 	}
 
-	private void setConsensusProvider(ConsensusProvider consensusProvider) {
-		this.consensusProvider = consensusProvider;
-	}
-
 	@Override
 	public HashDigest initialize(int currentId, PrivKey privKey, LedgerInitProperties ledgerInitProps,
 			DBConnectionConfig dbConnConfig, Prompter prompter) {
-		return initialize(currentId, privKey, ledgerInitProps, dbConnConfig, prompter, createDefaultCryptoSetting());
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(ledgerInitProps);
+		return initialize(currentId, privKey, initConfig, dbConnConfig, prompter);
 	}
 
 	@Override
-	public HashDigest initialize(int currentId, PrivKey privKey, LedgerInitProperties ledgerInitProps,
-			DBConnectionConfig dbConnConfig, Prompter prompter, CryptoSetting cryptoSetting) {
-
-		if (this.ledgerInitSetting != null) {
+	public HashDigest initialize(int currentId, PrivKey privKey, LedgerInitConfiguration initConfig,
+			DBConnectionConfig dbConnConfig, Prompter prompter) {
+		if (initConfig == null) {
+			throw new IllegalArgumentException("Ledger init configuration is null");
+		}
+		if (this.ledgerInitConfig != null) {
 			throw new IllegalStateException("ledger init process has already started.");
 		}
 
 		setPrompter(prompter);
 
-		Properties csProps = ledgerInitProps.getConsensusConfig();
-		ConsensusProvider csProvider = ConsensusProviders.getProvider(ledgerInitProps.getConsensusProvider());
-		ConsensusSettings csSettings = csProvider.getSettingsFactory().getConsensusSettingsBuilder()
-				.createSettings(csProps, ledgerInitProps.getConsensusParticipantNodes());
-		setConsensusProvider(csProvider);
+//		Properties csProps = ledgerInitProps.getConsensusConfig();
+//		ConsensusProvider csProvider = ConsensusProviders.getProvider(ledgerInitProps.getConsensusProvider());
+//		ConsensusSettings csSettings = csProvider.getSettingsFactory().getConsensusSettingsBuilder()
+//				.createSettings(csProps, ledgerInitProps.getConsensusParticipantNodes());
+//		setConsensusProvider(csProvider);
 
 		prompter.info("Init settings and sign permision...");
 
-		prepareLocalPermission(currentId, privKey, ledgerInitProps, csSettings, cryptoSetting);
+		this.ledgerInitConfig = initConfig;
+
+		prepareLocalPermission(currentId, privKey, ledgerInitConfig);
 
 		prompter.confirm(InitializingStep.PERMISSION_READY.toString(),
 				"Ledger init permission has already prepared! Any key to continue...");
@@ -212,7 +195,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 
 		// 生成签名决定；
 		this.localDecision = makeDecision(currentId, initializer.getLedgerHash(), privKey);
-		this.decisions = new DecisionResultHandle[this.ledgerInitSetting.getConsensusParticipants().length];
+		this.decisions = new DecisionResultHandle[ledgerInitConfig.getParticipantCount()];
 		for (int i = 0; i < decisions.length; i++) {
 			// 参与者的 id 是依次递增的；
 			this.decisions[i] = new DecisionResultHandle(i);
@@ -223,7 +206,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	private DigitalSignature[] getNodesSignatures() {
-		ParticipantNode[] parties = this.ledgerInitSetting.getConsensusParticipants();
+		ParticipantNode[] parties = this.ledgerInitConfig.getParticipants();
 		DigitalSignature[] signatures = new DigitalSignature[parties.length];
 		for (int i = 0; i < parties.length; i++) {
 			PubKey pubKey = parties[i].getPubKey();
@@ -298,78 +281,57 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		return allPermitted;
 	}
 
-	public CryptoSetting createDefaultCryptoSetting() {
-		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
-		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
-			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
-		}
-		CryptoConfig defCryptoSetting = new CryptoConfig();
-		defCryptoSetting.setSupportedProviders(supportedProviders);
-		defCryptoSetting.setAutoVerifyHash(true);
-		defCryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
-
-		return defCryptoSetting;
+//	public CryptoSetting createDefaultCryptoSetting() {
+//		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+//		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+//			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+//		}
+//		CryptoConfig defCryptoSetting = new CryptoConfig();
+//		defCryptoSetting.setSupportedProviders(supportedProviders);
+//		defCryptoSetting.setAutoVerifyHash(true);
+//		defCryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
+//
+//		return defCryptoSetting;
+//	}
+//
+	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey,
+			LedgerInitProperties ledgerInitProps) {
+		LedgerInitConfiguration ledgerInitConfiguration = LedgerInitConfiguration.create(ledgerInitProps);
+		return prepareLocalPermission(currentId, privKey, ledgerInitConfiguration);
 	}
 
-	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
-			ConsensusSettings consensusProps) {
-		CryptoSetting defCryptoSetting = createDefaultCryptoSetting();
-		return prepareLocalPermission(currentId, privKey, ledgerProps, consensusProps, defCryptoSetting);
-	}
-
-	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey, LedgerInitProperties ledgerProps,
-			ConsensusSettings csSettings, CryptoSetting cryptoSetting) {
+	public LedgerInitProposal prepareLocalPermission(int currentId, PrivKey privKey,
+			LedgerInitConfiguration ledgerInitConfig) {
 		// 创建初始化配置；
-		LedgerInitData initSetting = new LedgerInitData();
-		initSetting.setLedgerSeed(ledgerProps.getLedgerSeed());
-		initSetting.setCryptoSetting(cryptoSetting);
-
-		List<ConsensusParticipantConfig> partiList = ledgerProps.getConsensusParticipants();
-		ConsensusParticipantConfig[] parties = new ConsensusParticipantConfig[partiList.size()];
-		parties = partiList.toArray(parties);
-		ConsensusParticipantConfig[] orderedParties = sortAndVerify(parties);
-		initSetting.setConsensusParticipants(orderedParties);
-		initSetting.setCreatedTime(ledgerProps.getCreatedTime());
-
-		// 创建默认的共识配置；
-		try {
-			// ConsensusConfig csConfig = new ConsensusConfig();
-			byte[] csSettingBytes = consensusProvider.getSettingsFactory().getConsensusSettingsEncoder()
-					.encode(csSettings);
-			initSetting.setConsensusProvider(consensusProvider.getName());
-			initSetting.setConsensusSettings(new Bytes(csSettingBytes));
-		} catch (Exception e) {
-			throw new LedgerInitException("Create default consensus config failed! --" + e.getMessage(), e);
-		}
-
-		if (currentId < 0 || currentId >= orderedParties.length) {
+		ParticipantProperties[] participants = ledgerInitConfig.getParticipants();
+		if (currentId < 0 || currentId >= participants.length) {
 			throw new LedgerInitException("Your id is out of bound of participant list!");
 		}
 		this.currentId = currentId;
-		this.ledgerInitSetting = initSetting;
 
 		// 校验当前的公钥、私钥是否匹配；
 		byte[] testBytes = BytesUtils.toBytes(currentId);
 		SignatureDigest testSign = SIGN_FUNC.sign(privKey, testBytes);
-		PubKey myPubKey = orderedParties[currentId].getPubKey();
+		PubKey myPubKey = participants[currentId].getPubKey();
 		if (!SIGN_FUNC.verify(testSign, myPubKey, testBytes)) {
 			throw new LedgerInitException("Your pub-key specified in the init-settings isn't match your priv-key!");
 		}
-		this.initializerAddresses = new NetworkAddress[orderedParties.length];
+		this.initializerAddresses = new NetworkAddress[participants.length];
 		// 记录每个参与方的账本初始化服务地址；
-		for (int i = 0; i < orderedParties.length; i++) {
-			initializerAddresses[i] = orderedParties[i].getInitializerAddress();
+		for (int i = 0; i < participants.length; i++) {
+			initializerAddresses[i] = participants[i].getInitializerAddress();
 		}
 
 		// 初始化账本；
-		this.initializer = LedgerInitializer.create(ledgerInitSetting);
+		this.initializer = LedgerInitializer.create(ledgerInitConfig.getLedgerSettings(),
+				ledgerInitConfig.getSecuritySettings());
 
 		// 对初始交易签名，生成当前参与者的账本初始化许可；
 		SignatureDigest permissionSign = initializer.signTransaction(privKey);
 		LedgerInitProposalData permission = new LedgerInitProposalData(currentId, permissionSign);
 
 		this.currentId = currentId;
-		this.permissions = new LedgerInitProposal[initSetting.getConsensusParticipants().length];
+		this.permissions = new LedgerInitProposal[ledgerInitConfig.getParticipantCount()];
 		this.permissions[currentId] = permission;
 		this.localPermission = permission;
 
@@ -397,7 +359,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	private boolean startRequestPermissions(int currentId, PrivKey privKey) {
 		SignatureDigest reqAuthSign = signPermissionRequest(currentId, privKey);
 
-		ParticipantNode[] participants = ledgerInitSetting.getConsensusParticipants();
+		ParticipantNode[] participants = ledgerInitConfig.getParticipants();
 
 		// 异步请求结果列表；不包括已经获得许可的参与方；
 		InvocationResult<?>[] results = new InvocationResult<?>[participants.length];
@@ -457,7 +419,8 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 				continue;
 			}
 
-			if (!SignatureUtils.verifySignature(initializer.getTransactionContent(), permission.getTransactionSignature(), pubKey)) {
+			if (!SignatureUtils.verifySignature(initializer.getTransactionContent(),
+					permission.getTransactionSignature(), pubKey)) {
 				prompter.error("Invalid permission from participant! --[Id=%s][name=%s]", participants[i].getAddress(),
 						participants[i].getName());
 				allPermitted = false;
@@ -477,7 +440,8 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	public SignatureDigest signPermissionRequest(int requesterId, PrivKey privKey) {
-		byte[] reqAuthBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), ledgerInitSetting.getLedgerSeed());
+		byte[] reqAuthBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId),
+				ledgerInitConfig.getLedgerSettings().getLedgerSeed());
 		SignatureDigest reqAuthSign = SIGN_FUNC.sign(privKey, reqAuthBytes);
 		return reqAuthSign;
 	}
@@ -523,7 +487,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			throw new LedgerInitException("There is a id conflict!");
 		}
 		int retry = 0;
-		while (currentId == -1 || ledgerInitSetting == null || localPermission == null) {
+		while (currentId == -1 || ledgerInitConfig == null || localPermission == null) {
 			// 本地尚未完成初始化；
 			if (retry < 30) {
 				try {
@@ -537,11 +501,12 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			retry++;
 		}
 
-		ParticipantNode[] participants = ledgerInitSetting.getConsensusParticipants();
+		ParticipantNode[] participants = ledgerInitConfig.getParticipants();
 		if (requesterId < 0 || requesterId >= participants.length) {
 			throw new LedgerInitException("The id of requester is out of the bound of participant list!");
 		}
-		byte[] requestCodeBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId), ledgerInitSetting.getLedgerSeed());
+		byte[] requestCodeBytes = BytesUtils.concat(BytesUtils.toBytes(requesterId),
+				ledgerInitConfig.getLedgerSettings().getLedgerSeed());
 		PubKey requesterPubKey = participants[requesterId].getPubKey();
 		if (!SIGN_FUNC.verify(signature, requesterPubKey, requestCodeBytes)) {
 			throw new LedgerInitException("The requester signature is invalid!");
@@ -680,8 +645,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		}
 
 		// 检查签名；
-		PubKey targetPubKey = ledgerInitSetting.getConsensusParticipants()[targetDecision.getParticipantId()]
-				.getPubKey();
+		PubKey targetPubKey = ledgerInitConfig.getParticipant(targetDecision.getParticipantId()).getPubKey();
 		byte[] deciBytes = getDecisionBytes(targetDecision.getParticipantId(), targetDecision.getLedgerHash());
 		if ((!SIGN_FUNC.verify(targetDecision.getSignature(), targetPubKey, deciBytes))
 				&& resultHandle.getValue() == null) {
@@ -731,28 +695,6 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 			throw new LedgerInitException(
 					"Error occurred while receiving the request of synchronizing decision! --" + e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * 对参与者列表按照 id 进行升序排列，并校验id是否从 1 开始且没有跳跃；
-	 * 
-	 * @param parties
-	 * @return
-	 */
-	private ConsensusParticipantConfig[] sortAndVerify(ConsensusParticipantConfig[] parties) {
-		Arrays.sort(parties, new Comparator<ConsensusParticipantConfig>() {
-			@Override
-			public int compare(ConsensusParticipantConfig o1, ConsensusParticipantConfig o2) {
-				return o1.getId() - o2.getId();
-			}
-		});
-		for (int i = 0; i < parties.length; i++) {
-			if (parties[i].getId() != i) {
-				throw new LedgerInitException(
-						"The ids of participants are not match their positions in the participant-list!");
-			}
-		}
-		return parties;
 	}
 
 	private static class DecisionResultHandle extends InvocationResult<LedgerInitDecision> {

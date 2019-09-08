@@ -1,34 +1,54 @@
 package com.jd.blockchain.ledger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.jd.blockchain.utils.Bytes;
 
 public class SecurityInitData implements SecurityInitSettings {
 
-	private List<RoleInitData> roles = new ArrayList<RoleInitData>();
+	private Map<String, RoleInitData> roles = new LinkedHashMap<>();
+
+	private Map<Bytes, UserAuthInitData> userAuthentications = new LinkedHashMap<>();
 
 	@Override
 	public RoleInitData[] getRoles() {
-		return roles.toArray(new RoleInitData[roles.size()]);
+		return roles.values().toArray(new RoleInitData[roles.size()]);
+	}
+
+	public int getRolesCount() {
+		return roles.size();
 	}
 
 	public void setRoles(RoleInitData[] roles) {
-		List<RoleInitData> list = new ArrayList<RoleInitData>();
+		Map<String, RoleInitData> newRoles = new LinkedHashMap<>();
 		for (RoleInitData r : roles) {
-			list.add(r);
+			newRoles.put(r.getRoleName(), r);
 		}
-		this.roles = list;
+		this.roles = newRoles;
 	}
 
-	public void add(String roleName, LedgerPermission[] ledgerPermissions,
+	public boolean containsRole(String roleName) {
+		return roles.containsKey(roleName);
+	}
+
+	public void addRole(String roleName, LedgerPermission[] ledgerPermissions,
 			TransactionPermission[] transactionPermissions) {
 		RoleInitData roleInitData = new RoleInitData(roleName, ledgerPermissions, transactionPermissions);
-		roles.add(roleInitData);
+		roles.put(roleName, roleInitData);
 	}
 
 	@Override
-	public UserAuthInitSettings[] getUserAuthorizations() {
-		// TODO Auto-generated method stub
-		return null;
+	public UserAuthInitData[] getUserAuthorizations() {
+		return userAuthentications.values().toArray(new UserAuthInitData[userAuthentications.size()]);
+	}
+
+	public void addUserAuthencation(Bytes address, String[] roles, RolesPolicy policy) {
+		UserAuthInitData userAuth = new UserAuthInitData();
+		userAuth.setUserAddress(address);
+		userAuth.setRoles(roles);
+		userAuth.setPolicy(policy);
+
+		userAuthentications.put(address, userAuth);
 	}
 }

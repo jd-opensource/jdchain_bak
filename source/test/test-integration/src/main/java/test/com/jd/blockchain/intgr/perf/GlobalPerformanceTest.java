@@ -186,9 +186,8 @@ public class GlobalPerformanceTest {
 		LedgerInitProperties initSetting = loadInitSetting_integration();
 		Properties props = Utils.loadConsensusSetting();
 		ConsensusProvider csProvider = getConsensusProvider();
-		ConsensusSettings csProps = csProvider.getSettingsFactory()
-				.getConsensusSettingsBuilder()
-				.createSettings(props, Utils.loadParticipantNodes());
+		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props,
+				Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();
@@ -400,9 +399,8 @@ public class GlobalPerformanceTest {
 			return invoker.start();
 		}
 
-		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties initProps) {
+			return controller.prepareLocalPermission(id, privKey, initProps);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

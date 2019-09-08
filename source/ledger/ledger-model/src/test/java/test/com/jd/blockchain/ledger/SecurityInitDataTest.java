@@ -48,17 +48,17 @@ public class SecurityInitDataTest {
 		
 		SecurityInitData securityInitData = new SecurityInitData();
 
-		securityInitData.add("DEFAULT",
+		securityInitData.addRole("DEFAULT",
 				new LedgerPermission[] { LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT },
 				new TransactionPermission[] { TransactionPermission.CONTRACT_OPERATION });
-		securityInitData.add("ADMIN",
+		securityInitData.addRole("ADMIN",
 				new LedgerPermission[] { LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT },
 				new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
 						TransactionPermission.CONTRACT_OPERATION });
-		securityInitData.add("R1",
+		securityInitData.addRole("R1",
 				new LedgerPermission[] { LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT },
 				null);
-		securityInitData.add("R2", null, new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
+		securityInitData.addRole("R2", null, new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
 				TransactionPermission.CONTRACT_OPERATION });
 
 		String json = JSONSerializeUtils.serializeToJSON(securityInitData, true);

@@ -61,6 +61,12 @@ consensus.conf=classpath:bftsmart.config
 crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
 com.jd.blockchain.crypto.service.sm.SMCryptoService
 
+#从存储中加载账本数据时，是否校验哈希；可选；
+crypto.verify-hash=true
+
+#哈希算法；
+crypto.hash-algorithm=SHA256;
+
 
 #参与方的个数，后续以 cons_parti.id 分别标识每一个参与方的配置；
 cons_parti.count=4

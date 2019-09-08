@@ -42,6 +42,7 @@ import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.HttpInitConsensServiceFactory;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
 import com.jd.blockchain.utils.Bytes;
@@ -112,10 +113,12 @@ public class LedgerInitializeWebTest {
 		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 
 		// 测试生成“账本初始化许可”；
-		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initSetting, csProps);
-		LedgerInitProposal permission1 = testPreparePermisssion(node1, privkey1, initSetting, csProps);
-		LedgerInitProposal permission2 = testPreparePermisssion(node2, privkey2, initSetting, csProps);
-		LedgerInitProposal permission3 = testPreparePermisssion(node3, privkey3, initSetting, csProps);
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(initSetting);
+		initConfig.setConsensusSettings(csProvider, csProps);
+		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initConfig);
+		LedgerInitProposal permission1 = testPreparePermisssion(node1, privkey1, initConfig);
+		LedgerInitProposal permission2 = testPreparePermisssion(node2, privkey2, initConfig);
+		LedgerInitProposal permission3 = testPreparePermisssion(node3, privkey3, initConfig);
 
 		TransactionContent initTxContent0 = node0.getInitTxContent();
 		TransactionContent initTxContent1 = node1.getInitTxContent();
@@ -206,8 +209,8 @@ public class LedgerInitializeWebTest {
 	}
 
 	private LedgerInitProposal testPreparePermisssion(NodeWebContext node, PrivKey privKey,
-			LedgerInitProperties setting, ConsensusSettings csProps) {
-		LedgerInitProposal permission = node.preparePermision(privKey, setting, csProps);
+			LedgerInitConfiguration setting) {
+		LedgerInitProposal permission = node.preparePermision(privKey, setting);
 
 		return permission;
 	}
@@ -457,9 +460,8 @@ public class LedgerInitializeWebTest {
 			return invoker.start();
 		}
 
-		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitConfiguration initConfig) {
+			return controller.prepareLocalPermission(id, privKey, initConfig);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

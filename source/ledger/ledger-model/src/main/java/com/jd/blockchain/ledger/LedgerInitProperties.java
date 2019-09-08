@@ -15,6 +15,7 @@ import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.LedgerInitProperties.CryptoProperties;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.StringUtils;
@@ -72,6 +73,10 @@ public class LedgerInitProperties {
 
 	// 密码服务提供者列表，以英文逗点“,”分隔；必须；
 	public static final String CRYPTO_SERVICE_PROVIDERS = "crypto.service-providers";
+	// 从存储中加载账本数据时，是否校验哈希；可选；
+	public static final String CRYPTO_VRIFY_HASH = "crypto.verify-hash";
+	// 哈希算法；
+	public static final String CRYPTO_HASH_ALGORITHM = "crypto.hash-algorithm";
 
 	public static final String CRYPTO_SERVICE_PROVIDERS_SPLITTER = ",";
 
@@ -81,13 +86,15 @@ public class LedgerInitProperties {
 
 	private RoleInitData[] roles;
 
-	private List<ConsensusParticipantConfig> consensusParticipants = new ArrayList<>();
+	private List<ParticipantProperties> consensusParticipants = new ArrayList<>();
 
 	private String consensusProvider;
 
 	private Properties consensusConfig;
 
-	private String[] cryptoProviders;
+//	private String[] cryptoProviders;
+
+	private CryptoProperties cryptoProperties = new CryptoProperties();
 
 	private long createdTime;
 
@@ -115,7 +122,7 @@ public class LedgerInitProperties {
 		return consensusParticipants.size();
 	}
 
-	public List<ConsensusParticipantConfig> getConsensusParticipants() {
+	public List<ParticipantProperties> getConsensusParticipants() {
 		return consensusParticipants;
 	}
 
@@ -127,12 +134,15 @@ public class LedgerInitProperties {
 		return consensusParticipants.toArray(participantNodes);
 	}
 
-	public String[] getCryptoProviders() {
-		return cryptoProviders.clone();
+	public CryptoProperties getCryptoProperties() {
+		return cryptoProperties;
 	}
 
-	public void setCryptoProviders(String[] cryptoProviders) {
-		this.cryptoProviders = cryptoProviders;
+	public void setCryptoProperties(CryptoProperties cryptoProperties) {
+		if (cryptoProperties == null) {
+			cryptoProperties = new CryptoProperties();
+		}
+		this.cryptoProperties = cryptoProperties;
 	}
 
 	/**
@@ -141,8 +151,8 @@ public class LedgerInitProperties {
 	 * @param id 从 1 开始； 小于等于 {@link #getConsensusParticipantCount()};
 	 * @return
 	 */
-	public ConsensusParticipantConfig getConsensusParticipant(int id) {
-		for (ConsensusParticipantConfig p : consensusParticipants) {
+	public ParticipantProperties getConsensusParticipant(int id) {
+		for (ParticipantProperties p : consensusParticipants) {
 			if (p.getId() == id) {
 				return p;
 			}
@@ -159,7 +169,7 @@ public class LedgerInitProperties {
 		this.ledgerSeed = ledgerSeed;
 	}
 
-	public void addConsensusParticipant(ConsensusParticipantConfig participant) {
+	public void addConsensusParticipant(ParticipantProperties participant) {
 		consensusParticipants.add(participant);
 	}
 
@@ -249,7 +259,14 @@ public class LedgerInitProperties {
 		for (int i = 0; i < cryptoProviders.length; i++) {
 			cryptoProviders[i] = cryptoProviders[i].trim();
 		}
-		initProps.cryptoProviders = cryptoProviders;
+		initProps.cryptoProperties.setProviders(cryptoProviders);
+		// 哈希校验选项；
+		boolean verifyHash = PropertiesUtils.getBooleanOptional(props, CRYPTO_VRIFY_HASH, false);
+		initProps.cryptoProperties.setVerifyHash(verifyHash);
+		// 哈希算法；
+		String hashAlgorithm = PropertiesUtils.getOptionalProperty(props, CRYPTO_HASH_ALGORITHM);
+		initProps.cryptoProperties.setHashAlgorithm(hashAlgorithm);
+		
 
 		// 解析参与方节点列表；
 		int partCount = getInt(PropertiesUtils.getRequiredProperty(props, PART_COUNT));
@@ -260,7 +277,7 @@ public class LedgerInitProperties {
 			throw new IllegalArgumentException(String.format("Property[%s] is less than 4!", PART_COUNT));
 		}
 		for (int i = 0; i < partCount; i++) {
-			ConsensusParticipantConfig parti = new ConsensusParticipantConfig();
+			ParticipantProperties parti = new ParticipantProperties();
 
 			parti.setId(i);
 
@@ -363,13 +380,47 @@ public class LedgerInitProperties {
 		this.roles = roles;
 	}
 
+	public static class CryptoProperties {
+
+		private String[] providers;
+
+		private boolean verifyHash;
+
+		private String hashAlgorithm;
+
+		public String[] getProviders() {
+			return providers;
+		}
+
+		public void setProviders(String[] providers) {
+			this.providers = providers;
+		}
+
+		public boolean isVerifyHash() {
+			return verifyHash;
+		}
+
+		public void setVerifyHash(boolean verifyHash) {
+			this.verifyHash = verifyHash;
+		}
+
+		public String getHashAlgorithm() {
+			return hashAlgorithm;
+		}
+
+		public void setHashAlgorithm(String hashAlgorithm) {
+			this.hashAlgorithm = hashAlgorithm;
+		}
+
+	}
+
 	/**
 	 * 参与方配置信息；
 	 * 
 	 * @author huanghaiquan
 	 *
 	 */
-	public static class ConsensusParticipantConfig implements ParticipantNode {
+	public static class ParticipantProperties implements ParticipantNode {
 
 		private int id;
 

@@ -27,6 +27,8 @@ import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.RolesConfigureOperation;
+import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
@@ -57,6 +59,8 @@ public class LedgerInitializeTest {
 	static {
 		DataContractRegistry.register(LedgerInitOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(RolesConfigureOperation.class);
+		DataContractRegistry.register(UserAuthorizeOperation.class);
 	}
 
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
@@ -257,13 +261,16 @@ public class LedgerInitializeTest {
 			cryptoSetting.setSupportedProviders(supportedProviders);
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
 			cryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
+			
+			setting.getCryptoProperties().setHashAlgorithm("SHA256");
+			setting.getCryptoProperties().setVerifyHash(autoVerifyHash);
 
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 

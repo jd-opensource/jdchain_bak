@@ -4,6 +4,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 
 /**
  * 
@@ -28,13 +29,13 @@ public interface LedgerInitProcess {
 	/**
 	 * @param currentId
 	 * @param privKey
-	 * @param ledgerInitProps
+	 * @param ledgerInitConfig
 	 * @param dbConnConfig
 	 * @param prompter
 	 * @param cryptoSetting
 	 * @return
 	 */
-	HashDigest initialize(int currentId, PrivKey privKey, LedgerInitProperties ledgerInitProps,
-			DBConnectionConfig dbConnConfig, Prompter prompter, CryptoSetting cryptoSetting);
+	HashDigest initialize(int currentId, PrivKey privKey, LedgerInitConfiguration ledgerInitConfig,
+			DBConnectionConfig dbConnConfig, Prompter prompter);
 
 }
