@@ -5,8 +5,8 @@ import com.jd.blockchain.utils.Bytes;
 
 public interface UserAuthorize {
 
-	UserRolesAuthorizer forUser(BlockchainIdentity userId);
+	UserRolesAuthorizer forUser(BlockchainIdentity... userId);
 
-	UserRolesAuthorizer forUser(Bytes userAddress);
+	UserRolesAuthorizer forUser(Bytes... userAddress);
 
 }

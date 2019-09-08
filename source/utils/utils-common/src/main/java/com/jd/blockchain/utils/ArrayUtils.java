@@ -9,6 +9,7 @@ import java.util.*;
  */
 public abstract class ArrayUtils {
 	private ArrayUtils() {
+		
 	}
 	
 	public static <T> T[] singleton(T obj, Class<T> clazz) {

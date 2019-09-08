@@ -65,7 +65,7 @@ com.jd.blockchain.crypto.service.sm.SMCryptoService
 crypto.verify-hash=true
 
 #哈希算法；
-crypto.hash-algorithm=SHA256;
+crypto.hash-algorithm=SHA256
 
 
 #参与方的个数，后续以 cons_parti.id 分别标识每一个参与方的配置；

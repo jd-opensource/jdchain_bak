@@ -26,8 +26,8 @@ public interface UserAuthorizeOperation extends Operation {
 		 * 
 		 * @return
 		 */
-		@DataField(order = 0, primitiveType = PrimitiveType.BYTES)
-		Bytes getUserAddress();
+		@DataField(order = 0, primitiveType = PrimitiveType.BYTES, list = true)
+		Bytes[] getUserAddresses();
 
 		/**
 		 * 要更新的多角色权限策略；

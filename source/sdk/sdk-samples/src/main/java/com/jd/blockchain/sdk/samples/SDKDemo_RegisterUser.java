@@ -20,60 +20,67 @@ import com.jd.blockchain.utils.ConsoleUtils;
 
 /**
  * 注册用户
+ * 
  * @author shaozhuguang
  * @create 2018/10/18
  * @since 1.0.0
  */
 
 public class SDKDemo_RegisterUser {
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        String GATEWAY_IPADDR = "127.0.0.1";
-        int GATEWAY_PORT = 8081;
-        if (args != null && args.length == 2) {
-            GATEWAY_IPADDR = args[0];
-            GATEWAY_PORT = Integer.parseInt(args[1]);
-        }
+		String GATEWAY_IPADDR = "127.0.0.1";
+		int GATEWAY_PORT = 8081;
+		if (args != null && args.length == 2) {
+			GATEWAY_IPADDR = args[0];
+			GATEWAY_PORT = Integer.parseInt(args[1]);
+		}
 
-        // 注册相关class
-        DataContractRegistry.register(TransactionContent.class);
-        DataContractRegistry.register(TransactionContentBody.class);
-        DataContractRegistry.register(TransactionRequest.class);
-        DataContractRegistry.register(NodeRequest.class);
-        DataContractRegistry.register(EndpointRequest.class);
-        DataContractRegistry.register(TransactionResponse.class);
+		// 注册相关class
+		DataContractRegistry.register(TransactionContent.class);
+		DataContractRegistry.register(TransactionContentBody.class);
+		DataContractRegistry.register(TransactionRequest.class);
+		DataContractRegistry.register(NodeRequest.class);
+		DataContractRegistry.register(EndpointRequest.class);
+		DataContractRegistry.register(TransactionResponse.class);
 
-        PrivKey privKey = SDKDemo_Params.privkey1;
-        PubKey pubKey = SDKDemo_Params.pubKey1;
+		PrivKey privKey = SDKDemo_Params.privkey1;
+		PubKey pubKey = SDKDemo_Params.pubKey1;
 
-        BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
+		BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
 
-        boolean SECURE = false;
-        GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
-                    CLIENT_CERT);
-        BlockchainService service = serviceFactory.getBlockchainService();
+		boolean SECURE = false;
+		GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
+				CLIENT_CERT);
+		BlockchainService service = serviceFactory.getBlockchainService();
 
-        HashDigest[] ledgerHashs = service.getLedgerHashs();
-        // 在本地定义注册账号的 TX；
-        TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
+		HashDigest[] ledgerHashs = service.getLedgerHashs();
+		// 在本地定义注册账号的 TX；
+		TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
 
-        //existed signer
-        AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
+		// existed signer
+		AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
 
-        BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
-        // 注册
-        txTemp.users().register(user.getIdentity());
+		// 注册
+		txTemp.users().register(user.getIdentity());
 
-        // TX 准备就绪；
-        PreparedTransaction prepTx = txTemp.prepare();
+		// 定义角色权限；
+		txTemp.security().roles().configure("MANAGER")
+				.enable(LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT)
+				.enable(TransactionPermission.CONTRACT_OPERATION);
+		txTemp.security().authorziations().forUser(user.getIdentity()).authorize("MANAGER");
 
-        // 使用私钥进行签名；
-        prepTx.sign(keyPair);
+		// TX 准备就绪；
+		PreparedTransaction prepTx = txTemp.prepare();
 
-        // 提交交易；
-        TransactionResponse transactionResponse = prepTx.commit();
+		// 使用私钥进行签名；
+		prepTx.sign(keyPair);
 
-        ConsoleUtils.info("register user complete, result is [%s]", transactionResponse.isSuccess());
-    }
+		// 提交交易；
+		TransactionResponse transactionResponse = prepTx.commit();
+
+		ConsoleUtils.info("register user complete, result is [%s]", transactionResponse.isSuccess());
+	}
 }

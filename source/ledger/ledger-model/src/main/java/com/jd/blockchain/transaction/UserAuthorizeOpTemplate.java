@@ -1,9 +1,8 @@
 package com.jd.blockchain.transaction;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
@@ -21,8 +20,8 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 		DataContractRegistry.register(UserRegisterOperation.class);
 	}
 
-	private Map<Bytes, UserRolesAuthorization> userAuthMap = Collections
-			.synchronizedMap(new LinkedHashMap<Bytes, UserRolesAuthorization>());
+	private Set<UserRolesAuthorization> userAuthMap = Collections
+			.synchronizedSet(new LinkedHashSet<UserRolesAuthorization>());
 
 	public UserAuthorizeOpTemplate() {
 	}
@@ -32,7 +31,7 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 
 	@Override
 	public UserRolesAuthorization[] getUserRolesAuthorizations() {
-		return ArrayUtils.toArray(userAuthMap.values(), UserRolesAuthorization.class);
+		return ArrayUtils.toArray(userAuthMap, UserRolesAuthorization.class);
 	}
 
 	@Override
@@ -41,35 +40,33 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 	}
 
 	@Override
-	public UserRolesAuthorizer forUser(Bytes userAddress) {
-		UserRolesAuthorization userRolesAuth = userAuthMap.get(userAddress);
-		if (userRolesAuth == null) {
-			userRolesAuth = new UserRolesAuthorization(userAddress);
-			userAuthMap.put(userAddress, userRolesAuth);
-		}
+	public UserRolesAuthorizer forUser(Bytes... userAddresses) {
+		UserRolesAuthorization userRolesAuth = new UserRolesAuthorization(userAddresses);
+		userAuthMap.add(userRolesAuth);
 		return userRolesAuth;
 	}
 
 	@Override
-	public UserRolesAuthorizer forUser(BlockchainIdentity userId) {
-		return forUser(userId.getAddress());
+	public UserRolesAuthorizer forUser(BlockchainIdentity... userIds) {
+		Bytes[] addresses = Arrays.stream(userIds).map(p -> p.getAddress()).toArray(Bytes[]::new);
+		return forUser(addresses);
 	}
 
 	private class UserRolesAuthorization implements UserRolesAuthorizer, UserRolesEntry {
 
-		private Bytes userAddress;
+		private Bytes[] userAddress;
 
 		private RolesPolicy policy = RolesPolicy.UNION;
 
 		private Set<String> authRoles = new LinkedHashSet<String>();
 		private Set<String> unauthRoles = new LinkedHashSet<String>();
 
-		private UserRolesAuthorization(Bytes userAddress) {
+		private UserRolesAuthorization(Bytes[] userAddress) {
 			this.userAddress = userAddress;
 		}
 
 		@Override
-		public Bytes getUserAddress() {
+		public Bytes[] getUserAddresses() {
 			return userAddress;
 		}
 
@@ -119,13 +116,13 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 		}
 
 		@Override
-		public UserRolesAuthorizer forUser(BlockchainIdentity userId) {
-			return UserAuthorizeOpTemplate.this.forUser(userId);
+		public UserRolesAuthorizer forUser(BlockchainIdentity... userIds) {
+			return UserAuthorizeOpTemplate.this.forUser(userIds);
 		}
 
 		@Override
-		public UserRolesAuthorizer forUser(Bytes userAddress) {
-			return UserAuthorizeOpTemplate.this.forUser(userAddress);
+		public UserRolesAuthorizer forUser(Bytes... userAddresses) {
+			return UserAuthorizeOpTemplate.this.forUser(userAddresses);
 		}
 	}
 }

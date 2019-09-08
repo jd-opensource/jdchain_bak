@@ -18,6 +18,7 @@ import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension;
+import com.jd.blockchain.utils.Bytes;
 
 public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<UserAuthorizeOperation> {
 	public UserAuthorizeOperationHandle() {
@@ -49,21 +50,25 @@ public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<
 						}
 					}
 				}
-				UserRoles ur = urSettings.getUserRoles(urcfg.getUserAddress());
-				if (ur == null) {
-					RolesPolicy policy = urcfg.getPolicy();
-					if (policy == null) {
-						policy = RolesPolicy.UNION;
-					}
-					urSettings.addUserRoles(urcfg.getUserAddress(), policy, validRoles);
-				} else {
-					ur.addRoles(validRoles);
-					ur.removeRoles(urcfg.getUnauthorizedRoles());
+				for (Bytes address : urcfg.getUserAddresses()) {
+					UserRoles ur = urSettings.getUserRoles(address);
+					if (ur == null) {
+						// 这是新的授权；
+						RolesPolicy policy = urcfg.getPolicy();
+						if (policy == null) {
+							policy = RolesPolicy.UNION;
+						}
+						urSettings.addUserRoles(address, policy, validRoles);
+					} else {
+						// 更改之前的授权；
+						ur.addRoles(validRoles);
+						ur.removeRoles(urcfg.getUnauthorizedRoles());
 
-					// 如果请求中设置了策略，才进行更新；
-					RolesPolicy policy = urcfg.getPolicy();
-					if (policy != null) {
-						ur.setPolicy(policy);
+						// 如果请求中设置了策略，才进行更新；
+						RolesPolicy policy = urcfg.getPolicy();
+						if (policy != null) {
+							ur.setPolicy(policy);
+						}
 					}
 				}
 			}
