@@ -6,7 +6,7 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
@@ -24,7 +24,7 @@ public class UserRegisterOperationHandle extends AbstractLedgerOperationHandle<U
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
-		securityPolicy.checkEndpoints(LedgerPermission.REGISTER_USER, MultiIdsPolicy.AT_LEAST_ONE);
+		securityPolicy.checkEndpointPermission(LedgerPermission.REGISTER_USER, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
 		UserRegisterOperation userRegOp = (UserRegisterOperation) op;

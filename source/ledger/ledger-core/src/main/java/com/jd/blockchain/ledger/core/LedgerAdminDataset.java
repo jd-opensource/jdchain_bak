@@ -108,7 +108,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminDataQuery, 
 	public UserRolesSettings getUserRoles() {
 		return userRoles;
 	}
-	
+
 	@Override
 	public LedgerAdminInfo getAdminInfo() {
 		return this;
@@ -392,7 +392,7 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminDataQuery, 
 			return;
 		}
 		participants.cancel();
-		metadata = new LedgerMetadataInfo(origMetadata);
+		metadata =origMetadata == null ? new LedgerMetadataInfo() :  new LedgerMetadataInfo(origMetadata);
 	}
 
 	public static class LedgerMetadataInfo implements LedgerMetadata_V2 {

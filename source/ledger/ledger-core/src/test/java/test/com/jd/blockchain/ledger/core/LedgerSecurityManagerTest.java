@@ -1,6 +1,5 @@
 package test.com.jd.blockchain.ledger.core;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -8,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.CryptoAlgorithm;
@@ -18,15 +18,17 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.ParticipantDataQuery;
 import com.jd.blockchain.ledger.Privileges;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerSecurityManager;
 import com.jd.blockchain.ledger.core.LedgerSecurityManagerImpl;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.RolePrivilegeDataset;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.ledger.core.UserRoleDataset;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -125,8 +127,12 @@ public class LedgerSecurityManagerTest {
 		userRolesDataset.addUserRoles(kpPlatform.getAddress(), RolesPolicy.UNION, platformRoles);
 		userRolesDataset.commit();
 
+		ParticipantDataQuery partisQuery = Mockito.mock(ParticipantDataQuery.class);
+		UserAccountQuery usersQuery = Mockito.mock(UserAccountQuery.class);
+
 		// 创建安全管理器；
-		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(rolePrivilegeDataset, userRolesDataset);
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(rolePrivilegeDataset, userRolesDataset,
+				partisQuery, usersQuery);
 
 		// 定义终端用户列表；终端用户一起共同具有 ADMIN、OPERATOR 角色；
 		final Map<Bytes, BlockchainKeypair> endpoints = new HashMap<>();
@@ -146,16 +152,16 @@ public class LedgerSecurityManagerTest {
 			// 终端节点有 ADMIN 和 OPERATOR 两种角色的合并权限；
 			if (p == LedgerPermission.REGISTER_USER || p == LedgerPermission.REGISTER_DATA_ACCOUNT
 					|| p == LedgerPermission.WRITE_DATA_ACCOUNT) {
-				assertTrue(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertTrue(policy.isEndpointEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			} else {
-				assertFalse(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertFalse(policy.isEndpointEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			}
 
 			if (p == LedgerPermission.APPROVE_TX) {
 				// 共识参与方只有 PLATFORM 角色的权限：核准交易；
-				assertTrue(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertTrue(policy.isNodeEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			} else {
-				assertFalse(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertFalse(policy.isNodeEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			}
 		}
 
@@ -163,12 +169,12 @@ public class LedgerSecurityManagerTest {
 		for (TransactionPermission p : transactionPermissions) {
 			// 终端节点有 ADMIN 和 OPERATOR 两种角色的合并权限；
 			if (p == TransactionPermission.DIRECT_OPERATION || p == TransactionPermission.CONTRACT_OPERATION) {
-				assertTrue(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertTrue(policy.isEndpointEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			} else {
-				assertFalse(policy.isEnableToEndpoints(p, MultiIdsPolicy.AT_LEAST_ONE));
+				assertFalse(policy.isEndpointEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 			}
 
-			assertFalse(policy.isEnableToNodes(p, MultiIdsPolicy.AT_LEAST_ONE));
+			assertFalse(policy.isNodeEnable(p, MultiIDsPolicy.AT_LEAST_ONE));
 		}
 	}
 

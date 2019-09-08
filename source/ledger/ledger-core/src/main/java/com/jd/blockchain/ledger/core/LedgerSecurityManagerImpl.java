@@ -7,15 +7,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerSecurityException;
+import com.jd.blockchain.ledger.ParticipantDataQuery;
+import com.jd.blockchain.ledger.ParticipantDoesNotExistException;
 import com.jd.blockchain.ledger.RolePrivilegeSettings;
 import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.UserDoesNotExistException;
 import com.jd.blockchain.ledger.UserRoles;
+import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -36,17 +38,17 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 	private Map<Bytes, UserRoles> userRolesCache = new ConcurrentHashMap<>();
 	private Map<String, RolePrivileges> rolesPrivilegeCache = new ConcurrentHashMap<>();
 
-	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserRolesSettings userRolesSettings) {
+	private ParticipantDataQuery participantsQuery;
+	private UserAccountQuery userAccountsQuery;
+
+	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserRolesSettings userRolesSettings,
+			ParticipantDataQuery participantsQuery, UserAccountQuery userAccountsQuery) {
 		this.rolePrivilegeSettings = rolePrivilegeSettings;
 		this.userRolesSettings = userRolesSettings;
+		this.participantsQuery = participantsQuery;
+		this.userAccountsQuery = userAccountsQuery;
 	}
-	
-	
-	public static void initSecuritySettings(LedgerInitSetting initSettings, LedgerEditor editor) {
-		
-	}
-	
-	
+
 	@Override
 	public SecurityPolicy createSecurityPolicy(Set<Bytes> endpoints, Set<Bytes> nodes) {
 		Map<Bytes, UserRolesPrivileges> endpointPrivilegeMap = new HashMap<>();
@@ -62,7 +64,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 			nodePrivilegeMap.put(userAddress, userPrivileges);
 		}
 
-		return new UserRolesSecurityPolicy(endpointPrivilegeMap, nodePrivilegeMap);
+		return new UserRolesSecurityPolicy(endpointPrivilegeMap, nodePrivilegeMap, participantsQuery, userAccountsQuery);
 	}
 
 	private UserRolesPrivileges getUserRolesPrivilegs(Bytes userAddress) {
@@ -142,15 +144,22 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		 */
 		private Map<Bytes, UserRolesPrivileges> nodePrivilegeMap = new HashMap<>();
 
+		private ParticipantDataQuery participantsQuery;
+
+		private UserAccountQuery userAccountsQuery;
+
 		public UserRolesSecurityPolicy(Map<Bytes, UserRolesPrivileges> endpointPrivilegeMap,
-				Map<Bytes, UserRolesPrivileges> nodePrivilegeMap) {
+				Map<Bytes, UserRolesPrivileges> nodePrivilegeMap, ParticipantDataQuery participantsQuery,
+				UserAccountQuery userAccountsQuery) {
 			this.endpointPrivilegeMap = endpointPrivilegeMap;
 			this.nodePrivilegeMap = nodePrivilegeMap;
+			this.participantsQuery = participantsQuery;
+			this.userAccountsQuery = userAccountsQuery;
 		}
 
 		@Override
-		public boolean isEnableToEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy) {
-			if (MultiIdsPolicy.AT_LEAST_ONE == midPolicy) {
+		public boolean isEndpointEnable(LedgerPermission permission, MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
 				// 至少一个；
 				for (UserRolesPrivileges p : endpointPrivilegeMap.values()) {
 					if (p.getLedgerPrivileges().isEnable(permission)) {
@@ -158,7 +167,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 					}
 				}
 				return false;
-			} else if (MultiIdsPolicy.ALL == midPolicy) {
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
 				// 全部；
 				for (UserRolesPrivileges p : endpointPrivilegeMap.values()) {
 					if (!p.getLedgerPrivileges().isEnable(permission)) {
@@ -172,8 +181,8 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public boolean isEnableToEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy) {
-			if (MultiIdsPolicy.AT_LEAST_ONE == midPolicy) {
+		public boolean isEndpointEnable(TransactionPermission permission, MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
 				// 至少一个；
 				for (UserRolesPrivileges p : endpointPrivilegeMap.values()) {
 					if (p.getTransactionPrivileges().isEnable(permission)) {
@@ -181,7 +190,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 					}
 				}
 				return false;
-			} else if (MultiIdsPolicy.ALL == midPolicy) {
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
 				// 全部；
 				for (UserRolesPrivileges p : endpointPrivilegeMap.values()) {
 					if (!p.getTransactionPrivileges().isEnable(permission)) {
@@ -195,8 +204,8 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public boolean isEnableToNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) {
-			if (MultiIdsPolicy.AT_LEAST_ONE == midPolicy) {
+		public boolean isNodeEnable(LedgerPermission permission, MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
 				// 至少一个；
 				for (UserRolesPrivileges p : nodePrivilegeMap.values()) {
 					if (p.getLedgerPrivileges().isEnable(permission)) {
@@ -204,7 +213,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 					}
 				}
 				return false;
-			} else if (MultiIdsPolicy.ALL == midPolicy) {
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
 				// 全部；
 				for (UserRolesPrivileges p : nodePrivilegeMap.values()) {
 					if (!p.getLedgerPrivileges().isEnable(permission)) {
@@ -218,8 +227,8 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public boolean isEnableToNodes(TransactionPermission permission, MultiIdsPolicy midPolicy) {
-			if (MultiIdsPolicy.AT_LEAST_ONE == midPolicy) {
+		public boolean isNodeEnable(TransactionPermission permission, MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
 				// 至少一个；
 				for (UserRolesPrivileges p : nodePrivilegeMap.values()) {
 					if (p.getTransactionPrivileges().isEnable(permission)) {
@@ -227,7 +236,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 					}
 				}
 				return false;
-			} else if (MultiIdsPolicy.ALL == midPolicy) {
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
 				// 全部；
 				for (UserRolesPrivileges p : nodePrivilegeMap.values()) {
 					if (!p.getTransactionPrivileges().isEnable(permission)) {
@@ -241,9 +250,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public void checkEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy)
+		public void checkEndpointPermission(LedgerPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
-			if (!isEnableToEndpoints(permission, midPolicy)) {
+			if (!isEndpointEnable(permission, midPolicy)) {
 				throw new LedgerSecurityException(String.format(
 						"The security policy [Permission=%s, Policy=%s] for endpoints rejected the current operation!",
 						permission, midPolicy));
@@ -251,9 +260,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public void checkEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy)
+		public void checkEndpointPermission(TransactionPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
-			if (!isEnableToEndpoints(permission, midPolicy)) {
+			if (!isEndpointEnable(permission, midPolicy)) {
 				throw new LedgerSecurityException(String.format(
 						"The security policy [Permission=%s, Policy=%s] for endpoints rejected the current operation!",
 						permission, midPolicy));
@@ -261,8 +270,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public void checkNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) throws LedgerSecurityException {
-			if (!isEnableToNodes(permission, midPolicy)) {
+		public void checkNodePermission(LedgerPermission permission, MultiIDsPolicy midPolicy)
+				throws LedgerSecurityException {
+			if (!isNodeEnable(permission, midPolicy)) {
 				throw new LedgerSecurityException(String.format(
 						"The security policy [Permission=%s, Policy=%s] for nodes rejected the current operation!",
 						permission, midPolicy));
@@ -270,9 +280,9 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		}
 
 		@Override
-		public void checkNodes(TransactionPermission permission, MultiIdsPolicy midPolicy)
+		public void checkNodePermission(TransactionPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
-			if (!isEnableToNodes(permission, midPolicy)) {
+			if (!isNodeEnable(permission, midPolicy)) {
 				throw new LedgerSecurityException(String.format(
 						"The security policy [Permission=%s, Policy=%s] for nodes rejected the current operation!",
 						permission, midPolicy));
@@ -287,6 +297,98 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 		@Override
 		public Set<Bytes> getNodes() {
 			return nodePrivilegeMap.keySet();
+		}
+
+		@Override
+		public boolean isEndpointValid(MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
+				// 至少一个；
+				for (Bytes address : getEndpoints()) {
+					if (userAccountsQuery.contains(address)) {
+						return true;
+					}
+				}
+				return false;
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
+				// 全部；
+				for (Bytes address : getEndpoints()) {
+					if (!userAccountsQuery.contains(address)) {
+						return false;
+					}
+				}
+				return true;
+			} else {
+				throw new IllegalArgumentException("Unsupported MultiIdsPolicy[" + midPolicy + "]!");
+			}
+		}
+
+		@Override
+		public boolean isNodeValid(MultiIDsPolicy midPolicy) {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
+				// 至少一个；
+				for (Bytes address : getNodes()) {
+					if (participantsQuery.contains(address)) {
+						return true;
+					}
+				}
+				return false;
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
+				// 全部；
+				for (Bytes address : getNodes()) {
+					if (!participantsQuery.contains(address)) {
+						return false;
+					}
+				}
+				return true;
+			} else {
+				throw new IllegalArgumentException("Unsupported MultiIdsPolicy[" + midPolicy + "]!");
+			}
+		}
+
+		@Override
+		public void checkEndpointValidity(MultiIDsPolicy midPolicy) throws LedgerSecurityException {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
+				// 至少一个；
+				for (Bytes address : getEndpoints()) {
+					if (userAccountsQuery.contains(address)) {
+						return;
+					}
+				}
+				throw new UserDoesNotExistException("All endpoint signers were not registered!");
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
+				// 全部；
+				for (Bytes address : getEndpoints()) {
+					if (!userAccountsQuery.contains(address)) {
+						throw new UserDoesNotExistException("The endpoint signer[" + address + "] was not registered!");
+					}
+				}
+				return;
+			} else {
+				throw new IllegalArgumentException("Unsupported MultiIdsPolicy[" + midPolicy + "]!");
+			}
+		}
+
+		@Override
+		public void checkNodeValidity(MultiIDsPolicy midPolicy) throws LedgerSecurityException {
+			if (MultiIDsPolicy.AT_LEAST_ONE == midPolicy) {
+				// 至少一个；
+				for (Bytes address : getNodes()) {
+					if (participantsQuery.contains(address)) {
+						return;
+					}
+				}
+				throw new ParticipantDoesNotExistException("All node signers were not registered as participant!");
+			} else if (MultiIDsPolicy.ALL == midPolicy) {
+				// 全部；
+				for (Bytes address : getNodes()) {
+					if (!participantsQuery.contains(address)) {
+						throw new ParticipantDoesNotExistException(
+								"The node signer[" + address + "] was not registered as participant!");
+					}
+				}
+			} else {
+				throw new IllegalArgumentException("Unsupported MultiIdsPolicy[" + midPolicy + "]!");
+			}
 		}
 
 	}

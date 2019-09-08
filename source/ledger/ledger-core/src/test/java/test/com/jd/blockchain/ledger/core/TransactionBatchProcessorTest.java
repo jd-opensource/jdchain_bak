@@ -122,10 +122,10 @@ public class TransactionBatchProcessorTest {
 		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
 
 		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
-		when(securityPolicy.isEnableToEndpoints(any(LedgerPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToEndpoints(any(TransactionPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEndpointEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEndpointEnable(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(TransactionPermission.class), any())).thenReturn(true);
 
 		when(securityManager.createSecurityPolicy(any(), any())).thenReturn(securityPolicy);
 

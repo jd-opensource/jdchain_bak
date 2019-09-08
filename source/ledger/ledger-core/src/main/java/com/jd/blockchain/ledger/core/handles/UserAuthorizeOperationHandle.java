@@ -13,7 +13,7 @@ import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
@@ -30,7 +30,7 @@ public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
-		securityPolicy.checkEndpoints(LedgerPermission.CONFIGURE_ROLES, MultiIdsPolicy.AT_LEAST_ONE);
+		securityPolicy.checkEndpointPermission(LedgerPermission.CONFIGURE_ROLES, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
 

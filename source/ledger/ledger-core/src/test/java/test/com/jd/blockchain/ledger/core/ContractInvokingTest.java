@@ -102,7 +102,13 @@ public class ContractInvokingTest {
 		// 创建和加载合约实例；
 		BlockchainKeypair contractKey = BlockchainKeyGenerator.getInstance().generate();
 		Bytes contractAddress = contractKey.getAddress();
+
 		TestContract contractInstance = Mockito.mock(TestContract.class);
+		final String asset = "AK";
+		final long issueAmount = new Random().nextLong();
+		when(contractInstance.issue(anyString(), anyLong())).thenReturn(issueAmount);
+
+		// 装载合约；
 		contractInvokingHandle.setup(contractAddress, TestContract.class, contractInstance);
 
 		// 注册合约处理器；
@@ -124,11 +130,8 @@ public class ContractInvokingTest {
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 		TestContract contractProxy = txBuilder.contract(contractAddress, TestContract.class);
-		TestContract contractProxy1 = txBuilder.contract(contractAddress, TestContract.class);
 
-		String asset = "AK";
-		long issueAmount = new Random().nextLong();
-		when(contractInstance.issue(anyString(), anyLong())).thenReturn(issueAmount);
+		// 构造调用合约的交易；
 		contractProxy.issue(asset, issueAmount);
 
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
@@ -475,10 +478,10 @@ public class ContractInvokingTest {
 		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
 
 		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
-		when(securityPolicy.isEnableToEndpoints(any(LedgerPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToEndpoints(any(TransactionPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToNodes(any(LedgerPermission.class), any())).thenReturn(true);
-		when(securityPolicy.isEnableToNodes(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEndpointEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEndpointEnable(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(TransactionPermission.class), any())).thenReturn(true);
 
 		when(securityManager.createSecurityPolicy(any(), any())).thenReturn(securityPolicy);
 

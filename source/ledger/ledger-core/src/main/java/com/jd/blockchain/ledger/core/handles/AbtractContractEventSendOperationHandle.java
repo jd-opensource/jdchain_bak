@@ -15,7 +15,7 @@ import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
@@ -35,7 +35,7 @@ public abstract class AbtractContractEventSendOperationHandle implements Operati
 			LedgerDataQuery previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
-		securityPolicy.checkEndpoints(TransactionPermission.CONTRACT_OPERATION, MultiIdsPolicy.AT_LEAST_ONE);
+		securityPolicy.checkEndpointPermission(TransactionPermission.CONTRACT_OPERATION, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;

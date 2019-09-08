@@ -1,20 +1,31 @@
 package com.jd.blockchain.ledger.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.core.handles.ContractCodeDeployOperationHandle;
 import com.jd.blockchain.ledger.core.handles.DataAccountKVSetOperationHandle;
 import com.jd.blockchain.ledger.core.handles.DataAccountRegisterOperationHandle;
 import com.jd.blockchain.ledger.core.handles.JVMContractEventSendOperationHandle;
+import com.jd.blockchain.ledger.core.handles.LedgerInitOperationHandle;
 import com.jd.blockchain.ledger.core.handles.RolesConfigureOperationHandle;
 import com.jd.blockchain.ledger.core.handles.UserAuthorizeOperationHandle;
 import com.jd.blockchain.ledger.core.handles.UserRegisterOperationHandle;
+import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
+import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
+import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
+import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
+import com.jd.blockchain.transaction.LedgerInitOpTemplate;
+import com.jd.blockchain.transaction.RolesConfigureOpTemplate;
+import com.jd.blockchain.transaction.UserAuthorizeOpTemplate;
+import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 
 @Component
 public class DefaultOperationHandleRegisteration implements OperationHandleRegisteration {
@@ -23,50 +34,73 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 
 	private Map<Class<?>, OperationHandle> handles = new ConcurrentHashMap<>();
 
-	private Map<Class<?>, OperationHandle> cacheMapping = new ConcurrentHashMap<>();
-
 	static {
-		addDefaultHandle(new RolesConfigureOperationHandle());
-		addDefaultHandle(new UserAuthorizeOperationHandle());
-		addDefaultHandle(new DataAccountKVSetOperationHandle());
-		addDefaultHandle(new DataAccountRegisterOperationHandle());
-		addDefaultHandle(new UserRegisterOperationHandle());
-		addDefaultHandle(new ContractCodeDeployOperationHandle());
-		addDefaultHandle(new JVMContractEventSendOperationHandle());
+		registerDefaultHandle(new LedgerInitOperationHandle());
+
+		registerDefaultHandle(new RolesConfigureOperationHandle());
+
+		registerDefaultHandle(new UserAuthorizeOperationHandle());
+
+		registerDefaultHandle(new UserRegisterOperationHandle());
+
+		registerDefaultHandle(new DataAccountKVSetOperationHandle());
+
+		registerDefaultHandle(new DataAccountRegisterOperationHandle());
+
+		registerDefaultHandle(new ContractCodeDeployOperationHandle());
+
+		registerDefaultHandle(new JVMContractEventSendOperationHandle());
 	}
 
-	private static void addDefaultHandle(OperationHandle handle) {
+	private static void registerDefaultHandle(OperationHandle handle) {
 		DEFAULT_HANDLES.put(handle.getOperationType(), handle);
 	}
 
 	/**
-	 * 以最高优先级插入一个操作处理器；
+	 * 注册操作处理器；此方法将覆盖默认的操作处理器配置；
 	 * 
 	 * @param handle
 	 */
 	public void registerHandle(OperationHandle handle) {
+		List<Class<?>> opTypes = new ArrayList<Class<?>>();
+		for (Class<?> opType : handles.keySet()) {
+			if (opType.isAssignableFrom(handle.getOperationType())) {
+				opTypes.add(opType);
+			}
+		}
+
+		for (Class<?> opType : opTypes) {
+			handles.put(opType, handle);
+		}
 		handles.put(handle.getOperationType(), handle);
 	}
 
 	private OperationHandle getRegisteredHandle(Class<?> operationType) {
 		OperationHandle hdl = handles.get(operationType);
 		if (hdl == null) {
-			for (Entry<Class<?>, OperationHandle> entry : handles.entrySet()) {
-				if (entry.getKey().isAssignableFrom(operationType)) {
-					hdl = entry.getValue();
+			hdl = DEFAULT_HANDLES.get(operationType);
+			
+			//按“操作类型”的继承关系匹配；
+			if (hdl == null) {
+				for (Class<?> opType : handles.keySet()) {
+					if (opType.isAssignableFrom(operationType)) {
+						hdl = handles.get(opType);
+						break;
+					}
 				}
 			}
-		}
-		return hdl;
-	}
-
-	private OperationHandle getDefaultHandle(Class<?> operationType) {
-		OperationHandle hdl = DEFAULT_HANDLES.get(operationType);
-		if (hdl == null) {
-			for (Entry<Class<?>, OperationHandle> entry : DEFAULT_HANDLES.entrySet()) {
-				if (entry.getKey().isAssignableFrom(operationType)) {
-					hdl = entry.getValue();
+			
+			if (hdl == null) {
+				for (Class<?> opType : DEFAULT_HANDLES.keySet()) {
+					if (opType.isAssignableFrom(operationType)) {
+						hdl = DEFAULT_HANDLES.get(opType);
+						break;
+					}
 				}
+			}
+			
+			if (hdl != null) {
+				handles.put(operationType, hdl);
 			}
 		}
 		return hdl;
@@ -80,20 +114,19 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 	 * java.lang.Class)
 	 */
 	@Override
-	public OperationHandle getHandle(Class<?> operationType) {
-		OperationHandle hdl = cacheMapping.get(operationType);
-		if (hdl != null) {
-			return hdl;
-		}
-		hdl = getRegisteredHandle(operationType);
+	public OperationHandle getHandle(Class<? extends Operation> operationType) {
+		OperationHandle hdl = getRegisteredHandle(operationType);
 		if (hdl == null) {
-			hdl = getDefaultHandle(operationType);
-			if (hdl == null) {
-				throw new LedgerException("Unsupported operation type[" + operationType.getName() + "]!");
-			}
+			throw new LedgerException("Unsupported operation type[" + operationType.getName() + "]!");
 		}
-		cacheMapping.put(operationType, hdl);
 		return hdl;
 	}
 
+	private static class OpHandleStub {
+
+		private Class<? extends Operation> operationType;
+
+		private OperationHandle operationHandle;
+
+	}
 }

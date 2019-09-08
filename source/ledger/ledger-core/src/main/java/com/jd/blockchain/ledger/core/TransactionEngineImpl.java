@@ -43,8 +43,10 @@ public class TransactionEngineImpl implements TransactionEngine {
 		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
 
 		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
-		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles());
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(
+				previousAdminDataset.getAdminInfo().getRolePrivileges(),
+				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousBlockDataset.getUserAccountSet());
 		batch = new InnerTransactionBatchProcessor(ledgerHash, securityManager, newBlockEditor, previousBlockDataset,
 				opHdlRegs, ledgerService, ledgerBlock.getHeight());
 		batchs.put(ledgerHash, batch);
@@ -75,8 +77,8 @@ public class TransactionEngineImpl implements TransactionEngine {
 		 * @param opHandles            操作处理对象注册表；
 		 */
 		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerSecurityManager securityManager,
-				LedgerEditor newBlockEditor, LedgerDataQuery previousBlockDataset, OperationHandleRegisteration opHandles,
-				LedgerService ledgerService, long blockHeight) {
+				LedgerEditor newBlockEditor, LedgerDataQuery previousBlockDataset,
+				OperationHandleRegisteration opHandles, LedgerService ledgerService, long blockHeight) {
 			super(securityManager, newBlockEditor, previousBlockDataset, opHandles, ledgerService);
 			this.ledgerHash = ledgerHash;
 			this.blockHeight = blockHeight;

@@ -46,7 +46,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private LedgerEditor newBlockEditor;
 
-	private LedgerDataQuery previousBlockDataset;
+	private LedgerDataQuery ledgerQueryer;
 
 	private OperationHandleRegisteration opHandles;
 
@@ -60,15 +60,15 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	private TransactionBatchResult batchResult;
 
 	/**
-	 * @param newBlockEditor       新区块的数据编辑器；
-	 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
-	 * @param opHandles            操作处理对象注册表；
+	 * @param newBlockEditor 新区块的数据编辑器；
+	 * @param ledgerQueryer  账本查询器，只包含新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
+	 * @param opHandles      操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerSecurityManager securityManager, LedgerEditor newBlockEditor,
-			LedgerDataQuery previousBlockDataset, OperationHandleRegisteration opHandles, LedgerService ledgerService) {
+			LedgerDataQuery ledgerQueryer, OperationHandleRegisteration opHandles, LedgerService ledgerService) {
 		this.securityManager = securityManager;
 		this.newBlockEditor = newBlockEditor;
-		this.previousBlockDataset = previousBlockDataset;
+		this.ledgerQueryer = ledgerQueryer;
 		this.opHandles = opHandles;
 		this.ledgerService = ledgerService;
 	}
@@ -95,7 +95,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			SecurityContext.setContextUsersPolicy(securityPolicy);
 
 			// 安全校验；
-			checkSecurity();
+			checkSecurity(securityPolicy);
 
 			// 验证交易请求；
 			checkRequest(reqExt);
@@ -143,23 +143,26 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	}
 
 	/**
-	 * 验证交易的参与方的权限；
+	 * 执行安全验证；
 	 */
-	private void checkSecurity() {
-		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
+	private void checkSecurity(SecurityPolicy securityPolicy) {
+		// 验证节点和终端身份的合法性；
+		// 多重身份签署的必须全部身份都合法；
+		securityPolicy.checkEndpointValidity(MultiIDsPolicy.ALL);
+		securityPolicy.checkNodeValidity(MultiIDsPolicy.ALL);
 
-		// 验证当前交易请求的节点参与方是否具有权限；
-		securityPolicy.checkNodes(LedgerPermission.APPROVE_TX, MultiIdsPolicy.AT_LEAST_ONE);
+		// 验证参与方节点是否具有核准交易的权限；
+		securityPolicy.checkNodePermission(LedgerPermission.APPROVE_TX, MultiIDsPolicy.AT_LEAST_ONE);
 	}
 
 	private void checkRequest(TransactionRequestExtension reqExt) {
 		// TODO: 把验签和创建交易并行化；
-		checkTxContent(reqExt);
+		checkTxContentHash(reqExt);
 		checkEndpointSignatures(reqExt);
 		checkNodeSignatures(reqExt);
 	}
 
-	private void checkTxContent(TransactionRequestExtension requestExt) {
+	private void checkTxContentHash(TransactionRequestExtension requestExt) {
 		TransactionContent txContent = requestExt.getTransactionContent();
 		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
 			// 由于哈希校验失败，引发IllegalTransactionException，使外部调用抛弃此交易请求；
@@ -169,44 +172,34 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		}
 	}
 
-	private void checkEndpointSignatures(TransactionRequestExtension request) {
-		TransactionContent txContent = request.getTransactionContent();
-		Collection<Credential> endpoints = request.getEndpoints();
-		if (endpoints != null) {
-			for (Credential endpoint : endpoints) {
-				if (!previousBlockDataset.getUserAccountSet().contains(endpoint.getAddress())) {
-					throw new UserDoesNotExistException(
-							"The endpoint signer[" + endpoint.getAddress() + "] was not registered!");
-				}
-
-				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), endpoint.getSignature().getDigest(),
-						endpoint.getPubKey())) {
-					// 由于签名校验失败，引发IllegalTransactionException，使外部调用抛弃此交易请求；
-					throw new IllegalTransactionException(
-							String.format("Wrong transaction endpoint signature! --[Tx Hash=%s][Endpoint Signer=%s]!",
-									request.getTransactionContent().getHash(), endpoint.getAddress()),
-							TransactionState.IGNORED_BY_WRONG_CONTENT_SIGNATURE);
-				}
-			}
-		}
-	}
-
 	private void checkNodeSignatures(TransactionRequestExtension request) {
 		TransactionContent txContent = request.getTransactionContent();
 		Collection<Credential> nodes = request.getNodes();
 		if (nodes != null) {
 			for (Credential node : nodes) {
-				if (!previousBlockDataset.getAdminDataset().getParticipantDataset().contains(node.getAddress())) {
-					throw new ParticipantDoesNotExistException(
-							"The node signer[" + node.getAddress() + "] was not registered to the participant set!");
-				}
-
 				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), node.getSignature().getDigest(),
 						node.getPubKey())) {
 					// 由于签名校验失败，引发IllegalTransactionException，使外部调用抛弃此交易请求；
 					throw new IllegalTransactionException(
 							String.format("Wrong transaction node signature! --[Tx Hash=%s][Node Signer=%s]!",
 									request.getTransactionContent().getHash(), node.getAddress()),
+							TransactionState.IGNORED_BY_WRONG_CONTENT_SIGNATURE);
+				}
+			}
+		}
+	}
+
+	private void checkEndpointSignatures(TransactionRequestExtension request) {
+		TransactionContent txContent = request.getTransactionContent();
+		Collection<Credential> endpoints = request.getEndpoints();
+		if (endpoints != null) {
+			for (Credential endpoint : endpoints) {
+				if (!SignatureUtils.verifyHashSignature(txContent.getHash(), endpoint.getSignature().getDigest(),
+						endpoint.getPubKey())) {
+					// 由于签名校验失败，引发IllegalTransactionException，使外部调用抛弃此交易请求；
+					throw new IllegalTransactionException(
+							String.format("Wrong transaction endpoint signature! --[Tx Hash=%s][Endpoint Signer=%s]!",
+									request.getTransactionContent().getHash(), endpoint.getAddress()),
 							TransactionState.IGNORED_BY_WRONG_CONTENT_SIGNATURE);
 				}
 			}
@@ -236,14 +229,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					// assert; Instance of operation are one of User related operations or
 					// DataAccount related operations;
 					OperationHandle hdl = opHandles.getHandle(operation.getClass());
-					hdl.process(operation, dataset, request, previousBlockDataset, this, ledgerService);
+					hdl.process(operation, dataset, request, ledgerQueryer, this, ledgerService);
 				}
 			};
 			OperationHandle opHandle;
 			int opIndex = 0;
 			for (Operation op : ops) {
 				opHandle = opHandles.getHandle(op.getClass());
-				BytesValue opResult = opHandle.process(op, dataset, request, previousBlockDataset, handleContext,
+				BytesValue opResult = opHandle.process(op, dataset, request, ledgerQueryer, handleContext,
 						ledgerService);
 				if (opResult != null) {
 					operationResults.add(new OperationResultData(opIndex, opResult));

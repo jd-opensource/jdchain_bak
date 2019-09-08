@@ -45,7 +45,7 @@ import com.jd.blockchain.ledger.core.LedgerEditor;
 import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.LedgerSecurityManager;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
@@ -676,43 +676,60 @@ public class LedgerPerformanceTest {
 		}
 
 		@Override
-		public boolean isEnableToEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy) {
+		public boolean isEndpointEnable(LedgerPermission permission, MultiIDsPolicy midPolicy) {
 			return true;
 		}
 
 		@Override
-		public boolean isEnableToEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy) {
+		public boolean isEndpointEnable(TransactionPermission permission, MultiIDsPolicy midPolicy) {
 			return true;
 		}
 
 		@Override
-		public boolean isEnableToNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) {
+		public boolean isNodeEnable(LedgerPermission permission, MultiIDsPolicy midPolicy) {
 			return true;
 		}
 
 		@Override
-		public boolean isEnableToNodes(TransactionPermission permission, MultiIdsPolicy midPolicy) {
-			// TODO Auto-generated method stub
-			return false;
+		public boolean isNodeEnable(TransactionPermission permission, MultiIDsPolicy midPolicy) {
+			return true;
 		}
 
 		@Override
-		public void checkEndpoints(LedgerPermission permission, MultiIdsPolicy midPolicy)
+		public void checkEndpointPermission(LedgerPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
 		}
 
 		@Override
-		public void checkEndpoints(TransactionPermission permission, MultiIdsPolicy midPolicy)
+		public void checkEndpointPermission(TransactionPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
 		}
 
 		@Override
-		public void checkNodes(LedgerPermission permission, MultiIdsPolicy midPolicy) throws LedgerSecurityException {
+		public void checkNodePermission(LedgerPermission permission, MultiIDsPolicy midPolicy) throws LedgerSecurityException {
 		}
 
 		@Override
-		public void checkNodes(TransactionPermission permission, MultiIdsPolicy midPolicy)
+		public void checkNodePermission(TransactionPermission permission, MultiIDsPolicy midPolicy)
 				throws LedgerSecurityException {
+		}
+
+		@Override
+		public boolean isEndpointValid(MultiIDsPolicy midPolicy) {
+			return true;
+		}
+
+		@Override
+		public boolean isNodeValid(MultiIDsPolicy midPolicy) {
+			return true;
+		}
+
+		@Override
+		public void checkEndpointValidity(MultiIDsPolicy midPolicy) throws LedgerSecurityException {
+		}
+
+		@Override
+		public void checkNodeValidity(MultiIDsPolicy midPolicy) throws LedgerSecurityException {
 		}
 
 	}

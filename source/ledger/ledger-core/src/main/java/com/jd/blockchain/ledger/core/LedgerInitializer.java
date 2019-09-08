@@ -9,20 +9,26 @@ import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.SecurityInitSettings;
 import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.transaction.TxRequestBuilder;
 
 public class LedgerInitializer {
+
+	private static final FullPermissionedSecurityManager FULL_PERMISSION_SECURITY_MANAGER = new FullPermissionedSecurityManager();
+
+	private static final LedgerDataQuery EMPTY_LEDGER_DATA_QUERY = new EmptyLedgerDataset();
+
+	private static final OperationHandleRegisteration DEFAULT_OP_HANDLE_REG = new DefaultOperationHandleRegisteration();
+
+	private LedgerService EMPTY_LEDGERS = new LedgerManager();
 
 	private LedgerInitSetting initSetting;
 
@@ -35,6 +41,8 @@ public class LedgerInitializer {
 	private volatile boolean committed = false;
 
 	private volatile boolean canceled = false;
+
+	private TransactionBatchResultHandle txResultsHandle;
 
 	/**
 	 * 初始化生成的账本hash； <br>
@@ -115,7 +123,7 @@ public class LedgerInitializer {
 			throw new LedgerInitException("The ledger has been canceled!");
 		}
 		committed = true;
-		this.ledgerEditor.commit();
+		this.txResultsHandle.commit();
 	}
 
 	public void cancel() {
@@ -148,18 +156,13 @@ public class LedgerInitializer {
 
 		TransactionRequest txRequest = txReqBuilder.buildRequest();
 
-		LedgerTransactionContext txCtx = ledgerEditor.newTransaction(txRequest);
-		Operation[] ops = txRequest.getTransactionContent().getOperations();
-		// 注册用户； 注：第一个操作是 LedgerInitOperation；
-		// TODO：暂时只支持注册用户的初始化操作；
-		for (int i = 1; i < ops.length; i++) {
-			UserRegisterOperation userRegOP = (UserRegisterOperation) ops[i];
-			txCtx.getDataset().getUserAccountSet().register(userRegOP.getUserID().getAddress(),
-					userRegOP.getUserID().getPubKey());
-		}
+		TransactionBatchProcessor txProcessor = new TransactionBatchProcessor(FULL_PERMISSION_SECURITY_MANAGER,
+				ledgerEditor, EMPTY_LEDGER_DATA_QUERY, DEFAULT_OP_HANDLE_REG, EMPTY_LEDGERS);
 
-		txCtx.commit(TransactionState.SUCCESS, null);
+		txProcessor.schedule(txRequest);
 
-		return ledgerEditor.prepare();
+		txResultsHandle = txProcessor.prepare();
+		return txResultsHandle.getBlock();
 	}
+
 }

@@ -7,7 +7,7 @@ import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
@@ -49,7 +49,7 @@ public abstract class AbstractLedgerOperationHandle<T extends Operation> impleme
 			OperationHandleContext handleContext, LedgerService ledgerService) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
-		securityPolicy.checkEndpoints(TransactionPermission.DIRECT_OPERATION, MultiIdsPolicy.AT_LEAST_ONE);
+		securityPolicy.checkEndpointPermission(TransactionPermission.DIRECT_OPERATION, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
 		@SuppressWarnings("unchecked")

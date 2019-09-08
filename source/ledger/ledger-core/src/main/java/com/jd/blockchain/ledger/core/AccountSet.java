@@ -70,10 +70,6 @@ public class AccountSet implements Transactional, MerkleProvable {
 		this.accessPolicy = accessPolicy;
 	}
 
-	// public HashDigest getAccountRootHash() {
-	// return merkleDataset.getRootHash();
-	// }
-
 	@Override
 	public HashDigest getRootHash() {
 		return merkleDataset.getRootHash();

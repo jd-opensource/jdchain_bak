@@ -109,16 +109,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		return latestState.block;
 	}
 
-//	private LedgerState getLatestState() {
-//		LedgerState state = latestState;
-//		if (state == null) {
-//			LedgerBlock latestBlock = innerGetBlock(innerGetLatestBlockHeight());
-//			state = new LedgerState(latestBlock);
-//			latestState = state;
-//		}
-//		return state;
-//	}
-
 	/**
 	 * 重新检索加载最新的状态；
 	 * 
@@ -264,20 +254,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public TransactionSet getTransactionSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		TransactionSet transactionSet = null;
 		if (height == block.getHeight()) {
-//			// 缓存最近一个区块的数据；
-//			LedgerState state = getLatestState();
-//			transactionSet = state.transactionSet;
-//			if (transactionSet == null) {
-//				LedgerAdminInfo adminAccount = getAdminInfo(block);
-//				transactionSet = loadTransactionSet(block.getTransactionSetHash(),
-//						adminAccount.getSettings().getCryptoSetting(), keyPrefix, exPolicyStorage, versioningStorage,
-//						true);
-//				state.transactionSet = transactionSet;
-//			}
-//			return transactionSet;
-
 			// 从缓存中返回最新区块的数据集；
 			return latestState.getTransactionSet();
 		}
@@ -290,18 +267,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public LedgerAdminDataset getAdminInfo(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		LedgerAdminDataset adminAccount = null;
 		if (height == block.getHeight()) {
-//			// 缓存读；
-//			LedgerState state = getLatestState();
-//			adminAccount = state.adminAccount;
-//			if (adminAccount == null) {
-//				adminAccount = new LedgerAdminDataset(block.getAdminAccountHash(), keyPrefix, exPolicyStorage,
-//						versioningStorage, true);
-//				state.adminAccount = adminAccount;
-//			}
-//			return adminAccount;
-
 			return latestState.getAdminDataset();
 		}
 
@@ -315,20 +281,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public UserAccountQuery getUserAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		UserAccountSet userAccountSet = null;
 		if (height == block.getHeight()) {
-//			// 缓存读；
-//			LedgerState state = getLatestState();
-//			userAccountSet = state.userAccountSet;
-//			if (userAccountSet == null) {
-//				LedgerAdminDataset adminAccount = getAdminInfo(block);
-//				userAccountSet = loadUserAccountSet(block.getUserAccountSetHash(),
-//						adminAccount.getPreviousSetting().getCryptoSetting(), keyPrefix, exPolicyStorage,
-//						versioningStorage, true);
-//				state.userAccountSet = userAccountSet;
-//			}
-//			return userAccountSet;
-
 			return latestState.getUserAccountSet();
 		}
 		LedgerAdminDataset adminAccount = getAdminInfo(block);
@@ -343,20 +296,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public DataAccountQuery getDataAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		DataAccountSet dataAccountSet = null;
 		if (height == block.getHeight()) {
-//			// 缓存读；
-//			LedgerState state = getLatestState();
-//			dataAccountSet = state.dataAccountSet;
-//			if (dataAccountSet == null) {
-//				LedgerAdminDataset adminAccount = getAdminInfo(block);
-//				dataAccountSet = loadDataAccountSet(block.getDataAccountSetHash(),
-//						adminAccount.getPreviousSetting().getCryptoSetting(), keyPrefix, exPolicyStorage,
-//						versioningStorage, true);
-//				state.dataAccountSet = dataAccountSet;
-//			}
-//			return dataAccountSet;
-
 			return latestState.getDataAccountSet();
 		}
 
@@ -372,20 +312,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public ContractAccountQuery getContractAccountSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		ContractAccountSet contractAccountSet = null;
 		if (height == block.getHeight()) {
-//			// 缓存读；
-//			LedgerState state = getLatestState();
-//			contractAccountSet = state.contractAccountSet;
-//			if (contractAccountSet == null) {
-//				LedgerAdminDataset adminAccount = getAdminInfo(block);
-//				contractAccountSet = loadContractAccountSet(block.getContractAccountSetHash(),
-//						adminAccount.getPreviousSetting().getCryptoSetting(), keyPrefix, exPolicyStorage,
-//						versioningStorage, true);
-//				state.contractAccountSet = contractAccountSet;
-//			}
-//			return contractAccountSet;
-
 			return latestState.getContractAccountSet();
 		}
 
@@ -401,17 +328,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	@Override
 	public LedgerDataset getDataSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
-//		LedgerDataSet ledgerDataSet = null;
 		if (height == block.getHeight()) {
-//			// 缓存读；
-//			LedgerState state = getLatestState();
-//			ledgerDataSet = state.ledgerDataSet;
-//			if (ledgerDataSet == null) {
-//				ledgerDataSet = innerDataSet(block);
-//				state.ledgerDataSet = ledgerDataSet;
-//			}
-//			return ledgerDataSet;
-
 			return latestState.getLedgerDataset();
 		}
 
@@ -463,15 +380,10 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	static Bytes encodeLedgerIndexKey(HashDigest ledgerHash) {
-		// return LEDGER_PREFIX + Base58Utils.encode(ledgerHash.toBytes());
-		// return new Bytes(ledgerHash.toBytes()).concatTo(LEDGER_PREFIX);
 		return LEDGER_PREFIX.concat(ledgerHash);
 	}
 
 	static Bytes encodeBlockStorageKey(HashDigest blockHash) {
-		// String key = ByteArray.toBase58(blockHash.toBytes());
-		// return BLOCK_PREFIX + key;
-
 		return BLOCK_PREFIX.concat(blockHash);
 	}
 
@@ -483,29 +395,13 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		String usersetKeyPrefix = keyPrefix + USER_SET_PREFIX;
 		String datasetKeyPrefix = keyPrefix + DATA_SET_PREFIX;
 		String contractsetKeyPrefix = keyPrefix + CONTRACT_SET_PREFIX;
-		// String txsetKeyPrefix = keyPrefix + TRANSACTION_SET_PREFIX;
 
-		// UserAccountSet userAccountSet = new
-		// UserAccountSet(adminAccount.getSetting().getCryptoSetting(),
-		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerVerStorage),
-		// DEFAULT_ACCESS_POLICY);
 		UserAccountSet userAccountSet = new UserAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				usersetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
-		// DataAccountSet dataAccountSet = new
-		// DataAccountSet(adminAccount.getSetting().getCryptoSetting(),
-		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerVerStorage),
-		// DEFAULT_ACCESS_POLICY);
 		DataAccountSet dataAccountSet = new DataAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				datasetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
-		// ContractAccountSet contractAccountSet = new
-		// ContractAccountSet(adminAccount.getSetting().getCryptoSetting(),
-		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerVerStorage),
-		// DEFAULT_ACCESS_POLICY);
 		ContractAccountSet contractAccountSet = new ContractAccountSet(adminAccount.getSettings().getCryptoSetting(),
 				contractsetKeyPrefix, ledgerExStorage, ledgerVerStorage, DEFAULT_ACCESS_POLICY);
 
@@ -517,10 +413,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 	static TransactionSet newTransactionSet(LedgerSettings ledgerSetting, String keyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage) {
-		// TransactionSet transactionSet = new
-		// TransactionSet(ledgerSetting.getCryptoSetting(),
-		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerVerStorage));
 
 		String txsetKeyPrefix = keyPrefix + TRANSACTION_SET_PREFIX;
 
@@ -533,8 +425,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage, boolean readonly) {
 		LedgerAdminDataset adminAccount = new LedgerAdminDataset(dataSnapshot.getAdminAccountHash(), keyPrefix,
 				ledgerExStorage, ledgerVerStorage, readonly);
-
-//		CryptoSetting cryptoSetting = adminAccount.getPreviousSetting().getCryptoSetting();
 
 		UserAccountSet userAccountSet = loadUserAccountSet(dataSnapshot.getUserAccountSetHash(), cryptoSetting,
 				keyPrefix, ledgerExStorage, ledgerVerStorage, readonly);
@@ -554,10 +444,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	static UserAccountSet loadUserAccountSet(HashDigest userAccountSetHash, CryptoSetting cryptoSetting,
 			String keyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage,
 			boolean readonly) {
-		// return new UserAccountSet(userAccountSetHash, cryptoSetting,
-		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(USER_SET_PREFIX, ledgerVerStorage), readonly,
-		// DEFAULT_ACCESS_POLICY);
 
 		String usersetKeyPrefix = keyPrefix + USER_SET_PREFIX;
 		return new UserAccountSet(userAccountSetHash, cryptoSetting, usersetKeyPrefix, ledgerExStorage,
@@ -567,10 +453,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	static DataAccountSet loadDataAccountSet(HashDigest dataAccountSetHash, CryptoSetting cryptoSetting,
 			String keyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage,
 			boolean readonly) {
-		// return new DataAccountSet(dataAccountSetHash, cryptoSetting,
-		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerExStorage,
-		// PrefixAppender.prefix(DATA_SET_PREFIX, ledgerVerStorage), readonly,
-		// DEFAULT_ACCESS_POLICY);
 
 		String datasetKeyPrefix = keyPrefix + DATA_SET_PREFIX;
 		return new DataAccountSet(dataAccountSetHash, cryptoSetting, datasetKeyPrefix, ledgerExStorage,
@@ -580,10 +462,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	static ContractAccountSet loadContractAccountSet(HashDigest contractAccountSetHash, CryptoSetting cryptoSetting,
 			String keyPrefix, ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage,
 			boolean readonly) {
-		// return new ContractAccountSet(contractAccountSetHash, cryptoSetting,
-		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerExStorage,
-		// PrefixAppender.prefix(CONTRACT_SET_PREFIX, ledgerVerStorage), readonly,
-		// DEFAULT_ACCESS_POLICY);
 
 		String contractsetKeyPrefix = keyPrefix + CONTRACT_SET_PREFIX;
 		return new ContractAccountSet(contractAccountSetHash, cryptoSetting, contractsetKeyPrefix, ledgerExStorage,
@@ -592,9 +470,6 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 	static TransactionSet loadTransactionSet(HashDigest txsetHash, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage ledgerExStorage, VersioningKVStorage ledgerVerStorage, boolean readonly) {
-		// return new TransactionSet(txsetHash, cryptoSetting,
-		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerExStorage),
-		// PrefixAppender.prefix(TRANSACTION_SET_PREFIX, ledgerVerStorage), readonly);
 
 		String txsetKeyPrefix = keyPrefix + TRANSACTION_SET_PREFIX;
 		return new TransactionSet(txsetHash, cryptoSetting, txsetKeyPrefix, ledgerExStorage, ledgerVerStorage,

@@ -5,7 +5,7 @@ import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIdsPolicy;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
@@ -26,7 +26,7 @@ public class ContractCodeDeployOperationHandle extends AbstractLedgerOperationHa
 
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
-		securityPolicy.checkEndpoints(LedgerPermission.UPGRADE_CONTRACT, MultiIdsPolicy.AT_LEAST_ONE);
+		securityPolicy.checkEndpointPermission(LedgerPermission.UPGRADE_CONTRACT, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
 		ContractCodeDeployOperation contractOP = (ContractCodeDeployOperation) op;
