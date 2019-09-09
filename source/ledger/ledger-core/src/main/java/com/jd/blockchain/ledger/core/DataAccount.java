@@ -8,6 +8,7 @@ import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.utils.Bytes;
 
 public class DataAccount implements AccountHeader, MerkleProvable {

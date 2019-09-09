@@ -22,8 +22,14 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-rocksdb</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
 			<artifactId>crypto-classic</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
 	</dependencies>
 </project>

@@ -12,11 +12,6 @@ import com.jd.blockchain.utils.io.BytesMap;
 
 public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, KVStorageService, BytesMap<Bytes> {
 
-//	private Set<String> keys = new HashSet<>();
-	
-//	private Set<String> keys = Collections.synchronizedSet(new HashSet<>());
-
-//	private Map<String, Object> storageMap = new ConcurrentHashMap<>();
 	private ExistancePolicyKVStorageMap exStorage = new ExistancePolicyKVStorageMap();
 	private VersioningKVStorageMap verStorage = new VersioningKVStorageMap();
 
@@ -38,10 +33,6 @@ public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, 
 	@Override
 	public long set(Bytes key, byte[] value, long version) {
 		return verStorage.set(key, value, version);
-//		if (v > -1) {
-//			keys.add(key);
-//		}
-//		return v;
 	}
 
 	@Override
@@ -57,10 +48,6 @@ public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, 
 	@Override
 	public boolean set(Bytes key, byte[] value, ExPolicy ex) {
 		return exStorage.set(key, value, ex);
-//		if (ok) {
-//			keys.add(key);
-//		}
-//		return ok;
 	}
 
 	@Override
@@ -81,12 +68,10 @@ public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, 
 		HashSet<Bytes> keySet = new HashSet<>(exStorage.keySet());
 		keySet.addAll(verStorage.keySet());
 		return keySet;
-//		return storageMap.keySet();
 	}
 
 	public int getStorageCount() {
 		return exStorage.getCount() + verStorage.getCount();
-//		return storageMap.size();
 	}
 
 //	public void printStoragedKeys() {

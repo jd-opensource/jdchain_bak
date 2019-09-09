@@ -35,6 +35,9 @@ public class GatewayWebServerConfigurer implements WebMvcConfigurer {
 		JSONSerializeUtils.disableCircularReferenceDetect();
 		JSONSerializeUtils.configStringSerializer(ByteArray.class);
 		DataContractRegistry.register(BftsmartNodeSettings.class);
+		
+
+		DataContractRegistry.register(LedgerAdminInfo.class);
 	}
 
 

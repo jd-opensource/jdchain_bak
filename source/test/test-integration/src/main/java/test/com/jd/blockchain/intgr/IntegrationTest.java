@@ -17,6 +17,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
@@ -28,23 +29,22 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -110,7 +110,7 @@ public class IntegrationTest {
 		peerStarting2.waitReturn();
 		peerStarting3.waitReturn();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(LedgerInitializeWebTest.PUB_KEYS[0]);
@@ -452,16 +452,16 @@ public class IntegrationTest {
 
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		LedgerInitializeWebTest.NodeWebContext nodeCtx3 = new LedgerInitializeWebTest.NodeWebContext(3, initAddr3);
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[0],
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[0],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[1],
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[1],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[2],
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[2],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[3],
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[3],
 				LedgerInitializeWebTest.PASSWORD);
 
-		String encodedPassword = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
+		String encodedPassword = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
@@ -619,7 +619,7 @@ public class IntegrationTest {
 		LedgerBlock backgroundLedgerBlock = ledgerOfNode0.retrieveLatestBlock();
 
 		// 验证合约中的赋值，外部可以获得;
-		DataAccountSet dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
+		DataAccountQuery dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
 		AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);

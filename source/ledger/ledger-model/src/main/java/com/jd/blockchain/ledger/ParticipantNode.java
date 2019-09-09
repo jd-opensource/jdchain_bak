@@ -5,6 +5,7 @@ import com.jd.blockchain.binaryproto.DataField;
 import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * 参与方节点；
@@ -13,7 +14,7 @@ import com.jd.blockchain.crypto.PubKey;
  *
  */
 @DataContract(code = DataCodes.METADATA_CONSENSUS_PARTICIPANT)
-public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
+public interface ParticipantNode {
 
 	/**
 	 * 节点的顺序编号；<br>
@@ -30,8 +31,8 @@ public interface ParticipantNode {// extends ConsensusNode, ParticipantInfo {
 	 * 
 	 * @return
 	 */
-	@DataField(order = 1, primitiveType = PrimitiveType.TEXT)
-	String getAddress();
+	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
+	Bytes getAddress();
 
 	/**
 	 * 参与者名称；

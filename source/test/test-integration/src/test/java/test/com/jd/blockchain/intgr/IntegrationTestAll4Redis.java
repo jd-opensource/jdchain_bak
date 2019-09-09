@@ -2,20 +2,17 @@ package test.com.jd.blockchain.intgr;
 
 import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.DataAccount;
-import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -99,7 +96,7 @@ public class IntegrationTestAll4Redis {
 		DbConnectionFactory dbConnectionFactory2 = peer2.getDBConnectionFactory();
 		DbConnectionFactory dbConnectionFactory3 = peer3.getDBConnectionFactory();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWeb4SingleStepsTest.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(PUB_KEYS[0]);
@@ -118,15 +115,15 @@ public class IntegrationTestAll4Redis {
 						dbConnectionFactory3 });
 		testConsistencyAmongNodes(ledgers);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 
 		AsymmetricKeypair adminKey = new AsymmetricKeypair(pubKey0, privkey0);
 
@@ -448,7 +445,7 @@ public class IntegrationTestAll4Redis {
 		assertEquals(txResp.getBlockHeight(), backgroundLedgerBlock.getHeight());
 
 		// 验证合约中的赋值，外部可以获得;
-		DataAccountSet dataAccountSet = ledgerRepository.getDataAccountSet(backgroundLedgerBlock);
+		DataAccountQuery dataAccountSet = ledgerRepository.getDataAccountSet(backgroundLedgerBlock);
 		AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);

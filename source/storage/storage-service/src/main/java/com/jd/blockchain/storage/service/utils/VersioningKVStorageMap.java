@@ -215,38 +215,6 @@ public class VersioningKVStorageMap implements VersioningKVStorage, BytesMap<Byt
 			}
 		}
 	}
-
-	private static class VersioningKVData implements VersioningKVEntry {
-
-		private Bytes key;
-
-		private long version;
-
-		private byte[] value;
-
-		public VersioningKVData(Bytes key, long version, byte[] value) {
-			this.key = key;
-			this.version = version;
-			this.value = value;
-		}
-
-		@Override
-		public Bytes getKey() {
-			return key;
-		}
-
-		@Override
-		public long getVersion() {
-			return version;
-		}
-
-		@Override
-		public byte[] getValue() {
-			return value;
-		}
-
-	}
-	
 	
 //	private static class CachedSetEntry implements VersioningKVEntry {
 //

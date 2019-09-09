@@ -6,6 +6,7 @@ package com.jd.blockchain.transaction;
  * @author huanghaiquan
  *
  */
-public interface ClientOperator extends UserOperator, DataAccountOperator, ContractOperator, EventOperator, ParticipantOperator, ParticipantStateOperator{
+public interface ClientOperator
+		extends SecurityOperator, UserOperator, DataAccountOperator, ContractOperator, EventOperator, ParticipantOperator, ParticipantStateOperator {
 
 }

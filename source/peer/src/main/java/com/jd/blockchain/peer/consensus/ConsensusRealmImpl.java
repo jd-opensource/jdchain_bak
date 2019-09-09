@@ -16,7 +16,7 @@ public class ConsensusRealmImpl implements ConsensusRealm {
 
 	public ConsensusRealmImpl(ParticipantNode[] nodeList) {
 		this.nodes = nodeList;
-		String[] addrs = new String[nodes.length];
+		Bytes[] addrs = new Bytes[nodes.length];
 		int i = 0;
 		for (ParticipantNode n : nodes) {
 			addrs[i++] = n.getAddress();

@@ -3,9 +3,10 @@ package test.perf.com.jd.blockchain.ledger.core;
 import java.io.IOException;
 import java.util.Random;
 
-import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -15,6 +16,8 @@ import com.jd.blockchain.storage.service.impl.redis.RedisConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 
 public class MerkleDatasetPerformanceTester {
+
+	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName() };
 
 	private static final String MKL_KEY_PREFIX = "";
 
@@ -131,7 +134,13 @@ public class MerkleDatasetPerformanceTester {
 			VersioningKVStorage verStorage) {
 		Random rand = new Random();
 
+		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
+		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
+			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
+		}
+
 		CryptoConfig cryptoConfig = new CryptoConfig();
+		cryptoConfig.setSupportedProviders(supportedProviders);
 		cryptoConfig.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
 		cryptoConfig.setAutoVerifyHash(true);
 

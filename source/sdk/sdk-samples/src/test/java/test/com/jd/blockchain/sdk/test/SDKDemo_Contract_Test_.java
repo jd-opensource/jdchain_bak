@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.contract.TransferContract;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -18,9 +19,8 @@ import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
-import com.jd.blockchain.transaction.LongValueHolder;
 import com.jd.blockchain.transaction.GenericValueHolder;
+import com.jd.blockchain.transaction.LongValueHolder;
 import com.jd.blockchain.utils.Bytes;
 
 public class SDKDemo_Contract_Test_ {
@@ -34,10 +34,10 @@ public class SDKDemo_Contract_Test_ {
 	@Before
 	public void init() {
 		// 生成连接网关的账号
-		PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(SDKDemo_Constant.PRIV_KEYS[0],
+		PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(SDKDemo_Constant.PRIV_KEYS[0],
 				SDKDemo_Constant.PASSWORD);
 
-		PubKey pubKey = KeyGenCommand.decodePubKey(SDKDemo_Constant.PUB_KEYS[0]);
+		PubKey pubKey = KeyGenUtils.decodePubKey(SDKDemo_Constant.PUB_KEYS[0]);
 
 		adminKey = new BlockchainKeypair(pubKey, privKey);
 
