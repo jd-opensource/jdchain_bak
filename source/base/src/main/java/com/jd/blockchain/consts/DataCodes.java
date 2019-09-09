@@ -100,8 +100,8 @@ public interface DataCodes {
 //	public static final int METADATA_CONSENSUS_SETTING = 0x631;
 //
 // public static final int METADATA_PARTICIPANT_INFO = 0x640;
-
-	public static final int METADATA_CRYPTO_SETTING = 0x642;
+//
+//	public static final int METADATA_CRYPTO_SETTING = 0x642;
 
 
 	// public static final int METADATA_CONSENSUS_NODE = 0x630;
