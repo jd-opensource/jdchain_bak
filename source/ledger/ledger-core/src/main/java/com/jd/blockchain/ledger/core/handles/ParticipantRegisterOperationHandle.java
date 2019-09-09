@@ -40,11 +40,18 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
 //        metadata.setSetting(ledgerSetting);
 //        metadata.setViewId(metadata.getViewId() + 1);
 
-        //reg participant as user
-        dataset.getUserAccountSet().register(identityData.getAddress(), pubKey);
+        
+        
+//        //reg participant as user
+//        dataset.getUserAccountSet().register(identityData.getAddress(), pubKey);
 
         //add new participant as consensus node
         adminAccount.addParticipant(participantNode);
+        
+     // Build UserRegisterOperation;
+        UserRegisterOperation userRegOp = null;//
+        handleContext.handle(userRegOp);
+        
 
         return null;
     }
