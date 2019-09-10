@@ -1,11 +1,10 @@
 package com.jd.blockchain.ledger.core.handles;
 
-import com.jd.blockchain.consensus.ConsensusProvider;
-import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 import com.jd.blockchain.utils.Bytes;
 
 
@@ -27,22 +26,15 @@ public class ParticipantRegisterOperationHandle extends AbstractLedgerOperationH
 
         LedgerAdminDataset adminAccountDataSet = newBlockDataset.getAdminDataset();
 
-        ParticipantInfo participantInfo = participantRegOp.getParticipantInfo();
+        ParticipantInfo participantInfo = new ParticipantInfoData(participantRegOp.getParticipantName(), participantRegOp.getParticipantIdentity().getPubKey(), participantRegOp.getNetworkAddress());
 
         ParticipantNode participantNode = new PartNode((int)(adminAccountDataSet.getParticipantCount()), participantInfo.getName(), participantInfo.getPubKey(), ParticipantNodeState.REGISTED);
-
-        PubKey pubKey = participantNode.getPubKey();
-
-        BlockchainIdentityData identityData = new BlockchainIdentityData(pubKey);
-
-//        //reg participant as user
-//        dataset.getUserAccountSet().register(identityData.getAddress(), pubKey);
 
         //add new participant as consensus node
         adminAccountDataSet.addParticipant(participantNode);
 
-        // Build UserRegisterOperation;
-        UserRegisterOperation userRegOp = null;//
+        // Build UserRegisterOperation, reg participant as user
+        UserRegisterOperation userRegOp = new UserRegisterOpTemplate(participantRegOp.getParticipantIdentity());
         handleContext.handle(userRegOp);
     }
 

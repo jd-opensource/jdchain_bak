@@ -1,7 +1,10 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import com.jd.blockchain.ledger.ParticipantStateUpdateInfo;
 import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
+import com.jd.blockchain.utils.net.NetworkAddress;
 
 public interface ParticipantStateUpdateOperationBuilder {
 
@@ -14,5 +17,5 @@ public interface ParticipantStateUpdateOperationBuilder {
      *
      * @return
      */
-     ParticipantStateUpdateOperation update(ParticipantStateUpdateInfo stateUpdateInfo);
+     ParticipantStateUpdateOperation update(BlockchainIdentity blockchainIdentity, NetworkAddress networkAddress, ParticipantNodeState participantNodeState);
 }

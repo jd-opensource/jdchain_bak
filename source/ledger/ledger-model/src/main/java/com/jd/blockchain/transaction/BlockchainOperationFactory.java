@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.net.NetworkAddress;
 
 /**
  * @author huanghaiquan
@@ -288,8 +290,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private class ParticipantRegisterOperationBuilderFilter implements ParticipantRegisterOperationBuilder {
 		@Override
-		public ParticipantRegisterOperation register(ParticipantInfo participantInfo) {
-			ParticipantRegisterOperation op = PARTICIPANT_REG_OP_BUILDER.register(participantInfo);
+		public ParticipantRegisterOperation register(String  participantName, BlockchainIdentity participantIdentity, NetworkAddress networkAddress) {
+			ParticipantRegisterOperation op = PARTICIPANT_REG_OP_BUILDER.register(participantName, participantIdentity, networkAddress);
 			operationList.add(op);
 			return op;
 		}
@@ -297,8 +299,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 
 	private class ParticipantStateUpdateOperationBuilderFilter implements ParticipantStateUpdateOperationBuilder {
 		@Override
-		public ParticipantStateUpdateOperation update(ParticipantStateUpdateInfo stateUpdateInfo) {
-			ParticipantStateUpdateOperation op = PARTICIPANT_STATE_UPDATE_OP_BUILDER.update(stateUpdateInfo);
+		public ParticipantStateUpdateOperation update(BlockchainIdentity blockchainIdentity, NetworkAddress networkAddress, ParticipantNodeState participantNodeState) {
+			ParticipantStateUpdateOperation op = PARTICIPANT_STATE_UPDATE_OP_BUILDER.update(blockchainIdentity, networkAddress, participantNodeState);
 			operationList.add(op);
 			return op;
 		}

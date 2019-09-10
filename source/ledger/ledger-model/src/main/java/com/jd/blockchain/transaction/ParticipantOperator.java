@@ -8,4 +8,11 @@ public interface ParticipantOperator {
      * @return
      */
     ParticipantRegisterOperationBuilder participants();
+
+    /**
+     * 参与方状态更新操作;
+     *
+     * @return
+     */
+    ParticipantStateUpdateOperationBuilder states();
 }

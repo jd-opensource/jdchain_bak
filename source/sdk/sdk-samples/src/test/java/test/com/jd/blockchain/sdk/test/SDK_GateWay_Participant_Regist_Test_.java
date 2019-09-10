@@ -82,10 +82,8 @@ public class SDK_GateWay_Participant_Regist_Test_ {
 
         NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
 
-        ParticipantInfo participantInfo = new ParticipantInfoData("Peer4", user.getPubKey(), networkAddress);
-
         // 注册参与方
-        txTemp.participants().register(participantInfo);
+        txTemp.participants().register("Peer4", user.getIdentity(), networkAddress);
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

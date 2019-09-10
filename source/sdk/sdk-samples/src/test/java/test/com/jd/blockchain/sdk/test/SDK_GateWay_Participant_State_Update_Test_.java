@@ -77,10 +77,11 @@ public class SDK_GateWay_Participant_State_Update_Test_ {
 
         System.out.println("Address = "+AddressEncoding.generateAddress(pubKey));
 
+        BlockchainKeypair user = new BlockchainKeypair(pubKey, privKey);
+
         NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
 
-        ParticipantStateUpdateInfo stateUpdateInfo = new ParticipantStateUpdateInfoData(pubKey, ParticipantNodeState.CONSENSUSED, networkAddress);
-        txTemp.states().update(stateUpdateInfo);
+        txTemp.states().update(user.getIdentity(),networkAddress, ParticipantNodeState.CONSENSUSED);
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger;
 
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.net.NetworkAddress;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 /**
  * 即将要注册的参与方的信息
