@@ -11,13 +11,7 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.TransactionStagedSnapshot;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
@@ -74,6 +68,7 @@ public class LedgerTestUtils {
 			parties[i].setPubKey(partiKeys[i].getPubKey());
 			parties[i].setAddress(AddressEncoding.generateAddress(partiKeys[i].getPubKey()));
 			parties[i].setHostAddress(new NetworkAddress("192.168.1." + (10 + i), 9000));
+			parties[i].setParticipantState(ParticipantNodeState.CONSENSUSED);
 
 		}
 

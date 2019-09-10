@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
@@ -87,7 +88,7 @@ public class Utils {
 	public static ParticipantNode[] loadParticipantNodes() {
 		ParticipantNode[] participantNodes = new ParticipantNode[PUB_KEYS.length];
 		for (int i = 0; i < PUB_KEYS.length; i++) {
-			participantNodes[i] = new PartNode(i, KeyGenUtils.decodePubKey(PUB_KEYS[i]));
+			participantNodes[i] = new PartNode(i, KeyGenUtils.decodePubKey(PUB_KEYS[i]), ParticipantNodeState.CONSENSUSED);
 		}
 		return participantNodes;
 	}
@@ -249,15 +250,18 @@ public class Utils {
 
 		private PubKey pubKey;
 
-		public PartNode(int id, PubKey pubKey) {
-			this(id, id + "", pubKey);
+		private ParticipantNodeState participantNodeState;
+
+		public PartNode(int id, PubKey pubKey, ParticipantNodeState participantNodeState) {
+			this(id, id + "", pubKey, participantNodeState);
 		}
 
-		public PartNode(int id, String name, PubKey pubKey) {
+		public PartNode(int id, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
 			this.id = id;
 			this.name = name;
 			this.pubKey = pubKey;
 			this.address = AddressEncoding.generateAddress(pubKey);
+			this.participantNodeState = participantNodeState;
 		}
 
 		@Override
@@ -279,6 +283,12 @@ public class Utils {
 		public PubKey getPubKey() {
 			return pubKey;
 		}
+
+		@Override
+		public ParticipantNodeState getParticipantNodeState() {
+			return participantNodeState;
+		}
+
 	}
 
 }

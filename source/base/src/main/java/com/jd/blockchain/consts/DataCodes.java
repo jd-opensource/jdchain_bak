@@ -51,17 +51,20 @@ public interface DataCodes {
 
 	public static final int TX_OP_CONTRACT_EVENT_SEND = 0x340;
 
-	public static final int TX_RESPONSE = 0x350;
+	public static final int TX_OP_PARTICIPANT_REG = 0x350;
+	public static final int TX_OP_PARTICIPANT_STATE_UPDATE = 0x351;
 
-	public static final int TX_OP_RESULT = 0x360;
+	public static final int TX_RESPONSE = 0x360;
+
+	public static final int TX_OP_RESULT = 0x370;
 	
-	public static final int TX_OP_ROLE_CONFIGURE = 0x370;
+	public static final int TX_OP_ROLE_CONFIGURE = 0x371;
 	
-	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x371;
+	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x372;
 	
-	public static final int TX_OP_USER_ROLES_AUTHORIZE = 0x372;
+	public static final int TX_OP_USER_ROLES_AUTHORIZE = 0x373;
 	
-	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x373;
+	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x374;
 
 	// enum types of permissions;
 	public static final int ENUM_TX_PERMISSION = 0x401;
@@ -97,9 +100,20 @@ public interface DataCodes {
 //	public static final int METADATA_CONSENSUS_SETTING = 0x631;
 //
 // public static final int METADATA_PARTICIPANT_INFO = 0x640;
+//
+//	public static final int METADATA_CRYPTO_SETTING = 0x642;
+
+
+	// public static final int METADATA_CONSENSUS_NODE = 0x630;
+
+	public static final int METADATA_CONSENSUS_SETTING = 0x631;
+
+	public static final int METADATA_PARTICIPANT_INFO = 0x640;
+
+	public static final int METADATA_PARTICIPANT_STATE_INFO = 0x641;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
-
+	
 	public static final int METADATA_CRYPTO_SETTING_PROVIDER = 0x643;
 
 	// public static final int ACCOUNT = 0x700;
@@ -125,6 +139,8 @@ public interface DataCodes {
 	public static final int ENUM_TYPE_TRANSACTION_STATE = 0xB22;
 
 	public static final int ENUM_TYPE_BYTES_VALUE_TYPE = 0xB23;
+
+	public static final int ENUM_TYPE_PARTICIPANT_NODE_STATE = 0xB24;
 
 	public static final int DIGITALSIGNATURE = 0xB30;
 

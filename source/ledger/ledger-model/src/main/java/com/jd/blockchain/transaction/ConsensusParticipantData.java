@@ -4,6 +4,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
+import com.jd.blockchain.ledger.ParticipantNodeState;
 
 public class ConsensusParticipantData implements ParticipantNode {
 	
@@ -17,6 +18,9 @@ public class ConsensusParticipantData implements ParticipantNode {
 
 		private NetworkAddress hostAddress;
 
+	    private ParticipantNodeState participantNodeState;
+
+        @Override
 		public int getId() {
 			return id;
 		}
@@ -25,6 +29,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.id = id;
 		}
 
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -33,7 +38,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.name = name;
 		}
 
-		public NetworkAddress getConsensusAddress() {
+		public NetworkAddress getHostAddress() {
 			return hostAddress;
 		}
 
@@ -41,6 +46,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.hostAddress = hostAddress;
 		}
 
+		@Override
 		public PubKey getPubKey() {
 			return pubKey;
 		}
@@ -49,12 +55,22 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.pubKey = pubKey;
 		}
 
+		@Override
 		public Bytes getAddress() {
 			return address;
 		}
 
 		public void setAddress(Bytes address) {
 			this.address = address;
+		}
+
+		@Override
+	    public ParticipantNodeState getParticipantNodeState() {
+		return participantNodeState;
+	}
+
+	    public void setParticipantState(ParticipantNodeState participantNodeState) {
+			this.participantNodeState = participantNodeState;
 		}
 
 	}

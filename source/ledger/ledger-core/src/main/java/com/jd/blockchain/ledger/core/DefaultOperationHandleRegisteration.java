@@ -6,18 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.ledger.core.handles.*;
 import org.springframework.stereotype.Component;
 
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.core.handles.ContractCodeDeployOperationHandle;
-import com.jd.blockchain.ledger.core.handles.DataAccountKVSetOperationHandle;
-import com.jd.blockchain.ledger.core.handles.DataAccountRegisterOperationHandle;
-import com.jd.blockchain.ledger.core.handles.JVMContractEventSendOperationHandle;
-import com.jd.blockchain.ledger.core.handles.LedgerInitOperationHandle;
-import com.jd.blockchain.ledger.core.handles.RolesConfigureOperationHandle;
-import com.jd.blockchain.ledger.core.handles.UserAuthorizeOperationHandle;
-import com.jd.blockchain.ledger.core.handles.UserRegisterOperationHandle;
 import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
 import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
@@ -50,6 +43,10 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 		registerDefaultHandle(new ContractCodeDeployOperationHandle());
 
 		registerDefaultHandle(new JVMContractEventSendOperationHandle());
+
+		registerDefaultHandle(new ParticipantRegisterOperationHandle());
+
+		registerDefaultHandle(new ParticipantStateUpdateOperationHandle());
 	}
 
 	private static void registerDefaultHandle(OperationHandle handle) {
