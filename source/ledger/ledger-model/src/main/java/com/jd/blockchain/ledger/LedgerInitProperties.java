@@ -15,7 +15,6 @@ import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.LedgerInitProperties.CryptoProperties;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.StringUtils;

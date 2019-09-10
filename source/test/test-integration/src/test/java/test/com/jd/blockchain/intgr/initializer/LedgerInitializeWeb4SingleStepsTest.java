@@ -30,7 +30,7 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
@@ -326,7 +326,7 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			this.serverAddress = serverAddress;
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash) {
+		public LedgerQuery registLedger(HashDigest ledgerHash) {
 			// LedgerManage ledgerManager = ctx.getBean(LedgerManage.class);
 			//
 			// DbConnectionFactory dbConnFactory = ctx.getBean(DbConnectionFactory.class);
@@ -336,7 +336,7 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			// DbConnection conn = db.connect(dbConnConfig.getUri(),
 			// dbConnConfig.getPassword());
 			DbConnection conn = db.connect(dbConnConfig.getUri());
-			LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
 			return ledgerRepo;
 		}
 

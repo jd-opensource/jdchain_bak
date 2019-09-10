@@ -15,7 +15,7 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.peer.PeerServerBooter;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -93,7 +93,7 @@ public class BftsmartLedgerInit {
         localConf4NodesLoad();
         PeerTestRunner[] peerNodes = startNodes(4);
         // 检查账本一致性
-        LedgerRepository[] ledgers = checkNodes(peerNodes);
+        LedgerQuery[] ledgers = checkNodes(peerNodes);
 
         txRequestTest(peerNodes, ledgers);
     }
@@ -110,7 +110,7 @@ public class BftsmartLedgerInit {
         localConf8NodesLoad();
         PeerTestRunner[] peerNodes = startNodes(8);
         // 检查账本一致性
-        LedgerRepository[] ledgers = checkNodes(peerNodes);
+        LedgerQuery[] ledgers = checkNodes(peerNodes);
 
         txRequestTest(peerNodes, ledgers);
     }
@@ -127,7 +127,7 @@ public class BftsmartLedgerInit {
         localConf16NodesLoad();
         PeerTestRunner[] peerNodes = startNodes(16);
         // 检查账本一致性
-        LedgerRepository[] ledgers = checkNodes(peerNodes);
+        LedgerQuery[] ledgers = checkNodes(peerNodes);
 
         txRequestTest(peerNodes, ledgers);
     }
@@ -145,7 +145,7 @@ public class BftsmartLedgerInit {
 //        ledgerInitPools.shutdown();
         PeerTestRunner[] peerNodes = startNodes(32);
         // 检查账本一致性
-        LedgerRepository[] ledgers = checkNodes(peerNodes);
+        LedgerQuery[] ledgers = checkNodes(peerNodes);
 
         txRequestTest(peerNodes, ledgers);
     }
@@ -162,16 +162,16 @@ public class BftsmartLedgerInit {
         localConf64NodesLoad();
         PeerTestRunner[] peerNodes = startNodes(64);
         // 检查账本一致性
-        LedgerRepository[] ledgers = checkNodes(peerNodes);
+        LedgerQuery[] ledgers = checkNodes(peerNodes);
 
         txRequestTest(peerNodes, ledgers);
     }
 
-    public void txRequestTest(PeerTestRunner[] peerNodes, LedgerRepository[] ledgers) {
+    public void txRequestTest(PeerTestRunner[] peerNodes, LedgerQuery[] ledgers) {
         // 测试K-V
         GatewayTestRunner gateway = initGateWay(peerNodes[0]);
 
-        LedgerRepository ledgerRepository = ledgers[0];
+        LedgerQuery ledgerRepository = ledgers[0];
 
         HashDigest ledgerHash = ledgerRepository.getHash();
 
@@ -249,7 +249,7 @@ public class BftsmartLedgerInit {
         return gateway;
     }
 
-    public LedgerRepository[] checkNodes(PeerTestRunner[] peerNodes) {
+    public LedgerQuery[] checkNodes(PeerTestRunner[] peerNodes) {
         int size = peerNodes.length;
         LedgerBindingConfig[] ledgerBindingConfigs = new LedgerBindingConfig[size];
         DbConnectionFactory[] connectionFactories = new DbConnectionFactory[size];
@@ -259,7 +259,7 @@ public class BftsmartLedgerInit {
         }
 
         // 执行测试用例之前，校验每个节点的一致性；
-        LedgerRepository[] ledgers = buildLedgers(ledgerBindingConfigs, connectionFactories);
+        LedgerQuery[] ledgers = buildLedgers(ledgerBindingConfigs, connectionFactories);
         IntegrationBase.testConsistencyAmongNodes(ledgers);
         return ledgers;
     }

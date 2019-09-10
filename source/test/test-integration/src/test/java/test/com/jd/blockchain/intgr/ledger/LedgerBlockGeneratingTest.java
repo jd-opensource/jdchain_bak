@@ -83,8 +83,7 @@ public class LedgerBlockGeneratingTest {
 
 			LedgerEditor newEditor = ledger.createNextBlock();
 			TransactionBatchProcessor txProc = new TransactionBatchProcessor(
-					LedgerPerformanceTest.DEFAULT_SECURITY_MANAGER, newEditor, previousDataSet, opHandler,
-					ledgerManager);
+					LedgerPerformanceTest.DEFAULT_SECURITY_MANAGER, newEditor, ledger, opHandler);
 
 			testTxExec(txList, i * batchSize, batchSize, txProc);
 

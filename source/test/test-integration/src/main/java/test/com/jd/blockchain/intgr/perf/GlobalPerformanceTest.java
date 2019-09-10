@@ -32,7 +32,7 @@ import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -116,7 +116,7 @@ public class GlobalPerformanceTest {
 		BlockchainKeypair[] keys = generateKeys(batchSize);
 
 		HashDigest ledgerHash = node0.getLedgerManager().getLedgerHashs()[0];
-		LedgerRepository ledger = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledger = node0.getLedgerManager().getLedger(ledgerHash);
 
 		PreparedTransaction[] ptxs = prepareTransactions_RegisterDataAcount(keys, node0.getPartiKeyPair(), ledgerHash,
 				blockchainService);
@@ -338,7 +338,7 @@ public class GlobalPerformanceTest {
 			this.serverAddress = serverAddress;
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash) {
+		public LedgerQuery registLedger(HashDigest ledgerHash) {
 			// LedgerManage ledgerManager = ctx.getBean(LedgerManage.class);
 			//
 			// DbConnectionFactory dbConnFactory = ctx.getBean(DbConnectionFactory.class);
@@ -347,7 +347,7 @@ public class GlobalPerformanceTest {
 
 			DbConnection conn = db.connect(dbConnConfig.getUri(), dbConnConfig.getPassword());
 			conns.add(conn);
-			LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
 			return ledgerRepo;
 		}
 

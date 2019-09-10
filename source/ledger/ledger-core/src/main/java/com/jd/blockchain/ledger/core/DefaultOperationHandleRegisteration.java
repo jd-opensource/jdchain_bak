@@ -18,14 +18,6 @@ import com.jd.blockchain.ledger.core.handles.LedgerInitOperationHandle;
 import com.jd.blockchain.ledger.core.handles.RolesConfigureOperationHandle;
 import com.jd.blockchain.ledger.core.handles.UserAuthorizeOperationHandle;
 import com.jd.blockchain.ledger.core.handles.UserRegisterOperationHandle;
-import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
-import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
-import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
-import com.jd.blockchain.transaction.DataAccountRegisterOpTemplate;
-import com.jd.blockchain.transaction.LedgerInitOpTemplate;
-import com.jd.blockchain.transaction.RolesConfigureOpTemplate;
-import com.jd.blockchain.transaction.UserAuthorizeOpTemplate;
-import com.jd.blockchain.transaction.UserRegisterOpTemplate;
 
 @Component
 public class DefaultOperationHandleRegisteration implements OperationHandleRegisteration {
@@ -120,13 +112,5 @@ public class DefaultOperationHandleRegisteration implements OperationHandleRegis
 			throw new LedgerException("Unsupported operation type[" + operationType.getName() + "]!");
 		}
 		return hdl;
-	}
-
-	private static class OpHandleStub {
-
-		private Class<? extends Operation> operationType;
-
-		private OperationHandle operationHandle;
-
 	}
 }

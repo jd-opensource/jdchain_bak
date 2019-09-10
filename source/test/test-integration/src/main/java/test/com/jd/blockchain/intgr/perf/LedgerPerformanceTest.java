@@ -294,7 +294,7 @@ public class LedgerPerformanceTest {
 		LedgerDataQuery previousDataSet = ledger.getDataSet(latestBlock);
 		LedgerEditor newEditor = ledger.createNextBlock();
 		TransactionBatchProcessor txProc = new TransactionBatchProcessor(DEFAULT_SECURITY_MANAGER, newEditor,
-				previousDataSet, opHandler, ledgerManager);
+				ledger, opHandler);
 
 		// 准备请求
 		int totalCount = batchSize * batchCount;
@@ -332,7 +332,7 @@ public class LedgerPerformanceTest {
 
 			LedgerEditor newEditor = ledger.createNextBlock();
 			TransactionBatchProcessor txProc = new TransactionBatchProcessor(DEFAULT_SECURITY_MANAGER, newEditor,
-					previousDataSet, opHandler, ledgerManager);
+					ledger, opHandler);
 
 			testTxExec(txList, i * batchSize, batchSize, txProc);
 

@@ -16,11 +16,10 @@ import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.LedgerQueryService;
-import com.jd.blockchain.ledger.core.LedgerService;
 import com.jd.blockchain.ledger.core.OperationHandle;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension;
@@ -37,7 +36,7 @@ public class MockerContractExeHandle implements OperationHandle {
 
 	@Override
 	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension request,
-			LedgerDataQuery previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
+			LedgerQuery ledger, OperationHandleContext opHandleContext) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
 		HashDigest txHash = request.getTransactionContent().getHash();
@@ -46,7 +45,7 @@ public class MockerContractExeHandle implements OperationHandle {
 
 		Object result = null;
 		if (executorProxy != null) {
-			LedgerQueryService queryService = new LedgerQueryService(ledgerManager);
+			LedgerQueryService queryService = new LedgerQueryService(ledger);
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
 			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,

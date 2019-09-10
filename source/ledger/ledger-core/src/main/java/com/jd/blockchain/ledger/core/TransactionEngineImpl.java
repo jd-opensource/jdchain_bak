@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.service.TransactionBatchProcess;
 import com.jd.blockchain.service.TransactionEngine;
 
@@ -38,17 +37,8 @@ public class TransactionEngineImpl implements TransactionEngine {
 
 		LedgerRepository ledgerRepo = ledgerService.getLedger(ledgerHash);
 
-		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
-		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
-
-		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
-		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(
-				previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
-				previousBlockDataset.getUserAccountSet());
-		batch = new InnerTransactionBatchProcessor(ledgerHash, securityManager, newBlockEditor, previousBlockDataset,
-				opHdlRegs, ledgerService, ledgerBlock.getHeight());
+		batch = new InnerTransactionBatchProcessor(ledgerRepo,
+				opHdlRegs);
 		batchs.put(ledgerHash, batch);
 		return batch;
 	}
@@ -66,22 +56,16 @@ public class TransactionEngineImpl implements TransactionEngine {
 
 		private HashDigest ledgerHash;
 
-		private long blockHeight;
-
 		/**
 		 * 创建交易批处理器；
 		 * 
-		 * @param ledgerHash           账本哈希；
-		 * @param newBlockEditor       新区块的数据编辑器；
-		 * @param previousBlockDataset 新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
-		 * @param opHandles            操作处理对象注册表；
+		 * @param ledgerRepo           账本；
+		 * @param handlesRegisteration 操作处理对象注册表；
+		 * @param blockHeight
 		 */
-		public InnerTransactionBatchProcessor(HashDigest ledgerHash, LedgerSecurityManager securityManager,
-				LedgerEditor newBlockEditor, LedgerDataQuery previousBlockDataset,
-				OperationHandleRegisteration opHandles, LedgerService ledgerService, long blockHeight) {
-			super(securityManager, newBlockEditor, previousBlockDataset, opHandles, ledgerService);
-			this.ledgerHash = ledgerHash;
-			this.blockHeight = blockHeight;
+		public InnerTransactionBatchProcessor(LedgerRepository ledgerRepo,
+				OperationHandleRegisteration handlesRegisteration) {
+			super(ledgerRepo, handlesRegisteration);
 		}
 
 		@Override
@@ -96,9 +80,5 @@ public class TransactionEngineImpl implements TransactionEngine {
 			finishBatch(ledgerHash);
 		}
 
-		@Override
-		public long blockHeight() {
-			return this.blockHeight;
-		}
 	}
 }

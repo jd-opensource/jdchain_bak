@@ -38,7 +38,7 @@ import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.KVStorageService;
@@ -150,16 +150,16 @@ public class IntegrationTest {
 	private void testConsistencyAmongNodes(IntegratedContext context) {
 		int[] ids = context.getNodeIds();
 		Node[] nodes = new Node[ids.length];
-		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
+		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = context.getNode(ids[i]);
 			HashDigest ledgerHash = nodes[i].getLedgerManager().getLedgerHashs()[0];
 			ledgers[i] = nodes[i].getLedgerManager().getLedger(ledgerHash);
 		}
-		LedgerRepository ledger0 = ledgers[0];
+		LedgerQuery ledger0 = ledgers[0];
 		LedgerBlock latestBlock0 = ledger0.retrieveLatestBlock();
 		for (int i = 1; i < ledgers.length; i++) {
-			LedgerRepository otherLedger = ledgers[i];
+			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 		}
 	}
@@ -212,7 +212,7 @@ public class IntegrationTest {
 		TransactionResponse txResp = prepTx.commit();
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		ledgerOfNode0.retrieveLatestBlock(); // 更新内存
 
 		// 先验证应答
@@ -250,7 +250,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 
 		return user;
 	}
@@ -282,7 +282,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 		long latestBlockHeight = ledgerOfNode0.retrieveLatestBlockHeight();
 
 		return dataAccount;
@@ -301,7 +301,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 
 		// getLedgerHashs
 		HashDigest[] ledgerHashs = blockchainService.getLedgerHashs();
@@ -494,10 +494,10 @@ public class IntegrationTest {
 		HashDigest ledgerHash2 = callback2.waitReturn();
 		HashDigest ledgerHash3 = callback3.waitReturn();
 
-		LedgerRepository ledger0 = nodeCtx0.registLedger(ledgerHash0);
-		LedgerRepository ledger1 = nodeCtx1.registLedger(ledgerHash1);
-		LedgerRepository ledger2 = nodeCtx2.registLedger(ledgerHash2);
-		LedgerRepository ledger3 = nodeCtx3.registLedger(ledgerHash3);
+		LedgerQuery ledger0 = nodeCtx0.registLedger(ledgerHash0);
+		LedgerQuery ledger1 = nodeCtx1.registLedger(ledgerHash1);
+		LedgerQuery ledger2 = nodeCtx2.registLedger(ledgerHash2);
+		LedgerQuery ledger3 = nodeCtx3.registLedger(ledgerHash3);
 
 		IntegratedContext context = new IntegratedContext();
 
@@ -577,7 +577,7 @@ public class IntegrationTest {
 		txResp.getContentHash();
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
 		byte[] contractCodeInDb = ledgerOfNode0.getContractAccountSet(block).getContract(contractDeployKey.getAddress())
 				.getChainCode();
@@ -615,7 +615,7 @@ public class IntegrationTest {
 		LedgerInfo latestLedgerInfo = blockchainService.getLedger(ledgerHash);
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock backgroundLedgerBlock = ledgerOfNode0.retrieveLatestBlock();
 
 		// 验证合约中的赋值，外部可以获得;
@@ -657,7 +657,7 @@ public class IntegrationTest {
 		// 验证结果；
 		Node node0 = context.getNode(0);
 
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
 		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes("A");

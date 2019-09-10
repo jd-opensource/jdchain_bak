@@ -30,7 +30,7 @@ import com.jd.blockchain.ledger.core.LedgerConfiguration;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
@@ -187,7 +187,7 @@ public class Utils {
 			return invoker.start();
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash, DBConnectionConfig dbConnConf) {
+		public LedgerQuery registLedger(HashDigest ledgerHash, DBConnectionConfig dbConnConf) {
 			return ledgerManager.register(ledgerHash, dbConnFactory.connect(dbConnConf.getUri()).getStorageService());
 		}
 	}

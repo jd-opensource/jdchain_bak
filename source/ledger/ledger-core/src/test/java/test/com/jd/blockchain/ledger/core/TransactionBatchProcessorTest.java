@@ -96,7 +96,7 @@ public class TransactionBatchProcessorTest {
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair = BlockchainKeyGenerator.getInstance().generate();
@@ -156,7 +156,7 @@ public class TransactionBatchProcessorTest {
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
@@ -214,7 +214,7 @@ public class TransactionBatchProcessorTest {
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 注册新用户；
 		BlockchainKeypair userKeypair1 = BlockchainKeyGenerator.getInstance().generate();
@@ -295,7 +295,7 @@ public class TransactionBatchProcessorTest {
 		OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		BlockchainKeypair dataAccountKeypair = BlockchainKeyGenerator.getInstance().generate();
 		TransactionRequest transactionRequest1 = LedgerTestUtils.createTxRequest_DataAccountReg(dataAccountKeypair,
@@ -322,8 +322,7 @@ public class TransactionBatchProcessorTest {
 
 		newBlockEditor = ledgerRepo.createNextBlock();
 		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, previousBlockDataset, opReg,
-				ledgerManager);
+		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo, opReg);
 
 		txbatchProcessor.schedule(txreq1);
 		txbatchProcessor.schedule(txreq2);
@@ -362,8 +361,7 @@ public class TransactionBatchProcessorTest {
 
 		newBlockEditor = ledgerRepo.createNextBlock();
 		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, previousBlockDataset, opReg,
-				ledgerManager);
+		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo, opReg);
 
 		txbatchProcessor.schedule(txreq5);
 		// 预期会产生版本冲突异常； DataVersionConflictionException;

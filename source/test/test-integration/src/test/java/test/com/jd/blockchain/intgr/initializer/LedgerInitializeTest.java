@@ -34,7 +34,7 @@ import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
@@ -133,10 +133,10 @@ public class LedgerInitializeTest {
 		assertEquals(ledgerHash0, ledgerHash2);
 		assertEquals(ledgerHash0, ledgerHash3);
 
-		LedgerRepository ledger0 = node0.registLedger(ledgerHash0, dbConnections[0]);
-		LedgerRepository ledger1 = node1.registLedger(ledgerHash1, dbConnections[1]);
-		LedgerRepository ledger2 = node2.registLedger(ledgerHash2, dbConnections[2]);
-		LedgerRepository ledger3 = node3.registLedger(ledgerHash3, dbConnections[3]);
+		LedgerQuery ledger0 = node0.registLedger(ledgerHash0, dbConnections[0]);
+		LedgerQuery ledger1 = node1.registLedger(ledgerHash1, dbConnections[1]);
+		LedgerQuery ledger2 = node2.registLedger(ledgerHash2, dbConnections[2]);
+		LedgerQuery ledger3 = node3.registLedger(ledgerHash3, dbConnections[3]);
 
 		assertNotNull(ledger0);
 		assertNotNull(ledger1);
@@ -277,7 +277,7 @@ public class LedgerInitializeTest {
 			return invoker.start();
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash, String memConn) {
+		public LedgerQuery registLedger(HashDigest ledgerHash, String memConn) {
 			return ledgerManager.register(ledgerHash, storageDb.connect(memConn).getStorageService());
 		}
 	}

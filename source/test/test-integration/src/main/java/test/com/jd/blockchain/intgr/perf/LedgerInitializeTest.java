@@ -25,7 +25,7 @@ import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
@@ -106,10 +106,10 @@ public class LedgerInitializeTest {
 		HashDigest ledgerHash2 = callback2.waitReturn();
 		HashDigest ledgerHash3 = callback3.waitReturn();
 
-		LedgerRepository ledger0 = node0.registLedger(ledgerHash0, memoryConnString[0]);
-		LedgerRepository ledger1 = node1.registLedger(ledgerHash1, memoryConnString[1]);
-		LedgerRepository ledger2 = node2.registLedger(ledgerHash2, memoryConnString[2]);
-		LedgerRepository ledger3 = node3.registLedger(ledgerHash3, memoryConnString[3]);
+		LedgerQuery ledger0 = node0.registLedger(ledgerHash0, memoryConnString[0]);
+		LedgerQuery ledger1 = node1.registLedger(ledgerHash1, memoryConnString[1]);
+		LedgerQuery ledger2 = node2.registLedger(ledgerHash2, memoryConnString[2]);
+		LedgerQuery ledger3 = node3.registLedger(ledgerHash3, memoryConnString[3]);
 
 		LedgerBlock genesisBlock = ledger0.getLatestBlock();
 
@@ -221,7 +221,7 @@ public class LedgerInitializeTest {
 			return invoker.start();
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash, String connString) {
+		public LedgerQuery registLedger(HashDigest ledgerHash, String connString) {
 			return ledgerManager.register(ledgerHash, memoryDBConnFactory.connect(connString).getStorageService());
 		}
 	}

@@ -30,7 +30,7 @@ import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -294,10 +294,10 @@ public class LedgerInitializeWebTest {
 		HashDigest ledgerHash2 = callback2.waitReturn();
 		HashDigest ledgerHash3 = callback3.waitReturn();
 
-		LedgerRepository ledger0 = node0.registLedger(ledgerHash0);
-		LedgerRepository ledger1 = node1.registLedger(ledgerHash1);
-		LedgerRepository ledger2 = node2.registLedger(ledgerHash2);
-		LedgerRepository ledger3 = node3.registLedger(ledgerHash3);
+		LedgerQuery ledger0 = node0.registLedger(ledgerHash0);
+		LedgerQuery ledger1 = node1.registLedger(ledgerHash1);
+		LedgerQuery ledger2 = node2.registLedger(ledgerHash2);
+		LedgerQuery ledger3 = node3.registLedger(ledgerHash3);
 
 		LedgerBlock genesisBlock = ledger0.getLatestBlock();
 
@@ -390,7 +390,7 @@ public class LedgerInitializeWebTest {
 			this.serverAddress = serverAddress;
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash) {
+		public LedgerQuery registLedger(HashDigest ledgerHash) {
 			// LedgerManage ledgerManager = ctx.getBean(LedgerManage.class);
 			//
 			// DbConnectionFactory dbConnFactory = ctx.getBean(DbConnectionFactory.class);
@@ -400,7 +400,7 @@ public class LedgerInitializeWebTest {
 			// DbConnection conn = db.connect(dbConnConfig.getUri(),
 			// dbConnConfig.getPassword());
 			DbConnection conn = db.connect(dbConnConfig.getUri());
-			LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
 			return ledgerRepo;
 		}
 

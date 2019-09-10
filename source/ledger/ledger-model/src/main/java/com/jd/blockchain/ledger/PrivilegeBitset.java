@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger;
 
 import java.util.BitSet;
 
+import com.jd.blockchain.utils.Int8Code;
 import com.jd.blockchain.utils.io.BytesSerializable;
 
 /**
@@ -10,43 +11,46 @@ import com.jd.blockchain.utils.io.BytesSerializable;
  * @author huanghaiquan
  *
  */
-public class PrivilegeBitset<E extends Enum<?>> implements Privilege<E>, BytesSerializable {
-	// 加入前缀位，可避免序列化时输出空的字节数组；
-	private static final boolean[] PREFIX = { false, false, false, true, false, false, false, true };
-	private static final int OFFSET = PREFIX.length;
-	private static final int MAX_SIZE = 256 - PREFIX.length;
+public abstract class PrivilegeBitset<E extends Enum<?> & Int8Code> implements Privilege<E>, BytesSerializable, Cloneable {
+	// 加入1个字节的前缀位 0xF1，可避免序列化时输出空的字节数组；
+	private static final byte PREFIX = (byte) 0xF1;
+	private static final byte[] PREFIX_BYTES = { PREFIX };
+	private static final int OFFSET = 8;
+	private static final int MAX_SIZE = 32;
+
+	// 前缀中置为 1 的位数，值 0xF1 有 5 个比特位为 1；
+	private static final int PREFIX_CARDINALITY = 5;
 
 	private BitSet permissionBits;
 
-	private CodeIndexer<E> codeIndexer;
-
-	public PrivilegeBitset(CodeIndexer<E> codeIndexer) {
-		this.permissionBits = new BitSet();
-		this.codeIndexer = codeIndexer;
+	public PrivilegeBitset() {
 		// 设置前缀；
-		for (int i = 0; i < PREFIX.length; i++) {
-			permissionBits.set(i, PREFIX[i]);
-		}
+		this.permissionBits = BitSet.valueOf(PREFIX_BYTES);
 	}
 
-	public PrivilegeBitset(byte[] codeBytes, CodeIndexer<E> codeIndexer) {
+	/**
+	 * @param codeBytes   权限的字节位；
+	 * @param codeIndexer
+	 */
+	public PrivilegeBitset(byte[] codeBytes) {
+		// 检查长度；
+		if (codeBytes.length == 0) {
+			throw new IllegalArgumentException("Empty code bytes!");
+		}
 		if (codeBytes.length > MAX_SIZE) {
 			throw new IllegalArgumentException(
 					"The size of code bytes specified to PrivilegeBitset exceed the max size[" + MAX_SIZE + "]!");
 		}
-		this.permissionBits = BitSet.valueOf(codeBytes);
-		this.codeIndexer = codeIndexer;
 		// 校验前缀；
-		for (int i = 0; i < PREFIX.length; i++) {
-			if (permissionBits.get(i) != PREFIX[i]) {
-				throw new IllegalArgumentException("The code bytes is not match the privilege prefix code!");
-			}
+		if (codeBytes[0] != PREFIX) {
+			throw new IllegalArgumentException("The code bytes is not match the privilege prefix code!");
 		}
+
+		this.permissionBits = BitSet.valueOf(codeBytes);
 	}
 
-	private PrivilegeBitset(BitSet bits, CodeIndexer<E> codeIndexer) {
+	protected PrivilegeBitset(BitSet bits) {
 		this.permissionBits = bits;
-		this.codeIndexer = codeIndexer;
 	}
 
 	public boolean isEnable(E permission) {
@@ -134,15 +138,29 @@ public class PrivilegeBitset<E extends Enum<?>> implements Privilege<E>, BytesSe
 		return this;
 	}
 
-	public PrivilegeBitset<E> clone() {
-		return new PrivilegeBitset<E>((BitSet) permissionBits.clone(), codeIndexer);
+	@Override
+	public Privilege<E> clone() {
+		try {
+			BitSet bitSet = (BitSet) permissionBits.clone();
+			@SuppressWarnings("unchecked")
+			PrivilegeBitset<E> privilege = (PrivilegeBitset<E>) super.clone();
+			privilege.permissionBits = bitSet;
+			return privilege;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+
+	protected BitSet cloneBitSet() {
+		return (BitSet) permissionBits.clone();
 	}
 
 	private int index(E permission) {
-		return OFFSET + codeIndexer.getCodeIndex(permission);
+		return OFFSET + permission.getCode();
 	}
 
-	static interface CodeIndexer<E extends Enum<?>> {
-		int getCodeIndex(E permission);
+	public int getPermissionCount() {
+		return permissionBits.cardinality() - PREFIX_CARDINALITY;
 	}
+
 }

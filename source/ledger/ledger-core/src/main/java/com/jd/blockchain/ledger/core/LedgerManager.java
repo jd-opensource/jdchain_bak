@@ -22,14 +22,6 @@ import com.jd.blockchain.utils.codec.Base58Utils;
  */
 public class LedgerManager implements LedgerManage {
 
-	// @Autowired
-	// private ExistentialKVStorage exPolicyStorage;
-	//
-	// @Autowired
-	// private VersioningKVStorage versioningStorage;
-
-	// private PrivilegeModelSetting privilegeModel = new PrivilegeModelConfig();
-
 	private Map<HashDigest, LedgerRepositoryContext> ledgers = new HashMap<>();
 
 	@Override
@@ -158,6 +150,7 @@ public class LedgerManager implements LedgerManage {
 
 		public final LedgerRepository ledgerRepo;
 
+		@SuppressWarnings("unused")
 		public final KVStorageService storageService;
 
 		public LedgerRepositoryContext(LedgerRepository ledgerRepo, KVStorageService storageService) {

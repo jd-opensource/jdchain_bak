@@ -1,4 +1,4 @@
-package test.perf.com.jd.blockchain.ledger.core;
+package test.perf.com.jd.blockchain.ledger;
 
 import java.io.IOException;
 import java.util.Random;
