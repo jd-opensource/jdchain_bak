@@ -52,7 +52,8 @@ public class VerifyEngine {
         // 加载所有的jar，然后ASM获取MAP
         URL jarURL = jarFile.toURI().toURL();
 
-        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarURL});
+        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarURL},
+                Thread.currentThread().getContextClassLoader());
 
         // 解析Jar包中所有的Class
         Map<String, ContractClass> allContractClasses = resolveClasses(jarClasses());
@@ -60,6 +61,8 @@ public class VerifyEngine {
         // 开始处理MainClass
         verify(urlClassLoader, allContractClasses);
 
+        // 校验完成后需要释放ClassLoader，否则无法删除该Jar包
+        urlClassLoader.close();
     }
 
     public void verify(URLClassLoader urlClassLoader, Map<String, ContractClass> allContractClasses) throws Exception {
@@ -91,6 +94,8 @@ public class VerifyEngine {
         // 将该方法设置为已处理
         haveManagedMethods.add(managedKey);
         String dotClassName = method.getDotClassName();
+
+
         Class<?> dotClass = urlClassLoader.loadClass(dotClassName);
 
         if (dotClass == null) {
@@ -137,8 +142,13 @@ public class VerifyEngine {
             }
         } else {
             // 非URLClassLoader加载的类，只需要做判断即可
+            // 对于系统加载的类，其白名单优先级高于黑名单
             // 1、不再需要获取其方法；
-            // 2、只需要判断黑名单不需要判断白名单
+            // 首先判断是否为白名单
+            if (white.isWhite(dotClass)) {
+                return;
+            }
+            // 然后判断其是否为黑名单
             if (black.isBlack(dotClass, method.getMethodName())) {
                 throw new IllegalStateException(String.format("Class [%s] Method [%s] is Black !!!", dotClassName, method.getMethodName()));
             }
@@ -186,8 +196,6 @@ public class VerifyEngine {
             if (white.isWhite(dotClassName) || black.isBlackClass(dotClassName)) {
                 continue;
             }
-
-            LOGGER.info(String.format("Resolve Class [%s] ...", className));
 
             ContractClass contractClass = new ContractClass(className);
             ClassReader cr = new ClassReader(classContent);

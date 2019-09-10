@@ -13,9 +13,13 @@ import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.io.BytesUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -43,6 +47,9 @@ public class ContractInvokingTest {
 
 	// 采用基于内存的 Storage；
 	private MemoryKVStorage storage = new MemoryKVStorage();
+
+	// 用于测试的发布合约文件
+	private static final String CONTRACT_JAR = "contract-JDChain-Contract.jar";
 
 	@Test
 	public void test() {
@@ -82,7 +89,6 @@ public class ContractInvokingTest {
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
 		TestContract contractProxy = txBuilder.contract(contractAddress, TestContract.class);
-		TestContract contractProxy1 = txBuilder.contract(contractAddress, TestContract.class);
 
 		String asset = "AK";
 		long issueAmount = new Random().nextLong();
@@ -190,8 +196,7 @@ public class ContractInvokingTest {
 	}
 
 	private byte[] chainCode() {
-		byte[] chainCode = new byte[1024];
-		new Random().nextBytes(chainCode);
-		return chainCode;
+
+		return BytesUtils.copyToBytes(this.getClass().getResourceAsStream("/" + CONTRACT_JAR));
 	}
 }

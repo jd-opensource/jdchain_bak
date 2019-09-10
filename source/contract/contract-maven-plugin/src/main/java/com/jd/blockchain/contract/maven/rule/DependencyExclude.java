@@ -1,6 +1,6 @@
 package com.jd.blockchain.contract.maven.rule;
 
-import com.jd.blockchain.contract.ContractJarUtils;
+import com.jd.blockchain.contract.maven.ContractCompileMojo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class DependencyExclude {
 
     private static final String COMMON_ARTIFACTID = "*";
 
-    private static final String CONFIG = "provided.conf";
+    private static final String CONFIG = "providers.conf";
 
     private static final Map<String, List<Dependency>> DEPENDENCYS = new ConcurrentHashMap<>();
 
@@ -24,7 +24,7 @@ public class DependencyExclude {
     }
 
     private static void init() throws Exception {
-        List<String> readLines = ContractJarUtils.loadConfig(CONFIG);
+        List<String> readLines = ContractCompileMojo.loadConfig(CONFIG);
         if (!readLines.isEmpty()) {
             for (String line : readLines) {
                 // groupId/artifactId

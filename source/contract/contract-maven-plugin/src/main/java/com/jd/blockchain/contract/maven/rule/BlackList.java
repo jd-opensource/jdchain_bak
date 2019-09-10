@@ -52,6 +52,7 @@ public class BlackList {
     }
 
     public boolean isBlack(Class<?> clazz, String methodName) {
+
         // 判断该Class是否属于黑名单
         if (isCurrentClassBlack(clazz, methodName)) {
             return true;
@@ -75,7 +76,7 @@ public class BlackList {
 
         String packageName = clazz.getPackage().getName();
         for (String bp : blackPackages) {
-            if (packageName.equals(bp) || packageName.startsWith(bp)) {
+            if ((packageName + ".").equals(bp) || packageName.startsWith(bp)) {
                 return true;
             }
         }

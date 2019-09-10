@@ -1,7 +1,10 @@
 package com.jd.blockchain.contract.maven.verify;
 
+import com.alibaba.fastjson.JSON;
+import com.jd.blockchain.contract.Contract;
 import com.jd.blockchain.contract.ContractJarUtils;
 import com.jd.blockchain.contract.ContractType;
+import com.jd.blockchain.contract.EventProcessingAware;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
@@ -21,23 +24,49 @@ public class ResolveEngine {
 
     private Log LOGGER;
 
-    private File jarFile;
+//    private File jarFile;
 
     private String mainClass;
 
-    public ResolveEngine(Log LOGGER, File jarFile, String mainClass) {
+//    public ResolveEngine(Log LOGGER, File jarFile, String mainClass) {
+    public ResolveEngine(Log LOGGER, String mainClass) {
         this.LOGGER = LOGGER;
-        this.jarFile = jarFile;
+//        this.jarFile = jarFile;
         this.mainClass = mainClass;
     }
 
-    public File verify() throws MojoFailureException {
+    /**
+     * 校验当前项目中MainClass其是否满足JDChain合约写法
+     *
+     * @param mainClassJarFile
+     * @throws MojoFailureException
+     */
+    public void verifyCurrentProjectMainClass(File mainClassJarFile) throws MojoFailureException {
+        // 校验MainClass
         try {
-            // 首先校验MainClass
-            ClassLoader classLoader = verifyMainClass(jarFile);
+            LOGGER.debug(String.format("Verify Jar [%s] 's MainClass start...", mainClassJarFile.getName()));
+            // 自定义ClassLoader，必须使用Thread.currentThread().getContextClassLoader()
+            // 保证其项目内部加载的Jar包无须再加载一次
+            URLClassLoader classLoader = new URLClassLoader(new URL[]{mainClassJarFile.toURI().toURL()},
+                    Thread.currentThread().getContextClassLoader());
 
+            // 从MainClass作为入口进行MainClass代码校验
+            Class<?> mClass = classLoader.loadClass(mainClass);
+            ContractType.resolve(mClass);
+
+            // 校验完成后需要释放，否则无法删除该Jar文件
+            classLoader.close();
+
+            LOGGER.debug(String.format("Verify Jar [%s] 's MainClass end...", mainClassJarFile.getName()));
+        } catch (Exception e) {
+            throw new MojoFailureException(e.getMessage());
+        }
+    }
+
+    public File verify(File defaultJarFile) throws MojoFailureException {
+        try {
             // 检查jar包中所有的class的命名，要求其包名不能为com.jd.blockchain.*
-            LinkedList<String> totalClasses = loadAllClass(jarFile);
+            LinkedList<String> totalClasses = loadAllClass(defaultJarFile);
 
             if (!totalClasses.isEmpty()) {
 
@@ -47,9 +76,8 @@ public class ResolveEngine {
 
                     LOGGER.debug(String.format("Verify Dependency Class[%s] start......", dotClassName));
                     // 获取其包名
-                    Class<?> currentClass = classLoader.loadClass(dotClassName);
-
-                    String packageName = currentClass.getPackage().getName();
+                    // 将class转换为包名
+                    String packageName = class2Package(dotClassName);
 
                     if (ContractJarUtils.isJDChainPackage(packageName)) {
                         throw new IllegalStateException(String.format("Class[%s]'s package[%s] cannot start with %s !",
@@ -61,18 +89,23 @@ public class ResolveEngine {
             }
 
             // 处理完成之后，生成finalName-JDChain-Contract.jar
-            return compileCustomJar();
+            return compileCustomJar(defaultJarFile);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new MojoFailureException(e.getMessage());
         }
     }
 
-    private File compileCustomJar() throws IOException {
+    private String class2Package(String dotClassName) {
 
-        String fileParentPath = jarFile.getParentFile().getPath();
+        return dotClassName.substring(0, dotClassName.lastIndexOf("."));
+    }
 
-        String jarFileName = jarFile.getName();
+    private File compileCustomJar(File defaultJarFile) throws IOException {
+
+        String fileParentPath = defaultJarFile.getParentFile().getPath();
+
+        String jarFileName = defaultJarFile.getName();
 
         String fileName = jarFileName.substring(0, jarFileName.lastIndexOf("."));
 
@@ -80,13 +113,13 @@ public class ResolveEngine {
         String dstJarPath = fileParentPath + File.separator +
                 fileName + "-temp-" + System.currentTimeMillis() + ".jar";
 
-        File srcJar = jarFile, dstJar = new File(dstJarPath);
+        File srcJar = defaultJarFile, dstJar = new File(dstJarPath);
 
-        LOGGER.debug(String.format("Jar from [%s] to [%s] Copying", jarFile.getPath(), dstJarPath));
+        LOGGER.debug(String.format("Jar from [%s] to [%s] Copying", defaultJarFile.getPath(), dstJarPath));
         // 首先进行Copy处理
         copy(srcJar, dstJar);
 
-        LOGGER.debug(String.format("Jar from [%s] to [%s] Copied", jarFile.getPath(), dstJarPath));
+        LOGGER.debug(String.format("Jar from [%s] to [%s] Copied", defaultJarFile.getPath(), dstJarPath));
 
         byte[] txtBytes = contractMF(FileUtils.readFileToByteArray(dstJar)).getBytes(StandardCharsets.UTF_8);
 
@@ -128,6 +161,9 @@ public class ResolveEngine {
                 }
             }
         }
+        // Jar文件使用完成后需要关闭，否则可能会产生无法删除的问题
+        jarFile.close();
+
         return allClass;
     }
 }
