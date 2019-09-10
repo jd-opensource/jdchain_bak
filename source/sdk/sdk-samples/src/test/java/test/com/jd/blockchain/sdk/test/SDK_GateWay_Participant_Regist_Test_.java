@@ -72,9 +72,9 @@ public class SDK_GateWay_Participant_Regist_Test_ {
         //existed signer
         AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
 
-        PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
+        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
 
-        PubKey pubKey = KeyGenCommand.decodePubKey(PUB);
+        PubKey pubKey = KeyGenUtils.decodePubKey(PUB);
 
         System.out.println("Address = "+AddressEncoding.generateAddress(pubKey));
 
@@ -82,7 +82,7 @@ public class SDK_GateWay_Participant_Regist_Test_ {
 
         NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
 
-        ParticipantInfo participantInfo = new ParticipantInfoData("add","Peer4", user.getPubKey(), networkAddress);
+        ParticipantInfo participantInfo = new ParticipantInfoData("Peer4", user.getPubKey(), networkAddress);
 
         // 注册参与方
         txTemp.participants().register(participantInfo);

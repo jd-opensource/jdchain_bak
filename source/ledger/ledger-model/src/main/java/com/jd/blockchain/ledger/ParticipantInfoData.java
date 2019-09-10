@@ -18,22 +18,12 @@ public class ParticipantInfoData implements ParticipantInfo {
 
     private NetworkAddress networkAddress;
 
-    private String flag;//代表注册参与方或者删除参与方
+//    private String flag;//代表注册参与方或者删除参与方
 
-    public ParticipantInfoData(String flag, String name, PubKey pubKey, NetworkAddress networkAddress) {
-        this.flag = flag;
+    public ParticipantInfoData(String name, PubKey pubKey, NetworkAddress networkAddress) {
         this.name = name;
         this.pubKey = pubKey;
         this.networkAddress = networkAddress;
-    }
-
-    @Override
-    public String getFlag() {
-        return flag;
-    }
-
-    public void setFlag(String flag) {
-        this.flag = flag;
     }
 
     @Override

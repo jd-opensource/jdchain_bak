@@ -18,12 +18,12 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 public interface ParticipantInfo {
 
     /**
-     * regist or unregist；
+     * regist or unregist, temporarily not available to users
      *
      * @return
      */
-    @DataField(order = 0, primitiveType = PrimitiveType.TEXT)
-    String getFlag();
+//    @DataField(order = 0, primitiveType = PrimitiveType.TEXT)
+//    String getFlag();
 
     /**
      * 参与者名称；

@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core.impl.handles;
+package com.jd.blockchain.ledger.core.handles;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
@@ -6,66 +6,51 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
-import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.utils.Bytes;
 
-public class ParticipantRegisterOperationHandle implements OperationHandle {
+
+public class ParticipantRegisterOperationHandle extends AbstractLedgerOperationHandle<ParticipantRegisterOperation> {
+    public ParticipantRegisterOperationHandle() {
+        super(ParticipantRegisterOperation.class);
+    }
+
     @Override
-    public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-                              LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+    protected void doProcess(ParticipantRegisterOperation op, LedgerDataset newBlockDataset,
+                             TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
+                             OperationHandleContext handleContext, LedgerService ledgerService) {
+
+        // 权限校验；
+        SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
+        securityPolicy.checkEndpointPermission(LedgerPermission.REGISTER_PARTICIPANT, MultiIDsPolicy.AT_LEAST_ONE);
 
         ParticipantRegisterOperation participantRegOp = (ParticipantRegisterOperation) op;
 
-        LedgerAdminAccount adminAccount = dataset.getAdminAccount();
+        LedgerAdminDataset adminAccountDataSet = newBlockDataset.getAdminDataset();
 
         ParticipantInfo participantInfo = participantRegOp.getParticipantInfo();
 
-//        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccount.getSetting().getConsensusProvider());
-
-        ParticipantNode participantNode = new PartNode((int)(adminAccount.getParticipantCount()), participantInfo.getName(), participantInfo.getPubKey(), ParticipantNodeState.REGISTED);
-
-//        LedgerAdminAccount.LedgerMetadataImpl metadata = (LedgerAdminAccount.LedgerMetadataImpl) adminAccount.getMetadata();
-
+        ParticipantNode participantNode = new PartNode((int)(adminAccountDataSet.getParticipantCount()), participantInfo.getName(), participantInfo.getPubKey(), ParticipantNodeState.REGISTED);
 
         PubKey pubKey = participantNode.getPubKey();
 
         BlockchainIdentityData identityData = new BlockchainIdentityData(pubKey);
 
-        //update consensus setting
-//        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(metadata.getSetting().getConsensusSetting(), participantInfo);
-
-//        LedgerSetting ledgerSetting = new LedgerConfiguration(adminAccount.getSetting().getConsensusProvider(),
-//                newConsensusSettings, metadata.getSetting().getCryptoSetting());
-
-//        metadata.setSetting(ledgerSetting);
-//        metadata.setViewId(metadata.getViewId() + 1);
-
-        
-        
 //        //reg participant as user
 //        dataset.getUserAccountSet().register(identityData.getAddress(), pubKey);
 
         //add new participant as consensus node
-        adminAccount.addParticipant(participantNode);
-        
-     // Build UserRegisterOperation;
+        adminAccountDataSet.addParticipant(participantNode);
+
+        // Build UserRegisterOperation;
         UserRegisterOperation userRegOp = null;//
         handleContext.handle(userRegOp);
-        
-
-        return null;
-    }
-
-    @Override
-    public boolean support(Class<?> operationType) {
-        return ParticipantRegisterOperation.class.isAssignableFrom(operationType);
     }
 
     private static class PartNode implements ParticipantNode {
 
         private int id;
 
-        private String address;
+        private Bytes address;
 
         private String name;
 
@@ -77,7 +62,7 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
             this.id = id;
             this.name = name;
             this.pubKey = pubKey;
-            this.address = AddressEncoding.generateAddress(pubKey).toBase58();
+            this.address = AddressEncoding.generateAddress(pubKey);
             this.participantNodeState = participantNodeState;
         }
 
@@ -87,7 +72,7 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
         }
 
         @Override
-        public String getAddress() {
+        public Bytes getAddress() {
             return address;
         }
 
@@ -106,5 +91,6 @@ public class ParticipantRegisterOperationHandle implements OperationHandle {
             return participantNodeState;
         }
     }
+
 
 }

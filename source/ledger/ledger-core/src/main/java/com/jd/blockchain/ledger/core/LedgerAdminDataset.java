@@ -268,6 +268,8 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminDataQuery, 
 	 * 
 	 * @return
 	 */
+
+	@Override
 	public LedgerSettings getSettings() {
 		return settings;
 	}
@@ -307,6 +309,16 @@ public class LedgerAdminDataset implements Transactional, LedgerAdminDataQuery, 
 	 */
 	public void addParticipant(ParticipantNode participant) {
 		participants.addConsensusParticipant(participant);
+	}
+
+
+	/**
+	 * 更新参与方的状态参数；
+	 *
+	 * @param participant
+	 */
+	public void updateParticipant(ParticipantNode participant) {
+		participants.updateConsensusParticipant(participant);
 	}
 
 	@Override

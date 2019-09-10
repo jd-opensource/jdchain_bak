@@ -175,7 +175,7 @@ public class IntegrationBase {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		ParticipantInfoData participantInfoData = new ParticipantInfoData("add", "peer4", participant.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
+		ParticipantInfoData participantInfoData = new ParticipantInfoData("peer4", participant.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
 
 		txTpl.participants().register(participantInfoData);
 
@@ -201,7 +201,7 @@ public class IntegrationBase {
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
-		ParticipantInfoData participantInfoData = new ParticipantInfoData("add", "peer4", participantKeyPair.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
+		ParticipantInfoData participantInfoData = new ParticipantInfoData("peer4", participantKeyPair.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
 
 		ParticipantStateUpdateInfo stateUpdateInfo = new ParticipantStateUpdateInfoData(participantKeyPair.getPubKey(), ParticipantNodeState.CONSENSUSED, participantInfoData.getNetworkAddress());
 

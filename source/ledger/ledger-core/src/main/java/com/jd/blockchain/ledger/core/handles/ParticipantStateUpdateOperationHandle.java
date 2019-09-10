@@ -1,4 +1,4 @@
-package com.jd.blockchain.ledger.core.impl.handles;
+package com.jd.blockchain.ledger.core.handles;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
@@ -6,28 +6,30 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
-import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
 import com.jd.blockchain.utils.Bytes;
 
-public class ParticipantStateUpdateOperationHandle implements OperationHandle {
 
-    @Override
-    public boolean support(Class<?> operationType) {
-        return ParticipantStateUpdateOperation.class.isAssignableFrom(operationType);
+public class ParticipantStateUpdateOperationHandle extends AbstractLedgerOperationHandle<ParticipantStateUpdateOperation> {
+    public ParticipantStateUpdateOperationHandle() {
+        super(ParticipantStateUpdateOperation.class);
     }
 
     @Override
-    public BytesValue process(Operation op, LedgerDataSet newBlockDataset, TransactionRequestContext requestContext, LedgerDataSet previousBlockDataset, OperationHandleContext handleContext, LedgerService ledgerService) {
+    protected void doProcess(ParticipantStateUpdateOperation op, LedgerDataset newBlockDataset,
+                             TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
+                             OperationHandleContext handleContext, LedgerService ledgerService) {
+
+        // 权限校验；
+        SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
+        securityPolicy.checkEndpointPermission(LedgerPermission.REGISTER_PARTICIPANT, MultiIDsPolicy.AT_LEAST_ONE);
 
         ParticipantStateUpdateOperation stateUpdateOperation = (ParticipantStateUpdateOperation) op;
 
-        LedgerAdminAccount adminAccount = newBlockDataset.getAdminAccount();
+        LedgerAdminDataset adminAccountDataSet = newBlockDataset.getAdminDataset();
 
-        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccount.getSetting().getConsensusProvider());
+        ConsensusProvider provider = ConsensusProviders.getProvider(adminAccountDataSet.getSettings().getConsensusProvider());
 
-        LedgerAdminAccount.LedgerMetadataImpl metadata = (LedgerAdminAccount.LedgerMetadataImpl) adminAccount.getMetadata();
-
-        ParticipantNode[] participants = adminAccount.getParticipants();
+        ParticipantNode[] participants = adminAccountDataSet.getParticipants();
 
         ParticipantNode participantNode = null;
 
@@ -39,25 +41,24 @@ public class ParticipantStateUpdateOperationHandle implements OperationHandle {
         }
 
         //update consensus setting
-        ParticipantInfo participantInfo = new ParticipantInfoData("", participantNode.getName(), participantNode.getPubKey(), stateUpdateOperation.getStateUpdateInfo().getNetworkAddress());
+        ParticipantInfo participantInfo = new ParticipantInfoData(participantNode.getName(), participantNode.getPubKey(), stateUpdateOperation.getStateUpdateInfo().getNetworkAddress());
 
-        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(metadata.getSetting().getConsensusSetting(), participantInfo);
+        Bytes newConsensusSettings =  provider.getSettingsFactory().getConsensusSettingsBuilder().updateSettings(adminAccountDataSet.getSettings().getConsensusSetting(), participantInfo);
 
-        LedgerSetting ledgerSetting = new LedgerConfiguration(adminAccount.getSetting().getConsensusProvider(),
-                newConsensusSettings, metadata.getSetting().getCryptoSetting());
+        LedgerSettings ledgerSetting = new LedgerConfiguration(adminAccountDataSet.getSettings().getConsensusProvider(),
+                newConsensusSettings, adminAccountDataSet.getPreviousSetting().getCryptoSetting());
 
-        metadata.setSetting(ledgerSetting);
+        adminAccountDataSet.setLedgerSetting(ledgerSetting);
 
-        adminAccount.updateParticipant(participantNode);
+        adminAccountDataSet.updateParticipant(participantNode);
 
-        return null;
     }
 
     private static class PartNode implements ParticipantNode {
 
         private int id;
 
-        private String address;
+        private Bytes address;
 
         private String name;
 
@@ -69,7 +70,7 @@ public class ParticipantStateUpdateOperationHandle implements OperationHandle {
             this.id = id;
             this.name = name;
             this.pubKey = pubKey;
-            this.address = AddressEncoding.generateAddress(pubKey).toBase58();
+            this.address = AddressEncoding.generateAddress(pubKey);
             this.participantNodeState = participantNodeState;
         }
 
@@ -79,7 +80,7 @@ public class ParticipantStateUpdateOperationHandle implements OperationHandle {
         }
 
         @Override
-        public String getAddress() {
+        public Bytes getAddress() {
             return address;
         }
 

@@ -71,9 +71,9 @@ public class SDK_GateWay_Participant_State_Update_Test_ {
         //existed signer
         AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
 
-        PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
+        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
 
-        PubKey pubKey = KeyGenCommand.decodePubKey(PUB);
+        PubKey pubKey = KeyGenUtils.decodePubKey(PUB);
 
         System.out.println("Address = "+AddressEncoding.generateAddress(pubKey));
 

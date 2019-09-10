@@ -10,27 +10,13 @@ package com.jd.blockchain.sdk.converters;
 
 import java.lang.reflect.Field;
 
+import com.jd.blockchain.ledger.*;
 import org.apache.commons.codec.binary.Base64;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainIdentityData;
-import com.jd.blockchain.ledger.BytesData;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesValueEncoding;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.DataType;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.transaction.ContractCodeDeployOpTemplate;
 import com.jd.blockchain.transaction.ContractEventSendOpTemplate;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
@@ -214,8 +200,7 @@ public class ClientResolveUtil {
 				JSONObject pubKeyObj = currConsensusParticipant.getJSONObject("pubKey");
 				String pubKeyBase58 = pubKeyObj.getString("value");
 				// 生成ParticipantNode对象
-                ParticipantCertData participantCertData = new ParticipantCertData(id, addressBase58, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
-						new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
+                ParticipantCertData participantCertData = new ParticipantCertData(id, address, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
 				participantNodes[i] = participantCertData;
 			}
 			ledgerInitSettingData.setConsensusParticipants(participantNodes);
@@ -309,7 +294,7 @@ public class ClientResolveUtil {
 			this.pubKey = participantNode.getPubKey();
 		}
 
-        public ParticipantCertData(int id, String address, String name, PubKey pubKey) {
+        public ParticipantCertData(int id, Bytes address, String name, PubKey pubKey) {
 			this.id = id;
 			this.address = address;
 			this.name = name;
@@ -332,12 +317,9 @@ public class ClientResolveUtil {
 			return pubKey;
 		}
 
+		@Override
 		public int getId() {
 			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
 		}
 
         @Override

@@ -147,7 +147,7 @@ public class IntegrationTest4MQ {
 			integrationBase.testSDK_Contract(adminKey, ledgerHash, blockchainService,ledgerRepository);
 		}
 
-		long participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+		long participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
 
 		long userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
 
@@ -158,30 +158,30 @@ public class IntegrationTest4MQ {
 			participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
 		}
 
-		participantCount = ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+		participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
 
 		userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
 
 		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
 
-		MsgQueueConsensusSettings consensusSettings = (MsgQueueConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminAccount().getSetting().getConsensusSetting().toBytes());
+		MsgQueueConsensusSettings consensusSettings = (MsgQueueConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo().getSettings().getConsensusSetting().toBytes());
 
 		System.out.printf("update participant state before ,old consensus env node num = %d\r\n", consensusSettings.getNodes().length);
 
 		for (int i = 0; i < participantCount; i++) {
-			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
 		}
 
 		if (isParticipantStateUpdate) {
 			IntegrationBase.testSDK_UpdateParticipantState(adminKey, new BlockchainKeypair(participantResponse.getKeyPair().getPubKey(), participantResponse.getKeyPair().getPrivKey()), ledgerHash, blockchainService);
 		}
 
-		BftsmartConsensusSettings consensusSettingsNew = (BftsmartConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getSetting().getConsensusSetting().toBytes());
+		BftsmartConsensusSettings consensusSettingsNew = (BftsmartConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getSettings().getConsensusSetting().toBytes());
 
 		System.out.printf("update participant state after ,new consensus env node num = %d\r\n", consensusSettingsNew.getNodes().length);
 
 		for (int i = 0; i < participantCount; i++) {
-			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminAccount(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
 		}
 
 		IntegrationBase.testConsistencyAmongNodes(ledgers);
