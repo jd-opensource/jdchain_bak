@@ -2,13 +2,14 @@ package com.jd.blockchain.transaction;
 
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class ConsensusParticipantData implements ParticipantNode {
 	
 		private int id;
 		
-		private String address;
+		private Bytes address;
 
 		private String name;
 
@@ -48,11 +49,11 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.pubKey = pubKey;
 		}
 
-		public String getAddress() {
+		public Bytes getAddress() {
 			return address;
 		}
 
-		public void setAddress(String address) {
+		public void setAddress(Bytes address) {
 			this.address = address;
 		}
 

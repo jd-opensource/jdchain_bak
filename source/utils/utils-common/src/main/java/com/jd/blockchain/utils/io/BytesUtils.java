@@ -46,6 +46,9 @@ public class BytesUtils {
 		if (bytes1 == bytes2) {
 			return true;
 		}
+		if (bytes1 == null || bytes2 == null) {
+			return false;
+		}
 		if (bytes1.length != bytes2.length) {
 			return false;
 		}

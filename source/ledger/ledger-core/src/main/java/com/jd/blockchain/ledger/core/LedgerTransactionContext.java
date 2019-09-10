@@ -13,18 +13,25 @@ import java.util.List;
 public interface LedgerTransactionContext {
 
 	/**
-	 * 账本数据；
+	 * 账本数据集合；
 	 * 
 	 * @return
 	 */
-	LedgerDataSet getDataSet();
+	LedgerDataset getDataset();
+
+	/**
+	 * 事务集合；
+	 * 
+	 * @return
+	 */
+	TransactionSet getTransactionSet();
 
 	/**
 	 * 交易请求；
 	 * 
 	 * @return
 	 */
-	TransactionRequest getRequestTX();
+	TransactionRequest getTransactionRequest();
 
 	/**
 	 * 提交对账本数据的修改，以指定的交易状态提交交易；

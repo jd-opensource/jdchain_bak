@@ -12,6 +12,7 @@ import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -48,6 +49,10 @@ public class AccountSet implements Transactional, MerkleProvable {
 	public boolean isReadonly() {
 		return merkleDataset.isReadonly();
 	}
+	
+	void setReadonly() {
+		merkleDataset.setReadonly();
+	}
 
 	public AccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
@@ -64,10 +69,6 @@ public class AccountSet implements Transactional, MerkleProvable {
 				this.baseVerStorage, readonly);
 		this.accessPolicy = accessPolicy;
 	}
-
-	// public HashDigest getAccountRootHash() {
-	// return merkleDataset.getRootHash();
-	// }
 
 	@Override
 	public HashDigest getRootHash() {
@@ -333,9 +334,9 @@ public class AccountSet implements Transactional, MerkleProvable {
 		if (!updated) {
 			return;
 		}
-		String[] addresses = new String[latestAccountsCache.size()];
+		Bytes[] addresses = new Bytes[latestAccountsCache.size()];
 		latestAccountsCache.keySet().toArray(addresses);
-		for (String address : addresses) {
+		for (Bytes address : addresses) {
 			VersioningAccount acc = latestAccountsCache.remove(address);
 			// cancel;
 			if (acc.isUpdated()) {

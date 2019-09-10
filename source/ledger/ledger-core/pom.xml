@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>ledger</artifactId>
-		<version>1.0.0.RELEASE</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>ledger-core</artifactId>
 
@@ -68,7 +68,7 @@
 			<scope>test</scope>
 		</dependency>
 
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -83,42 +83,32 @@
 		</plugins>
 	</build>
 
-	<!--<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<excludes>
-						<exclude>**/TransactionBatchProcessorTest.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>-->
+	<!--<build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+		<artifactId>maven-surefire-plugin</artifactId> <version>2.5</version> <configuration> 
+		<excludes> <exclude>**/TransactionBatchProcessorTest.java</exclude> </excludes> 
+		</configuration> </plugin> </plugins> </build> -->
 
-	<!--<build>-->
-		<!--<plugins>-->
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-compiler-plugin</artifactId>-->
-				<!--<version>3.1</version>-->
-				<!--<configuration>-->
-					<!--<source>1.8</source>-->
-					<!--<target>1.8</target>-->
-					<!--<encoding>UTF-8</encoding>-->
-					<!--<compilerArgs>-->
-						<!--&lt;!&ndash;<arg>-verbose</arg>&ndash;&gt;-->
-						<!--&lt;!&ndash;<arg>-Xlint:unchecked</arg>&ndash;&gt;-->
-						<!--&lt;!&ndash;<arg>-Xlint:deprecation</arg>&ndash;&gt;-->
-						<!--&lt;!&ndash;<arg>-bootclasspath</arg>&ndash;&gt;-->
-						<!--&lt;!&ndash;<arg>${env.JAVA_HOME}/jre/lib/rt.jar</arg>&ndash;&gt;-->
-						<!--<arg>-extdirs</arg>-->
-						<!--<arg>${project.basedir}/../contract/contract-libs;$JAVA_HOME/jre/lib/ext</arg>-->
-					<!--</compilerArgs>-->
-				<!--</configuration>-->
-			<!--</plugin>-->
-		<!--</plugins>-->
-	<!--</build>-->
+	<!--<build> -->
+	<!--<plugins> -->
+	<!--<plugin> -->
+	<!--<groupId>org.apache.maven.plugins</groupId> -->
+	<!--<artifactId>maven-compiler-plugin</artifactId> -->
+	<!--<version>3.1</version> -->
+	<!--<configuration> -->
+	<!--<source>1.8</source> -->
+	<!--<target>1.8</target> -->
+	<!--<encoding>UTF-8</encoding> -->
+	<!--<compilerArgs> -->
+	<!--&lt;!&ndash;<arg>-verbose</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-Xlint:unchecked</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-Xlint:deprecation</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-bootclasspath</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>${env.JAVA_HOME}/jre/lib/rt.jar</arg>&ndash;&gt; -->
+	<!--<arg>-extdirs</arg> -->
+	<!--<arg>${project.basedir}/../contract/contract-libs;$JAVA_HOME/jre/lib/ext</arg> -->
+	<!--</compilerArgs> -->
+	<!--</configuration> -->
+	<!--</plugin> -->
+	<!--</plugins> -->
+	<!--</build> -->
 </project>

@@ -8,10 +8,10 @@ import com.jd.blockchain.contract.engine.ContractCode;
 import com.jd.blockchain.contract.jvm.AbstractContractCode;
 import com.jd.blockchain.contract.jvm.ContractDefinition;
 import com.jd.blockchain.ledger.core.ContractAccount;
-import com.jd.blockchain.ledger.core.impl.handles.AbstractContractEventHandle;
+import com.jd.blockchain.ledger.core.handles.AbtractContractEventSendOperationHandle;
 import com.jd.blockchain.utils.Bytes;
 
-public class ContractInvokingHandle extends AbstractContractEventHandle {
+public class ContractInvokingHandle extends AbtractContractEventSendOperationHandle {
 
 	private Map<Bytes, ContractCode> contractInstances = new ConcurrentHashMap<Bytes, ContractCode>();
 

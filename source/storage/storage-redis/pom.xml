@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>storage</artifactId>
-		<version>1.0.0.RELEASE</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>storage-redis</artifactId>
 
@@ -36,10 +36,6 @@
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 
 	</dependencies>

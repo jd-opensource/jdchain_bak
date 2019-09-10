@@ -5,6 +5,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -14,7 +15,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class UserAccountSet implements Transactional, MerkleProvable {
+public class UserAccountSet implements Transactional, MerkleProvable, UserAccountQuery {
 
 	private AccountSet accountSet;
 
@@ -30,6 +31,7 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 				accessPolicy);
 	}
 
+	@Override
 	public AccountHeader[] getAccounts(int fromIndex, int count) {
 		return accountSet.getAccounts(fromIndex,count);
 	}
@@ -39,12 +41,17 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 	 * 
 	 * @return
 	 */
+	@Override
 	public long getTotalCount() {
 		return accountSet.getTotalCount();
 	}
 
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
+	}
+	
+	void setReadonly() {
+		accountSet.setReadonly();
 	}
 
 	@Override
@@ -57,19 +64,23 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 		return accountSet.getProof(key);
 	}
 	
+	@Override
 	public UserAccount getUser(String address) {
 		return getUser(Bytes.fromBase58(address));
 	}
 
+	@Override
 	public UserAccount getUser(Bytes address) {
 		BaseAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
+	@Override
 	public boolean contains(Bytes address) {
 		return accountSet.contains(address);
 	}
 
+	@Override
 	public UserAccount getUser(Bytes address, long version) {
 		BaseAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);

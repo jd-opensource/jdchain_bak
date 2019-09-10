@@ -17,8 +17,8 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
-import com.jd.blockchain.ledger.core.LedgerInitPermissionData;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerInitProposalData;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
@@ -38,10 +38,10 @@ public class LedgerInitMessageConverter implements HttpMessageConverter<Object> 
 	private static final Map<Class<?>, Class<?>> SUPPORTED_CONTRACT_TYPES = new HashMap<>();
 
 	static {
-		DataContractRegistry.register(LedgerInitPermission.class);
+		DataContractRegistry.register(LedgerInitProposal.class);
 		DataContractRegistry.register(LedgerInitDecision.class);
 		
-		SUPPORTED_CONTRACT_TYPES.put(LedgerInitPermission.class, LedgerInitPermissionData.class);
+		SUPPORTED_CONTRACT_TYPES.put(LedgerInitProposal.class, LedgerInitProposalData.class);
 		SUPPORTED_CONTRACT_TYPES.put(LedgerInitDecision.class, LedgerInitDecisionData.class);
 
 		// SUPPORTED_CONTRACT_TYPES.add(LedgerInitResponse.class);

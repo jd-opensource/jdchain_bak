@@ -3,6 +3,7 @@ package com.jd.blockchain.ledger.core;
 import java.io.Closeable;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
 
 public interface LedgerRepository extends Closeable {
@@ -51,23 +52,23 @@ public interface LedgerRepository extends Closeable {
 	 */
 	LedgerBlock getBlock(long height);
 
-	LedgerAdministration getAdminInfo();
+	LedgerAdminInfo getAdminInfo();
+	
+	LedgerAdminInfo getAdminInfo(LedgerBlock block);
 
 	LedgerBlock getBlock(HashDigest hash);
 
-	LedgerDataSet getDataSet(LedgerBlock block);
+	LedgerDataQuery getDataSet(LedgerBlock block);
 
 	TransactionSet getTransactionSet(LedgerBlock block);
 
-	LedgerAdminAccount getAdminAccount(LedgerBlock block);
+	UserAccountQuery getUserAccountSet(LedgerBlock block);
 
-	UserAccountSet getUserAccountSet(LedgerBlock block);
+	DataAccountQuery getDataAccountSet(LedgerBlock block);
 
-	DataAccountSet getDataAccountSet(LedgerBlock block);
+	ContractAccountQuery getContractAccountSet(LedgerBlock block);
 
-	ContractAccountSet getContractAccountSet(LedgerBlock block);
-
-	default LedgerDataSet getDataSet() {
+	default LedgerDataQuery getDataSet() {
 		return getDataSet(getLatestBlock());
 	}
 
@@ -75,19 +76,15 @@ public interface LedgerRepository extends Closeable {
 		return getTransactionSet(getLatestBlock());
 	}
 
-	default LedgerAdminAccount getAdminAccount() {
-		return getAdminAccount(getLatestBlock());
-	}
-
-	default UserAccountSet getUserAccountSet() {
+	default UserAccountQuery getUserAccountSet() {
 		return getUserAccountSet(getLatestBlock());
 	}
 
-	default DataAccountSet getDataAccountSet() {
+	default DataAccountQuery getDataAccountSet() {
 		return getDataAccountSet(getLatestBlock());
 	}
 
-	default ContractAccountSet getContractAccountSet() {
+	default ContractAccountQuery getContractAccountSet() {
 		return getContractAccountSet(getLatestBlock());
 	}
 

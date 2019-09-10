@@ -1,10 +1,10 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerSetting;
+import com.jd.blockchain.ledger.LedgerSettings;
 import com.jd.blockchain.utils.Bytes;
 
-public class LedgerConfiguration implements LedgerSetting {
+public class LedgerConfiguration implements LedgerSettings {
 
 	private String consensusProvider;
 
@@ -16,7 +16,7 @@ public class LedgerConfiguration implements LedgerSetting {
 		this.cryptoSetting = new CryptoConfig();
 	}
 
-	public LedgerConfiguration(LedgerSetting origSetting) {
+	public LedgerConfiguration(LedgerSettings origSetting) {
 		if (origSetting != null) {
 			this.consensusProvider = origSetting.getConsensusProvider();
 			this.consensusSetting = origSetting.getConsensusSetting();

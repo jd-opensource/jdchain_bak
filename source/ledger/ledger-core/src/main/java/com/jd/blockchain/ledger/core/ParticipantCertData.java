@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.utils.Bytes;
 
 /**
  * 参与方证书数据对象；
@@ -12,7 +13,7 @@ import com.jd.blockchain.ledger.ParticipantNode;
 public class ParticipantCertData implements ParticipantNode {
 	
 	private int id;
-	private String address;
+	private Bytes address;
 	private String name;
 	private PubKey pubKey;
 
@@ -26,14 +27,14 @@ public class ParticipantCertData implements ParticipantNode {
 		this.pubKey = participantNode.getPubKey();
 	}
 
-	public ParticipantCertData(String address, String name, PubKey pubKey) {
+	public ParticipantCertData(Bytes address, String name, PubKey pubKey) {
 		this.address = address;
 		this.name = name;
 		this.pubKey = pubKey;
 	}
 
 	@Override
-	public String getAddress() {
+	public Bytes getAddress() {
 		return address;
 	}
 

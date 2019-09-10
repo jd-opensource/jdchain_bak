@@ -8,15 +8,10 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.6.RELEASE</version>
 	</parent>
-	<!--<parent>-->
-		<!--<groupId>org.sonatype.oss</groupId>-->
-		<!--<artifactId>oss-parent</artifactId>-->
-		<!--<version>7</version>-->
-	<!--</parent>-->
 
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
-	<version>1.0.0.RELEASE</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>jdchain</description>
 
@@ -32,6 +27,7 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
+		<module>manager</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
@@ -42,9 +38,8 @@
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
 		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
 		<explorer.version>0.7.0.RELEASE</explorer.version>
-		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
-		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
-			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
+		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
+		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
 		<aspectj.version>1.8.8</aspectj.version>
@@ -81,6 +76,22 @@
 		<disruptor.version>3.4.2</disruptor.version>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -103,6 +114,18 @@
 				<version>${explorer.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>ump-explorer</artifactId>
+				<version>${ump-explorer.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+
 			<!-- The test dependency -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -113,7 +136,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<!-- The thirdpart dependency -->
@@ -158,7 +180,7 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.2.32</version>
+				<version>1.2.58</version>
 			</dependency>
 
 			<dependency>
@@ -433,22 +455,22 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!--&lt;!&ndash; 生成sources源码包的插件 &ndash;&gt;-->
-				<!--<plugin>-->
-					<!--<artifactId>maven-source-plugin</artifactId>-->
-					<!--<version>2.4</version>-->
-					<!--<configuration>-->
-						<!--<attach>true</attach>-->
-					<!--</configuration>-->
-					<!--<executions>-->
-						<!--<execution>-->
-							<!--<phase>package</phase>-->
-							<!--<goals>-->
-								<!--<goal>jar-no-fork</goal>-->
-							<!--</goals>-->
-						<!--</execution>-->
-					<!--</executions>-->
-				<!--</plugin>-->
+				<!--&lt;!&ndash; 生成sources源码包的插件 &ndash;&gt; -->
+				<!--<plugin> -->
+				<!--<artifactId>maven-source-plugin</artifactId> -->
+				<!--<version>2.4</version> -->
+				<!--<configuration> -->
+				<!--<attach>true</attach> -->
+				<!--</configuration> -->
+				<!--<executions> -->
+				<!--<execution> -->
+				<!--<phase>package</phase> -->
+				<!--<goals> -->
+				<!--<goal>jar-no-fork</goal> -->
+				<!--</goals> -->
+				<!--</execution> -->
+				<!--</executions> -->
+				<!--</plugin> -->
 			</plugins>
 		</pluginManagement>
 

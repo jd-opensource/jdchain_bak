@@ -18,30 +18,31 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.HttpInitConsensServiceFactory;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
-import com.jd.blockchain.transaction.TxRequestBuilder;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.BytesUtils;
@@ -78,9 +79,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		// 加载共识配置；
 		Properties props = loadConsensusSetting(consensusConfig.getConfigPath());
 		ConsensusProvider csProvider = LedgerInitConsensusConfig.getConsensusProvider(consensusConfig.getProvider());
-		ConsensusSettings csProps = csProvider.getSettingsFactory()
-				.getConsensusSettingsBuilder()
-				.createSettings(props, Utils.loadParticipantNodes());
+		ConsensusSettings csProps = csProvider.getSettingsFactory().getConsensusSettingsBuilder().createSettings(props,
+				Utils.loadParticipantNodes());
 
 		// 启动服务器；
 		NetworkAddress initAddr0 = initSetting.getConsensusParticipant(0).getInitializerAddress();
@@ -104,31 +104,33 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		node2.setPrompter(prompter);
 		node3.setPrompter(prompter);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 
 		// 测试生成“账本初始化许可”；
-		LedgerInitPermission permission0 = testPreparePermisssion(node0, privkey0, initSetting, csProps);
-		LedgerInitPermission permission1 = testPreparePermisssion(node1, privkey1, initSetting, csProps);
-		LedgerInitPermission permission2 = testPreparePermisssion(node2, privkey2, initSetting, csProps);
-		LedgerInitPermission permission3 = testPreparePermisssion(node3, privkey3, initSetting, csProps);
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(initSetting);
+		initConfig.setConsensusSettings(csProvider, csProps);
+		LedgerInitProposal permission0 = testPreparePermisssion(node0, privkey0, initConfig);
+		LedgerInitProposal permission1 = testPreparePermisssion(node1, privkey1, initConfig);
+		LedgerInitProposal permission2 = testPreparePermisssion(node2, privkey2, initConfig);
+		LedgerInitProposal permission3 = testPreparePermisssion(node3, privkey3, initConfig);
 
 		TransactionContent initTxContent0 = node0.getInitTxContent();
 		TransactionContent initTxContent1 = node1.getInitTxContent();
 		TransactionContent initTxContent2 = node2.getInitTxContent();
 		TransactionContent initTxContent3 = node3.getInitTxContent();
 
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent0, permission0.getTransactionSignature(), pubKey0));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent1, permission1.getTransactionSignature(), pubKey1));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent2, permission2.getTransactionSignature(), pubKey2));
-		assertTrue(TxRequestBuilder.verifySignature(initTxContent3, permission3.getTransactionSignature(), pubKey3));
+		assertTrue(SignatureUtils.verifySignature(initTxContent0, permission0.getTransactionSignature(), pubKey0));
+		assertTrue(SignatureUtils.verifySignature(initTxContent1, permission1.getTransactionSignature(), pubKey1));
+		assertTrue(SignatureUtils.verifySignature(initTxContent2, permission2.getTransactionSignature(), pubKey2));
+		assertTrue(SignatureUtils.verifySignature(initTxContent3, permission3.getTransactionSignature(), pubKey3));
 
 		assertNotNull(initTxContent0.getHash());
 		if (!initTxContent0.getHash().equals(initTxContent1.getHash())) {
@@ -239,9 +241,9 @@ public class LedgerInitializeWeb4SingleStepsTest {
 		testRequestDecision(node3, node2, initCsService2);
 	}
 
-	private LedgerInitPermission testPreparePermisssion(NodeWebContext node, PrivKey privKey,
-			LedgerInitProperties setting, ConsensusSettings csProps) {
-		LedgerInitPermission permission = node.preparePermision(privKey, setting, csProps);
+	private LedgerInitProposal testPreparePermisssion(NodeWebContext node, PrivKey privKey,
+			LedgerInitConfiguration setting) {
+		LedgerInitProposal permission = node.preparePermision(privKey, setting);
 
 		assertEquals(node.getId(), permission.getParticipantId());
 		assertNotNull(permission.getTransactionSignature());
@@ -252,7 +254,7 @@ public class LedgerInitializeWeb4SingleStepsTest {
 	private void testRequestPermission(NodeWebContext fromNode, PrivKey fromPrivkey, NodeWebContext targetNode,
 			LedgerInitConsensusService targetNodeService) {
 		SignatureDigest reqSignature = fromNode.createPermissionRequestSignature(fromNode.getId(), fromPrivkey);
-		LedgerInitPermission targetPermission = targetNodeService.requestPermission(fromNode.getId(), reqSignature);
+		LedgerInitProposal targetPermission = targetNodeService.requestPermission(fromNode.getId(), reqSignature);
 		assertEquals(targetNode.getId(), targetPermission.getParticipantId());
 		assertEquals(targetNode.getLocalPermission().getTransactionSignature(),
 				targetPermission.getTransactionSignature());
@@ -311,7 +313,7 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			return controller.getInitTxContent();
 		}
 
-		public LedgerInitPermission getLocalPermission() {
+		public LedgerInitProposal getLocalPermission() {
 			return controller.getLocalPermission();
 		}
 
@@ -384,9 +386,8 @@ public class LedgerInitializeWeb4SingleStepsTest {
 			return invoker.start();
 		}
 
-		public LedgerInitPermission preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitConfiguration setting) {
+			return controller.prepareLocalPermission(id, privKey, setting);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

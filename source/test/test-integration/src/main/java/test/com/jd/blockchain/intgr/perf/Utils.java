@@ -6,29 +6,40 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
-import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
+import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.CryptoAlgorithm;
+import com.jd.blockchain.crypto.CryptoProvider;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.SignatureDigest;
+import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
+import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.CryptoSetting;
+import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.core.CryptoConfig;
+import com.jd.blockchain.ledger.core.LedgerConfiguration;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.InitConsensusServiceFactory;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.io.FileUtils;
@@ -38,8 +49,7 @@ public class Utils {
 
 	public static final String PASSWORD = "abc";
 
-	public static final String[] PUB_KEYS = {
-			"3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
+	public static final String[] PUB_KEYS = { "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
 			"3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX",
 			"3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x",
 			"3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk" };
@@ -77,7 +87,7 @@ public class Utils {
 	public static ParticipantNode[] loadParticipantNodes() {
 		ParticipantNode[] participantNodes = new ParticipantNode[PUB_KEYS.length];
 		for (int i = 0; i < PUB_KEYS.length; i++) {
-			participantNodes[i] = new PartNode(i, KeyGenCommand.decodePubKey(PUB_KEYS[i]));
+			participantNodes[i] = new PartNode(i, KeyGenUtils.decodePubKey(PUB_KEYS[i]));
 		}
 		return participantNodes;
 	}
@@ -110,8 +120,8 @@ public class Utils {
 				DbConnectionFactory dbConnFactory) {
 			this.dbConnFactory = dbConnFactory;
 			this.initCsServiceFactory = new MultiThreadInterInvokerFactory(serviceRegisterMap);
-			LedgerInitializeWebController initController = new LedgerInitializeWebController(ledgerManager,
-					dbConnFactory, initCsServiceFactory);
+			LedgerInitializeWebController initController = new LedgerInitializeWebController(dbConnFactory,
+					initCsServiceFactory);
 			serviceRegisterMap.put(address, initController);
 			this.initProcess = initController;
 		}
@@ -161,12 +171,16 @@ public class Utils {
 				ConsensusSettings csProps, ConsensusProvider consensusProvider, DBConnectionConfig dbConnConfig,
 				Prompter prompter, CryptoSetting cryptoSetting) {
 
+			LedgerInitConfiguration ledgerInitConfig = LedgerInitConfiguration.create(setting);
+			ledgerInitConfig.getLedgerSettings().setCryptoSetting(cryptoSetting);
+			
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
+
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 
@@ -202,10 +216,10 @@ public class Utils {
 		}
 
 		@Override
-		public LedgerInitPermission requestPermission(int requesterId, SignatureDigest signature) {
-			ThreadInvoker<LedgerInitPermission> invoker = new ThreadInvoker<LedgerInitPermission>() {
+		public LedgerInitProposal requestPermission(int requesterId, SignatureDigest signature) {
+			ThreadInvoker<LedgerInitProposal> invoker = new ThreadInvoker<LedgerInitProposal>() {
 				@Override
-				protected LedgerInitPermission invoke() {
+				protected LedgerInitProposal invoke() {
 					return initCsService.requestPermission(requesterId, signature);
 				}
 			};
@@ -229,7 +243,7 @@ public class Utils {
 
 		private int id;
 
-		private String address;
+		private Bytes address;
 
 		private String name;
 
@@ -243,7 +257,7 @@ public class Utils {
 			this.id = id;
 			this.name = name;
 			this.pubKey = pubKey;
-			this.address = pubKey.toBase58();
+			this.address = AddressEncoding.generateAddress(pubKey);
 		}
 
 		@Override
@@ -252,7 +266,7 @@ public class Utils {
 		}
 
 		@Override
-		public String getAddress() {
+		public Bytes getAddress() {
 			return address;
 		}
 

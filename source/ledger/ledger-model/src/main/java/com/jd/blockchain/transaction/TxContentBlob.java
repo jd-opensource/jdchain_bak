@@ -84,7 +84,7 @@ public class TxContentBlob implements TransactionContent {
 	}
 	
 	@Override
-	public long getTime() {
+	public long getTimestamp() {
 		return time;
 	}
 	

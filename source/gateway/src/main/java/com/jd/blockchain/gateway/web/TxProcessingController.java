@@ -1,6 +1,8 @@
 package com.jd.blockchain.gateway.web;
 
+import com.jd.blockchain.crypto.*;
 import com.jd.blockchain.gateway.service.GatewayInterceptService;
+import com.jd.blockchain.transaction.SignatureUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,9 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -60,11 +59,8 @@ public class TxProcessingController implements TransactionService {
 			throw new IllegalStateException("Not implemented!");
 		} else {
 			// 验证签名；
-			byte[] content = BinaryProtocol.encode(txRequest.getTransactionContent(), TransactionContent.class);
 			for (DigitalSignature sign : partiSigns) {
-				SignatureFunction signFunc = Crypto
-						.getSignatureFunction(sign.getPubKey().getAlgorithm());
-				if (!signFunc.verify(sign.getDigest(), sign.getPubKey(), content)) {
+				if (!SignatureUtils.verifySignature(txRequest.getTransactionContent(), sign.getDigest(), sign.getPubKey())) {
 					throw new BusinessException("The validation of participant signatures fail!");
 				}
 			}

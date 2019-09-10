@@ -81,7 +81,7 @@ public abstract class RuntimeContext {
 			if (jarFile.isFile()) {
 				FileUtils.deleteFile(jarFile);
 			} else {
-				throw new IllegalStateException("Code storage confliction! --" + jarFile.getAbsolutePath());
+				throw new IllegalStateException("Code storage conflict! --" + jarFile.getAbsolutePath());
 			}
 		}
 		FileUtils.writeBytes(jarBytes, jarFile);

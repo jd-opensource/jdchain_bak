@@ -8,17 +8,17 @@
         <!--这个输出控制台的配置-->
         <console name="Console" target="SYSTEM_OUT">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
-            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <!--输出日志的格式-->
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </console>
         <!--文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，适合临时测试用-->
-        <File name="log" fileName="../logs/test.log" append="false">
+        <File name="log" fileName="${sys:gateway.log}/logs/gateway.temp.log" append="false">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </File>
         <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
-        <RollingFile name="GatewayRollingInfo" fileName="../logs/gateway.out.info.log"
-                     filePattern="../logs/$${date:yyyy-MM}/gateway.out.info-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="GatewayRollingInfo" fileName="${sys:gateway.log}/logs/gateway.info.log"
+                     filePattern="${sys:gateway.log}/logs/$${date:yyyy-MM}/gateway.info-%d{yyyy-MM-dd}-%i.log">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
@@ -27,8 +27,8 @@
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
         </RollingFile>
-        <RollingFile name="GatewayRollingWarn" fileName="../logs/gateway.out.warn.log"
-                     filePattern="../logs/$${date:yyyy-MM}/gateway.out.warn-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="GatewayRollingWarn" fileName="${sys:gateway.log}/logs/gateway.warn.log"
+                     filePattern="${sys:gateway.log}/logs/$${date:yyyy-MM}/gateway.out.warn-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
             <Policies>
@@ -38,8 +38,8 @@
             <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
-        <RollingFile name="GatewayRollingError" fileName="../logs/gateway.out.error.log"
-                     filePattern="../logs/$${date:yyyy-MM}/gateway.out.error-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="GatewayRollingError" fileName="${sys:gateway.log}/logs/gateway.error.log"
+                     filePattern="${sys:gateway.log}/logs/$${date:yyyy-MM}/gateway.error-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
             <Policies>
@@ -51,7 +51,7 @@
     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
     <loggers>
         <!--过滤掉spring的一些DEBUG信息-->
-        <logger name="org.springframework" level="INFO"></logger>
+        <logger name="org.springframework" level="INFO"/>
         <root level="all">
             <appender-ref ref="Console"/>
             <appender-ref ref="GatewayRollingInfo"/>

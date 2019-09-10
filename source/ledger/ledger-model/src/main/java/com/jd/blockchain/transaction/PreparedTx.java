@@ -7,13 +7,8 @@ import java.util.Comparator;
 
 import org.springframework.cglib.proxy.UndeclaredThrowableException;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.SignatureDigest;
-import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -68,11 +63,7 @@ public class PreparedTx implements PreparedTransaction {
 
 	@Override
 	public DigitalSignature sign(AsymmetricKeypair keyPair) {
-		SignatureFunction signatureFunction = Crypto.getSignatureFunction(keyPair.getAlgorithm());
-		PrivKey privKey = keyPair.getPrivKey();
-		byte[] content = BinaryProtocol.encode(getTransactionContent(), TransactionContent.class);
-		SignatureDigest signatureDigest = signatureFunction.sign(privKey, content);
-		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
+		DigitalSignature signature = SignatureUtils.sign(getTransactionContent(), keyPair);
 		addSignature(signature);
 		return signature;
 	}

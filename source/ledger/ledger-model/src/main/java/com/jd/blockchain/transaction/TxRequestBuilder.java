@@ -7,9 +7,6 @@ import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.TransactionContent;
@@ -42,42 +39,56 @@ public class TxRequestBuilder implements TransactionRequestBuilder {
 
 	@Override
 	public DigitalSignature signAsEndpoint(AsymmetricKeypair keyPair) {
-		DigitalSignature signature = sign(txContent, keyPair);
+		DigitalSignature signature = SignatureUtils.sign(txContent, keyPair);
 		addEndpointSignature(signature);
 		return signature;
 	}
 
 	@Override
 	public DigitalSignature signAsNode(AsymmetricKeypair keyPair) {
-		DigitalSignature signature = sign(txContent, keyPair);
+		DigitalSignature signature = SignatureUtils.sign(txContent, keyPair);
 		addNodeSignature(signature);
 		return signature;
 	}
 
 	@Override
-	public void addNodeSignature(DigitalSignature signature) {
-		nodeSignatures.add(signature);
+	public void addNodeSignature(DigitalSignature... signatures) {
+		if (signatures != null) {
+			for (DigitalSignature s : signatures) {
+				nodeSignatures.add(s);
+			}
+		}
 	}
 
 	@Override
-	public void addEndpointSignature(DigitalSignature signature) {
-		endpointSignatures.add(signature);
+	public void addEndpointSignature(DigitalSignature... signatures) {
+		if (signatures != null) {
+			for (DigitalSignature s : signatures) {
+				endpointSignatures.add(s);
+			}
+		}
 	}
 
-	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {
-		SignatureDigest signatureDigest = sign(txContent, keyPair.getPrivKey());
-		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
-		return signature;
-	}
+//	public static DigitalSignature sign(TransactionContent txContent, AsymmetricKeypair keyPair) {
+//		SignatureDigest signatureDigest = sign(txContent, keyPair.getPrivKey());
+//		DigitalSignature signature = new DigitalSignatureBlob(keyPair.getPubKey(), signatureDigest);
+//		return signature;
+//	}
+//
+//	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
+//		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
+//	}
 
-	public static SignatureDigest sign(TransactionContent txContent, PrivKey privKey) {
-		return Crypto.getSignatureFunction(privKey.getAlgorithm()).sign(privKey, txContent.getHash().toBytes());
-	}
-
-	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {
-		return Crypto.getSignatureFunction(pubKey.getAlgorithm()).verify(signDigest, pubKey,
-				txContent.getHash().toBytes());
-	}
+//	public static boolean verifySignature(TransactionContent txContent, SignatureDigest signDigest, PubKey pubKey) {
+//		if (!TxBuilder.verifyTxContentHash(txContent, txContent.getHash())) {
+//			return false;
+//		}
+//		return verifyHashSignature(txContent.getHash(), signDigest, pubKey);
+//	}
+//
+//	public static boolean verifyHashSignature(HashDigest hash, SignatureDigest signDigest, PubKey pubKey) {
+//		return Crypto.getSignatureFunction(pubKey.getAlgorithm()).verify(signDigest, pubKey, hash.toBytes());
+//	}
 
 	@Override
 	public TransactionRequest buildRequest() {

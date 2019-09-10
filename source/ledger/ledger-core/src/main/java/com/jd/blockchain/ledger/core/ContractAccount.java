@@ -2,10 +2,10 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.utils.Bytes;
 
 public class ContractAccount implements ContractInfo {

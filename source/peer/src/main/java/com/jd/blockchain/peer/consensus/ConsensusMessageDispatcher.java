@@ -47,8 +47,8 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 	public String beginBatch(String realmName) {
 		RealmProcessor realmProcessor = realmProcessorMap.get(realmName);
 		if (realmProcessor == null) {
+			beginLock.lock();
 			try {
-				beginLock.lock();
 				realmProcessor = realmProcessorMap.get(realmName);
 				if (realmProcessor == null) {
 					realmProcessor = initRealmProcessor(realmName);
@@ -174,8 +174,8 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 		}
 
 		public String newBatchId() {
+			realmLock.lock();
 			try {
-				realmLock.lock();
 				if (currBatchId == null) {
 					currBatchId = getRealmName() + "-" + getBatchIdIndex().getAndIncrement();
 				}
@@ -227,8 +227,8 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 		}
 
 		public void commit() {
+			realmLock.lock();
 			try {
-				realmLock.lock();
 				if (batchResultHandle == null) {
 					throw new IllegalArgumentException("BatchResultHandle is null, complete() is not execute !");
 				}
@@ -242,8 +242,8 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 		}
 
 		public void rollback(int reasonCode) {
+			realmLock.lock();
 			try {
-				realmLock.lock();
 				batchResultHandle.cancel(TransactionState.valueOf((byte)reasonCode));
 			} finally {
 				realmLock.unlock();

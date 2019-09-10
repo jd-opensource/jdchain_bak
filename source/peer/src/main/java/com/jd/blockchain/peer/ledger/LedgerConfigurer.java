@@ -3,10 +3,10 @@ package com.jd.blockchain.peer.ledger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.jd.blockchain.ledger.core.impl.DefaultOperationHandleRegisteration;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
-import com.jd.blockchain.ledger.core.impl.OperationHandleRegisteration;
-import com.jd.blockchain.ledger.core.impl.TransactionEngineImpl;
+import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.TransactionEngineImpl;
 import com.jd.blockchain.service.TransactionEngine;
 
 @Configuration

@@ -12,6 +12,8 @@ import java.util.List;
  *
  */
 public class BlockchainOperationFactory implements ClientOperator, LedgerInitOperator {
+	
+	private static final SecurityOperationBuilderImpl SECURITY_OP_BUILDER = new SecurityOperationBuilderImpl();
 
 	private static final LedgerInitOperationBuilderImpl LEDGER_INIT_OP_BUILDER = new LedgerInitOperationBuilderImpl();
 
@@ -22,6 +24,8 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	private static final ContractCodeDeployOperationBuilderImpl CONTRACT_CODE_DEPLOY_OP_BUILDER = new ContractCodeDeployOperationBuilderImpl();
 
 //	private static final ContractEventSendOperationBuilderImpl CONTRACT_EVENT_SEND_OP_BUILDER = new ContractEventSendOperationBuilderImpl();
+	
+	private SecurityOperationBuilderFilter securityOpBuilder = new SecurityOperationBuilderFilter();
 
 	private LedgerInitOperationBuilder ledgerInitOpBuilder = new LedgerInitOperationBuilderFilter();
 
@@ -41,6 +45,11 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 	@Override
 	public LedgerInitOperationBuilder ledgers() {
 		return ledgerInitOpBuilder;
+	}
+	
+	@Override
+	public SecurityOperationBuilder security() {
+		return securityOpBuilder;
 	}
 
 	@Override
@@ -145,6 +154,23 @@ public class BlockchainOperationFactory implements ClientOperator, LedgerInitOpe
 			return op;
 		}
 
+	}
+	
+	private class SecurityOperationBuilderFilter implements SecurityOperationBuilder {
+
+		@Override
+		public RolesConfigurer roles() {
+			RolesConfigurer rolesConfigurer = SECURITY_OP_BUILDER.roles();
+			operationList.add(rolesConfigurer.getOperation());
+			return rolesConfigurer;
+		}
+		
+		@Override
+		public UserAuthorizer authorziations() {
+			UserAuthorizer userAuthorizer = SECURITY_OP_BUILDER.authorziations();
+			operationList.add(userAuthorizer.getOperation());
+			return userAuthorizer;
+		}
 	}
 
 	private class DataAccountRegisterOperationBuilderFilter implements DataAccountRegisterOperationBuilder {

@@ -19,65 +19,6 @@ import com.jd.blockchain.utils.Bytes;
  */
 public interface VersioningKVStorage extends BatchStorageService {
 
-//	/**
-//	 * Return the latest version entry associated the specified key;
-//	 * 
-//	 * If the key doesn't exist, then return -1;
-//	 * 
-//	 * @param key
-//	 * @return
-//	 */
-//	long getVersion(String key);
-//
-//	/**
-//	 * Return the specified verson's entry;<br>
-//	 * 
-//	 * It will return the latest one if the version is -1; <br>
-//	 * 
-//	 * It will return null if the key or version not exist.
-//	 * 
-//	 * @param key
-//	 * @param version
-//	 * @return
-//	 */
-//	VersioningKVEntry getEntry(String key, long version);
-//
-//	/**
-//	 * Return the specified verson's value; <br>
-//	 * 
-//	 * If the specified version of key doesn't exist, then return null;<br>
-//	 * 
-//	 * If the version is specified to -1, then return the latest version's
-//	 * value;<br>
-//	 * 
-//	 * @param key
-//	 * @param version
-//	 * @return
-//	 */
-//	byte[] get(String key, long version);
-//
-//	/**
-//	 * Update the value of the key;<br>
-//	 * 
-//	 * If key exist, and the specified version equals to latest , then the value is
-//	 * updated and version is increased by 1;<br>
-//	 * If key not exist, and the specified version is -1, then the value will be
-//	 * created and initialized it's version by 0; <br>
-//	 * 
-//	 * @param key
-//	 *            the key;
-//	 * @param value
-//	 *            the new value to update if expected version match the actual
-//	 *            version;
-//	 * @param version
-//	 *            the latest version expected;
-//	 * @return The latest version entry after setting. <br>
-//	 *         If the version checking fail, or concurrent confliction occur, then
-//	 *         return -1 as indication. <br>
-//	 */
-//	long set(String key, byte[] value, long version);
-//	
-	
 	/**
 	 * Return the latest version entry associated the specified key;
 	 * 
@@ -118,8 +59,8 @@ public interface VersioningKVStorage extends BatchStorageService {
 	/**
 	 * Update the value of the key;<br>
 	 * 
-	 * If key exist, and the specified version equals to latest , then the value is
-	 * updated and version is increased by 1;<br>
+	 * If key exist, and the specified version equals to it's latest version, then the value will be
+	 * updated and version will be increased by 1;<br>
 	 * If key not exist, and the specified version is -1, then the value will be
 	 * created and initialized it's version by 0; <br>
 	 * 

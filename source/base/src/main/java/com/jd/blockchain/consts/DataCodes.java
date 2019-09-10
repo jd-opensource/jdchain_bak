@@ -8,11 +8,11 @@ package com.jd.blockchain.consts;
  */
 public interface DataCodes {
 
-	public static final int BYTES_VALUE = 0x80;
-	
-	public static final int BYTES_VALUE_LIST = 0x81;
+	public static final int BYTES_VALUE = 0x080;
 
-	public static final int BLOCK_CHAIN_IDENTITY = 0x90;
+	public static final int BYTES_VALUE_LIST = 0x081;
+
+	public static final int BLOCK_CHAIN_IDENTITY = 0x090;
 
 	public static final int BLOCK = 0x100;
 
@@ -21,6 +21,8 @@ public interface DataCodes {
 	public static final int BLOCK_GENESIS = 0x120;
 
 	public static final int DATA_SNAPSHOT = 0x130;
+
+//	public static final int LEDGER_ADMIN_DATA = 0x131;
 
 	public static final int TX = 0x200;
 
@@ -52,12 +54,37 @@ public interface DataCodes {
 	public static final int TX_RESPONSE = 0x350;
 
 	public static final int TX_OP_RESULT = 0x360;
+	
+	public static final int TX_OP_ROLE_CONFIGURE = 0x370;
+	
+	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x371;
+	
+	public static final int TX_OP_USER_ROLES_AUTHORIZE = 0x372;
+	
+	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x373;
 
+	// enum types of permissions;
+	public static final int ENUM_TX_PERMISSION = 0x401;
+	public static final int ENUM_LEDGER_PERMISSION = 0x402;
+	public static final int ENUM_MULTI_ROLES_POLICY = 0x403;
+
+	public static final int PRIVILEGE_SET = 0x410;
+
+	public static final int ROLE_SET = 0x411;
+	
+	public static final int SECURITY_INIT_SETTING = 0x420;
+
+	public static final int SECURITY_ROLE_INIT_SETTING = 0x421;
+	
+	public static final int SECURITY_USER_AUTH_INIT_SETTING = 0x422;
+
+	// contract types of metadata;
 	public static final int METADATA = 0x600;
+	public static final int METADATA_V2 = 0x601;
 
 	public static final int METADATA_INIT_SETTING = 0x610;
 
-	public static final int METADATA_INIT_PERMISSION = 0x611;
+	public static final int METADATA_INIT_PROPOSAL = 0x611;
 
 	public static final int METADATA_INIT_DECISION = 0x612;
 
@@ -65,14 +92,14 @@ public interface DataCodes {
 
 	public static final int METADATA_CONSENSUS_PARTICIPANT = 0x621;
 
-	// public static final int METADATA_CONSENSUS_NODE = 0x630;
-
-	public static final int METADATA_CONSENSUS_SETTING = 0x631;
-
-	// public static final int METADATA_PARTICIPANT_INFO = 0x640;
+// public static final int METADATA_CONSENSUS_NODE = 0x630;
+//
+//	public static final int METADATA_CONSENSUS_SETTING = 0x631;
+//
+// public static final int METADATA_PARTICIPANT_INFO = 0x640;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
-	
+
 	public static final int METADATA_CRYPTO_SETTING_PROVIDER = 0x643;
 
 	// public static final int ACCOUNT = 0x700;
@@ -83,11 +110,10 @@ public interface DataCodes {
 
 	public static final int DATA = 0x900;
 
-	//contract related;
+	// contract related;
 	public static final int CONTRACT = 0xA00;
 
-
-	//...0xA19
+	// ...0xA19
 	public static final int HASH = 0xB00;
 
 	public static final int HASH_OBJECT = 0xB10;
@@ -152,4 +178,5 @@ public interface DataCodes {
 
 	public static final int CONSENSUS_MSGQUEUE_BLOCK_SETTINGS = CONSENSUS_MSGQUEUE | 0x05;
 
+	
 }

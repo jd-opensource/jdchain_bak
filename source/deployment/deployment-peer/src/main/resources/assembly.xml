@@ -55,6 +55,16 @@
             	<exclude>com.jd.blockchain:deployment-peer</exclude>
             </excludes>
         </dependencySet>
+
+        <!--<dependencySet>
+            <unpack>false</unpack>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>ext</outputDirectory>
+            <includes>
+                <include>com.jd.blockchain:ump-booter</include>
+            </includes>
+        </dependencySet>-->
+
     </dependencySets>
 
     <moduleSets>

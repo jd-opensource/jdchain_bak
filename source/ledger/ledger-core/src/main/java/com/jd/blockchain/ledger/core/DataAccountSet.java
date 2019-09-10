@@ -5,18 +5,19 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class DataAccountSet implements MerkleProvable, Transactional {
+public class DataAccountSet implements MerkleProvable, Transactional, DataAccountQuery {
 
 	private AccountSet accountSet;
 
-	public DataAccountSet(CryptoSetting cryptoSetting, String prefix,ExPolicyKVStorage exStorage,
+	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting,prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new AccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
 	}
 
 	public DataAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
@@ -25,19 +26,25 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
+	@Override
 	public AccountHeader[] getAccounts(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex,count);
+		return accountSet.getAccounts(fromIndex, count);
 	}
 
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
 	}
 
+	void setReadonly() {
+		accountSet.setReadonly();
+	}
+	
 	@Override
 	public HashDigest getRootHash() {
 		return accountSet.getRootHash();
 	}
 
+	@Override
 	public long getTotalCount() {
 		return accountSet.getTotalCount();
 	}
@@ -56,11 +63,23 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		return new DataAccount(accBase);
 	}
 
+	/**
+	 * 返回数据账户； <br>
+	 * 如果不存在，则返回 null；
+	 * 
+	 * @param address
+	 * @return
+	 */
+	@Override
 	public DataAccount getDataAccount(Bytes address) {
 		BaseAccount accBase = accountSet.getAccount(address);
+		if (accBase == null) {
+			return null;
+		}
 		return new DataAccount(accBase);
 	}
 
+	@Override
 	public DataAccount getDataAccount(Bytes address, long version) {
 		BaseAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);
