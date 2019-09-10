@@ -30,10 +30,11 @@ public class ParticipantCertData implements ParticipantNode {
 		this.participantNodeState = participantNode.getParticipantNodeState();
 	}
 
-	public ParticipantCertData(Bytes address, String name, PubKey pubKey) {
+	public ParticipantCertData(Bytes address, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
 		this.address = address;
 		this.name = name;
 		this.pubKey = pubKey;
+		this.participantNodeState = participantNodeState;
 	}
 
 	@Override
@@ -51,6 +52,7 @@ public class ParticipantCertData implements ParticipantNode {
 		return pubKey;
 	}
 
+	@Override
 	public int getId() {
 		return id;
 	}

@@ -20,7 +20,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 
 	    private ParticipantNodeState participantNodeState;
 
-
+        @Override
 		public int getId() {
 			return id;
 		}
@@ -29,6 +29,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.id = id;
 		}
 
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -37,7 +38,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.name = name;
 		}
 
-		public NetworkAddress getConsensusAddress() {
+		public NetworkAddress getHostAddress() {
 			return hostAddress;
 		}
 
@@ -45,6 +46,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.hostAddress = hostAddress;
 		}
 
+		@Override
 		public PubKey getPubKey() {
 			return pubKey;
 		}
@@ -53,6 +55,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.pubKey = pubKey;
 		}
 
+		@Override
 		public Bytes getAddress() {
 			return address;
 		}
@@ -61,6 +64,7 @@ public class ConsensusParticipantData implements ParticipantNode {
 			this.address = address;
 		}
 
+		@Override
 	    public ParticipantNodeState getParticipantNodeState() {
 		return participantNodeState;
 	}

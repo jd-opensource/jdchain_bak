@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.jd.blockchain.ledger.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,10 +18,6 @@ import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.ParticipantCertData;
 import com.jd.blockchain.transaction.ConsensusParticipantData;
@@ -80,6 +77,7 @@ public class LedgerInitOperationTest {
 			parties[i].setHostAddress(new NetworkAddress("192.168.10." + (10 + i), 10010 + 10 * i));
 			parties[i].setName("Participant[" + i + "]");
 			parties[i].setPubKey(keys[i].getPubKey());
+			parties[i].setParticipantState(ParticipantNodeState.CONSENSUSED);
 		}
 		ConsensusParticipantData[] parties1 = Arrays.copyOf(parties, 4);
 
@@ -118,7 +116,7 @@ public class LedgerInitOperationTest {
 		for (int i = 0; i < parties.length; i++) {
 			keys[i] = BlockchainKeyGenerator.getInstance().generate();
 			parties[i] = new ParticipantCertData(AddressEncoding.generateAddress(keys[i].getPubKey()),
-					"Participant[" + i + "]", keys[i].getPubKey());
+					"Participant[" + i + "]", keys[i].getPubKey(), ParticipantNodeState.CONSENSUSED);
 		}
 
 		ParticipantCertData[] parties1 = Arrays.copyOf(parties, 4);

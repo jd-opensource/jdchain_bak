@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,6 +81,7 @@ public class LedgerInitSettingSerializeTest {
 			parties[i].setHostAddress(new NetworkAddress("192.168.10." + (10 + i), 10010 + 10 * i));
 			parties[i].setName("Participant[" + i + "]");
 			parties[i].setPubKey(keys[i].getPubKey());
+			parties[i].setParticipantState(ParticipantNodeState.CONSENSUSED);
 		}
 		ConsensusParticipantData[] parties1 = Arrays.copyOf(parties, 4);
 
@@ -122,7 +124,7 @@ public class LedgerInitSettingSerializeTest {
 		for (int i = 0; i < parties.length; i++) {
 			keys[i] = BlockchainKeyGenerator.getInstance().generate();
 			parties[i] = new ParticipantCertData(AddressEncoding.generateAddress(keys[i].getPubKey()),
-					"Participant[" + i + "]", keys[i].getPubKey());
+					"Participant[" + i + "]", keys[i].getPubKey(), ParticipantNodeState.CONSENSUSED);
 		}
 
 		ParticipantCertData[] parties1 = Arrays.copyOf(parties, 4);

@@ -441,6 +441,7 @@ public class LedgerInitProperties {
 
 		private NetworkAddress initializerAddress;
 
+		@Override
 		public int getId() {
 			return id;
 		}
@@ -454,6 +455,7 @@ public class LedgerInitProperties {
 			return address;
 		}
 
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -470,6 +472,7 @@ public class LedgerInitProperties {
 //			this.pubKeyPath = pubKeyPath;
 //		}
 
+		@Override
 		public ParticipantNodeState getParticipantNodeState() {
 			return participantNodeState;
 		}
@@ -486,6 +489,7 @@ public class LedgerInitProperties {
 			this.initializerAddress = initializerAddress;
 		}
 
+		@Override
 		public PubKey getPubKey() {
 			return pubKey;
 		}
