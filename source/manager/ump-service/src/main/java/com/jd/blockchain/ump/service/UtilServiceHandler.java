@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
 
-import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePrivKey;
-import static com.jd.blockchain.tools.keygen.KeyGenCommand.encodePubKey;
+import static com.jd.blockchain.crypto.KeyGenUtils.encodePrivKey;
+import static com.jd.blockchain.crypto.KeyGenUtils.encodePubKey;
 
 @Service
 public class UtilServiceHandler implements UtilService {
