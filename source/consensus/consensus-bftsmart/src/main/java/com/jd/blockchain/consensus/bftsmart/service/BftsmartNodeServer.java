@@ -52,11 +52,13 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private BftsmartConsensusManageService manageService;
 
+
     private volatile BftsmartTopology topology;
 
     private volatile BftsmartConsensusSettings setting;
 
     private TOMConfiguration tomConfig;
+
     private TOMConfiguration outerTomConfig;
 
     private HostsConfig hostsConfig;

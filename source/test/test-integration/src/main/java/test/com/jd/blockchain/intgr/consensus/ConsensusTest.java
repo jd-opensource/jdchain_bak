@@ -16,19 +16,21 @@ import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -37,10 +39,8 @@ import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitCommand;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -90,7 +90,7 @@ public class ConsensusTest {
 		peerStarting2.waitReturn();
 		peerStarting3.waitReturn();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(Utils.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(Utils.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(Utils.PUB_KEYS[0]);
@@ -118,7 +118,7 @@ public class ConsensusTest {
 		BlockchainKeypair[] keys = generateKeys(batchSize);
 
 		HashDigest ledgerHash = node0.getLedgerManager().getLedgerHashs()[0];
-		LedgerRepository ledger = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledger = node0.getLedgerManager().getLedger(ledgerHash);
 
 		PreparedTransaction[] ptxs = prepareTransactions_RegisterDataAcount(keys, node0.getPartiKeyPair(), ledgerHash,
 				blockchainService);
@@ -205,12 +205,12 @@ public class ConsensusTest {
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		NodeInitContext nodeCtx3 = new NodeInitContext(3, initAddr3);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[0], Utils.PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[1], Utils.PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[2], Utils.PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(Utils.PRIV_KEYS[3], Utils.PASSWORD);
 
-		String encodedPassword = KeyGenCommand.encodePasswordAsBase58(Utils.PASSWORD);
+		String encodedPassword = KeyGenUtils.encodePasswordAsBase58(Utils.PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
@@ -326,7 +326,7 @@ public class ConsensusTest {
 			return controller.getInitTxContent();
 		}
 
-		public LedgerInitPermission getLocalPermission() {
+		public LedgerInitProposal getLocalPermission() {
 			return controller.getLocalPermission();
 		}
 
@@ -339,7 +339,7 @@ public class ConsensusTest {
 			this.serverAddress = serverAddress;
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash) {
+		public LedgerQuery registLedger(HashDigest ledgerHash) {
 			// LedgerManage ledgerManager = ctx.getBean(LedgerManage.class);
 			//
 			// DbConnectionFactory dbConnFactory = ctx.getBean(DbConnectionFactory.class);
@@ -347,7 +347,7 @@ public class ConsensusTest {
 			// dbConnConfig.getPassword());
 
 			DbConnection conn = db.connect(dbConnConfig.getUri(), dbConnConfig.getPassword());
-			LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
 			return ledgerRepo;
 		}
 
@@ -398,9 +398,8 @@ public class ConsensusTest {
 			return invoker.start();
 		}
 
-		public LedgerInitPermission preparePermision(PrivKey privKey, LedgerInitProperties setting,
-				ConsensusSettings csProps) {
-			return controller.prepareLocalPermission(id, privKey, setting, csProps);
+		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitProperties initProps) {
+			return controller.prepareLocalPermission(id, privKey, initProps);
 		}
 
 		public boolean consensusPermission(PrivKey privKey) {

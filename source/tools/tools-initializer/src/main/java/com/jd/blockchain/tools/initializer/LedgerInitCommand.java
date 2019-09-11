@@ -2,8 +2,6 @@ package com.jd.blockchain.tools.initializer;
 
 import java.io.File;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,12 +12,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.LedgerInitProperties.ParticipantProperties;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties.ConsensusParticipantConfig;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.ArgumentSet;
 import com.jd.blockchain.utils.ArgumentSet.ArgEntry;
 import com.jd.blockchain.utils.ArgumentSet.Setting;
@@ -88,18 +87,18 @@ public class LedgerInitCommand {
 			// load ledger init setting;
 			LedgerInitProperties ledgerInitProperties = LedgerInitProperties.resolve(iniArg.getValue());
 			String localNodePubKeyString = localConf.getLocal().getPubKeyString();
-			PubKey localNodePubKey = KeyGenCommand.decodePubKey(localNodePubKeyString);
+			PubKey localNodePubKey = KeyGenUtils.decodePubKey(localNodePubKeyString);
 			// 地址根据公钥生成
 			String localNodeAddress = AddressEncoding.generateAddress(localNodePubKey).toBase58();
 
 			// 加载全部公钥;
 			int currId = -1;
 			for (int i = 0; i < ledgerInitProperties.getConsensusParticipantCount(); i++) {
-				ConsensusParticipantConfig partiConf = ledgerInitProperties.getConsensusParticipant(i);
+				ParticipantProperties partiConf = ledgerInitProperties.getConsensusParticipant(i);
 //				String partiAddress = partiConf.getAddress();
 //				if (partiAddress == null) {
 //					if (partiConf.getPubKeyPath() != null) {
-//						PubKey pubKey = KeyGenCommand.readPubKey(partiConf.getPubKeyPath());
+//						PubKey pubKey = KeyGenUtils.readPubKey(partiConf.getPubKeyPath());
 //						partiConf.setPubKey(pubKey);
 //						partiAddress = partiConf.getAddress();
 //					}
@@ -116,9 +115,9 @@ public class LedgerInitCommand {
 			// 加载当前节点的私钥；
 			String base58Pwd = localConf.getLocal().getPassword();
 			if (base58Pwd == null) {
-				base58Pwd = KeyGenCommand.readPasswordString();
+				base58Pwd = KeyGenUtils.readPasswordString();
 			}
-			PrivKey privKey = KeyGenCommand.decodePrivKey(localConf.getLocal().getPrivKeyString(), base58Pwd);
+			PrivKey privKey = KeyGenUtils.decodePrivKey(localConf.getLocal().getPrivKeyString(), base58Pwd);
 
 			// Output ledger binding config of peer;
 			if (!FileUtils.existDirectory(localConf.getBindingOutDir())) {
@@ -186,11 +185,12 @@ public class LedgerInitCommand {
 		// 设置账本名称
 		bindingConf.setLedgerName(ledgerInitProperties.getLedgerName());
 
-		bindingConf.getParticipant().setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress());
+		bindingConf.getParticipant()
+				.setAddress(ledgerInitProperties.getConsensusParticipant(currId).getAddress().toBase58());
 		// 设置参与方名称
 		bindingConf.getParticipant().setName(ledgerInitProperties.getConsensusParticipant(currId).getName());
 
-		String encodedPrivKey = KeyGenCommand.encodePrivKey(privKey, base58Pwd);
+		String encodedPrivKey = KeyGenUtils.encodePrivKey(privKey, base58Pwd);
 		bindingConf.getParticipant().setPk(encodedPrivKey);
 		bindingConf.getParticipant().setPassword(base58Pwd);
 

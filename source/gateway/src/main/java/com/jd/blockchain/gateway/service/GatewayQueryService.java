@@ -4,7 +4,6 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.sdk.ContractSettings;
 import com.jd.blockchain.sdk.LedgerInitSettings;
-import com.jd.blockchain.utils.Bytes;
 
 /**
  * queryService only for gateway;

@@ -9,6 +9,7 @@ import java.util.*;
  */
 public abstract class ArrayUtils {
 	private ArrayUtils() {
+		
 	}
 	
 	public static <T> T[] singleton(T obj, Class<T> clazz) {
@@ -27,6 +28,13 @@ public abstract class ArrayUtils {
 		@SuppressWarnings("unchecked")
 		T[] array = (T[]) Array.newInstance(clazz, lst.size());
 		lst.toArray(array);
+		return array;
+	}
+	
+	public static <T> T[] toArray(Collection<T> collection, Class<T> clazz){
+		@SuppressWarnings("unchecked")
+		T[] array = (T[]) Array.newInstance(clazz, collection.size());
+		collection.toArray(array);
 		return array;
 	}
 	

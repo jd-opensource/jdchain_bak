@@ -13,9 +13,9 @@
 	<modules>
 		<module>test-consensus-client</module>
 		<module>test-consensus-node</module>
-		<module>test-ledger-core</module>
+		<module>test-ledger</module>
 		<module>test-integration</module>
-    </modules>
+	</modules>
 
 	<build>
 		<plugins>

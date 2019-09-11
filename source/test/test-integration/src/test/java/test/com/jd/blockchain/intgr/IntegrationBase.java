@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -34,8 +35,8 @@ import com.jd.blockchain.contract.ReadContract;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
@@ -166,7 +167,60 @@ public class IntegrationBase {
 		return kvResponse;
 	}
 
-	public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerRepository ledgerRepository,
+	public static KeyPairResponse testSDK_RegisterParticipant(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+															  BlockchainService blockchainService) {
+		// 注册参与方，并验证最终写入；
+		BlockchainKeypair participant = BlockchainKeyGenerator.getInstance().generate();
+
+		// 定义交易；
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+
+		txTpl.participants().register("peer4", new BlockchainIdentityData(participant.getPubKey()), new NetworkAddress("127.0.0.1", 20000));
+
+		// 签名；
+		PreparedTransaction ptx = txTpl.prepare();
+
+		HashDigest transactionHash = ptx.getHash();
+
+		ptx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = ptx.commit();
+
+		KeyPairResponse keyPairResponse = new KeyPairResponse();
+		keyPairResponse.keyPair = participant;
+		keyPairResponse.txResp = txResp;
+		keyPairResponse.txHash = transactionHash;
+		return keyPairResponse;
+	}
+
+	public static KeyPairResponse testSDK_UpdateParticipantState(AsymmetricKeypair adminKey, BlockchainKeypair participantKeyPair, HashDigest ledgerHash,
+																 BlockchainService blockchainService) {
+		// 定义交易；
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+
+		ParticipantInfoData participantInfoData = new ParticipantInfoData("peer4", participantKeyPair.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
+
+		txTpl.states().update(new BlockchainIdentityData(participantInfoData.getPubKey()), participantInfoData.getNetworkAddress(), ParticipantNodeState.ACTIVED);
+
+		// 签名；
+		PreparedTransaction ptx = txTpl.prepare();
+
+		HashDigest transactionHash = ptx.getHash();
+
+		ptx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = ptx.commit();
+
+		KeyPairResponse keyPairResponse = new KeyPairResponse();
+		keyPairResponse.keyPair = participantKeyPair;
+		keyPairResponse.txResp = txResp;
+		keyPairResponse.txHash = transactionHash;
+		return keyPairResponse;
+	}
+
+	public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerQuery ledgerRepository,
 			KeyPairType keyPairType) {
 		TransactionResponse txResp = keyPairResponse.txResp;
 		HashDigest transactionHash = keyPairResponse.txHash;
@@ -191,7 +245,7 @@ public class IntegrationBase {
 		System.out.printf("validKeyPair end %s \r\n", index);
 	}
 
-	public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerRepository ledgerRepository,
+	public static void validKeyPair(IntegrationBase.KeyPairResponse keyPairResponse, LedgerQuery ledgerRepository,
 			KeyPairType keyPairType, CountDownLatch countDownLatch) {
 
 		TransactionResponse txResp = keyPairResponse.txResp;
@@ -215,7 +269,7 @@ public class IntegrationBase {
 		countDownLatch.countDown();
 	}
 
-	public static void validKvWrite(IntegrationBase.KvResponse kvResponse, LedgerRepository ledgerRepository,
+	public static void validKvWrite(IntegrationBase.KvResponse kvResponse, LedgerQuery ledgerRepository,
 			BlockchainService blockchainService) {
 		// 先验证应答
 		TransactionResponse txResp = kvResponse.getTxResp();
@@ -240,10 +294,10 @@ public class IntegrationBase {
 		}
 	}
 
-	public static LedgerRepository[] buildLedgers(LedgerBindingConfig[] bindingConfigs,
+	public static LedgerQuery[] buildLedgers(LedgerBindingConfig[] bindingConfigs,
 			DbConnectionFactory[] dbConnectionFactories) {
 		int[] ids = { 0, 1, 2, 3 };
-		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
+		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
 		LedgerManager[] ledgerManagers = new LedgerManager[ids.length];
 		for (int i = 0; i < ids.length; i++) {
 			ledgerManagers[i] = new LedgerManager();
@@ -255,11 +309,11 @@ public class IntegrationBase {
 		return ledgers;
 	}
 
-	public static void testConsistencyAmongNodes(LedgerRepository[] ledgers) {
-		LedgerRepository ledger0 = ledgers[0];
+	public static void testConsistencyAmongNodes(LedgerQuery[] ledgers) {
+		LedgerQuery ledger0 = ledgers[0];
 		LedgerBlock latestBlock0 = ledger0.retrieveLatestBlock();
 		for (int i = 1; i < ledgers.length; i++) {
-			LedgerRepository otherLedger = ledgers[i];
+			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 			assertEquals(ledger0.getHash(), otherLedger.getHash());
 			assertEquals(ledger0.getLatestBlockHeight(), otherLedger.getLatestBlockHeight());
@@ -447,7 +501,7 @@ public class IntegrationBase {
     static HashDigest txContentHash;
 
     public static LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
         KeyPairResponse keyPairResponse = testSDK_RegisterDataAccount(adminKey,ledgerHash,blockchainService);
 
 		System.out.println("adminKey=" + AddressEncoding.generateAddress(adminKey.getPubKey()));

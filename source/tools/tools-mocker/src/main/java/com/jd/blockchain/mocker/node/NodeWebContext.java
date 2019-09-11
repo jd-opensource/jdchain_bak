@@ -2,17 +2,17 @@ package com.jd.blockchain.mocker.node;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.mocker.config.LedgerInitWebConfiguration;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
@@ -48,7 +48,7 @@ public class NodeWebContext {
         return controller.getInitTxContent();
     }
 
-    public LedgerInitPermission getLocalPermission() {
+    public LedgerInitProposal getLocalPermission() {
         return controller.getLocalPermission();
     }
 
@@ -61,9 +61,9 @@ public class NodeWebContext {
         this.serverAddress = serverAddress;
     }
 
-    public LedgerRepository registLedger(HashDigest ledgerHash) {
+    public LedgerQuery registLedger(HashDigest ledgerHash) {
         DbConnection conn = db.connect(dbConnConfig.getUri());
-        LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+        LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
         return ledgerRepo;
     }
 

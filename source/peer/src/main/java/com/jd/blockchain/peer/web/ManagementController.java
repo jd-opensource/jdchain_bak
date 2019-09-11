@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.ledger.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,24 +32,10 @@ import com.jd.blockchain.consensus.service.NodeServer;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerAdminAccount;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.core.LedgerAdminDataQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.peer.ConsensusRealm;
 import com.jd.blockchain.peer.LedgerBindingConfigAware;
 import com.jd.blockchain.peer.PeerManage;
@@ -116,11 +103,15 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 
 		DataContractRegistry.register(ActionResponse.class);
 
 		DataContractRegistry.register(BftsmartConsensusSettings.class);
 		DataContractRegistry.register(BftsmartNodeSettings.class);
+		
+//		DataContractRegistry.register(LedgerAdminDataQuery.class);
 
 	}
 
@@ -221,14 +212,14 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		LedgerBindingConfig.BindingConfig bindingConfig = config.getLedger(ledgerHash);
 		DbConnection dbConnNew = connFactory.connect(bindingConfig.getDbConnection().getUri(),
 				bindingConfig.getDbConnection().getPassword());
-		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
+		LedgerQuery ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
 
 		// load provider;
-		LedgerAdminAccount ledgerAdminAccount = ledgerRepository.getAdminAccount();
-		String consensusProvider = ledgerAdminAccount.getSetting().getConsensusProvider();
+		LedgerAdminInfo ledgerAdminAccount = ledgerRepository.getAdminInfo();
+		String consensusProvider = ledgerAdminAccount.getSettings().getConsensusProvider();
 		ConsensusProvider provider = ConsensusProviders.getProvider(consensusProvider);
 		// find current node;
-		Bytes csSettingBytes = ledgerAdminAccount.getSetting().getConsensusSetting();
+		Bytes csSettingBytes = ledgerAdminAccount.getSettings().getConsensusSetting();
 		ConsensusSettings csSettings = provider.getSettingsFactory().getConsensusSettingsEncoder()
 				.decode(csSettingBytes.toBytes());
 		NodeSettings currentNode = null;
@@ -247,7 +238,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		NodeServer server = provider.getServerFactory().setupServer(serverSettings, consensusMessageHandler,
 				consensusStateManager);
 		ledgerPeers.put(ledgerHash, server);
-		ledgerCryptoSettings.put(ledgerHash, ledgerAdminAccount.getSetting().getCryptoSetting());
+		ledgerCryptoSettings.put(ledgerHash, ledgerAdminAccount.getSettings().getCryptoSetting());
 
 		return server;
 	}

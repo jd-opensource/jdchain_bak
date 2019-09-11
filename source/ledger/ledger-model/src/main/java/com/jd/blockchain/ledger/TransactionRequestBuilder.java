@@ -60,7 +60,7 @@ public interface TransactionRequestBuilder extends HashObject  {
 	 *            Base64格式的签名摘要；
 	 * @return
 	 */
-	void addEndpointSignature(DigitalSignature signature);
+	void addEndpointSignature(DigitalSignature... signature);
 	
 	/**
 	 * 加入签名；
@@ -71,7 +71,7 @@ public interface TransactionRequestBuilder extends HashObject  {
 	 *            Base64格式的签名摘要；
 	 * @return
 	 */
-	void addNodeSignature(DigitalSignature signature);
+	void addNodeSignature(DigitalSignature... signatures);
 
 	/**
 	 * 生成交易请求；

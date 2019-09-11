@@ -8,6 +8,7 @@
  */
 package com.jd.blockchain.consensus.mq;
 
+import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.consensus.ConsensusSettingsBuilder;
 import com.jd.blockchain.consensus.NodeSettings;
@@ -20,12 +21,14 @@ import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNetworkSettings;
 import com.jd.blockchain.consensus.mq.settings.MsgQueueNodeSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.ParticipantInfo;
 import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.codec.Base58Utils;
+import com.jd.blockchain.utils.io.BytesEncoder;
 import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -82,6 +85,8 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
 
     public static final String MSG_QUEUE_BLOCK_MAXDELAY = "system.msg.queue.block.maxdelay";
 
+    public static final  String  MSG_QUEUE_PROVIDER = "com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider";
+
     private static Properties CONFIG_TEMPLATE;
 
     static {
@@ -129,7 +134,7 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
             String keyOfPubkey = nodeKey(PUBKEY_PATTERN, id);
 
             String base58PubKey = PropertiesUtils.getRequiredProperty(resolvingProps, keyOfPubkey);
-            PubKey pubKey = KeyGenCommand.decodePubKey(base58PubKey);
+            PubKey pubKey = KeyGenUtils.decodePubKey(base58PubKey);
 
 //            PubKey pubKey = new PubKey(Base58Utils.decode(base58PubKey));
             resolvingProps.remove(keyOfPubkey);
@@ -143,6 +148,48 @@ public class MsgQueueConsensusSettingsBuilder implements ConsensusSettingsBuilde
             consensusConfig.addNodeSettings(nodeConfig);
         }
         return consensusConfig;
+    }
+
+    private MsgQueueNodeSettings[] nodeSettings(NodeSettings[] nodeSettings, ParticipantInfo participantInfo) {
+
+        MsgQueueNodeSettings msgQueueNodeSettings = new MsgQueueNodeConfig();
+        ((MsgQueueNodeConfig) msgQueueNodeSettings).setAddress(AddressEncoding.generateAddress(participantInfo.getPubKey()).toBase58());
+        ((MsgQueueNodeConfig) msgQueueNodeSettings).setPubKey(participantInfo.getPubKey());
+
+        MsgQueueNodeSettings[] msgQueuetNodeSettings = new MsgQueueNodeSettings[nodeSettings.length + 1];
+        for (int i = 0; i < nodeSettings.length; i++) {
+            msgQueuetNodeSettings[i] = (MsgQueueNodeSettings)nodeSettings[i];
+        }
+        msgQueuetNodeSettings[nodeSettings.length] = msgQueueNodeSettings;
+
+        return msgQueuetNodeSettings;
+    }
+
+    @Override
+    public Bytes updateSettings(Bytes oldConsensusSettings, ParticipantInfo participantInfo) {
+
+        BytesEncoder<ConsensusSettings> consensusEncoder =  ConsensusProviders.getProvider(MSG_QUEUE_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder();
+
+        MsgQueueConsensusSettings consensusSettings = (MsgQueueConsensusSettings) consensusEncoder.decode(oldConsensusSettings.toBytes());
+
+        MsgQueueNodeSettings[] nodeSettings = nodeSettings(consensusSettings.getNodes(), participantInfo);
+
+        MsgQueueConsensusConfig msgQueueConsensusConfig = new MsgQueueConsensusConfig();
+        for (int i = 0; i < nodeSettings.length; i++) {
+            msgQueueConsensusConfig.addNodeSettings(nodeSettings[i]);
+        }
+
+        msgQueueConsensusConfig.setBlockSettings(consensusSettings.getBlockSettings());
+
+        msgQueueConsensusConfig.setNetworkSettings(consensusSettings.getNetworkSettings());
+
+
+//        for(int i = 0 ;i < msgQueueConsensusConfig.getNodes().length; i++) {
+//            System.out.printf("node addr = %s\r\n", msgQueueConsensusConfig.getNodes()[i].getAddress());
+//        }
+
+        return new Bytes(consensusEncoder.encode(msgQueueConsensusConfig));
+
     }
 
     @Override

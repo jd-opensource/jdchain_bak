@@ -91,7 +91,7 @@ public class HomeBooter {
 			runtimeDir.mkdirs();
 		}
 
-		// 以 ExtClassLoader 作为所有创建的ClassLoader的 Parrent；
+		// 以 ExtClassLoader 作为所有创建的ClassLoader的 Parent；
 		ClassLoader extClassLoader = HomeBooter.class.getClassLoader().getParent();
 
 		URL[] libJars = loadClassPaths(libDir);

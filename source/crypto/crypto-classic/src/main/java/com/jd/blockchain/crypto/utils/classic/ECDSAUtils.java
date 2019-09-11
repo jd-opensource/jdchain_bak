@@ -7,6 +7,8 @@ import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECMultiplier;
 import org.bouncycastle.math.ec.ECPoint;
@@ -28,12 +30,10 @@ public class ECDSAUtils {
 
     // p = 2^256 - 2^32 - 2^9 - 2^8 - 2^7 - 2^6 - 2^4 - 1
     // the curve equation is y^2 = x^3 + 7.
-    private static final X9ECParameters X9_PARAMS = SECNamedCurves.getByName("secp256k1");
-    private static final ECCurve CURVE = X9_PARAMS.getCurve();
-    private static final ECPoint ECDSA_G = X9_PARAMS.getG();
-    private static final BigInteger ECDSA_H = X9_PARAMS.getH();
-    private static final BigInteger ECDSA_N = X9_PARAMS.getN();
-    private static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, ECDSA_G,ECDSA_N,ECDSA_H);
+    private static final ECNamedCurveParameterSpec PARAMS = ECNamedCurveTable.getParameterSpec("secp256k1");
+    private static final ECCurve CURVE = PARAMS.getCurve();
+    private static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(
+            CURVE, PARAMS.getG(), PARAMS.getN(), PARAMS.getH());
 
 
     //-----------------Key Generation Algorithm-----------------

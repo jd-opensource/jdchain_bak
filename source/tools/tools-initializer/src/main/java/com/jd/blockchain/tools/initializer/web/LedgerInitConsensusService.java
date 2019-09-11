@@ -2,7 +2,7 @@ package com.jd.blockchain.tools.initializer.web;
 
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.utils.http.HttpAction;
 import com.jd.blockchain.utils.http.HttpMethod;
 import com.jd.blockchain.utils.http.HttpService;
@@ -21,7 +21,7 @@ public interface LedgerInitConsensusService {
 	 *            请求者的私钥对 “id” + “账本种子” 做出的签名；只有签名合法且参与者是初始化配置中的参与方才能获得有效返回，否则将被拒绝；
 	 */
 	@HttpAction(path = "/legerinit/permission/{requesterId}", method = HttpMethod.POST, contentType = LedgerInitMessageConverter.CONTENT_TYPE_VALUE, responseConverter = PermissionResponseConverter.class)
-	LedgerInitPermission requestPermission(@PathParam(name = "requesterId") int requesterId,
+	LedgerInitProposal requestPermission(@PathParam(name = "requesterId") int requesterId,
 			@RequestBody(converter = SignatureDigestRequestBodyConverter.class) SignatureDigest signature);
 
 	/**

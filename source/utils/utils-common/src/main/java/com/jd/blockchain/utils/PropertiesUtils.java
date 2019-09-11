@@ -251,6 +251,14 @@ public abstract class PropertiesUtils {
 		String value = getRequiredProperty(props, key);
 		return Boolean.parseBoolean(value);
 	}
+	
+	public static boolean getBooleanOptional(Properties props, String key, boolean defaultValue) {
+		String value = getProperty(props, key, false);
+		if (value == null) {
+			return defaultValue;
+		}
+		return Boolean.parseBoolean(value);
+	}
 
 	/**
 	 * 返回指定的属性； <br>
@@ -262,6 +270,18 @@ public abstract class PropertiesUtils {
 	 */
 	public static String getRequiredProperty(Properties props, String key) {
 		return getProperty(props, key, true);
+	}
+	
+	public static String getOptionalProperty(Properties props, String key) {
+		return getProperty(props, key, false);
+	}
+	
+	public static String getOptionalProperty(Properties props, String key, String defaultValue) {
+		String value = getProperty(props, key, false);
+		if (value == null) {
+			return defaultValue;
+		}
+		return value;
 	}
 
 	/**

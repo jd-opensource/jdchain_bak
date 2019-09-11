@@ -3,18 +3,17 @@ package com.jd.blockchain.gateway.service;
 import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.consensus.ConsensusSettings;
-import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
-import com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.gateway.PeerService;
-import com.jd.blockchain.gateway.decompiler.utils.DecompilerUtils;
 import com.jd.blockchain.ledger.ContractInfo;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.sdk.ContractSettings;
 import com.jd.blockchain.sdk.LedgerInitSettings;
 import com.jd.blockchain.utils.QueryUtil;
 import com.jd.blockchain.utils.codec.HexUtils;
+import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
@@ -53,7 +52,9 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
 
         LedgerMetadata ledgerMetadata = peerService.getQueryService().getLedgerMetadata(ledgerHash);
 
-        return initLedgerInitSettings(participantNodes, ledgerMetadata);
+        LedgerAdminInfo ledgerAdminInfo = peerService.getQueryService().getLedgerAdminInfo(ledgerHash);
+
+        return initLedgerInitSettings(participantNodes, ledgerMetadata, ledgerAdminInfo);
     }
 
     @Override
@@ -80,26 +81,26 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
      *     账本元数据
      * @return
      */
-    private LedgerInitSettings initLedgerInitSettings(ParticipantNode[] participantNodes, LedgerMetadata ledgerMetadata) {
+    private LedgerInitSettings initLedgerInitSettings(ParticipantNode[] participantNodes, LedgerMetadata ledgerMetadata, LedgerAdminInfo ledgerAdminInfo) {
         LedgerInitSettings ledgerInitSettings = new LedgerInitSettings();
 
         // 设置参与方
         ledgerInitSettings.setParticipantNodes(participantNodes);
 
         // 设置共识设置
-        ledgerInitSettings.setConsensusSettings(initConsensusSettings(ledgerMetadata));
+        ledgerInitSettings.setConsensusSettings(initConsensusSettings(ledgerAdminInfo));
 
         // 设置参与方根Hash
         ledgerInitSettings.setParticipantsHash(ledgerMetadata.getParticipantsHash());
 
         // 设置算法配置
-        ledgerInitSettings.setCryptoSetting(ledgerMetadata.getSetting().getCryptoSetting());
+        ledgerInitSettings.setCryptoSetting(ledgerAdminInfo.getSettings().getCryptoSetting());
 
         // 设置种子
         ledgerInitSettings.setSeed(initSeed(ledgerMetadata.getSeed()));
 
         // 设置共识协议
-        ledgerInitSettings.setConsensusProtocol(ledgerMetadata.getSetting().getConsensusProvider());
+        ledgerInitSettings.setConsensusProtocol(ledgerAdminInfo.getSettings().getConsensusProvider());
 
         return ledgerInitSettings;
     }
@@ -131,14 +132,14 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
     /**
      * 初始化共识配置
      *
-     * @param ledgerMetadata
+     * @param ledgerAdminInfo
      *     账本元数据
      * @return
      */
-    private ConsensusSettings initConsensusSettings(LedgerMetadata ledgerMetadata) {
-        String consensusProvider = ledgerMetadata.getSetting().getConsensusProvider();
+    private ConsensusSettings initConsensusSettings(LedgerAdminInfo ledgerAdminInfo) {
+        String consensusProvider = ledgerAdminInfo.getSettings().getConsensusProvider();
         ConsensusProvider provider = ConsensusProviders.getProvider(consensusProvider);
-        byte[] consensusSettingsBytes = ledgerMetadata.getSetting().getConsensusSetting().toBytes();
+        byte[] consensusSettingsBytes = ledgerAdminInfo.getSettings().getConsensusSetting().toBytes();
         return provider.getSettingsFactory().getConsensusSettingsEncoder().decode(consensusSettingsBytes);
     }
 }

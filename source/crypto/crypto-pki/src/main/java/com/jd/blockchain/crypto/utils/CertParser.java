@@ -25,6 +25,7 @@ public class CertParser {
     private String sigAlgName;
     private String userName;
     private String issuerName;
+    private int keyLength;
 
     private Date startTime;
     private Date endTime;
@@ -71,6 +72,17 @@ public class CertParser {
         sigAlgName = userCert.getSigAlgName();
         issuerName = userCert.getIssuerX500Principal().getName();
         userName   = userCert.getSubjectX500Principal().getName();
+
+        switch (sigAlgName) {
+            case "SM3WITHSM2": {
+                keyLength = 256;
+                break;
+            }
+            case "SHA1WITHRSA": {
+                keyLength = (pubKey.getEncoded().length < 4096 / 8)? 2048: 4096;
+                break;
+            }
+        }
     }
 
     // certificate string in Base64 format
@@ -119,6 +131,10 @@ public class CertParser {
 
     public String getIssuerName() {
         return issuerName;
+    }
+
+    public int getKeyLength() {
+        return keyLength;
     }
 
     public Date getStartTime() {

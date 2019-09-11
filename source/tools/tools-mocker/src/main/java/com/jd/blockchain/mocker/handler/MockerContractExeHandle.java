@@ -9,15 +9,21 @@ import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.contract.LedgerContext;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
-import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BytesValueEncoding;
+import com.jd.blockchain.ledger.BytesValueList;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
+import com.jd.blockchain.ledger.Operation;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.core.LedgerDataset;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
+import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.OperationHandle;
-import com.jd.blockchain.ledger.core.TransactionRequestContext;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
-import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
-import com.jd.blockchain.ledger.core.impl.OperationHandleContext;
-import com.jd.blockchain.ledger.core.impl.handles.ContractLedgerContext;
+import com.jd.blockchain.ledger.core.OperationHandleContext;
+import com.jd.blockchain.ledger.core.TransactionRequestExtension;
+import com.jd.blockchain.ledger.core.handles.ContractLedgerContext;
 import com.jd.blockchain.mocker.proxy.ExecutorProxy;
 
 public class MockerContractExeHandle implements OperationHandle {
@@ -29,21 +35,21 @@ public class MockerContractExeHandle implements OperationHandle {
 	private HashDigest ledgerHash;
 
 	@Override
-	public BytesValue process(Operation op, LedgerDataSet dataset, TransactionRequestContext requestContext,
-			LedgerDataSet previousBlockDataset, OperationHandleContext opHandleContext, LedgerService ledgerService) {
+	public BytesValue process(Operation op, LedgerDataset dataset, TransactionRequestExtension request,
+			LedgerQuery ledger, OperationHandleContext opHandleContext) {
 		ContractEventSendOperation contractOP = (ContractEventSendOperation) op;
 
-		HashDigest txHash = requestContext.getRequest().getTransactionContent().getHash();
+		HashDigest txHash = request.getTransactionContent().getHash();
 
 		ExecutorProxy executorProxy = executorProxyMap.get(txHash);
 
 		Object result = null;
 		if (executorProxy != null) {
-			LedgerQueryService queryService = new LedgerQueryService(ledgerManager);
+			LedgerQueryService queryService = new LedgerQueryService(ledger);
 			ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
 			MockerContractEventContext contractEventContext = new MockerContractEventContext(ledgerHash,
-					contractOP.getEvent(), requestContext.getRequest(), ledgerContext);
+					contractOP.getEvent(), request, ledgerContext);
 
 			Object instance = executorProxy.getInstance();
 			EventProcessingAware awire = null;
@@ -73,8 +79,8 @@ public class MockerContractExeHandle implements OperationHandle {
 	}
 
 	@Override
-	public boolean support(Class<?> operationType) {
-		return ContractEventSendOperation.class.isAssignableFrom(operationType);
+	public Class<?> getOperationType() {
+		return ContractEventSendOperation.class;
 	}
 
 	public void initLedger(LedgerManager ledgerManager, HashDigest ledgerHash) {

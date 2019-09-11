@@ -7,29 +7,12 @@ import java.io.InputStream;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainIdentityData;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.UserRegisterOperation;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -47,8 +30,8 @@ public enum ContractDeployExeUtil {
         PubKey pub = null;
         PrivKey prv = null;
         try {
-            prv = KeyGenCommand.readPrivKey(prvPath, KeyGenCommand.encodePassword(rawPassword));
-            pub = KeyGenCommand.readPubKey(pubPath);
+            prv = KeyGenUtils.readPrivKey(prvPath, KeyGenUtils.encodePassword(rawPassword));
+            pub = KeyGenUtils.readPubKey(pubPath);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +47,7 @@ public enum ContractDeployExeUtil {
                 BlockchainKeypair contractKeyPair = BlockchainKeyGenerator.getInstance().generate();
                 pub = contractKeyPair.getPubKey();
             }else {
-                pub = KeyGenCommand.readPubKey(pubPath);
+                pub = KeyGenUtils.readPubKey(pubPath);
             }
 
         } catch (Exception e) {
@@ -111,6 +94,8 @@ public enum ContractDeployExeUtil {
         DataContractRegistry.register(ContractEventSendOperation.class);
         DataContractRegistry.register(DataAccountRegisterOperation.class);
         DataContractRegistry.register(UserRegisterOperation.class);
+        DataContractRegistry.register(ParticipantRegisterOperation.class);
+        DataContractRegistry.register(ParticipantStateUpdateOperation.class);
     }
 
     public BlockchainService initBcsrv(String host, int port) {

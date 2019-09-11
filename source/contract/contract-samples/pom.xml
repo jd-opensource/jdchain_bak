@@ -27,6 +27,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -34,11 +40,11 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>transfer</finalName>
+                    <finalName>complex</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>com.jd.blockchain.contract.TransferContractImpl</mainClass>
+                            <mainClass>com.jd.blockchain.contract.ComplexContractImpl</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

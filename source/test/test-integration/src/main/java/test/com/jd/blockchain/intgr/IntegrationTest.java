@@ -17,6 +17,7 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
@@ -28,23 +29,22 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.DataAccountSet;
+import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
-import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -110,7 +110,7 @@ public class IntegrationTest {
 		peerStarting2.waitReturn();
 		peerStarting3.waitReturn();
 
-		String encodedBase58Pwd = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
+		String encodedBase58Pwd = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
 
 		KeyPairConfig gwkey0 = new KeyPairConfig();
 		gwkey0.setPubKeyValue(LedgerInitializeWebTest.PUB_KEYS[0]);
@@ -150,16 +150,16 @@ public class IntegrationTest {
 	private void testConsistencyAmongNodes(IntegratedContext context) {
 		int[] ids = context.getNodeIds();
 		Node[] nodes = new Node[ids.length];
-		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
+		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = context.getNode(ids[i]);
 			HashDigest ledgerHash = nodes[i].getLedgerManager().getLedgerHashs()[0];
 			ledgers[i] = nodes[i].getLedgerManager().getLedger(ledgerHash);
 		}
-		LedgerRepository ledger0 = ledgers[0];
+		LedgerQuery ledger0 = ledgers[0];
 		LedgerBlock latestBlock0 = ledger0.retrieveLatestBlock();
 		for (int i = 1; i < ledgers.length; i++) {
-			LedgerRepository otherLedger = ledgers[i];
+			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 		}
 	}
@@ -212,7 +212,7 @@ public class IntegrationTest {
 		TransactionResponse txResp = prepTx.commit();
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		ledgerOfNode0.retrieveLatestBlock(); // 更新内存
 
 		// 先验证应答
@@ -250,7 +250,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 
 		return user;
 	}
@@ -282,7 +282,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 		long latestBlockHeight = ledgerOfNode0.retrieveLatestBlockHeight();
 
 		return dataAccount;
@@ -301,7 +301,7 @@ public class IntegrationTest {
 
 		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
 
-		LedgerRepository ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHash, storageService);
 
 		// getLedgerHashs
 		HashDigest[] ledgerHashs = blockchainService.getLedgerHashs();
@@ -452,16 +452,16 @@ public class IntegrationTest {
 
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		LedgerInitializeWebTest.NodeWebContext nodeCtx3 = new LedgerInitializeWebTest.NodeWebContext(3, initAddr3);
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[0],
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[0],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[1],
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[1],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[2],
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[2],
 				LedgerInitializeWebTest.PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[3],
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(LedgerInitializeWebTest.PRIV_KEYS[3],
 				LedgerInitializeWebTest.PASSWORD);
 
-		String encodedPassword = KeyGenCommand.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
+		String encodedPassword = KeyGenUtils.encodePasswordAsBase58(LedgerInitializeWebTest.PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
@@ -494,10 +494,10 @@ public class IntegrationTest {
 		HashDigest ledgerHash2 = callback2.waitReturn();
 		HashDigest ledgerHash3 = callback3.waitReturn();
 
-		LedgerRepository ledger0 = nodeCtx0.registLedger(ledgerHash0);
-		LedgerRepository ledger1 = nodeCtx1.registLedger(ledgerHash1);
-		LedgerRepository ledger2 = nodeCtx2.registLedger(ledgerHash2);
-		LedgerRepository ledger3 = nodeCtx3.registLedger(ledgerHash3);
+		LedgerQuery ledger0 = nodeCtx0.registLedger(ledgerHash0);
+		LedgerQuery ledger1 = nodeCtx1.registLedger(ledgerHash1);
+		LedgerQuery ledger2 = nodeCtx2.registLedger(ledgerHash2);
+		LedgerQuery ledger3 = nodeCtx3.registLedger(ledgerHash3);
 
 		IntegratedContext context = new IntegratedContext();
 
@@ -577,7 +577,7 @@ public class IntegrationTest {
 		txResp.getContentHash();
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
 		byte[] contractCodeInDb = ledgerOfNode0.getContractAccountSet(block).getContract(contractDeployKey.getAddress())
 				.getChainCode();
@@ -615,11 +615,11 @@ public class IntegrationTest {
 		LedgerInfo latestLedgerInfo = blockchainService.getLedger(ledgerHash);
 
 		Node node0 = context.getNode(0);
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock backgroundLedgerBlock = ledgerOfNode0.retrieveLatestBlock();
 
 		// 验证合约中的赋值，外部可以获得;
-		DataAccountSet dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
+		DataAccountQuery dataAccountSet = ledgerOfNode0.getDataAccountSet(backgroundLedgerBlock);
 		AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
@@ -657,7 +657,7 @@ public class IntegrationTest {
 		// 验证结果；
 		Node node0 = context.getNode(0);
 
-		LedgerRepository ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
+		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
 		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
 				.getBytes("A");

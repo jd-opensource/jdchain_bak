@@ -5,20 +5,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jd.blockchain.gateway.web.BlockBrowserController;
 import org.apache.commons.io.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.gateway.web.BlockBrowserController;
 import com.jd.blockchain.utils.ArgumentSet;
+import com.jd.blockchain.utils.ArgumentSet.ArgEntry;
 import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.ConsoleUtils;
-import com.jd.blockchain.utils.ArgumentSet.ArgEntry;
 
 
 public class GatewayServerBooter {
@@ -88,19 +88,19 @@ public class GatewayServerBooter {
 
 		String base58Pwd = config.keys().getDefault().getPrivKeyPassword();
 		if (base58Pwd == null || base58Pwd.length() == 0) {
-			base58Pwd = KeyGenCommand.readPasswordString();
+			base58Pwd = KeyGenUtils.readPasswordString();
 		}
 
 		// 加载密钥；
-		PubKey pubKey = KeyGenCommand.decodePubKey(config.keys().getDefault().getPubKeyValue());
+		PubKey pubKey = KeyGenUtils.decodePubKey(config.keys().getDefault().getPubKeyValue());
 
 		PrivKey privKey = null;
 		String base58PrivKey = config.keys().getDefault().getPrivKeyValue();
 		if (base58PrivKey == null) {
 			//注：GatewayConfigProperties 确保了 PrivKeyValue 和 PrivKeyPath 必有其一；
-			privKey = KeyGenCommand.readPrivKey(config.keys().getDefault().getPrivKeyPath(), base58Pwd);
+			privKey = KeyGenUtils.readPrivKey(config.keys().getDefault().getPrivKeyPath(), base58Pwd);
 		} else {
-			privKey = KeyGenCommand.decodePrivKey(base58PrivKey, base58Pwd);
+			privKey = KeyGenUtils.decodePrivKey(base58PrivKey, base58Pwd);
 		}
 		defaultKeyPair = new AsymmetricKeypair(pubKey, privKey);
 	}
