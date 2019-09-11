@@ -1,15 +1,9 @@
 package com.jd.blockchain.ledger.core.handles;
 
+import com.jd.blockchain.contract.ContractJarUtils;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.core.LedgerDataQuery;
-import com.jd.blockchain.ledger.core.LedgerDataset;
-import com.jd.blockchain.ledger.core.LedgerService;
-import com.jd.blockchain.ledger.core.MultiIDsPolicy;
-import com.jd.blockchain.ledger.core.OperationHandleContext;
-import com.jd.blockchain.ledger.core.SecurityContext;
-import com.jd.blockchain.ledger.core.SecurityPolicy;
-import com.jd.blockchain.ledger.core.TransactionRequestExtension;
+import com.jd.blockchain.ledger.core.*;
 
 public class ContractCodeDeployOperationHandle extends AbstractLedgerOperationHandle<ContractCodeDeployOperation> {
 
@@ -19,10 +13,9 @@ public class ContractCodeDeployOperationHandle extends AbstractLedgerOperationHa
 
 	@Override
 	protected void doProcess(ContractCodeDeployOperation op, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
-			OperationHandleContext handleContext, LedgerService ledgerService) {
 			TransactionRequestExtension requestContext, LedgerQuery ledger,
 			OperationHandleContext handleContext) {
+
 
 		// TODO: 请求者应该提供合约账户的公钥签名，以确保注册人对注册的地址和公钥具有合法的使用权；
 

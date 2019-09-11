@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,12 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	private static final String DEFAULT_SIGN_ALGORITHM = "ED25519";
+
+	/**
+	 * 决定值列表并发处理，必须等待Local释放
+	 *
+	 */
+	private final CountDownLatch decisionsCountDownLatch = new CountDownLatch(1);
 
 	private final SignatureFunction SIGN_FUNC;
 
@@ -190,18 +197,25 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 	}
 
 	public LedgerInitDecision makeLocalDecision(PrivKey privKey) {
-		// 生成账本；
-		initializer.prepareLedger(dbConn.getStorageService(), getNodesSignatures());
 
-		// 生成签名决定；
-		this.localDecision = makeDecision(currentId, initializer.getLedgerHash(), privKey);
-		this.decisions = new DecisionResultHandle[ledgerInitConfig.getParticipantCount()];
-		for (int i = 0; i < decisions.length; i++) {
-			// 参与者的 id 是依次递增的；
-			this.decisions[i] = new DecisionResultHandle(i);
+		try {
+			// 生成账本；
+			initializer.prepareLedger(dbConn.getStorageService(), getNodesSignatures());
+
+			// 生成签名决定；
+			this.localDecision = makeDecision(currentId, initializer.getLedgerHash(), privKey);
+			this.decisions = new DecisionResultHandle[ledgerInitConfig.getParticipantCount()];
+			for (int i = 0; i < decisions.length; i++) {
+				// 参与者的 id 是依次递增的；
+				this.decisions[i] = new DecisionResultHandle(i);
+			}
+			// 预置当前参与方的“决定”到列表，避免向自己发起请求；
+			this.decisions[currentId].setValue(localDecision);
+		} finally {
+			// 释放，以便于其他节点接收
+			this.decisionsCountDownLatch.countDown();
 		}
-		// 预置当前参与方的“决定”到列表，避免向自己发起请求；
-		this.decisions[currentId].setValue(localDecision);
+
 		return localDecision;
 	}
 
@@ -677,6 +691,9 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		prompter.info("Received request of synchronizing decision! --[RemoteId=%s][CurrentId=%s]", remoteId, currentId);
 
 		try {
+
+			// 必须等待本地处理完成，此处线程阻塞
+			this.decisionsCountDownLatch.await();
 
 			DecisionResultHandle resultHandle = this.decisions[remoteId];
 			if (!validateAndRecordDecision(initDecision, resultHandle)) {
