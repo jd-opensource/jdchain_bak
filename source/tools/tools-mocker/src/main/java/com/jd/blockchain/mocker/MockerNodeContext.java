@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import org.mockito.Mockito;
 
+import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ClientIdentifications;
@@ -123,8 +124,10 @@ public class MockerNodeContext implements BlockchainQueryService {
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 
 		DataContractRegistry.register(ActionRequest.class);
 		DataContractRegistry.register(ActionResponse.class);

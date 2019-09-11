@@ -49,4 +49,12 @@ public interface ParticipantNode {
 	 */
 	@DataField(order = 3, primitiveType = PrimitiveType.BYTES)
 	PubKey getPubKey();
+
+	/**
+	 * 节点的状态：已注册/已参与共识
+	 *
+	 * @return
+	 */
+	@DataField(order = 4, refEnum = true)
+	ParticipantNodeState getParticipantNodeState();
 }

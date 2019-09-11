@@ -1,5 +1,8 @@
 package test.com.jd.blockchain.intgr;
 
+import com.jd.blockchain.consensus.ConsensusProviders;
+import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
+import com.jd.blockchain.consensus.mq.settings.MsgQueueConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.KeyGenUtils;
@@ -30,6 +33,10 @@ public class IntegrationTest4MQ {
 
 	private static final boolean isRegisterDataAccount = true;
 
+	private static final boolean isRegisterParticipant = true;
+
+	private static final boolean isParticipantStateUpdate = true;
+
 	private static final boolean isWriteKv = true;
 	private static final boolean isContract = false;
 
@@ -43,6 +50,8 @@ public class IntegrationTest4MQ {
 	private static final String DB_TYPE_ROCKSDB = "rocksdb";
 
 	private static final String DATA_RETRIEVAL_URL= "http://192.168.151.39:10001";
+
+	public static final  String MQ_PROVIDER = "com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider";
 
 	@Test
 	public void test4Memory() {
@@ -136,6 +145,43 @@ public class IntegrationTest4MQ {
 		if(isContract){
 			IntegrationBase integrationBase = new IntegrationBase();
 			integrationBase.testSDK_Contract(adminKey, ledgerHash, blockchainService,ledgerRepository);
+		}
+
+		long participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+		long userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+		System.out.printf("before add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+		IntegrationBase.KeyPairResponse participantResponse;
+		if (isRegisterParticipant) {
+			participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
+		}
+
+		participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+		userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+		System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+		MsgQueueConsensusSettings consensusSettings = (MsgQueueConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo().getSettings().getConsensusSetting().toBytes());
+
+		System.out.printf("update participant state before ,old consensus env node num = %d\r\n", consensusSettings.getNodes().length);
+
+		for (int i = 0; i < participantCount; i++) {
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+		}
+
+		if (isParticipantStateUpdate) {
+			IntegrationBase.testSDK_UpdateParticipantState(adminKey, new BlockchainKeypair(participantResponse.getKeyPair().getPubKey(), participantResponse.getKeyPair().getPrivKey()), ledgerHash, blockchainService);
+		}
+
+		BftsmartConsensusSettings consensusSettingsNew = (BftsmartConsensusSettings) ConsensusProviders.getProvider(MQ_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getSettings().getConsensusSetting().toBytes());
+
+		System.out.printf("update participant state after ,new consensus env node num = %d\r\n", consensusSettingsNew.getNodes().length);
+
+		for (int i = 0; i < participantCount; i++) {
+			System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
 		}
 
 		IntegrationBase.testConsistencyAmongNodes(ledgers);

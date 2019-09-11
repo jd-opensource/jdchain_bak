@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.stream.Stream;
 
+import com.jd.blockchain.ledger.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,19 +20,6 @@ import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.BlockBody;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitSetting;
-import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.ContractAccountQuery;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.DataAccountQuery;
@@ -57,6 +45,9 @@ public class LedgerManagerTest {
 		DataContractRegistry.register(TransactionContent.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
+		DataContractRegistry.register(ParticipantNode.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 		DataContractRegistry.register(BlockBody.class);
 		DataContractRegistry.register(CryptoProvider.class);
 	}
@@ -214,6 +205,7 @@ public class LedgerManagerTest {
 		parties[0].setPubKey(kp0.getPubKey());
 		parties[0].setAddress(AddressEncoding.generateAddress(kp0.getPubKey()));
 		parties[0].setHostAddress(new NetworkAddress("127.0.0.1", 9000));
+		parties[0].setParticipantState(ParticipantNodeState.CONSENSUSED);
 
 		parties[1] = new ConsensusParticipantData();
 		parties[1].setId(1);
@@ -222,6 +214,7 @@ public class LedgerManagerTest {
 		parties[1].setPubKey(kp1.getPubKey());
 		parties[1].setAddress(AddressEncoding.generateAddress(kp1.getPubKey()));
 		parties[1].setHostAddress(new NetworkAddress("127.0.0.1", 9010));
+		parties[1].setParticipantState(ParticipantNodeState.CONSENSUSED);
 
 		parties[2] = new ConsensusParticipantData();
 		parties[2].setId(2);
@@ -230,6 +223,7 @@ public class LedgerManagerTest {
 		parties[2].setPubKey(kp2.getPubKey());
 		parties[2].setAddress(AddressEncoding.generateAddress(kp2.getPubKey()));
 		parties[2].setHostAddress(new NetworkAddress("127.0.0.1", 9020));
+		parties[2].setParticipantState(ParticipantNodeState.CONSENSUSED);
 
 		parties[3] = new ConsensusParticipantData();
 		parties[3].setId(3);
@@ -238,6 +232,7 @@ public class LedgerManagerTest {
 		parties[3].setPubKey(kp3.getPubKey());
 		parties[3].setAddress(AddressEncoding.generateAddress(kp3.getPubKey()));
 		parties[3].setHostAddress(new NetworkAddress("127.0.0.1", 9030));
+		parties[3].setParticipantState(ParticipantNodeState.CONSENSUSED);
 
 		initSetting.setConsensusParticipants(parties);
 

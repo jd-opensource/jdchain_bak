@@ -1,5 +1,7 @@
 package test.com.jd.blockchain.intgr;
 
+import com.jd.blockchain.consensus.ConsensusProviders;
+import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.KeyGenUtils;
@@ -7,6 +9,9 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.ParticipantNodeState;
+import com.jd.blockchain.ledger.ParticipantStateUpdateInfo;
+import com.jd.blockchain.ledger.ParticipantStateUpdateInfoData;
 import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
@@ -30,6 +35,10 @@ public class IntegrationTest4Bftsmart {
 
     private static final boolean isRegisterDataAccount = true;
 
+    private static final boolean isRegisterParticipant = true;
+
+    private static final boolean isParticipantStateUpdate = true;
+
     private static final boolean isWriteKv = true;
 
     private static final String DB_TYPE_MEM = "mem";
@@ -37,6 +46,8 @@ public class IntegrationTest4Bftsmart {
     private static final String DB_TYPE_REDIS = "redis";
 
     private static final String DB_TYPE_ROCKSDB = "rocksdb";
+
+    public static final  String  BFTSMART_PROVIDER = "com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider";
 
     @Test
     public void test4Memory() {
@@ -138,6 +149,41 @@ public class IntegrationTest4Bftsmart {
                     validKvWrite(kvResponse, ledgerRepository, blockchainService);
                 }
             }
+        }
+
+        long participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+        long userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+        System.out.printf("before add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+        IntegrationBase.KeyPairResponse participantResponse;
+        if (isRegisterParticipant) {
+            participantResponse = IntegrationBase.testSDK_RegisterParticipant(adminKey, ledgerHash, blockchainService);
+        }
+
+        participantCount = ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipantCount();
+
+        userCount = ledgerRepository.getUserAccountSet(ledgerRepository.retrieveLatestBlock()).getTotalCount();
+
+        System.out.printf("after add participant: participantCount = %d, userCount = %d\r\n", (int)participantCount, (int)userCount);
+
+        BftsmartConsensusSettings consensusSettings = (BftsmartConsensusSettings) ConsensusProviders.getProvider(BFTSMART_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo().getSettings().getConsensusSetting().toBytes());
+        System.out.printf("update participant state before ,old consensus env node num = %d\r\n", consensusSettings.getNodes().length);
+
+        for (int i = 0; i < participantCount; i++) {
+            System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
+        }
+
+        if (isParticipantStateUpdate) {
+            IntegrationBase.testSDK_UpdateParticipantState(adminKey, new BlockchainKeypair(participantResponse.getKeyPair().getPubKey(), participantResponse.getKeyPair().getPrivKey()), ledgerHash, blockchainService);
+        }
+
+        BftsmartConsensusSettings consensusSettingsNew = (BftsmartConsensusSettings) ConsensusProviders.getProvider(BFTSMART_PROVIDER).getSettingsFactory().getConsensusSettingsEncoder().decode(ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getSettings().getConsensusSetting().toBytes());
+
+        System.out.printf("update participant state after ,new consensus env node num = %d\r\n", consensusSettingsNew.getNodes().length);
+        for (int i = 0; i < participantCount; i++) {
+            System.out.printf("part%d state = %d\r\n",i, ledgerRepository.getAdminInfo(ledgerRepository.retrieveLatestBlock()).getParticipants()[i].getParticipantNodeState().CODE);
         }
 
         try {

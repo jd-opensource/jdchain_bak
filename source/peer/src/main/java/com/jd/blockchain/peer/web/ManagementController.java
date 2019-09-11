@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jd.blockchain.ledger.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,22 +32,7 @@ import com.jd.blockchain.consensus.service.NodeServer;
 import com.jd.blockchain.consensus.service.ServerSettings;
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitOperation;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.LedgerAdminDataQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerQuery;
@@ -117,6 +103,8 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 
 		DataContractRegistry.register(ActionResponse.class);
 

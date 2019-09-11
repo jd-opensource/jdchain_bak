@@ -15,6 +15,8 @@ import com.jd.blockchain.consts.Global;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.LedgerInitProperties.CryptoProperties;
+import com.jd.blockchain.ledger.ParticipantNodeState;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.StringUtils;
@@ -324,7 +326,7 @@ public class LedgerInitProperties {
 					.parseBoolean(PropertiesUtils.getRequiredProperty(props, initializerSecureKey));
 			NetworkAddress initializerAddress = new NetworkAddress(initializerHost, initializerPort, initializerSecure);
 			parti.setInitializerAddress(initializerAddress);
-
+			parti.setParticipantNodeState(ParticipantNodeState.CONSENSUSED);
 			initProps.addConsensusParticipant(parti);
 		}
 
@@ -435,8 +437,11 @@ public class LedgerInitProperties {
 
 		// private NetworkAddress consensusAddress;
 
+		private ParticipantNodeState participantNodeState;
+
 		private NetworkAddress initializerAddress;
 
+		@Override
 		public int getId() {
 			return id;
 		}
@@ -450,6 +455,7 @@ public class LedgerInitProperties {
 			return address;
 		}
 
+		@Override
 		public String getName() {
 			return name;
 		}
@@ -466,6 +472,15 @@ public class LedgerInitProperties {
 //			this.pubKeyPath = pubKeyPath;
 //		}
 
+		@Override
+		public ParticipantNodeState getParticipantNodeState() {
+			return participantNodeState;
+		}
+
+		public void setParticipantNodeState(ParticipantNodeState participantNodeState) {
+			this.participantNodeState = participantNodeState;
+		}
+
 		public NetworkAddress getInitializerAddress() {
 			return initializerAddress;
 		}
@@ -474,6 +489,7 @@ public class LedgerInitProperties {
 			this.initializerAddress = initializerAddress;
 		}
 
+		@Override
 		public PubKey getPubKey() {
 			return pubKey;
 		}

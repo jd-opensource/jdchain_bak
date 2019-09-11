@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.DoubleStream;
 
+import com.jd.blockchain.ledger.*;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
@@ -23,22 +24,10 @@ import com.jd.blockchain.crypto.CryptoAlgorithm;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.BytesDataList;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerSecurityException;
 import com.jd.blockchain.ledger.TransactionPermission;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionRequestBuilder;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerEditor;
@@ -98,6 +87,8 @@ public class LedgerPerformanceTest {
 		DataContractRegistry.register(UserRegisterOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 	}
 
 	public static final LedgerSecurityManager DEFAULT_SECURITY_MANAGER = new FreedomLedgerSecurityManager();
