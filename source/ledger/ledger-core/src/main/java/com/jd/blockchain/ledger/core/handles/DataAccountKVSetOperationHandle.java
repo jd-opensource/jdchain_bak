@@ -35,7 +35,7 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 			throw new DataAccountDoesNotExistException("DataAccount doesn't exist!");
 		}
 		KVWriteEntry[] writeSet = kvWriteOp.getWriteSet();
-		long v = -1;
+		long v = -1L;
 		for (KVWriteEntry kvw : writeSet) {
 			v = account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
 			if (v < 0) {
