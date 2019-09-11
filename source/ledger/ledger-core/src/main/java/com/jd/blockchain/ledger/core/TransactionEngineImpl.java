@@ -54,31 +54,31 @@ public class TransactionEngineImpl implements TransactionEngine {
 
 	private class InnerTransactionBatchProcessor extends TransactionBatchProcessor {
 
-		private HashDigest ledgerHash;
+//		private HashDigest ledgerHash;
 
 		/**
 		 * 创建交易批处理器；
 		 * 
 		 * @param ledgerRepo           账本；
 		 * @param handlesRegisteration 操作处理对象注册表；
-		 * @param blockHeight
+		 *
 		 */
 		public InnerTransactionBatchProcessor(LedgerRepository ledgerRepo,
 				OperationHandleRegisteration handlesRegisteration) {
 			super(ledgerRepo, handlesRegisteration);
-			ledgerHash = ledgerRepo.getHash();
+//			ledgerHash = ledgerRepo.getHash();
 		}
 
 		@Override
 		protected void onCommitted() {
 			super.onCommitted();
-			finishBatch(ledgerHash);
+			finishBatch(getLedgerHash());
 		}
 
 		@Override
 		protected void onCanceled() {
 			super.onCanceled();
-			finishBatch(ledgerHash);
+			finishBatch(getLedgerHash());
 		}
 
 	}
