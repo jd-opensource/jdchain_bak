@@ -66,6 +66,7 @@ public class TransactionEngineImpl implements TransactionEngine {
 		public InnerTransactionBatchProcessor(LedgerRepository ledgerRepo,
 				OperationHandleRegisteration handlesRegisteration) {
 			super(ledgerRepo, handlesRegisteration);
+			ledgerHash = ledgerRepo.getHash();
 		}
 
 		@Override
