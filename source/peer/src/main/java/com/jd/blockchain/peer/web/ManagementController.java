@@ -111,7 +111,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		DataContractRegistry.register(BftsmartConsensusSettings.class);
 		DataContractRegistry.register(BftsmartNodeSettings.class);
 		
-		DataContractRegistry.register(LedgerAdminDataQuery.class);
+//		DataContractRegistry.register(LedgerAdminDataQuery.class);
 
 	}
 

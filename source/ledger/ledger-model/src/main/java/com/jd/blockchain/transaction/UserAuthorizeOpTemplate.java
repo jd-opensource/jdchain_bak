@@ -18,6 +18,7 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 
 	static {
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(UserAuthorizeOperation.class);
 	}
 
 	private Set<UserRolesAuthorization> userAuthMap = Collections

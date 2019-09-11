@@ -43,6 +43,21 @@ public class LedgerInitializeWeb4Nodes {
 
 	public static final String[] PRIV_KEYS = IntegrationBase.PRIV_KEYS;
 
+	static {
+		try {
+			// 首先获取当前Resource路径
+			ClassPathResource ledgerInitSettingResource = new ClassPathResource("");
+			String path = ledgerInitSettingResource.getURL().getPath();
+			System.out.println("-----" + path + "-----");
+			// 将参数注册进去
+			System.setProperty("peer.log", path);
+			System.setProperty("init.log", path);
+			System.setProperty("gateway.log", path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void testMQInitByMemWith4Nodes() {
 		testInitWith4Nodes(LedgerInitConsensusConfig.mqConfig, LedgerInitConsensusConfig.memConnectionStrings);

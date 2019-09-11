@@ -19,6 +19,7 @@ public class RolesConfigureOpTemplate implements RolesConfigurer, RolesConfigure
 
 	static {
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(RolesConfigureOperation.class);
 	}
 
 	private Map<String, RolePrivilegeConfig> rolesMap = Collections
