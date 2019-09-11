@@ -12,7 +12,6 @@ import java.util.Properties;
 
 import org.mockito.Mockito;
 
-import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ClientIdentifications;
@@ -50,6 +49,8 @@ import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.OperationResult;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantRegisterOperation;
+import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionPermission;

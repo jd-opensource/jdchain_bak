@@ -201,7 +201,7 @@ public class IntegrationBase {
 
 		ParticipantInfoData participantInfoData = new ParticipantInfoData("peer4", participantKeyPair.getPubKey(), new NetworkAddress("127.0.0.1", 20000));
 
-		txTpl.states().update(new BlockchainIdentityData(participantInfoData.getPubKey()), participantInfoData.getNetworkAddress(), ParticipantNodeState.CONSENSUSED);
+		txTpl.states().update(new BlockchainIdentityData(participantInfoData.getPubKey()), participantInfoData.getNetworkAddress(), ParticipantNodeState.ACTIVED);
 
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();

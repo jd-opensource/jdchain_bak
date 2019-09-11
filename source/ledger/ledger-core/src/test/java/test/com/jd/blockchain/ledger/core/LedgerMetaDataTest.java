@@ -186,7 +186,7 @@ public class LedgerMetaDataTest {
 		// NetworkAddress consensusAddress = new NetworkAddress("192.168.1.1", 9001,
 		// false);
 		Bytes address = AddressEncoding.generateAddress(pubKey);
-		ParticipantCertData participantCertData = new ParticipantCertData(address, name, pubKey, ParticipantNodeState.CONSENSUSED);
+		ParticipantCertData participantCertData = new ParticipantCertData(address, name, pubKey, ParticipantNodeState.ACTIVED);
 
 		// encode and decode
 		byte[] encodeBytes = BinaryProtocol.encode(participantCertData, ParticipantNode.class);

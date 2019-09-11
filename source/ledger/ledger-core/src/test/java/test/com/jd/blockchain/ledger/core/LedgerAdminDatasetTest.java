@@ -50,7 +50,7 @@ public class LedgerAdminDatasetTest {
 			parties[i].setHostAddress(new NetworkAddress("192.168.10." + (10 + i), 10010 + 10 * i));
 			parties[i].setName("Participant[" + i + "]");
 			parties[i].setPubKey(bckeys[i].getPubKey());
-			parties[i].setParticipantState(ParticipantNodeState.CONSENSUSED);
+			parties[i].setParticipantState(ParticipantNodeState.ACTIVED);
 		}
 		ConsensusParticipantData[] parties1 = Arrays.copyOf(parties, 4);
 		initSetting.setConsensusParticipants(parties1);

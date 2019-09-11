@@ -68,7 +68,7 @@ public class LedgerTestUtils {
 			parties[i].setPubKey(partiKeys[i].getPubKey());
 			parties[i].setAddress(AddressEncoding.generateAddress(partiKeys[i].getPubKey()));
 			parties[i].setHostAddress(new NetworkAddress("192.168.1." + (10 + i), 9000));
-			parties[i].setParticipantState(ParticipantNodeState.CONSENSUSED);
+			parties[i].setParticipantState(ParticipantNodeState.ACTIVED);
 
 		}
 
