@@ -4,8 +4,22 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusProviders;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.LedgerSettings;
+import com.jd.blockchain.ledger.ParticipantInfo;
+import com.jd.blockchain.ledger.ParticipantInfoData;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantNodeState;
+import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
+import com.jd.blockchain.ledger.core.LedgerAdminDataset;
+import com.jd.blockchain.ledger.core.LedgerConfiguration;
+import com.jd.blockchain.ledger.core.LedgerDataset;
+import com.jd.blockchain.ledger.core.LedgerQuery;
+import com.jd.blockchain.ledger.core.MultiIDsPolicy;
+import com.jd.blockchain.ledger.core.OperationHandleContext;
+import com.jd.blockchain.ledger.core.SecurityContext;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 import com.jd.blockchain.utils.Bytes;
 
 
@@ -16,8 +30,8 @@ public class ParticipantStateUpdateOperationHandle extends AbstractLedgerOperati
 
     @Override
     protected void doProcess(ParticipantStateUpdateOperation op, LedgerDataset newBlockDataset,
-                             TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
-                             OperationHandleContext handleContext, LedgerService ledgerService) {
+                             TransactionRequestExtension requestContext, LedgerQuery previousBlockDataset,
+                             OperationHandleContext handleContext) {
 
         // 权限校验；
         SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
@@ -35,7 +49,7 @@ public class ParticipantStateUpdateOperationHandle extends AbstractLedgerOperati
 
         for(int i = 0; i < participants.length; i++) {
             if (stateUpdateOperation.getParticipantIdentity().getPubKey().equals(participants[i].getPubKey())) {
-               participantNode = new PartNode(participants[i].getId(), participants[i].getName(), participants[i].getPubKey(), ParticipantNodeState.CONSENSUSED);
+               participantNode = new PartNode(participants[i].getId(), participants[i].getName(), participants[i].getPubKey(), ParticipantNodeState.ACTIVED);
                break;
             }
         }

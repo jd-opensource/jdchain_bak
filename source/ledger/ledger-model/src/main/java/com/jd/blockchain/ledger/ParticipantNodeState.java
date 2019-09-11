@@ -18,12 +18,12 @@ public enum ParticipantNodeState {
     /**
      * 已注册；
      */
-    REGISTED((byte) 0),
+    REGISTERED((byte) 0),
 
     /**
-     * 已共识；
+     * 已激活；
      */
-    CONSENSUSED((byte) 1);
+    ACTIVED((byte) 1);
 
     @EnumField(type= PrimitiveType.INT8)
     public final byte CODE;

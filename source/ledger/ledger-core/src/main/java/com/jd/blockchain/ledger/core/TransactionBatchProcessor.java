@@ -42,13 +42,11 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private LedgerSecurityManager securityManager;
 
-	private LedgerService ledgerService;
-
 	private LedgerEditor newBlockEditor;
 
-	private LedgerDataQuery ledgerQueryer;
+	private LedgerQuery ledger;
 
-	private OperationHandleRegisteration opHandles;
+	private OperationHandleRegisteration handlesRegisteration;
 
 	// 新创建的交易；
 	private LedgerBlock block;
@@ -59,18 +57,53 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private TransactionBatchResult batchResult;
 
+	public HashDigest getLedgerHash() {
+		return ledger.getHash();
+	}
+
 	/**
 	 * @param newBlockEditor 新区块的数据编辑器；
 	 * @param ledgerQueryer  账本查询器，只包含新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
 	 * @param opHandles      操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerSecurityManager securityManager, LedgerEditor newBlockEditor,
-			LedgerDataQuery ledgerQueryer, OperationHandleRegisteration opHandles, LedgerService ledgerService) {
+			LedgerQuery ledger, OperationHandleRegisteration opHandles) {
 		this.securityManager = securityManager;
 		this.newBlockEditor = newBlockEditor;
-		this.ledgerQueryer = ledgerQueryer;
-		this.opHandles = opHandles;
-		this.ledgerService = ledgerService;
+		this.ledger = ledger;
+		this.handlesRegisteration = opHandles;
+	}
+
+	public TransactionBatchProcessor(LedgerRepository ledgerRepo, OperationHandleRegisteration handlesRegisteration) {
+		this.ledger = ledgerRepo;
+		this.handlesRegisteration = handlesRegisteration;
+		
+		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
+		LedgerDataQuery ledgerDataQuery = ledgerRepo.getDataSet(ledgerBlock);
+		LedgerAdminDataQuery previousAdminDataset = ledgerDataQuery.getAdminDataset();
+		this.securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
+				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				ledgerDataQuery.getUserAccountSet());
+		
+		this.newBlockEditor = ledgerRepo.createNextBlock();
+
+	}
+
+	public static TransactionBatchProcess create(LedgerRepository ledgerRepo,
+			OperationHandleRegisteration handlesRegisteration) {
+		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
+		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
+
+		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
+		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(
+				previousAdminDataset.getAdminInfo().getRolePrivileges(),
+				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousBlockDataset.getUserAccountSet());
+
+		TransactionBatchProcessor processor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo,
+				handlesRegisteration);
+		return processor;
 	}
 
 	/*
@@ -228,16 +261,15 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 				public void handle(Operation operation) {
 					// assert; Instance of operation are one of User related operations or
 					// DataAccount related operations;
-					OperationHandle hdl = opHandles.getHandle(operation.getClass());
-					hdl.process(operation, dataset, request, ledgerQueryer, this, ledgerService);
+					OperationHandle hdl = handlesRegisteration.getHandle(operation.getClass());
+					hdl.process(operation, dataset, request, ledger, this);
 				}
 			};
 			OperationHandle opHandle;
 			int opIndex = 0;
 			for (Operation op : ops) {
-				opHandle = opHandles.getHandle(op.getClass());
-				BytesValue opResult = opHandle.process(op, dataset, request, ledgerQueryer, handleContext,
-						ledgerService);
+				opHandle = handlesRegisteration.getHandle(op.getClass());
+				BytesValue opResult = opHandle.process(op, dataset, request, ledger, handleContext);
 				if (opResult != null) {
 					operationResults.add(new OperationResultData(opIndex, opResult));
 				}
@@ -335,8 +367,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		if (batchResult != null) {
 			throw new IllegalStateException("Batch result has already been prepared or canceled!");
 		}
-		block = newBlockEditor.prepare();
-		batchResult = new TransactionBatchResultHandleImpl();
+		this.block = newBlockEditor.prepare();
+		this.batchResult = new TransactionBatchResultHandleImpl();
 		return (TransactionBatchResultHandle) batchResult;
 	}
 
@@ -361,10 +393,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	@Override
 	public long blockHeight() {
-		if (block != null) {
-			return block.getHeight();
-		}
-		return 0;
+//		if (block != null) {
+//			return block.getHeight();
+//		}
+//		return 0;
+
+		return ledger.getLatestBlockHeight();
 	}
 
 	private void commitSuccess() {

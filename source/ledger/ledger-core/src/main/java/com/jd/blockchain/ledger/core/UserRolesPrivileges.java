@@ -21,9 +21,9 @@ class UserRolesPrivileges {
 
 	private Bytes userAddress;
 
-	private PrivilegeBitset<LedgerPermission> ledgerPrivileges;
+	private LedgerPrivilege ledgerPrivileges;
 
-	private PrivilegeBitset<TransactionPermission> transactionPrivileges;
+	private TransactionPrivilege transactionPrivileges;
 
 	public UserRolesPrivileges(Bytes userAddress, RolesPolicy policy, Collection<RolePrivileges> privilegesList) {
 		this.userAddress = userAddress;

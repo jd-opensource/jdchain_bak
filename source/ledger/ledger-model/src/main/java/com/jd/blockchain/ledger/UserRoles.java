@@ -1,6 +1,7 @@
 package com.jd.blockchain.ledger;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,7 +50,7 @@ public class UserRoles implements RoleSet {
 	public RolesPolicy getPolicy() {
 		return policy;
 	}
-
+	
 	public void setPolicy(RolesPolicy policy) {
 		this.policy = policy;
 	}
@@ -61,6 +62,10 @@ public class UserRoles implements RoleSet {
 	@Override
 	public String[] getRoles() {
 		return roles.toArray(new String[roles.size()]);
+	}
+	
+	public Set<String> getRoleSet(){
+		return Collections.unmodifiableSet(roles);
 	}
 
 	public long getVersion() {

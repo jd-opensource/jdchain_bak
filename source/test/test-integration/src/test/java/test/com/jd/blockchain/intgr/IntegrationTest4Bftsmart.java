@@ -12,7 +12,7 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.ParticipantNodeState;
 import com.jd.blockchain.ledger.ParticipantStateUpdateInfo;
 import com.jd.blockchain.ledger.ParticipantStateUpdateInfoData;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
@@ -90,7 +90,7 @@ public class IntegrationTest4Bftsmart {
         gwStarting.waitReturn();
 
         // 执行测试用例之前，校验每个节点的一致性；
-        LedgerRepository[] ledgers = buildLedgers(new LedgerBindingConfig[]{
+        LedgerQuery[] ledgers = buildLedgers(new LedgerBindingConfig[]{
                         peerNodes[0].getLedgerBindingConfig(),
                         peerNodes[1].getLedgerBindingConfig(),
                         peerNodes[2].getLedgerBindingConfig(),
@@ -104,7 +104,7 @@ public class IntegrationTest4Bftsmart {
 
         IntegrationBase.testConsistencyAmongNodes(ledgers);
 
-        LedgerRepository ledgerRepository = ledgers[0];
+        LedgerQuery ledgerRepository = ledgers[0];
 
         GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 

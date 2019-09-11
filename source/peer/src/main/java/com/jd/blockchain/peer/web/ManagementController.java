@@ -35,7 +35,7 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.core.LedgerAdminDataQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.peer.ConsensusRealm;
 import com.jd.blockchain.peer.LedgerBindingConfigAware;
 import com.jd.blockchain.peer.PeerManage;
@@ -212,7 +212,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		LedgerBindingConfig.BindingConfig bindingConfig = config.getLedger(ledgerHash);
 		DbConnection dbConnNew = connFactory.connect(bindingConfig.getDbConnection().getUri(),
 				bindingConfig.getDbConnection().getPassword());
-		LedgerRepository ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
+		LedgerQuery ledgerRepository = ledgerManager.register(ledgerHash, dbConnNew.getStorageService());
 
 		// load provider;
 		LedgerAdminInfo ledgerAdminAccount = ledgerRepository.getAdminInfo();

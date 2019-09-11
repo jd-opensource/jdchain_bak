@@ -7,7 +7,7 @@ import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.mocker.config.LedgerInitWebConfiguration;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
@@ -61,9 +61,9 @@ public class NodeWebContext {
         this.serverAddress = serverAddress;
     }
 
-    public LedgerRepository registLedger(HashDigest ledgerHash) {
+    public LedgerQuery registLedger(HashDigest ledgerHash) {
         DbConnection conn = db.connect(dbConnConfig.getUri());
-        LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+        LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
         return ledgerRepo;
     }
 

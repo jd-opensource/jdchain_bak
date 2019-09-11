@@ -166,7 +166,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 		ledgerRepository = registerLedger(ledgerHash, dbConnectionConfig);
 
-		queryService = new LedgerQueryService(ledgerManager);
+		queryService = new LedgerQueryService(ledgerRepository);
 
 		contractExeHandle.initLedger(ledgerManager, ledgerHash);
 
@@ -442,7 +442,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 		LedgerBlock latestBlock = ledgerRepository.getLatestBlock();
 		LedgerDataQuery previousDataSet = ledgerRepository.getDataSet(latestBlock);
 		TransactionBatchProcessor txProc = new TransactionBatchProcessor(getSecurityManager(), newEditor,
-				previousDataSet, opHandler, ledgerManager);
+				ledgerRepository, opHandler);
 		TransactionResponse txResp = txProc.schedule(txRequest);
 		TransactionBatchResultHandle handle = txProc.prepare();
 		handle.commit();

@@ -8,22 +8,16 @@ package com.jd.blockchain.ledger;
  */
 public class LedgerPrivilege extends PrivilegeBitset<LedgerPermission> {
 
-	private static final CodeIndexer<LedgerPermission> CODE_INDEXER = new LedgerPermissionCodeIndexer();
-
 	public LedgerPrivilege() {
-		super(CODE_INDEXER);
 	}
 
 	public LedgerPrivilege(byte[] codeBytes) {
-		super(codeBytes, CODE_INDEXER);
+		super(codeBytes);
 	}
 
-	private static class LedgerPermissionCodeIndexer implements CodeIndexer<LedgerPermission> {
-
-		@Override
-		public int getCodeIndex(LedgerPermission permission) {
-			return permission.CODE & 0xFF;
-		}
-
+	@Override
+	public LedgerPrivilege clone() {
+		return (LedgerPrivilege) super.clone();
 	}
+
 }

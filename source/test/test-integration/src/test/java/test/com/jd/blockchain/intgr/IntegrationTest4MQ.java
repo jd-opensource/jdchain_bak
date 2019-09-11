@@ -98,7 +98,7 @@ public class IntegrationTest4MQ {
 		gwStarting.waitReturn();
 
 		// 执行测试用例之前，校验每个节点的一致性；
-		LedgerRepository[] ledgers = buildLedgers(new LedgerBindingConfig[]{
+		LedgerQuery[] ledgers = buildLedgers(new LedgerBindingConfig[]{
 				peerNodes[0].getLedgerBindingConfig(),
 				peerNodes[1].getLedgerBindingConfig(),
 				peerNodes[2].getLedgerBindingConfig(),
@@ -112,7 +112,7 @@ public class IntegrationTest4MQ {
 
 		IntegrationBase.testConsistencyAmongNodes(ledgers);
 
-		LedgerRepository ledgerRepository = ledgers[0];
+		LedgerQuery ledgerRepository = ledgers[0];
 
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 

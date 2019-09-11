@@ -29,7 +29,7 @@ import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
@@ -117,16 +117,16 @@ public class IntegrationTest2 {
 	private void testConsistencyAmongNodes(IntegratedContext context) {
 		int[] ids = context.getNodeIds();
 		Node[] nodes = new Node[ids.length];
-		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
+		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = context.getNode(ids[i]);
 			HashDigest ledgerHash = nodes[i].getLedgerManager().getLedgerHashs()[0];
 			ledgers[i] = nodes[i].getLedgerManager().getLedger(ledgerHash);
 		}
-		LedgerRepository ledger0 = ledgers[0];
+		LedgerQuery ledger0 = ledgers[0];
 		LedgerBlock latestBlock0 = ledger0.retrieveLatestBlock();
 		for (int i = 1; i < ledgers.length; i++) {
-			LedgerRepository otherLedger = ledgers[i];
+			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 			assertEquals(ledger0.getHash(), otherLedger.getHash());
 			assertEquals(ledger0.getLatestBlockHeight(), otherLedger.getLatestBlockHeight());
@@ -225,10 +225,10 @@ public class IntegrationTest2 {
 		assertEquals(ledgerHash0, ledgerHash2);
 		assertEquals(ledgerHash0, ledgerHash3);
 
-		LedgerRepository ledger0 = nodeCtx0.registLedger(ledgerHash0);
-		LedgerRepository ledger1 = nodeCtx1.registLedger(ledgerHash1);
-		LedgerRepository ledger2 = nodeCtx2.registLedger(ledgerHash2);
-		LedgerRepository ledger3 = nodeCtx3.registLedger(ledgerHash3);
+		LedgerQuery ledger0 = nodeCtx0.registLedger(ledgerHash0);
+		LedgerQuery ledger1 = nodeCtx1.registLedger(ledgerHash1);
+		LedgerQuery ledger2 = nodeCtx2.registLedger(ledgerHash2);
+		LedgerQuery ledger3 = nodeCtx3.registLedger(ledgerHash3);
 
 		assertNotNull(ledger0);
 		assertNotNull(ledger1);

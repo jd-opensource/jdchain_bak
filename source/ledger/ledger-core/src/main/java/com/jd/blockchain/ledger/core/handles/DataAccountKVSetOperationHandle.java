@@ -6,9 +6,8 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
 import com.jd.blockchain.ledger.DataVersionConflictException;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.core.DataAccount;
-import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
-import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
@@ -24,8 +23,8 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 
 	@Override
 	protected void doProcess(DataAccountKVSetOperation kvWriteOp, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
-			OperationHandleContext handleContext, LedgerService ledgerService) {
+			TransactionRequestExtension requestContext, LedgerQuery ledger, 
+			OperationHandleContext handleContext) {
 		// 权限校验；
 		SecurityPolicy securityPolicy = SecurityContext.getContextUsersPolicy();
 		securityPolicy.checkEndpointPermission(LedgerPermission.WRITE_DATA_ACCOUNT, MultiIDsPolicy.AT_LEAST_ONE);

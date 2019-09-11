@@ -5,7 +5,9 @@ import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
+import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitOperation;
@@ -29,12 +31,14 @@ import com.jd.blockchain.transaction.TxRequestBuilder;
 public class LedgerInitializer {
 
 	private static final FullPermissionedSecurityManager FULL_PERMISSION_SECURITY_MANAGER = new FullPermissionedSecurityManager();
+	
+	private static final LedgerQuery EMPTY_LEDGER =new EmptyLedgerQuery();
 
 	private static final LedgerDataQuery EMPTY_LEDGER_DATA_QUERY = new EmptyLedgerDataset();
 
 	private static final OperationHandleRegisteration DEFAULT_OP_HANDLE_REG = new DefaultOperationHandleRegisteration();
 
-	private LedgerService EMPTY_LEDGERS = new LedgerManager();
+//	private LedgerService EMPTY_LEDGERS = new LedgerManager();
 
 	private LedgerInitSetting initSetting;
 
@@ -74,15 +78,6 @@ public class LedgerInitializer {
 	public TransactionContent getTransactionContent() {
 		return initTxContent;
 	}
-
-	private static SecurityInitSettings createDefaultSecurityInitSettings() {
-		// TODO throw new IllegalStateException("Not implemented!");
-		return null;
-	}
-
-//	public static LedgerInitializer create(LedgerInitSetting initSetting) {
-//		return create(initSetting, createDefaultSecurityInitSettings());
-//	}
 
 	public static LedgerInitializer create(LedgerInitSetting initSetting, SecurityInitSettings securityInitSettings) {
 		// 生成创世交易；
@@ -142,6 +137,10 @@ public class LedgerInitializer {
 
 	public SignatureDigest signTransaction(PrivKey privKey) {
 		return SignatureUtils.sign(initTxContent, privKey);
+	}
+	
+	public DigitalSignature signTransaction(BlockchainKeypair key) {
+		return SignatureUtils.sign(initTxContent, key);
 	}
 
 	/**
@@ -204,12 +203,103 @@ public class LedgerInitializer {
 		TransactionRequest txRequest = txReqBuilder.buildRequest();
 
 		TransactionBatchProcessor txProcessor = new TransactionBatchProcessor(FULL_PERMISSION_SECURITY_MANAGER,
-				ledgerEditor, EMPTY_LEDGER_DATA_QUERY, DEFAULT_OP_HANDLE_REG, EMPTY_LEDGERS);
+				ledgerEditor, EMPTY_LEDGER, DEFAULT_OP_HANDLE_REG);
 
 		txProcessor.schedule(txRequest);
 
 		txResultsHandle = txProcessor.prepare();
 		return txResultsHandle.getBlock();
+	}
+	
+	private static class EmptyLedgerQuery implements LedgerQuery{
+		
+		private EmptyLedgerDataset dataset;
+
+		@Override
+		public HashDigest getHash() {
+			return null;
+		}
+
+		@Override
+		public long getLatestBlockHeight() {
+			return 0;
+		}
+
+		@Override
+		public HashDigest getLatestBlockHash() {
+			return null;
+		}
+
+		@Override
+		public LedgerBlock getLatestBlock() {
+			return null;
+		}
+
+		@Override
+		public HashDigest getBlockHash(long height) {
+			return null;
+		}
+
+		@Override
+		public LedgerBlock getBlock(long height) {
+			return null;
+		}
+
+		@Override
+		public LedgerAdminInfo getAdminInfo() {
+			return null;
+		}
+
+		@Override
+		public LedgerAdminInfo getAdminInfo(LedgerBlock block) {
+			return null;
+		}
+
+		@Override
+		public LedgerBlock getBlock(HashDigest hash) {
+			return null;
+		}
+
+		@Override
+		public LedgerDataQuery getDataSet(LedgerBlock block) {
+			return dataset;
+		}
+
+		@Override
+		public TransactionSet getTransactionSet(LedgerBlock block) {
+			return null;
+		}
+
+		@Override
+		public UserAccountQuery getUserAccountSet(LedgerBlock block) {
+			return dataset.getUserAccountSet();
+		}
+
+		@Override
+		public DataAccountQuery getDataAccountSet(LedgerBlock block) {
+			return dataset.getDataAccountSet();
+		}
+
+		@Override
+		public ContractAccountQuery getContractAccountSet(LedgerBlock block) {
+			return dataset.getContractAccountset();
+		}
+
+		@Override
+		public LedgerBlock retrieveLatestBlock() {
+			return null;
+		}
+
+		@Override
+		public long retrieveLatestBlockHeight() {
+			return 0;
+		}
+
+		@Override
+		public HashDigest retrieveLatestBlockHash() {
+			return null;
+		}
+		
 	}
 
 }

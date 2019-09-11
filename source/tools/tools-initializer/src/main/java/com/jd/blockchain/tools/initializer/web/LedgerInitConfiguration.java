@@ -21,7 +21,6 @@ import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.LedgerInitProperties.CryptoProperties;
 import com.jd.blockchain.ledger.LedgerInitProperties.ParticipantProperties;
 import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.SecurityInitData;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.core.CryptoConfig;
@@ -184,6 +183,8 @@ public class LedgerInitConfiguration {
 									partiProps.getId(), partiProps.getName()));
 				}
 			}
+			//去掉对默认角色的授权；
+			
 			securityInitData.addUserAuthencation(partiProps.getAddress(), roles, partiProps.getRolesPolicy());
 		}
 

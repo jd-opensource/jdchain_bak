@@ -3,9 +3,8 @@ package com.jd.blockchain.ledger.core.handles;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
-import com.jd.blockchain.ledger.core.LedgerService;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.MultiIDsPolicy;
 import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
@@ -17,11 +16,10 @@ public class DataAccountRegisterOperationHandle extends AbstractLedgerOperationH
 	public DataAccountRegisterOperationHandle() {
 		super(DataAccountRegisterOperation.class);
 	}
-	
+
 	@Override
 	protected void doProcess(DataAccountRegisterOperation op, LedgerDataset newBlockDataset,
-			TransactionRequestExtension requestContext, LedgerDataQuery previousBlockDataset,
-			OperationHandleContext handleContext, LedgerService ledgerService) {
+			TransactionRequestExtension requestContext, LedgerQuery ledger, OperationHandleContext handleContext) {
 		// TODO: 请求者应该提供数据账户的公钥签名，以更好地确保注册人对该地址和公钥具有合法使用权；
 
 		// 权限校验；

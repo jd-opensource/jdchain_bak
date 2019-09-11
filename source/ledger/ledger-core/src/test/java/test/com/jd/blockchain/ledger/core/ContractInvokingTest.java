@@ -112,7 +112,7 @@ public class ContractInvokingTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
@@ -186,7 +186,7 @@ public class ContractInvokingTest {
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		String key = TxTestContractImpl.KEY;
 		String value = "VAL";
@@ -333,7 +333,7 @@ public class ContractInvokingTest {
 		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
-				previousBlockDataset, opReg, ledgerService);
+				ledgerRepo, opReg);
 
 		TxBuilder txBuilder = new TxBuilder(ledgerRepo.getHash());
 		txDefinitor.buildTx(txBuilder);
@@ -368,7 +368,7 @@ public class ContractInvokingTest {
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 注册数据账户；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);
@@ -399,7 +399,7 @@ public class ContractInvokingTest {
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		LedgerSecurityManager securityManager = getSecurityManager();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor,
-				previousBlockDataset, opReg, ledgerManager);
+				ledgerRepo, opReg);
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		TxBuilder txBuilder = new TxBuilder(ledgerHash);

@@ -1,7 +1,6 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.storage.service.KVStorageService;
 
 /**
@@ -14,7 +13,7 @@ public interface LedgerManage extends LedgerService {
 	
 	static final String LEDGER_PREFIX = "LDG://";
 	
-	LedgerRepository register(HashDigest ledgerHash, KVStorageService storageService);
+	LedgerQuery register(HashDigest ledgerHash, KVStorageService storageService);
 	
 	void unregister(HashDigest ledgerHash);
 

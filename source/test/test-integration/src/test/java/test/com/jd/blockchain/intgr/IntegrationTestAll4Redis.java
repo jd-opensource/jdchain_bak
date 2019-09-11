@@ -7,7 +7,7 @@ import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.DbConnection;
@@ -109,7 +109,7 @@ public class IntegrationTestAll4Redis {
 		gwStarting0.waitReturn();
 
 		// 执行测试用例之前，校验每个节点的一致性；
-		LedgerRepository[] ledgers = buildLedgers(
+		LedgerQuery[] ledgers = buildLedgers(
 				new LedgerBindingConfig[] { bindingConfig0, bindingConfig1, bindingConfig2, bindingConfig3 },
 				new DbConnectionFactory[] { dbConnectionFactory0, dbConnectionFactory1, dbConnectionFactory2,
 						dbConnectionFactory3 });
@@ -144,10 +144,10 @@ public class IntegrationTestAll4Redis {
 		}
 	}
 
-	private LedgerRepository[] buildLedgers(LedgerBindingConfig[] bindingConfigs,
+	private LedgerQuery[] buildLedgers(LedgerBindingConfig[] bindingConfigs,
 			DbConnectionFactory[] dbConnectionFactories) {
 		int[] ids = { 0, 1, 2, 3 };
-		LedgerRepository[] ledgers = new LedgerRepository[ids.length];
+		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
 		LedgerManager[] ledgerManagers = new LedgerManager[ids.length];
 		for (int i = 0; i < ids.length; i++) {
 			ledgerManagers[i] = new LedgerManager();
@@ -160,11 +160,11 @@ public class IntegrationTestAll4Redis {
 		return ledgers;
 	}
 
-	private void testConsistencyAmongNodes(LedgerRepository[] ledgers) {
-		LedgerRepository ledger0 = ledgers[0];
+	private void testConsistencyAmongNodes(LedgerQuery[] ledgers) {
+		LedgerQuery ledger0 = ledgers[0];
 		LedgerBlock latestBlock0 = ledger0.retrieveLatestBlock();
 		for (int i = 1; i < ledgers.length; i++) {
-			LedgerRepository otherLedger = ledgers[i];
+			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 			assertEquals(ledger0.getHash(), otherLedger.getHash());
 			assertEquals(ledger0.getLatestBlockHeight(), otherLedger.getLatestBlockHeight());
@@ -183,7 +183,7 @@ public class IntegrationTestAll4Redis {
 
 	// 测试一个区块包含多个交易的写入情况，并验证写入结果；
 	private void testWriteBatchTransactions(GatewayTestRunner gateway, AsymmetricKeypair adminKey,
-			LedgerRepository ledgerRepository) {
+			LedgerQuery ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService blockchainService = gwsrvFact.getBlockchainService();
@@ -233,7 +233,7 @@ public class IntegrationTestAll4Redis {
 		return;
 	}
 
-	private void testSDK(GatewayTestRunner gateway, AsymmetricKeypair adminKey, LedgerRepository ledgerRepository) {
+	private void testSDK(GatewayTestRunner gateway, AsymmetricKeypair adminKey, LedgerQuery ledgerRepository) {
 		// 连接网关；
 		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
 		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
@@ -248,7 +248,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private void testSDK_InsertData(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, Bytes dataAccountAddress, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, Bytes dataAccountAddress, LedgerQuery ledgerRepository) {
 
 		// 在本地定义注册账号的 TX；
 		TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHash);
@@ -292,7 +292,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private BlockchainKeypair testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
 		// 注册数据账户，并验证最终写入；
 		BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
 
@@ -327,7 +327,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private BlockchainKeypair testSDK_RegisterUser(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
 		// 注册用户，并验证最终写入；
 		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
@@ -367,7 +367,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private LedgerBlock testSDK_Contract(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
 		System.out.println("adminKey=" + AddressEncoding.generateAddress(adminKey.getPubKey()));
 		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		System.out.println("userKey=" + userKey.getAddress());
@@ -418,7 +418,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private void testContractExe(AsymmetricKeypair adminKey, HashDigest ledgerHash, BlockchainKeypair userKey,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
 		LedgerInfo ledgerInfo = blockchainService.getLedger(ledgerHash);
 		LedgerBlock previousBlock = blockchainService.getBlock(ledgerHash, ledgerInfo.getLatestBlockHeight() - 1);
 
@@ -463,7 +463,7 @@ public class IntegrationTestAll4Redis {
 	}
 
 	private void prepareContractData(AsymmetricKeypair adminKey, HashDigest ledgerHash,
-			BlockchainService blockchainService, LedgerRepository ledgerRepository) {
+			BlockchainService blockchainService, LedgerQuery ledgerRepository) {
 
 		// 定义交易；
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);

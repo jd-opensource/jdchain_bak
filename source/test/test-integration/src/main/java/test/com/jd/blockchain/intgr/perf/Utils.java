@@ -31,7 +31,7 @@ import com.jd.blockchain.ledger.core.LedgerConfiguration;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
@@ -88,7 +88,7 @@ public class Utils {
 	public static ParticipantNode[] loadParticipantNodes() {
 		ParticipantNode[] participantNodes = new ParticipantNode[PUB_KEYS.length];
 		for (int i = 0; i < PUB_KEYS.length; i++) {
-			participantNodes[i] = new PartNode(i, KeyGenUtils.decodePubKey(PUB_KEYS[i]), ParticipantNodeState.CONSENSUSED);
+			participantNodes[i] = new PartNode(i, KeyGenUtils.decodePubKey(PUB_KEYS[i]), ParticipantNodeState.ACTIVED);
 		}
 		return participantNodes;
 	}
@@ -188,7 +188,7 @@ public class Utils {
 			return invoker.start();
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash, DBConnectionConfig dbConnConf) {
+		public LedgerQuery registLedger(HashDigest ledgerHash, DBConnectionConfig dbConnConf) {
 			return ledgerManager.register(ledgerHash, dbConnFactory.connect(dbConnConf.getUri()).getStorageService());
 		}
 	}

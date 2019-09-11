@@ -326,7 +326,7 @@ public class LedgerInitProperties {
 					.parseBoolean(PropertiesUtils.getRequiredProperty(props, initializerSecureKey));
 			NetworkAddress initializerAddress = new NetworkAddress(initializerHost, initializerPort, initializerSecure);
 			parti.setInitializerAddress(initializerAddress);
-			parti.setParticipantNodeState(ParticipantNodeState.CONSENSUSED);
+			parti.setParticipantNodeState(ParticipantNodeState.ACTIVED);
 			initProps.addConsensusParticipant(parti);
 		}
 
