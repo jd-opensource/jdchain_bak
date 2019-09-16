@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jd.blockchain.gateway.service.GatewayQueryService;
+import com.jd.blockchain.sdk.LedgerBaseSettings;
 import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,9 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	private PeerService peerService;
 
 	@Autowired
+	private GatewayQueryService gatewayQueryService;
+
+	@Autowired
 	private DataRetrievalService dataRetrievalService;
 
 	private String dataRetrievalUrl;
@@ -86,10 +91,10 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 		return peerService.getQueryService().getLedgerMetadata(ledgerHash);
 	}
 
-//    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/settings")
-//    public LedgerInitSettings getLedgerInitSettings(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
-//	    return gatewayQueryService.getLedgerInitSettings(ledgerHash);
-//    }
+    @RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/settings")
+    public LedgerBaseSettings getLedgerInitSettings(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {
+	    return gatewayQueryService.getLedgerBaseSettings(ledgerHash);
+    }
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/blocks")
 	public LedgerBlock[] getBlocks(@PathVariable(name = "ledgerHash") HashDigest ledgerHash) {

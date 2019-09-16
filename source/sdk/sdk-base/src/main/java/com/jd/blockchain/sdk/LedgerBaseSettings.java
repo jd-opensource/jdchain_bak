@@ -14,7 +14,7 @@ import com.jd.blockchain.ledger.ParticipantNode;
  * @since 1.0.0
  *
  */
-public class LedgerInitSettings {
+public class LedgerBaseSettings {
 
     /**
      * 账本初始化种子

@@ -245,7 +245,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 	@Override
 	public LedgerAdminInfo getAdminInfo() {
-		return getAdminSettings(getLatestBlock());
+		return createAdminData(getLatestBlock());
 	}
 
 	private LedgerBlock deserialize(byte[] blockBytes) {
@@ -267,7 +267,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 	@Override
 	public LedgerAdminInfo getAdminInfo(LedgerBlock block) {
-		return getAdminSettings(block);
+		return createAdminData(block);
 	}
 	
 	@Override
@@ -283,6 +283,17 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		}
 
 		return createAdminDataset(block);
+	}
+
+	/**
+	 * 生成LedgerAdminInfoData对象
+	 *     该对象主要用于页面展示
+	 *
+	 * @param block
+	 * @return
+	 */
+	private LedgerAdminInfoData createAdminData(LedgerBlock block) {
+		return new LedgerAdminInfoData(block.getAdminAccountHash(), keyPrefix, exPolicyStorage, versioningStorage, true);
 	}
 
 	private LedgerAdminDataset createAdminDataset(LedgerBlock block) {

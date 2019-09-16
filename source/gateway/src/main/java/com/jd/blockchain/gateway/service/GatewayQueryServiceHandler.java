@@ -10,7 +10,7 @@ import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.sdk.ContractSettings;
-import com.jd.blockchain.sdk.LedgerInitSettings;
+import com.jd.blockchain.sdk.LedgerBaseSettings;
 import com.jd.blockchain.utils.QueryUtil;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
@@ -31,30 +31,26 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
 
     @Override
     public HashDigest[] getLedgersHash(int fromIndex, int count) {
-        HashDigest ledgersHash[] = peerService.getQueryService().getLedgerHashs();
-        int indexAndCount[] = QueryUtil.calFromIndexAndCount(fromIndex,count,ledgersHash.length);
-        HashDigest ledgersHashNew[] = Arrays.copyOfRange(ledgersHash,indexAndCount[0],indexAndCount[0]+indexAndCount[1]);
-        return ledgersHashNew;
+        HashDigest[] ledgersHashs = peerService.getQueryService().getLedgerHashs();
+        int[] indexAndCount = QueryUtil.calFromIndexAndCount(fromIndex, count, ledgersHashs.length);
+        return Arrays.copyOfRange(ledgersHashs, indexAndCount[0], indexAndCount[0] + indexAndCount[1]);
     }
 
     @Override
     public ParticipantNode[] getConsensusParticipants(HashDigest ledgerHash, int fromIndex, int count) {
-        ParticipantNode participantNode[] = peerService.getQueryService().getConsensusParticipants(ledgerHash);
-        int indexAndCount[] = QueryUtil.calFromIndexAndCount(fromIndex,count,participantNode.length);
-        ParticipantNode participantNodesNew[] = Arrays.copyOfRange(participantNode,indexAndCount[0],indexAndCount[0]+indexAndCount[1]);
-        return participantNodesNew;
+        ParticipantNode[] participantNodes = peerService.getQueryService().getConsensusParticipants(ledgerHash);
+        int[] indexAndCount = QueryUtil.calFromIndexAndCount(fromIndex, count, participantNodes.length);
+        ParticipantNode[] participantNodesNews = Arrays.copyOfRange(participantNodes, indexAndCount[0],
+                indexAndCount[0] + indexAndCount[1]);
+        return participantNodesNews;
     }
 
     @Override
-    public LedgerInitSettings getLedgerInitSettings(HashDigest ledgerHash) {
-
-        ParticipantNode[] participantNodes = peerService.getQueryService().getConsensusParticipants(ledgerHash);
-
-        LedgerMetadata ledgerMetadata = peerService.getQueryService().getLedgerMetadata(ledgerHash);
+    public LedgerBaseSettings getLedgerBaseSettings(HashDigest ledgerHash) {
 
         LedgerAdminInfo ledgerAdminInfo = peerService.getQueryService().getLedgerAdminInfo(ledgerHash);
 
-        return initLedgerInitSettings(participantNodes, ledgerMetadata, ledgerAdminInfo);
+        return initLedgerBaseSettings(ledgerAdminInfo);
     }
 
     @Override
@@ -73,36 +69,38 @@ public class GatewayQueryServiceHandler implements GatewayQueryService {
     }
 
     /**
-     * 初始化账本配置
+     * 初始化账本的基本配置
      *
-     * @param participantNodes
-     *     参与方列表
-     * @param ledgerMetadata
-     *     账本元数据
+     * @param ledgerAdminInfo
+     *     账本信息
+     *
      * @return
      */
-    private LedgerInitSettings initLedgerInitSettings(ParticipantNode[] participantNodes, LedgerMetadata ledgerMetadata, LedgerAdminInfo ledgerAdminInfo) {
-        LedgerInitSettings ledgerInitSettings = new LedgerInitSettings();
+    private LedgerBaseSettings initLedgerBaseSettings(LedgerAdminInfo ledgerAdminInfo) {
+
+        LedgerMetadata ledgerMetadata = ledgerAdminInfo.getMetadata();
+
+        LedgerBaseSettings ledgerBaseSettings = new LedgerBaseSettings();
 
         // 设置参与方
-        ledgerInitSettings.setParticipantNodes(participantNodes);
+        ledgerBaseSettings.setParticipantNodes(ledgerAdminInfo.getParticipants());
 
         // 设置共识设置
-        ledgerInitSettings.setConsensusSettings(initConsensusSettings(ledgerAdminInfo));
+        ledgerBaseSettings.setConsensusSettings(initConsensusSettings(ledgerAdminInfo));
 
         // 设置参与方根Hash
-        ledgerInitSettings.setParticipantsHash(ledgerMetadata.getParticipantsHash());
+        ledgerBaseSettings.setParticipantsHash(ledgerMetadata.getParticipantsHash());
 
         // 设置算法配置
-        ledgerInitSettings.setCryptoSetting(ledgerAdminInfo.getSettings().getCryptoSetting());
+        ledgerBaseSettings.setCryptoSetting(ledgerAdminInfo.getSettings().getCryptoSetting());
 
         // 设置种子
-        ledgerInitSettings.setSeed(initSeed(ledgerMetadata.getSeed()));
+        ledgerBaseSettings.setSeed(initSeed(ledgerMetadata.getSeed()));
 
         // 设置共识协议
-        ledgerInitSettings.setConsensusProtocol(ledgerAdminInfo.getSettings().getConsensusProvider());
+        ledgerBaseSettings.setConsensusProtocol(ledgerAdminInfo.getSettings().getConsensusProvider());
 
-        return ledgerInitSettings;
+        return ledgerBaseSettings;
     }
 
     /**
