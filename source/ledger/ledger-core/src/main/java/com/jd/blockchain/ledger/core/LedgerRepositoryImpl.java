@@ -293,9 +293,15 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	 * @return
 	 */
 	private LedgerAdminInfoData createAdminData(LedgerBlock block) {
-		return new LedgerAdminInfoData(block.getAdminAccountHash(), keyPrefix, exPolicyStorage, versioningStorage, true);
+		return new LedgerAdminInfoData(createAdminDataset(block));
 	}
 
+	/**
+	 * 生成LedgerAdminDataset对象
+	 *
+	 * @param block
+	 * @return
+	 */
 	private LedgerAdminDataset createAdminDataset(LedgerBlock block) {
 		return new LedgerAdminDataset(block.getAdminAccountHash(), keyPrefix, exPolicyStorage, versioningStorage, true);
 	}
