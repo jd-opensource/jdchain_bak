@@ -7,6 +7,7 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.ledger.BlockBody;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerDataSnapshot;
 import com.jd.blockchain.ledger.LedgerInitSetting;
@@ -244,7 +245,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 	@Override
 	public LedgerAdminInfo getAdminInfo() {
-		return getAdminInfo(getLatestBlock());
+		return getAdminSettings(getLatestBlock());
 	}
 
 	private LedgerBlock deserialize(byte[] blockBytes) {
@@ -265,7 +266,17 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public LedgerAdminDataset getAdminInfo(LedgerBlock block) {
+	public LedgerAdminInfo getAdminInfo(LedgerBlock block) {
+		return getAdminSettings(block);
+	}
+	
+	@Override
+	public LedgerAdminSettings getAdminSettings() {
+		return getAdminSettings(getLatestBlock());
+	}
+	
+	@Override
+	public LedgerAdminSettings getAdminSettings(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 		if (height == block.getHeight()) {
 			return latestState.getAdminDataset();
@@ -284,7 +295,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		if (height == block.getHeight()) {
 			return latestState.getUserAccountSet();
 		}
-		LedgerAdminDataset adminAccount = getAdminInfo(block);
+		LedgerAdminSettings adminAccount = getAdminSettings(block);
 		return createUserAccountSet(block, adminAccount.getSettings().getCryptoSetting());
 	}
 
@@ -300,7 +311,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 			return latestState.getDataAccountSet();
 		}
 
-		LedgerAdminDataset adminAccount = getAdminInfo(block);
+		LedgerAdminSettings adminAccount = getAdminSettings(block);
 		return createDataAccountSet(block, adminAccount.getSettings().getCryptoSetting());
 	}
 
@@ -316,7 +327,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 			return latestState.getContractAccountSet();
 		}
 
-		LedgerAdminDataset adminAccount = getAdminInfo(block);
+		LedgerAdminSettings adminAccount = getAdminSettings(block);
 		return createContractAccountSet(block, adminAccount.getSettings().getCryptoSetting());
 	}
 
