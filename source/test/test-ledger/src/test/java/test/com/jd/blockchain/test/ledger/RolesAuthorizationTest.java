@@ -192,7 +192,7 @@ public class RolesAuthorizationTest {
 		if (roles == null) {
 			roles = new String[0];
 		}
-		UserRoles userRoles = ledger.getAdminInfo().getUserRoles().getUserRoles(address);
+		UserRoles userRoles = ledger.getAdminSettings().getUserRoles().getUserRoles(address);
 		assertNotNull(userRoles);
 		assertEquals(policy, userRoles.getPolicy());
 
@@ -206,7 +206,7 @@ public class RolesAuthorizationTest {
 
 	private void assertRolePermissions(LedgerQuery ledger, String roleName, LedgerPermission[] ledgerPermissions,
 			TransactionPermission[] txPermissions) {
-		RolePrivilegeSettings roles = ledger.getAdminInfo().getRolePrivileges();
+		RolePrivilegeSettings roles = ledger.getAdminSettings().getRolePrivileges();
 		assertTrue(roles.contains(roleName));
 		RolePrivileges privileges = roles.getRolePrivilege(roleName);
 		assertEquals(ledgerPermissions.length, privileges.getLedgerPrivilege().getPermissionCount());

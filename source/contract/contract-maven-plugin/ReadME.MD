@@ -35,7 +35,7 @@
  + 3）executions->execution->phase：建议使用package及其后续阶段（若不了解phase含义，请自行查阅相关信息）；
  + 4）executions->execution->goals->goal：必须使用compile；
  + 5）mainClass：必填，该类为需要发布的合约执行类（注意此处是类，不是接口），必须正确配置；
- + 6）finalName：必填，最终在编译正常的情况下，会产生{finalName}-jdchain-contract.jar文件，只有该文件是可以发布到JDChain的合约包；
+ + 6）finalName：必填，最终在编译正常的情况下，会产生{finalName}-JDChain-Contract.jar文件，只有该文件是可以发布到JDChain的合约包；
 
 
 ### 2、执行命令

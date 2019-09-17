@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
 import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.ParticipantDataQuery;
 import com.jd.blockchain.ledger.ParticipantNode;
@@ -45,7 +45,7 @@ public class EmptyLedgerDataset implements LedgerDataQuery {
 		
 
 		@Override
-		public LedgerAdminInfo getAdminInfo() {
+		public LedgerAdminSettings getAdminInfo() {
 			return null;
 		}
 

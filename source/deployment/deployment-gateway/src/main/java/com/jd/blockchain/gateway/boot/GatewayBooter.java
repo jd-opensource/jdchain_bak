@@ -18,7 +18,6 @@ public class GatewayBooter {
 			writePID();
 			GatewayServerBooter.main(args);
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
 		}
 	}

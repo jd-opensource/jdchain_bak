@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.jd.blockchain.ledger.*;
 import org.junit.Test;
 
 import com.jd.blockchain.crypto.AddressEncoding;
@@ -20,6 +19,21 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
+import com.jd.blockchain.ledger.LedgerMetadata_V2;
+import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.LedgerSettings;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantNodeState;
+import com.jd.blockchain.ledger.RolePrivilegeSettings;
+import com.jd.blockchain.ledger.RolePrivileges;
+import com.jd.blockchain.ledger.RolesPolicy;
+import com.jd.blockchain.ledger.TransactionPermission;
+import com.jd.blockchain.ledger.UserRoles;
+import com.jd.blockchain.ledger.UserRolesSettings;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminDataset;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
@@ -213,7 +227,7 @@ public class LedgerAdminDatasetTest {
 				actualLedgerSettings.getCryptoSetting().getHashAlgorithm());
 	}
 
-	private void verifyRealoadingRoleAuthorizations(LedgerAdminInfo actualAccount,
+	private void verifyRealoadingRoleAuthorizations(LedgerAdminSettings actualAccount,
 			RolePrivilegeSettings expRolePrivilegeSettings, UserRolesSettings expUserRoleSettings) {
 		// 验证基本信息；
 		RolePrivilegeSettings actualRolePrivileges = actualAccount.getRolePrivileges();

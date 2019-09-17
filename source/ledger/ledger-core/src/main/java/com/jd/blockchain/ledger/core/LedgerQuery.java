@@ -2,6 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
 import com.jd.blockchain.ledger.LedgerBlock;
 
 public interface LedgerQuery {
@@ -53,6 +54,10 @@ public interface LedgerQuery {
 	LedgerAdminInfo getAdminInfo();
 
 	LedgerAdminInfo getAdminInfo(LedgerBlock block);
+	
+	LedgerAdminSettings getAdminSettings();
+	
+	LedgerAdminSettings getAdminSettings(LedgerBlock block);
 
 	LedgerBlock getBlock(HashDigest hash);
 

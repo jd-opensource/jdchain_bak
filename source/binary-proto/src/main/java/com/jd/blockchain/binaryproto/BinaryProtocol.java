@@ -42,6 +42,10 @@ public class BinaryProtocol {
 		long version = HeaderEncoder.resolveVersion(bytes);
 
 		DataContractEncoder encoder = DataContractContext.ENCODER_LOOKUP.lookup(code, version);
+		if (encoder == null) {
+			throw new DataContractException(
+					String.format("No data contract was registered with code[%s] and version[%s]!", code, version));
+		}
 		return encoder.decode(bytes.getInputStream());
 	}
 

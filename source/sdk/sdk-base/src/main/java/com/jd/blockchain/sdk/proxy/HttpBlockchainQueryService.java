@@ -8,6 +8,8 @@ import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.utils.http.*;
 import com.jd.blockchain.utils.web.client.WebResponseConverterFactory;
 import com.jd.blockchain.sdk.converters.HashDigestToStringConverter;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * 作为内部使用的适配接口，用于声明 HTTP 协议的服务请求；
@@ -194,6 +196,17 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	@Override
 	long getAdditionalContractCount(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash);
 
+
+	/**
+	 * 获取账本信息；
+	 *
+	 * @param ledgerHash
+	 * @return 账本对象；如果不存在，则返回 null；
+	 */
+	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/admininfo")
+	@Override
+	LedgerAdminInfo getLedgerAdminInfo(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash);
+
 	/**
 	 * 返回指定账本的参与列表
 	 *
@@ -203,7 +216,6 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/participants")
 	@Override
 	ParticipantNode[] getConsensusParticipants(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash);
-
 
 	/**
 	 * 返回指定账本的元数据

@@ -2,6 +2,7 @@ package com.jd.blockchain.gateway;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +24,14 @@ import com.jd.blockchain.utils.ConsoleUtils;
 
 public class GatewayServerBooter {
 
+	private static final String DEFAULT_GATEWAY_PROPS = "application-gw.properties";
+
 	// 当前参与方在初始化配置中的参与方列表的编号；
 	private static final String HOST_ARG = "-c";
+
 	//sp;针对spring.config.location这个参数进行包装;
 	private static final String SPRING_CF_LOCATION = BaseConstant.SPRING_CF_LOCATION;
+
 	// 是否输出调试信息；
 	private static final String DEBUG_OPT = "-debug";
 
@@ -57,11 +62,20 @@ public class GatewayServerBooter {
 			}else {
 				//if no the config file, then should tip as follows. but it's not a good feeling, so we create it by inputStream;
 				ConsoleUtils.info("no param:-sp, format: -sp /x/xx.properties, use the default application-gw.properties 	");
-				ClassPathResource configResource = new ClassPathResource("application-gw.properties");
+				ClassPathResource configResource = new ClassPathResource(DEFAULT_GATEWAY_PROPS);
 				InputStream in = configResource.getInputStream();
-				File targetFile = new File(System.getProperty("user.dir")+File.separator+"conf"+File.separator+"application-gw.properties");
+
+				// 将文件写入至config目录下
+				String configPath = bootPath() + "config" + File.separator + DEFAULT_GATEWAY_PROPS;
+				File targetFile = new File(configPath);
+
+				// 先将原来文件删除再Copy
+				if (targetFile.exists()) {
+					FileUtils.forceDelete(targetFile);
+				}
+
 				FileUtils.copyInputStreamToFile(in, targetFile);
-				springConfigLocation = "file:"+targetFile.getAbsolutePath();
+				springConfigLocation = "file:" + targetFile.getAbsolutePath();
 			}
 
 			// 启动服务器；
@@ -147,4 +161,17 @@ public class GatewayServerBooter {
 		return appCtx;
 	}
 
+	private static String bootPath() throws Exception {
+		URL url = GatewayServerBooter.class.getProtectionDomain().getCodeSource().getLocation();
+		String currPath = java.net.URLDecoder.decode(url.getPath(), "UTF-8");
+		// 处理打包至SpringBoot问题
+		if (currPath.contains("!/")) {
+			currPath = currPath.substring(5, currPath.indexOf("!/"));
+		}
+		if (currPath.endsWith(".jar")) {
+			currPath = currPath.substring(0, currPath.lastIndexOf("/") + 1);
+		}
+		System.out.printf("Current Project Boot Path = %s \r\n", currPath);
+		return new File(currPath).getParent() + File.separator;
+	}
 }

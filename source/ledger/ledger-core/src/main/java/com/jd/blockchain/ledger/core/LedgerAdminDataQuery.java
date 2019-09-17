@@ -1,11 +1,11 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
 import com.jd.blockchain.ledger.ParticipantDataQuery;
 
 public interface LedgerAdminDataQuery {
 	
-	LedgerAdminInfo getAdminInfo();
+	LedgerAdminSettings getAdminInfo();
 
 	ParticipantDataQuery getParticipantDataset();
 

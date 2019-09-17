@@ -8,6 +8,7 @@ import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerAdminSettings;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitException;
 import com.jd.blockchain.ledger.LedgerInitOperation;
@@ -252,6 +253,16 @@ public class LedgerInitializer {
 
 		@Override
 		public LedgerAdminInfo getAdminInfo(LedgerBlock block) {
+			return null;
+		}
+		
+		@Override
+		public LedgerAdminSettings getAdminSettings() {
+			return null;
+		}
+		
+		@Override
+		public LedgerAdminSettings getAdminSettings(LedgerBlock block) {
 			return null;
 		}
 

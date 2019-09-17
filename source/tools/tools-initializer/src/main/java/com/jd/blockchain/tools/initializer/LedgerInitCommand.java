@@ -103,7 +103,7 @@ public class LedgerInitCommand {
 //						partiAddress = partiConf.getAddress();
 //					}
 //				}
-				if (localNodeAddress.equals(partiConf.getAddress())) {
+				if (localNodeAddress.equals(partiConf.getAddress().toBase58())) {
 					currId = i;
 				}
 			}
