@@ -49,9 +49,25 @@ public class SecurityServiceHandler implements SecurityService {
 
         if (roles.length() > 0) {
 
+            securityConfigs.add(propBuild(UmpConstant.SECURITY_ROLES, roles));
 
+            String[] rolesArray = roles.split(",");
+            for (String role : rolesArray) {
+                String roleRealm = role.trim();
+                String roleLedgerKey = String.format(UmpConstant.SECURITY_ROLES_PRIVILEGES_LEDGER_FORMAT, roleRealm);
+                String roleLedgerValue = currentProps.getProperty(roleLedgerKey, "");
+                securityConfigs.add(propBuild(roleLedgerKey, roleLedgerValue));
 
-
+                String roleTxKey = String.format(UmpConstant.SECURITY_ROLES_PRIVILEGES_TX_FORMAT, roleRealm);
+                String roleTxValue = currentProps.getProperty(roleTxKey, "");
+                securityConfigs.add(propBuild(roleTxKey, roleTxValue));
+            }
+        } else {
+            throw new IllegalStateException("Can not find Properties from security.config");
         }
+    }
+
+    private String propBuild(String key, String value) {
+        return key + "=" + value;
     }
 }
