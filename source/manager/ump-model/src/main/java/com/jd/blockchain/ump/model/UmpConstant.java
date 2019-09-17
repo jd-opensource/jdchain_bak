@@ -32,6 +32,10 @@ public class UmpConstant {
 
     public static final String PARTINODE_PUBKEY_FORMAT = PARTINODE_FORMAT + ".pubkey";
 
+    public static final String PARTINODE_ROLES_FORMAT = PARTINODE_FORMAT + ".roles";
+
+    public static final String PARTINODE_ROLES_POLICY_FORMAT = PARTINODE_FORMAT + ".roles-policy";
+
     public static final String PARTINODE_INIT_FORMAT = PARTINODE_FORMAT + ".initializer";
 
     public static final String PARTINODE_INIT_HOST_FORMAT = PARTINODE_INIT_FORMAT + ".host";
@@ -48,13 +52,25 @@ public class UmpConstant {
 
     public static final String CREATE_TIME_PREFIX = "created-time";
 
+    public static final String SECURITY_PREFIX = "security";
+
+    public static final String SECURITY_ROLES = SECURITY_PREFIX + ".roles";
+
+    public static final String SECURITY_ROLES_PRIVILEGES_LEDGER_FORMAT = SECURITY_ROLES + ".%s.ledger-privileges";
+
+    public static final String SECURITY_ROLES_PRIVILEGES_TX_FORMAT = SECURITY_ROLES + ".%s.tx-privileges";
+
+    public static final String CRYPTO_PREFIX = "crypto";
+
+    public static final String CRYPTO_HASH_VERIFY = CRYPTO_PREFIX + ".verify-hash";
+
+    public static final String CRYPTO_HASH_ALGORITHM = CRYPTO_PREFIX + ".hash-algorithm";
+
     public static final String CONSENSUS_PREFIX = "consensus";
 
     public static final String CONSENSUS_PROVIDER_PREFIX = CONSENSUS_PREFIX + ".service-provider";
 
     public static final String CONSENSUS_CONF_PREFIX = CONSENSUS_PREFIX + ".conf";
-
-    public static final String CRYPTO_PREFIX = "crypto";
 
     public static final String CRYPTO_PROVIDERS_PREFIX = CRYPTO_PREFIX + ".service-providers";
 

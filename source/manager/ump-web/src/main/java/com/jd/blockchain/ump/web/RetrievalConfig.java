@@ -12,7 +12,7 @@ import java.util.Properties;
 import static com.jd.blockchain.ump.model.UmpConstant.SCHEMA_RETRIEVAL_URL;
 import static com.jd.blockchain.ump.model.UmpConstant.TASK_RETRIEVAL_URL;
 
-public class   RetrievalConfig {
+public class RetrievalConfig {
 
     private static Map<String,String> propertiesMap = new HashMap<>();
 

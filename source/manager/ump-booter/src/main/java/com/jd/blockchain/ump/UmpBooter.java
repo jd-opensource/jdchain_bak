@@ -18,6 +18,7 @@ public class UmpBooter {
     private static final String ARG_HOST = "-h";
 
     private static final String CONFIG = "BOOT-INF" + File.separator + "classes" + File.separator + "config.properties";
+
     private static final String CONFIG_APPLICATION = "BOOT-INF" + File.separator + "classes" + File.separator + "application.properties";
 
     private static final String CONFIG_PROP_HOST = "server.host";
