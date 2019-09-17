@@ -1,8 +1,13 @@
 package com.jd.blockchain.ledger;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.utils.Bytes;
 
 public class UserAuthInitData implements UserAuthInitSettings {
+
+	static {
+		DataContractRegistry.register(UserAuthInitSettings.class);
+	}
 
 	private Bytes userAddress;
 
