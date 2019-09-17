@@ -139,13 +139,15 @@ public class PeerSharedConfigs {
         }
     }
 
-    public synchronized LedgerInitConfig ledgerInitConfig(String seed, String createTime) {
+    public synchronized LedgerInitConfig ledgerInitConfig(String seed, String createTime,
+                                                          List<String> securityConfigs, List<String> partiRoleConfigs) {
         if (ledgerInitConfig != null) {
             return ledgerInitConfig;
         }
 
         // 处理该ledgerInitConfig
-        ledgerInitConfig = new LedgerInitConfig(seed, ledgerName, createTime, consensusProvider, waitNodeSize);
+        ledgerInitConfig = new LedgerInitConfig(seed, ledgerName, createTime, consensusProvider, waitNodeSize,
+                securityConfigs, partiRoleConfigs);
 
         // 添加参与方
         for (int i = 0; i < sharedConfigs.size(); i++) {

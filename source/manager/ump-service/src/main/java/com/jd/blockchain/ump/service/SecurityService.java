@@ -6,5 +6,7 @@ public interface SecurityService {
 
     List<String> securityConfigs();
 
+    List<String> participantRoleConfigs();
+
     void init();
 }

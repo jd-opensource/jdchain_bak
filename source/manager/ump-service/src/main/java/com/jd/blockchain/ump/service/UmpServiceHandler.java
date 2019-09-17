@@ -60,6 +60,9 @@ public class UmpServiceHandler implements UmpService {
     @Autowired
     private UmpStateService umpStateService;
 
+    @Autowired
+    private SecurityService securityService;
+
     @Override
     public synchronized PeerSharedConfigs loadPeerSharedConfigs(PeerLocalConfig sharedConfig) {
 
@@ -117,7 +120,8 @@ public class UmpServiceHandler implements UmpService {
 
                 // 所有数据到达之后生成返回的应答
                 LedgerInitConfig initConfig = sharedConfigs.ledgerInitConfig(
-                        ledgerService.randomSeed(), ledgerService.currentCreateTime());
+                        ledgerService.randomSeed(), ledgerService.currentCreateTime(),
+                        securityService.securityConfigs(), securityService.participantRoleConfigs());
 
                 // 生成共识文件
                 String consensusConfig = consensusService.initConsensusConf(

@@ -22,18 +22,25 @@ public class LedgerInitConfig {
             "com.jd.blockchain.crypto.service.classic.ClassicCryptoService, " +
             "com.jd.blockchain.crypto.service.sm.SMCryptoService";
 
+    List<String> securityConfigs = null;
+
+    List<String> partiRolesConfigs = null;
+
 
     private List<PartiNode> partiNodes = new ArrayList<>();
 
     public LedgerInitConfig() {
     }
 
-    public LedgerInitConfig(String seed, String name, String createTime, String consensusProvider, int nodeSize) {
+    public LedgerInitConfig(String seed, String name, String createTime, String consensusProvider, int nodeSize,
+                            List<String> securityConfigs, List<String> partiRolesConfigs) {
         this.seed = seed;
         this.name = name;
         this.createTime = createTime;
         this.consensusProvider = consensusProvider;
         this.nodeSize = nodeSize;
+        this.securityConfigs = securityConfigs;
+        this.partiRolesConfigs = partiRolesConfigs;
     }
 
     public List<String> toConfigChars(String consensusConf) {
@@ -54,8 +61,10 @@ public class LedgerInitConfig {
 
         configChars.add(toConfigChars(UmpConstant.PARTINODE_COUNT, partiNodes.size()));
 
+        configChars.addAll(securityConfigs);
+
         for (PartiNode partiNode : partiNodes) {
-            configChars.addAll(partiNode.toConfigChars());
+            configChars.addAll(partiNode.toConfigChars(this.partiRolesConfigs));
         }
 
         return configChars;

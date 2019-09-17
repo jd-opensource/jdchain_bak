@@ -16,6 +16,8 @@ public class SecurityServiceHandler implements SecurityService {
 
     private List<String> securityConfigs = new ArrayList<>();
 
+    private List<String> participantRoleConfigs = new ArrayList<>();
+
     public SecurityServiceHandler() {
         init();
     }
@@ -23,6 +25,11 @@ public class SecurityServiceHandler implements SecurityService {
     @Override
     public List<String> securityConfigs() {
         return securityConfigs;
+    }
+
+    @Override
+    public List<String> participantRoleConfigs() {
+        return participantRoleConfigs;
     }
 
     @Override
@@ -62,6 +69,14 @@ public class SecurityServiceHandler implements SecurityService {
                 String roleTxValue = currentProps.getProperty(roleTxKey, "");
                 securityConfigs.add(propBuild(roleTxKey, roleTxValue));
             }
+
+            // 将参与方信息写入
+            String partiRolesValue = currentProps.getProperty(UmpConstant.SECURITY_PARTI_ROLES, "");
+            String partiRolesPolicyValue = currentProps.getProperty(UmpConstant.SECURITY_PARTI_ROLES_POLICY, "");
+
+            participantRoleConfigs.add(propBuild(UmpConstant.SECURITY_PARTI_ROLES, partiRolesValue));
+            participantRoleConfigs.add(propBuild(UmpConstant.SECURITY_PARTI_ROLES_POLICY, partiRolesPolicyValue));
+
         } else {
             throw new IllegalStateException("Can not find Properties from security.config");
         }

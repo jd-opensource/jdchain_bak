@@ -60,6 +60,12 @@ public class UmpConstant {
 
     public static final String SECURITY_ROLES_PRIVILEGES_TX_FORMAT = SECURITY_ROLES + ".%s.tx-privileges";
 
+    public static final String SECURITY_PARTI_PREFIX = "participant.default";
+
+    public static final String SECURITY_PARTI_ROLES = SECURITY_PARTI_PREFIX + ".roles";
+
+    public static final String SECURITY_PARTI_ROLES_POLICY = SECURITY_PARTI_PREFIX + ".roles-policy";
+
     public static final String CRYPTO_PREFIX = "crypto";
 
     public static final String CRYPTO_HASH_VERIFY = CRYPTO_PREFIX + ".verify-hash";

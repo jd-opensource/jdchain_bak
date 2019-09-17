@@ -17,13 +17,15 @@ public class PartiNode {
 
     private boolean isSecure;
 
-    public List<String> toConfigChars() {
+    public List<String> toConfigChars(List<String> partiRoleConfigs) {
 
         List<String> configCharList = new ArrayList<>();
 
         configCharList.add(formatConfig(UmpConstant.PARTINODE_NAME_FORMAT, name));
 
         configCharList.add(formatConfig(UmpConstant.PARTINODE_PUBKEY_FORMAT, pubKey));
+
+        configCharList.addAll(partiRoleConfigs);
 
         configCharList.add(formatConfig(UmpConstant.PARTINODE_INIT_HOST_FORMAT, initHost));
 
