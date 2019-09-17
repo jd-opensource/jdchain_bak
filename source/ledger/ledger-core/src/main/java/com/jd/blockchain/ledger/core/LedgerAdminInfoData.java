@@ -11,14 +11,43 @@ import com.jd.blockchain.ledger.*;
 public class LedgerAdminInfoData implements LedgerAdminInfo {
 
     /**
-     * 包装类型
-     *     将LedgerAdminInfo重新封装，用于页面显示
+     * 元数据
+     */
+    private LedgerMetadata_V2 metadata;
+
+    /**
+     * 账本配置
      *
      */
-    private LedgerAdminInfo ledgerAdminInfo;
+    private LedgerSettings ledgerSettings;
 
+    /**
+     * 参与方数量
+     *
+     */
+    private long participantCount;
+
+    /**
+     * 参与方
+     *
+     */
+    private ParticipantNode[] participantNodes;
+
+    /**
+     * 包装构造方法
+     *
+     * @param ledgerAdminInfo
+     */
     public LedgerAdminInfoData(LedgerAdminInfo ledgerAdminInfo) {
-        this.ledgerAdminInfo = ledgerAdminInfo;
+        this(ledgerAdminInfo.getMetadata(), ledgerAdminInfo.getSettings(),
+                ledgerAdminInfo.getParticipantCount(), ledgerAdminInfo.getParticipants());
+    }
+
+    public LedgerAdminInfoData(LedgerMetadata_V2 metadata, LedgerSettings ledgerSettings, long participantCount, ParticipantNode[] participantNodes) {
+        this.metadata = metadata;
+        this.ledgerSettings = ledgerSettings;
+        this.participantCount = participantCount;
+        this.participantNodes = participantNodes;
     }
 
     /**
@@ -28,7 +57,7 @@ public class LedgerAdminInfoData implements LedgerAdminInfo {
      */
     @Override
     public LedgerMetadata_V2 getMetadata() {
-        return ledgerAdminInfo.getMetadata();
+        return this.metadata;
     }
 
     /**
@@ -38,7 +67,7 @@ public class LedgerAdminInfoData implements LedgerAdminInfo {
      */
     @Override
     public LedgerSettings getSettings() {
-        return ledgerAdminInfo.getSettings();
+        return this.ledgerSettings;
     }
 
     /**
@@ -48,7 +77,7 @@ public class LedgerAdminInfoData implements LedgerAdminInfo {
      */
     @Override
     public long getParticipantCount() {
-        return ledgerAdminInfo.getParticipantCount();
+        return this.participantCount;
     }
 
     /**
@@ -58,6 +87,6 @@ public class LedgerAdminInfoData implements LedgerAdminInfo {
      */
     @Override
     public ParticipantNode[] getParticipants() {
-        return ledgerAdminInfo.getParticipants();
+        return this.participantNodes;
     }
 }
