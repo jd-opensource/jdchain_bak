@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
@@ -36,9 +37,12 @@ import com.jd.blockchain.ledger.TransactionBuilder;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionRequestBuilder;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.UserRoles;
+import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.LedgerInitializer;
 import com.jd.blockchain.ledger.core.LedgerManager;
@@ -46,6 +50,7 @@ import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.LedgerRepository;
 import com.jd.blockchain.ledger.core.OperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
+import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.service.TransactionBatchResult;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.KVStorageService;
@@ -79,6 +84,8 @@ public class RolesAuthorizationTest {
 	private static final BlockchainKeypair DEFAULT_USER;
 	private static final BlockchainKeypair GUEST_USER;
 
+	// 预置的新普通用户；
+	private static final BlockchainKeypair NEW_USER = BlockchainKeyGenerator.getInstance().generate();
 	// 预置的数据账户；
 	private static final BlockchainIdentity DATA_ACCOUNT_ID = BlockchainKeyGenerator.getInstance().generate()
 			.getIdentity();
@@ -107,24 +114,123 @@ public class RolesAuthorizationTest {
 	public void test() {
 		MemoryKVStorage storage = new MemoryKVStorage();
 		LedgerBlock genesisBlock = initLedger(storage);
+		final HashDigest ledgerHash = genesisBlock.getHash();
 
 		LedgerManager ledgerManager = new LedgerManager();
-		LedgerRepository ledger = ledgerManager.register(genesisBlock.getHash(), storage);
+		LedgerRepository ledger = ledgerManager.register(ledgerHash, storage);
 
 		// 验证角色和用户的权限配置；
 		assertUserRolesPermissions(ledger);
 
-		// 预置数据；
-		TransactionRequest tx = buildRequest(ledger.getHash(), ADMIN_USER, ADMIN_USER, new TransactionDefiner() {
+		// 预置数据：准备一个新用户和数据账户；
+		TransactionRequest predefinedTx = buildRequest(ledger.getHash(), ADMIN_USER, ADMIN_USER,
+				new TransactionDefiner() {
+					@Override
+					public void define(TransactionBuilder txBuilder) {
+						txBuilder.security().roles().configure("NORMAL").enable(LedgerPermission.REGISTER_DATA_ACCOUNT)
+								.disable(LedgerPermission.REGISTER_USER)
+								.enable(TransactionPermission.CONTRACT_OPERATION);
+
+						txBuilder.users().register(NEW_USER.getIdentity());
+
+						txBuilder.security().authorziations().forUser(NEW_USER.getAddress()).authorize("NORMAL");
+
+						txBuilder.dataAccounts().register(DATA_ACCOUNT_ID);
+					}
+				});
+
+		TransactionBatchResult procResult = executeTransactions(ledger, predefinedTx);
+
+		//断言预定义数据的交易和区块成功；
+		assertBlock(1, procResult);
+		assertTransactionAllSuccess(procResult);
+
+		//断言预定义的数据符合预期；
+		assertPredefineData(ledgerHash, storage);
+
+		// 用不具备“注册用户”权限的用户，注册另一个新用户，预期交易失败；
+		BlockchainKeypair tempUser = BlockchainKeyGenerator.getInstance().generate();
+		TransactionRequest tx = buildRequest(ledger.getHash(), NEW_USER, ADMIN_USER, new TransactionDefiner() {
 			@Override
 			public void define(TransactionBuilder txBuilder) {
-				txBuilder.dataAccounts().register(DATA_ACCOUNT_ID);
+				txBuilder.users().register(tempUser.getIdentity());
 			}
 		});
 
-		TransactionBatchResult procResult = executeTransactions(ledger, tx);
-		assertEquals(1, procResult.getBlock().getHeight());
+		procResult = executeTransactions(ledger, tx);
+		assertBlock(2, procResult);
+		
+		assertTransactionAllFail(procResult, TransactionState.REJECTED_BY_SECURITY_POLICY);
+	}
 
+	/**
+	 * 断言区块高度；
+	 * 
+	 * @param blockHeight
+	 * @param procResult
+	 */
+	private void assertBlock(long blockHeight, TransactionBatchResult procResult) {
+		assertEquals(blockHeight, procResult.getBlock().getHeight());
+	}
+
+	/**
+	 * 断言全部交易结果都是成功的；
+	 * 
+	 * @param procResult
+	 */
+	private void assertTransactionAllSuccess(TransactionBatchResult procResult) {
+
+		Iterator<TransactionResponse> responses = procResult.getResponses();
+		while (responses.hasNext()) {
+			TransactionResponse transactionResponse = (TransactionResponse) responses.next();
+
+			assertEquals(true, transactionResponse.isSuccess());
+			assertEquals(TransactionState.SUCCESS, transactionResponse.getExecutionState());
+			assertEquals(procResult.getBlock().getHash(), transactionResponse.getBlockHash());
+			assertEquals(procResult.getBlock().getHeight(), transactionResponse.getBlockHeight());
+		}
+	}
+	
+	/**
+	 * 断言全部交易结果都是失败的；
+	 * 
+	 * @param procResult
+	 */
+	private void assertTransactionAllFail(TransactionBatchResult procResult, TransactionState txState) {
+		Iterator<TransactionResponse> responses = procResult.getResponses();
+		while (responses.hasNext()) {
+			TransactionResponse transactionResponse = (TransactionResponse) responses.next();
+			
+			assertEquals(false, transactionResponse.isSuccess());
+			assertEquals(txState, transactionResponse.getExecutionState());
+		}
+	}
+
+	/**
+	 * 断言预定义的数据符合预期；
+	 * 
+	 * @param ledgerHash
+	 * @param storage
+	 */
+	private void assertPredefineData(HashDigest ledgerHash, MemoryKVStorage storage) {
+		LedgerManager ledgerManager = new LedgerManager();
+		LedgerRepository ledger = ledgerManager.register(ledgerHash, storage);
+		UserAccount newUser = ledger.getUserAccountSet().getUser(NEW_USER.getAddress());
+		assertNotNull(newUser);
+		DataAccount dataAccount = ledger.getDataAccountSet().getDataAccount(DATA_ACCOUNT_ID.getAddress());
+		assertNotNull(dataAccount);
+
+		UserRoles userRoles = ledger.getAdminSettings().getAuthorizations().getUserRoles(NEW_USER.getAddress());
+		assertNotNull(userRoles);
+		assertEquals(1, userRoles.getRoleCount());
+		assertEquals("NORMAL", userRoles.getRoles()[0]);
+
+		RolePrivileges normalRole = ledger.getAdminSettings().getRolePrivileges().getRolePrivilege("NORMAL");
+		assertNotNull(normalRole);
+		assertEquals(true, normalRole.getLedgerPrivilege().isEnable(LedgerPermission.REGISTER_DATA_ACCOUNT));
+		assertEquals(false, normalRole.getLedgerPrivilege().isEnable(LedgerPermission.REGISTER_USER));
+		assertEquals(true, normalRole.getTransactionPrivilege().isEnable(TransactionPermission.CONTRACT_OPERATION));
+		assertEquals(false, normalRole.getTransactionPrivilege().isEnable(TransactionPermission.DIRECT_OPERATION));
 	}
 
 	private TransactionBatchResult executeTransactions(LedgerRepository ledger, TransactionRequest... transactions) {
@@ -192,7 +298,7 @@ public class RolesAuthorizationTest {
 		if (roles == null) {
 			roles = new String[0];
 		}
-		UserRoles userRoles = ledger.getAdminSettings().getUserRoles().getUserRoles(address);
+		UserRoles userRoles = ledger.getAdminSettings().getAuthorizations().getUserRoles(address);
 		assertNotNull(userRoles);
 		assertEquals(policy, userRoles.getPolicy());
 

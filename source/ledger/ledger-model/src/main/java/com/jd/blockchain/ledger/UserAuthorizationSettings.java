@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.jd.blockchain.utils.Bytes;
 
-public interface UserRolesSettings {
+public interface UserAuthorizationSettings {
 
 	/**
 	 * 单一用户可被授权的角色数量的最大值；

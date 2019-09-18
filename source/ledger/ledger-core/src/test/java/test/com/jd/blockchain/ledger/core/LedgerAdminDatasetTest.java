@@ -33,7 +33,7 @@ import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.UserRoles;
-import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.UserAuthorizationSettings;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerAdminDataset;
 import com.jd.blockchain.ledger.core.LedgerConfiguration;
@@ -100,7 +100,7 @@ public class LedgerAdminDatasetTest {
 				new TransactionPermission[] { TransactionPermission.DIRECT_OPERATION,
 						TransactionPermission.CONTRACT_OPERATION });
 
-		ledgerAdminDataset.getUserRoles().addUserRoles(parties[0].getAddress(), RolesPolicy.UNION, "DEFAULT");
+		ledgerAdminDataset.getAuthorizations().addUserRoles(parties[0].getAddress(), RolesPolicy.UNION, "DEFAULT");
 
 		// New created instance is updated until being committed;
 		assertTrue(ledgerAdminDataset.isUpdated());
@@ -148,7 +148,7 @@ public class LedgerAdminDatasetTest {
 		verifyReadonlyState(reloadAdminAccount1);
 
 		verifyRealoadingRoleAuthorizations(reloadAdminAccount1, ledgerAdminDataset.getRolePrivileges(),
-				ledgerAdminDataset.getUserRoles());
+				ledgerAdminDataset.getAuthorizations());
 
 		// --------------
 		// 重新加载，并进行修改;
@@ -168,7 +168,7 @@ public class LedgerAdminDatasetTest {
 
 		reloadAdminAccount2.getRolePrivileges().disablePermissions("DEFAULT", TransactionPermission.CONTRACT_OPERATION);
 
-		reloadAdminAccount2.getUserRoles().addUserRoles(parties[1].getAddress(), RolesPolicy.UNION, "DEFAULT", "ADMIN");
+		reloadAdminAccount2.getAuthorizations().addUserRoles(parties[1].getAddress(), RolesPolicy.UNION, "DEFAULT", "ADMIN");
 
 		reloadAdminAccount2.commit();
 
@@ -228,7 +228,7 @@ public class LedgerAdminDatasetTest {
 	}
 
 	private void verifyRealoadingRoleAuthorizations(LedgerAdminSettings actualAccount,
-			RolePrivilegeSettings expRolePrivilegeSettings, UserRolesSettings expUserRoleSettings) {
+			RolePrivilegeSettings expRolePrivilegeSettings, UserAuthorizationSettings expUserRoleSettings) {
 		// 验证基本信息；
 		RolePrivilegeSettings actualRolePrivileges = actualAccount.getRolePrivileges();
 		RolePrivileges[] expRPs = expRolePrivilegeSettings.getRolePrivileges();
@@ -242,12 +242,12 @@ public class LedgerAdminDatasetTest {
 			assertArrayEquals(expRP.getTransactionPrivilege().toBytes(), actualRP.getTransactionPrivilege().toBytes());
 		}
 
-		UserRolesSettings actualUserRoleSettings = actualAccount.getUserRoles();
+		UserAuthorizationSettings actualUserRoleSettings = actualAccount.getAuthorizations();
 		UserRoles[] expUserRoles = expUserRoleSettings.getUserRoles();
 		assertEquals(expUserRoles.length, actualUserRoleSettings.getUserCount());
 
 		for (UserRoles expUR : expUserRoles) {
-			UserRoles actualUR = actualAccount.getUserRoles().getUserRoles(expUR.getUserAddress());
+			UserRoles actualUR = actualAccount.getAuthorizations().getUserRoles(expUR.getUserAddress());
 			assertNotNull(actualUR);
 			assertEquals(expUR.getPolicy(), actualUR.getPolicy());
 			String[] expRoles = expUR.getRoles();

@@ -9,7 +9,7 @@ import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserAuthorizeOperation.UserRolesEntry;
 import com.jd.blockchain.ledger.UserRoles;
-import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.UserAuthorizationSettings;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.MultiIDsPolicy;
@@ -36,7 +36,7 @@ public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<
 		// 操作账本；
 
 		UserRolesEntry[] urcfgs = operation.getUserRolesAuthorizations();
-		UserRolesSettings urSettings = newBlockDataset.getAdminDataset().getUserRoles();
+		UserAuthorizationSettings urSettings = newBlockDataset.getAdminDataset().getAuthorizations();
 		RolePrivilegeSettings rolesSettings = newBlockDataset.getAdminDataset().getRolePrivileges();
 		if (urcfgs != null) {
 			for (UserRolesEntry urcfg : urcfgs) {

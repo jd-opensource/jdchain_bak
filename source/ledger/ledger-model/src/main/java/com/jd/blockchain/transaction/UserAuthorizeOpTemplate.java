@@ -22,8 +22,8 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 		DataContractRegistry.register(UserRolesEntry.class);
 	}
 
-	private Set<UserRolesAuthorization> userAuthMap = Collections
-			.synchronizedSet(new LinkedHashSet<UserRolesAuthorization>());
+	private Set<AuthorizationDataEntry> userAuthMap = Collections
+			.synchronizedSet(new LinkedHashSet<AuthorizationDataEntry>());
 
 	public UserAuthorizeOpTemplate() {
 	}
@@ -32,8 +32,8 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 	}
 
 	@Override
-	public UserRolesAuthorization[] getUserRolesAuthorizations() {
-		return ArrayUtils.toArray(userAuthMap, UserRolesAuthorization.class);
+	public AuthorizationDataEntry[] getUserRolesAuthorizations() {
+		return ArrayUtils.toArray(userAuthMap, AuthorizationDataEntry.class);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 
 	@Override
 	public UserRolesAuthorizer forUser(Bytes... userAddresses) {
-		UserRolesAuthorization userRolesAuth = new UserRolesAuthorization(userAddresses);
+		AuthorizationDataEntry userRolesAuth = new AuthorizationDataEntry(userAddresses);
 		userAuthMap.add(userRolesAuth);
 		return userRolesAuth;
 	}
@@ -54,7 +54,7 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 		return forUser(addresses);
 	}
 
-	private class UserRolesAuthorization implements UserRolesAuthorizer, UserRolesEntry {
+	private class AuthorizationDataEntry implements UserRolesAuthorizer, UserRolesEntry {
 
 		private Bytes[] userAddress;
 
@@ -63,7 +63,7 @@ public class UserAuthorizeOpTemplate implements UserAuthorizer, UserAuthorizeOpe
 		private Set<String> authRoles = new LinkedHashSet<String>();
 		private Set<String> unauthRoles = new LinkedHashSet<String>();
 
-		private UserRolesAuthorization(Bytes[] userAddress) {
+		private AuthorizationDataEntry(Bytes[] userAddress) {
 			this.userAddress = userAddress;
 		}
 

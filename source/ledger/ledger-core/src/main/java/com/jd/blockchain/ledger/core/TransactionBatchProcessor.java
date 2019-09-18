@@ -82,7 +82,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		LedgerDataQuery ledgerDataQuery = ledgerRepo.getDataSet(ledgerBlock);
 		LedgerAdminDataQuery previousAdminDataset = ledgerDataQuery.getAdminDataset();
 		this.securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousAdminDataset.getAdminInfo().getAuthorizations(), previousAdminDataset.getParticipantDataset(),
 				ledgerDataQuery.getUserAccountSet());
 		
 		this.newBlockEditor = ledgerRepo.createNextBlock();
@@ -98,7 +98,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
 		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(
 				previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousAdminDataset.getAdminInfo().getAuthorizations(), previousAdminDataset.getParticipantDataset(),
 				previousBlockDataset.getUserAccountSet());
 
 		TransactionBatchProcessor processor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo,

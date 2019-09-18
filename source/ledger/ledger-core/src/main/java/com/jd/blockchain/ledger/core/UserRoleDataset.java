@@ -11,7 +11,7 @@ import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.RoleSet;
 import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.UserRoles;
-import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.UserAuthorizationSettings;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
@@ -24,7 +24,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class UserRoleDataset implements Transactional, MerkleProvable, UserRolesSettings {
+public class UserRoleDataset implements Transactional, MerkleProvable, UserAuthorizationSettings {
 
 	private MerkleDataSet dataset;
 
