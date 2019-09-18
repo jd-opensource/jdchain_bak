@@ -113,12 +113,18 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		
 		DataContractRegistry.register(LedgerAdminInfo.class);
 		DataContractRegistry.register(LedgerSettings.class);
+
+		// 注册角色/权限相关接口
+		DataContractRegistry.register(RolesConfigureOperation.class);
+		DataContractRegistry.register(RolesConfigureOperation.RolePrivilegeEntry.class);
+		DataContractRegistry.register(UserAuthorizeOperation.class);
+		DataContractRegistry.register(UserAuthorizeOperation.UserRolesEntry.class);
+		DataContractRegistry.register(PrivilegeSet.class);
 		DataContractRegistry.register(RoleSet.class);
 		DataContractRegistry.register(SecurityInitSettings.class);
 		DataContractRegistry.register(RoleInitSettings.class);
 		DataContractRegistry.register(UserAuthInitSettings.class);
-		DataContractRegistry.register(PrivilegeSet.class);
-
+		DataContractRegistry.register(LedgerMetadata_V2.class);
 	}
 
 	/**
