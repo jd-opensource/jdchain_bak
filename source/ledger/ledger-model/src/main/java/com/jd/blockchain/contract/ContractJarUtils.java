@@ -17,9 +17,9 @@ import java.util.jar.JarOutputStream;
 
 public class ContractJarUtils {
 
-    public static final String BLACK_CONF = "black.conf";
+    public static final String BLACK_CONF = "blacks.conf";
 
-    public static final String WHITE_CONF = "white.conf";
+    public static final String WHITE_CONF = "whites.conf";
 
     private static final String CONTRACT_MF = "META-INF/CONTRACT.MF";
 

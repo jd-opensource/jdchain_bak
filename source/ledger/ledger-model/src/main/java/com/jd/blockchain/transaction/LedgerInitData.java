@@ -1,11 +1,17 @@
 package com.jd.blockchain.transaction;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.UserAuthInitSettings;
 import com.jd.blockchain.utils.Bytes;
 
 public class LedgerInitData implements LedgerInitSetting {
+
+	static {
+		DataContractRegistry.register(LedgerInitSetting.class);
+	}
 
 	private byte[] ledgerSeed;
 

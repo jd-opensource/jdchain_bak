@@ -1,6 +1,12 @@
 package com.jd.blockchain.ledger;
 
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+
 public class RoleInitData implements RoleInitSettings {
+
+	static {
+		DataContractRegistry.register(RoleInitSettings.class);
+	}
 
 	private String roleName;
 
