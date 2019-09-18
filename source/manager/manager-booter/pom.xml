@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ump-booter</artifactId>
+    <artifactId>manager-booter</artifactId>
 
-    <name>ump-booter</name>
+    <name>manager-booter</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,19 +34,19 @@
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
-            <artifactId>ump-web</artifactId>
+            <artifactId>manager-web</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
-            <artifactId>ump-service</artifactId>
+            <artifactId>manager-service</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
-            <artifactId>ump-model</artifactId>
+            <artifactId>manager-model</artifactId>
             <version>${project.version}</version>
         </dependency>
 

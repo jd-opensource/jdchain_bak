@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<modules>
-		<module>ump-booter</module>
-		<module>ump-web</module>
-		<module>ump-service</module>
-		<module>ump-model</module>
+		<module>manager-booter</module>
+		<module>manager-web</module>
+		<module>manager-service</module>
+		<module>manager-model</module>
 	</modules>
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
