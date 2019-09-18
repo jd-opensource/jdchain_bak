@@ -12,21 +12,21 @@ public class ParticipantStateUpdateOpTemplate implements ParticipantStateUpdateO
         DataContractRegistry.register(ParticipantStateUpdateOperation.class);
     }
 
-    private BlockchainIdentity blockchainIdentity;
+    private BlockchainIdentity stateUpdateIdentity;
     private NetworkAddress networkAddress;
     private ParticipantNodeState participantNodeState;
 
-    public ParticipantStateUpdateOpTemplate(BlockchainIdentity blockchainIdentity, NetworkAddress networkAddress, ParticipantNodeState participantNodeState) {
+    public ParticipantStateUpdateOpTemplate(BlockchainIdentity stateUpdateIdentity, NetworkAddress networkAddress, ParticipantNodeState participantNodeState) {
 
-        this.blockchainIdentity = blockchainIdentity;
+        this.stateUpdateIdentity = stateUpdateIdentity;
         this.networkAddress = networkAddress;
         this.participantNodeState = participantNodeState;
     }
 
 
     @Override
-    public BlockchainIdentity getParticipantIdentity() {
-        return blockchainIdentity;
+    public BlockchainIdentity getStateUpdateIdentity() {
+        return stateUpdateIdentity;
     }
 
     @Override

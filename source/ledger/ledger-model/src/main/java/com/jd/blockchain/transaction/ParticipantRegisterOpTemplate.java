@@ -14,12 +14,12 @@ public class ParticipantRegisterOpTemplate implements ParticipantRegisterOperati
     }
 
     private String participantName;
-    private BlockchainIdentity participantPubKey;
+    private BlockchainIdentity participantRegisterIdentity;
     private NetworkAddress networkAddress;
 
-    public ParticipantRegisterOpTemplate(String participantName, BlockchainIdentity participantPubKey, NetworkAddress networkAddress) {
+    public ParticipantRegisterOpTemplate(String participantName, BlockchainIdentity participantRegisterIdentity, NetworkAddress networkAddress) {
         this.participantName = participantName;
-        this.participantPubKey = participantPubKey;
+        this.participantRegisterIdentity = participantRegisterIdentity;
         this.networkAddress = networkAddress;
 
     }
@@ -30,8 +30,8 @@ public class ParticipantRegisterOpTemplate implements ParticipantRegisterOperati
     }
 
     @Override
-    public BlockchainIdentity getParticipantIdentity() {
-        return participantPubKey;
+    public BlockchainIdentity getParticipantRegisterIdentity() {
+        return participantRegisterIdentity;
     }
 
     @Override
