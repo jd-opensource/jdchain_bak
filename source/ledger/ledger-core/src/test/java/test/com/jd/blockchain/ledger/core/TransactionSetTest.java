@@ -17,6 +17,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
 import com.jd.blockchain.ledger.core.LedgerTransactionData;
+import com.jd.blockchain.ledger.core.TransactionQuery;
 import com.jd.blockchain.ledger.core.TransactionSet;
 import com.jd.blockchain.ledger.core.TransactionStagedSnapshot;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
@@ -103,7 +104,7 @@ public class TransactionSetTest {
 		assertEquals(5, tx.getTransactionContent().getOperations().length);
 
 		// Reload ;
-		TransactionSet reloadTxset = new TransactionSet(txsetRootHash, defCryptoSetting, keyPrefix, testStorage,
+		TransactionQuery reloadTxset = new TransactionSet(txsetRootHash, defCryptoSetting, keyPrefix, testStorage,
 				testStorage, true);
 
 		assertEquals(1, reloadTxset.getTotalCount());

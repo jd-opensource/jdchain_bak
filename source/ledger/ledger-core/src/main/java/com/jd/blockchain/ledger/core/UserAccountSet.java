@@ -15,7 +15,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class UserAccountSet implements Transactional, MerkleProvable, UserAccountQuery {
+public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	private AccountSet accountSet;
 
@@ -32,7 +32,7 @@ public class UserAccountSet implements Transactional, MerkleProvable, UserAccoun
 	}
 
 	@Override
-	public AccountHeader[] getAccounts(int fromIndex, int count) {
+	public AccountHeader[] getHeaders(int fromIndex, int count) {
 		return accountSet.getAccounts(fromIndex,count);
 	}
 
@@ -42,7 +42,7 @@ public class UserAccountSet implements Transactional, MerkleProvable, UserAccoun
 	 * @return
 	 */
 	@Override
-	public long getTotalCount() {
+	public long getTotal() {
 		return accountSet.getTotalCount();
 	}
 
@@ -65,12 +65,12 @@ public class UserAccountSet implements Transactional, MerkleProvable, UserAccoun
 	}
 	
 	@Override
-	public UserAccount getUser(String address) {
-		return getUser(Bytes.fromBase58(address));
+	public UserAccount getAccount(String address) {
+		return getAccount(Bytes.fromBase58(address));
 	}
 
 	@Override
-	public UserAccount getUser(Bytes address) {
+	public UserAccount getAccount(Bytes address) {
 		BaseAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
@@ -81,7 +81,7 @@ public class UserAccountSet implements Transactional, MerkleProvable, UserAccoun
 	}
 
 	@Override
-	public UserAccount getUser(Bytes address, long version) {
+	public UserAccount getAccount(Bytes address, long version) {
 		BaseAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}

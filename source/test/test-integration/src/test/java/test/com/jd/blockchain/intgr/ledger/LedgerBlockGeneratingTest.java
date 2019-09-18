@@ -77,7 +77,7 @@ public class LedgerBlockGeneratingTest {
 			LedgerBlock latestBlock = ledger.getLatestBlock();
 			assertEquals(height + i, latestBlock.getHeight());
 
-			LedgerDataQuery previousDataSet = ledger.getDataSet(latestBlock);
+			LedgerDataQuery previousDataSet = ledger.getLedgerData(latestBlock);
 			ConsoleUtils.info("------ 开始执行交易, 即将生成区块[%s] ------", (latestBlock.getHeight() + 1));
 			long startTs = System.currentTimeMillis();
 

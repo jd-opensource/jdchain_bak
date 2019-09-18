@@ -57,7 +57,7 @@ public abstract class AbtractContractEventSendOperationHandle implements Operati
 		ContractLedgerContext ledgerContext = new ContractLedgerContext(queryService, opHandleContext);
 
 		// 先检查合约引擎是否已经加载合约；如果未加载，再从账本中读取合约代码并装载到引擎中执行；
-		ContractAccount contract = contractSet.getContract(contractOP.getContractAddress());
+		ContractAccount contract = contractSet.getAccount(contractOP.getContractAddress());
 		if (contract == null) {
 			throw new LedgerException(String.format("Contract was not registered! --[ContractAddress=%s]",
 					contractOP.getContractAddress()));

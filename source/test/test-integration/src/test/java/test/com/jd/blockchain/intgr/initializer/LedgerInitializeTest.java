@@ -151,22 +151,22 @@ public class LedgerInitializeTest {
 
 		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
 		Bytes address0 = AddressEncoding.generateAddress(pubKey0);
-		UserAccount user0_0 = userset0.getUser(address0);
+		UserAccount user0_0 = userset0.getAccount(address0);
 		assertNotNull(user0_0);
 
 		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
 		Bytes address1 = AddressEncoding.generateAddress(pubKey1);
-		UserAccount user1_0 = userset0.getUser(address1);
+		UserAccount user1_0 = userset0.getAccount(address1);
 		assertNotNull(user1_0);
 
 		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
 		Bytes address2 = AddressEncoding.generateAddress(pubKey2);
-		UserAccount user2_0 = userset0.getUser(address2);
+		UserAccount user2_0 = userset0.getAccount(address2);
 		assertNotNull(user2_0);
 
 		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 		Bytes address3 = AddressEncoding.generateAddress(pubKey3);
-		UserAccount user3_0 = userset0.getUser(address3);
+		UserAccount user3_0 = userset0.getAccount(address3);
 		assertNotNull(user3_0);
 	}
 

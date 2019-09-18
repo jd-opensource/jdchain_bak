@@ -282,7 +282,7 @@ public class LedgerPerformanceTest {
 		ConsoleUtils.info("\r\n\r\n================= 准备测试交易 [执行合约] =================");
 
 		LedgerBlock latestBlock = ledger.getLatestBlock();
-		LedgerDataQuery previousDataSet = ledger.getDataSet(latestBlock);
+		LedgerDataQuery previousDataSet = ledger.getLedgerData(latestBlock);
 		LedgerEditor newEditor = ledger.createNextBlock();
 		TransactionBatchProcessor txProc = new TransactionBatchProcessor(DEFAULT_SECURITY_MANAGER, newEditor,
 				ledger, opHandler);
@@ -315,7 +315,7 @@ public class LedgerPerformanceTest {
 		long batchStartTs = System.currentTimeMillis();
 		for (int i = 0; i < batchCount; i++) {
 			LedgerBlock latestBlock = ledger.getLatestBlock();
-			LedgerDataQuery previousDataSet = ledger.getDataSet(latestBlock);
+			LedgerDataQuery previousDataSet = ledger.getLedgerData(latestBlock);
 			if (statistic) {
 				ConsoleUtils.info("------ 开始执行交易, 即将生成区块[高度：%s] ------", (latestBlock.getHeight() + 1));
 			}

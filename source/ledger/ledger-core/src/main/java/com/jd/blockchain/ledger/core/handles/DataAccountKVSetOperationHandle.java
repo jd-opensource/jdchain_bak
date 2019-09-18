@@ -30,7 +30,7 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 		securityPolicy.checkEndpointPermission(LedgerPermission.WRITE_DATA_ACCOUNT, MultiIDsPolicy.AT_LEAST_ONE);
 
 		// 操作账本；
-		DataAccount account = newBlockDataset.getDataAccountSet().getDataAccount(kvWriteOp.getAccountAddress());
+		DataAccount account = newBlockDataset.getDataAccountSet().getAccount(kvWriteOp.getAccountAddress());
 		if (account == null) {
 			throw new DataAccountDoesNotExistException("DataAccount doesn't exist!");
 		}

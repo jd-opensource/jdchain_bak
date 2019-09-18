@@ -272,12 +272,12 @@ public class LedgerInitializer {
 		}
 
 		@Override
-		public LedgerDataQuery getDataSet(LedgerBlock block) {
+		public LedgerDataQuery getLedgerData(LedgerBlock block) {
 			return dataset;
 		}
 
 		@Override
-		public TransactionSet getTransactionSet(LedgerBlock block) {
+		public TransactionQuery getTransactionSet(LedgerBlock block) {
 			return null;
 		}
 

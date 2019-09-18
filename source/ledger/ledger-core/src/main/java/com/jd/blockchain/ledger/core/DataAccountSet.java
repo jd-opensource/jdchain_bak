@@ -11,7 +11,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class DataAccountSet implements MerkleProvable, Transactional, DataAccountQuery {
+public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	private AccountSet accountSet;
 
@@ -27,7 +27,7 @@ public class DataAccountSet implements MerkleProvable, Transactional, DataAccoun
 	}
 
 	@Override
-	public AccountHeader[] getAccounts(int fromIndex, int count) {
+	public AccountHeader[] getHeaders(int fromIndex, int count) {
 		return accountSet.getAccounts(fromIndex, count);
 	}
 
@@ -38,15 +38,20 @@ public class DataAccountSet implements MerkleProvable, Transactional, DataAccoun
 	void setReadonly() {
 		accountSet.setReadonly();
 	}
-	
+
 	@Override
 	public HashDigest getRootHash() {
 		return accountSet.getRootHash();
 	}
 
 	@Override
-	public long getTotalCount() {
+	public long getTotal() {
 		return accountSet.getTotalCount();
+	}
+
+	@Override
+	public boolean contains(Bytes address) {
+		return accountSet.contains(address);
 	}
 
 	/**
@@ -63,6 +68,11 @@ public class DataAccountSet implements MerkleProvable, Transactional, DataAccoun
 		return new DataAccount(accBase);
 	}
 
+	@Override
+	public DataAccount getAccount(String address) {
+		return getAccount(Bytes.fromBase58(address));
+	}
+
 	/**
 	 * 返回数据账户； <br>
 	 * 如果不存在，则返回 null；
@@ -71,7 +81,7 @@ public class DataAccountSet implements MerkleProvable, Transactional, DataAccoun
 	 * @return
 	 */
 	@Override
-	public DataAccount getDataAccount(Bytes address) {
+	public DataAccount getAccount(Bytes address) {
 		BaseAccount accBase = accountSet.getAccount(address);
 		if (accBase == null) {
 			return null;
@@ -80,7 +90,7 @@ public class DataAccountSet implements MerkleProvable, Transactional, DataAccoun
 	}
 
 	@Override
-	public DataAccount getDataAccount(Bytes address, long version) {
+	public DataAccount getAccount(Bytes address, long version) {
 		BaseAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);
 	}

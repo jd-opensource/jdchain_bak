@@ -336,21 +336,21 @@ public class IntegrationTest {
 		// getDataAccountCount according to blockhash
 		for (int i = 0; i < ledgerHeight + 1; i++) {
 			LedgerBlock expectBlock = ledgerOfNode0.getBlock(i);
-			long expectDataCount = ledgerOfNode0.getDataAccountSet(expectBlock).getTotalCount();
+			long expectDataCount = ledgerOfNode0.getDataAccountSet(expectBlock).getTotal();
 			long actualDataCount = blockchainService.getDataAccountCount(ledgerHash, expectBlock.getHash());
 		}
 
 		// getUserCount according to blockhash
 		for (int i = 0; i < ledgerHeight + 1; i++) {
 			LedgerBlock expectBlock = ledgerOfNode0.getBlock(i);
-			long expectUserCount = ledgerOfNode0.getUserAccountSet(expectBlock).getTotalCount();
+			long expectUserCount = ledgerOfNode0.getUserAccountSet(expectBlock).getTotal();
 			long actualUserCount = blockchainService.getUserCount(ledgerHash, expectBlock.getHash());
 		}
 
 		// getContractCount according to blockhash
 		for (int i = 0; i < ledgerHeight + 1; i++) {
 			LedgerBlock expectBlock = ledgerOfNode0.getBlock(i);
-			long expectContractCount = ledgerOfNode0.getContractAccountSet(expectBlock).getTotalCount();
+			long expectContractCount = ledgerOfNode0.getContractAccountSet(expectBlock).getTotal();
 			long actualContractCount = blockchainService.getContractCount(ledgerHash, expectBlock.getHash());
 		}
 
@@ -372,9 +372,9 @@ public class IntegrationTest {
 			// expect block acount total
 			LedgerBlock ledgerBlock = ledgerOfNode0.getBlock(i);
 			expectTransactionTotal = ledgerOfNode0.getTransactionSet(ledgerBlock).getTotalCount();
-			expectUserTotal = ledgerOfNode0.getUserAccountSet(ledgerBlock).getTotalCount();
-			expectDataTotal = ledgerOfNode0.getDataAccountSet(ledgerBlock).getTotalCount();
-			expectContractTotal = ledgerOfNode0.getContractAccountSet(ledgerBlock).getTotalCount();
+			expectUserTotal = ledgerOfNode0.getUserAccountSet(ledgerBlock).getTotal();
+			expectDataTotal = ledgerOfNode0.getDataAccountSet(ledgerBlock).getTotal();
+			expectContractTotal = ledgerOfNode0.getContractAccountSet(ledgerBlock).getTotal();
 		}
 
 		// getTransactionTotalCount
@@ -579,7 +579,7 @@ public class IntegrationTest {
 		Node node0 = context.getNode(0);
 		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
-		byte[] contractCodeInDb = ledgerOfNode0.getContractAccountSet(block).getContract(contractDeployKey.getAddress())
+		byte[] contractCodeInDb = ledgerOfNode0.getContractAccountSet(block).getAccount(contractDeployKey.getAddress())
 				.getChainCode();
 		txContentHash = ptx.getHash();
 
@@ -659,9 +659,9 @@ public class IntegrationTest {
 
 		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
-		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
 				.getBytes("A");
-		BytesValue val2InDb = ledgerOfNode0.getDataAccountSet(block).getDataAccount(contractDataKey.getAddress())
+		BytesValue val2InDb = ledgerOfNode0.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
 				.getBytes(KEY_TOTAL);
 	}
 

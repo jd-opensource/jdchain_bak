@@ -158,24 +158,24 @@ public class LedgerInitializeWeb4Nodes {
 		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
 		Bytes address0 = AddressEncoding.generateAddress(pubKey0);
 		System.out.printf("localNodeAddress0 = %s \r\n", address0.toBase58());
-		UserAccount user0_0 = userset0.getUser(address0);
+		UserAccount user0_0 = userset0.getAccount(address0);
 		assertNotNull(user0_0);
 
 		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
 		Bytes address1 = AddressEncoding.generateAddress(pubKey1);
-		UserAccount user1_0 = userset0.getUser(address1);
+		UserAccount user1_0 = userset0.getAccount(address1);
 		assertNotNull(user1_0);
 		System.out.printf("localNodeAddress1 = %s \r\n", address1.toBase58());
 
 		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
 		Bytes address2 = AddressEncoding.generateAddress(pubKey2);
-		UserAccount user2_0 = userset0.getUser(address2);
+		UserAccount user2_0 = userset0.getAccount(address2);
 		assertNotNull(user2_0);
 		System.out.printf("localNodeAddress2 = %s \r\n", address2.toBase58());
 
 		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 		Bytes address3 = AddressEncoding.generateAddress(pubKey3);
-		UserAccount user3_0 = userset0.getUser(address3);
+		UserAccount user3_0 = userset0.getAccount(address3);
 		assertNotNull(user3_0);
 		System.out.printf("localNodeAddress3 = %s \r\n", address3.toBase58());
 

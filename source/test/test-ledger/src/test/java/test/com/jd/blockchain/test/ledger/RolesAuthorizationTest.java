@@ -127,7 +127,8 @@ public class RolesAuthorizationTest {
 				new TransactionDefiner() {
 					@Override
 					public void define(TransactionBuilder txBuilder) {
-						txBuilder.security().roles().configure("NORMAL").enable(LedgerPermission.REGISTER_DATA_ACCOUNT)
+						txBuilder.security().roles().configure("NORMAL")
+								.enable(LedgerPermission.REGISTER_DATA_ACCOUNT)
 								.disable(LedgerPermission.REGISTER_USER)
 								.enable(TransactionPermission.CONTRACT_OPERATION);
 
@@ -215,9 +216,9 @@ public class RolesAuthorizationTest {
 	private void assertPredefineData(HashDigest ledgerHash, MemoryKVStorage storage) {
 		LedgerManager ledgerManager = new LedgerManager();
 		LedgerRepository ledger = ledgerManager.register(ledgerHash, storage);
-		UserAccount newUser = ledger.getUserAccountSet().getUser(NEW_USER.getAddress());
+		UserAccount newUser = ledger.getUserAccountSet().getAccount(NEW_USER.getAddress());
 		assertNotNull(newUser);
-		DataAccount dataAccount = ledger.getDataAccountSet().getDataAccount(DATA_ACCOUNT_ID.getAddress());
+		DataAccount dataAccount = ledger.getDataAccountSet().getAccount(DATA_ACCOUNT_ID.getAddress());
 		assertNotNull(dataAccount);
 
 		UserRoles userRoles = ledger.getAdminSettings().getAuthorizations().getUserRoles(NEW_USER.getAddress());
