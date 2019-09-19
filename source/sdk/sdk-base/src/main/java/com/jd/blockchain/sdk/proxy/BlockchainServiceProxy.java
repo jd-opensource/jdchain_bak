@@ -1,7 +1,19 @@
 package com.jd.blockchain.sdk.proxy;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.ContractInfo;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.KVInfoVO;
+import com.jd.blockchain.ledger.LedgerAdminInfo;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerMetadata;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TransactionTemplate;
+import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.sdk.BlockchainEventHandle;
 import com.jd.blockchain.sdk.BlockchainEventListener;
 import com.jd.blockchain.sdk.BlockchainService;
@@ -31,6 +43,11 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	@Override
 	public LedgerInfo getLedger(HashDigest ledgerHash) {
 		return getQueryService(ledgerHash).getLedger(ledgerHash);
+	}
+	
+	@Override
+	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
+		return getQueryService(ledgerHash).getLedgerAdminInfo(ledgerHash);
 	}
 
     @Override

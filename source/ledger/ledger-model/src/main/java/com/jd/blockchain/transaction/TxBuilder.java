@@ -75,6 +75,11 @@ public class TxBuilder implements TransactionBuilder {
 	public Collection<OperationResultHandle> getReturnValuehandlers() {
 		return opFactory.getReturnValuetHandlers();
 	}
+	
+	@Override
+	public SecurityOperationBuilder security() {
+		return opFactory.security();
+	}
 
 	@Override
 	public LedgerInitOperationBuilder ledgers() {
@@ -109,6 +114,12 @@ public class TxBuilder implements TransactionBuilder {
 	public ContractEventSendOperationBuilder contractEvents() {
 		return opFactory.contractEvents();
 	}
+
+	@Override
+	public ParticipantRegisterOperationBuilder participants() {return  opFactory.participants(); }
+
+	@Override
+	public ParticipantStateUpdateOperationBuilder states() {return  opFactory.states(); }
 
 	@Override
 	public <T> T contract(Bytes address, Class<T> contractIntf) {

@@ -107,14 +107,17 @@ public class PeerTimeTasks implements ApplicationContextAware {
     }
 
     private LedgerBindingConfig loadLedgerBindingConfig() throws Exception {
-        LedgerBindingConfig ledgerBindingConfig;
+        LedgerBindingConfig ledgerBindingConfig = null;
         ledgerBindConfigFile = PeerServerBooter.ledgerBindConfigFile;
         LOGGER.debug("Load LedgerBindConfigFile path = {}",
                 ledgerBindConfigFile == null ? "Default" : ledgerBindConfigFile);
         if (ledgerBindConfigFile == null) {
             ClassPathResource configResource = new ClassPathResource("ledger-binding.conf");
-            InputStream in = configResource.getInputStream();
-            ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+            try (InputStream in = configResource.getInputStream()) {
+                ledgerBindingConfig = LedgerBindingConfig.resolve(in);
+            } catch (Exception e) {
+                throw e;
+            }
         } else {
             File file = new File(ledgerBindConfigFile);
             ledgerBindingConfig = LedgerBindingConfig.resolve(file);

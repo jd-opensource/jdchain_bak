@@ -14,8 +14,8 @@
 		<module>tools-keygen-booter</module>
 		<module>tools-initializer</module>
 		<module>tools-initializer-booter</module>
-		<module>tools-capability</module>
-        <module>tools-mocker</module>
+		<!--<module>tools-capability</module>-->
+        <!-- <module>tools-mocker</module> -->
         <!-- <module>tools-package</module> -->
     </modules>
 </project>

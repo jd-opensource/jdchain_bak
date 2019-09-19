@@ -15,22 +15,10 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.ContractCodeDeployOperation;
-import com.jd.blockchain.ledger.ContractEventSendOperation;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.codec.Base58Utils;
 
 /**
@@ -58,6 +46,8 @@ public class SettingsInit {
         DataContractRegistry.register(ContractEventSendOperation.class);
         DataContractRegistry.register(DataAccountRegisterOperation.class);
         DataContractRegistry.register(UserRegisterOperation.class);
+        DataContractRegistry.register(ParticipantRegisterOperation.class);
+        DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 
         DataContractRegistry.register(ActionResponse.class);
 
@@ -116,8 +106,8 @@ public class SettingsInit {
         CapabilitySettings.ledgerHash = hash;
 
         // 处理用户
-        PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(settings.getPrivKey(), settings.getPwd());
-        PubKey pubKey = KeyGenCommand.decodePubKey(settings.getPubKey());
+        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(settings.getPrivKey(), settings.getPwd());
+        PubKey pubKey = KeyGenUtils.decodePubKey(settings.getPubKey());
         CapabilitySettings.adminKey = new AsymmetricKeypair(pubKey, privKey);
     }
 

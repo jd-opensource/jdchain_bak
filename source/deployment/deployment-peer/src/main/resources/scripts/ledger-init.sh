@@ -5,5 +5,5 @@ boot_file=$(ls $HOME/libs | grep tools-initializer-booter-)
 if [ ! -n "$boot_file" ]; then
   echo "tools-initializer-booter is null"
 else
-  java -jar $HOME/libs/$boot_file -l $HOME/config/init/local.conf -i $HOME/config/init/ledger.init $*
+  java -jar -server -Dinit.log=$HOME $HOME/libs/$boot_file -l $HOME/config/init/local.conf -i $HOME/config/init/ledger.init $*
 fi

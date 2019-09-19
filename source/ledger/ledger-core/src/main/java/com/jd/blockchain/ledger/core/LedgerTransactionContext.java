@@ -13,11 +13,18 @@ import java.util.List;
 public interface LedgerTransactionContext {
 
 	/**
-	 * 账本数据；
+	 * 账本数据集合；
 	 * 
 	 * @return
 	 */
-	LedgerDataSet getDataSet();
+	LedgerDataset getDataset();
+
+	/**
+	 * 事务集合；
+	 * 
+	 * @return
+	 */
+	TransactionQuery getTransactionSet();
 
 	/**
 	 * 交易请求；

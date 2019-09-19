@@ -11,6 +11,8 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.transaction.ContractReturnValue;
+import com.jd.blockchain.transaction.LongValueHolder;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.net.NetworkAddress;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
@@ -49,8 +51,6 @@ public class SDKDemo_Contract {
 		BlockchainService service = serviceFactory.getBlockchainService();
 
 		HashDigest ledgerHash = getLedgerHash();
-		// 发起交易；
-		TransactionTemplate txTemp = service.newTransaction(ledgerHash);
 
 		// --------------------------------------
 		// 一个贸易账户，贸易结算后的利润将通过一个合约账户来执行利润分配；
@@ -71,25 +71,26 @@ public class SDKDemo_Contract {
 		// 备注信息；
 		Remark remark = new Remark();
 		String remarkJSON = JSONSerializeUtils.serializeToJSON(remark);
-		
+
+		// 发起交易；
+		TransactionTemplate txTemp = service.newTransaction(ledgerHash);
+
 		AssetContract assetContract = txTemp.contract(profitDistributionContract, AssetContract.class);
 		assetContract.issue(1000, receiptorAccount1);
-		assetContract.transfer(receiptorAccount1, receiptorAccount2, 600);
-		
-//		assetContract.
-		
-		// --------------------------------------
+		LongValueHolder balance = ContractReturnValue.decode(assetContract.transfer(receiptorAccount1, receiptorAccount2, 600));
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
-		String txHash = ByteArray.toBase64(prepTx.getHash().toBytes());
 
 		// 使用私钥进行签名；
-		AsymmetricKeypair keyPair = getSponsorKey();
+		AsymmetricKeypair keyPair = getSponsorKey();//示例方法，取发起人的私钥；
 		prepTx.sign(keyPair);
 
 		// 提交交易；
 		prepTx.commit();
+		
+		//获取返回值；
+		System.out.println("balance = " + balance.get());
 	}
 
 	private static HashDigest getLedgerHash() {

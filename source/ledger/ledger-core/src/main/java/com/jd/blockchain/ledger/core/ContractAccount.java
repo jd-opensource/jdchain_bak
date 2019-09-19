@@ -2,10 +2,10 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.utils.Bytes;
 
 public class ContractAccount implements ContractInfo {
@@ -14,9 +14,9 @@ public class ContractAccount implements ContractInfo {
 
 	private static final Bytes CHAIN_CODE_KEY = Bytes.fromString("CHAIN-CODE");
 
-	private BaseAccount accBase;
+	private MerkleAccount accBase;
 
-	public ContractAccount(BaseAccount accBase) {
+	public ContractAccount(MerkleAccount accBase) {
 		this.accBase = accBase;
 	}
 
@@ -57,7 +57,7 @@ public class ContractAccount implements ContractInfo {
 	}
 
 	public long getChaincodeVersion() {
-		return accBase.getKeyVersion(CHAIN_CODE_KEY);
+		return accBase.getVersion(CHAIN_CODE_KEY);
 	}
 
 	public long setProperty(Bytes key, String value, long version) {

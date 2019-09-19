@@ -6,7 +6,7 @@ public class ModularFactory {
 	 * 启动系统；
 	 */
 	public static void startSystem(String runtimeDir, boolean productMode,
-			ClassLoader libClassLoader,String mainClassName,  ClassLoader systemClassLoader, String[] args) {
+			ClassLoader libClassLoader, String mainClassName, ClassLoader systemClassLoader, String[] args) {
 
 		JarsModule libModule = new JarsModule("LibModule", libClassLoader);
 

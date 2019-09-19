@@ -1,6 +1,7 @@
 package com.jd.blockchain.gateway.web;
 
 import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.gateway.service.GatewayInterceptService;
 import com.jd.blockchain.transaction.SignatureUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,9 +30,15 @@ public class TxProcessingController implements TransactionService {
 	@Autowired
 	private PeerService peerService;
 
+	@Autowired
+	private GatewayInterceptService interceptService;
+
 	@RequestMapping(path = "rpc/tx", method = RequestMethod.POST, consumes = BinaryMessageConverter.CONTENT_TYPE_VALUE, produces = BinaryMessageConverter.CONTENT_TYPE_VALUE)
 	@Override
 	public @ResponseBody TransactionResponse process(@RequestBody TransactionRequest txRequest) {
+		// 拦截请求进行校验
+		interceptService.intercept(txRequest);
+
 		// 检查交易请求的信息是否完整；
 		HashDigest ledgerHash = txRequest.getTransactionContent().getLedgerHash();
 		if (ledgerHash == null) {

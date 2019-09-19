@@ -5,6 +5,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -14,24 +15,25 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class UserAccountSet implements Transactional, MerkleProvable {
+public class UserAccountSet implements Transactional, UserAccountQuery {
 
-	private AccountSet accountSet;
+	private MerkleAccountSet accountSet;
 
 	public UserAccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage simpleStorage,
 			VersioningKVStorage versioningStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting, keyPrefix, simpleStorage, versioningStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, keyPrefix, simpleStorage, versioningStorage, accessPolicy);
 	}
 
 	public UserAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly,
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly,
 				accessPolicy);
 	}
 
-	public AccountHeader[] getAccounts(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex,count);
+	@Override
+	public AccountHeader[] getHeaders(int fromIndex, int count) {
+		return accountSet.getHeaders(fromIndex,count);
 	}
 
 	/**
@@ -39,12 +41,17 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 	 * 
 	 * @return
 	 */
-	public long getTotalCount() {
-		return accountSet.getTotalCount();
+	@Override
+	public long getTotal() {
+		return accountSet.getTotal();
 	}
 
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
+	}
+	
+	void setReadonly() {
+		accountSet.setReadonly();
 	}
 
 	@Override
@@ -57,21 +64,25 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 		return accountSet.getProof(key);
 	}
 	
-	public UserAccount getUser(String address) {
-		return getUser(Bytes.fromBase58(address));
+	@Override
+	public UserAccount getAccount(String address) {
+		return getAccount(Bytes.fromBase58(address));
 	}
 
-	public UserAccount getUser(Bytes address) {
-		BaseAccount baseAccount = accountSet.getAccount(address);
+	@Override
+	public UserAccount getAccount(Bytes address) {
+		MerkleAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
+	@Override
 	public boolean contains(Bytes address) {
 		return accountSet.contains(address);
 	}
 
-	public UserAccount getUser(Bytes address, long version) {
-		BaseAccount baseAccount = accountSet.getAccount(address, version);
+	@Override
+	public UserAccount getAccount(Bytes address, long version) {
+		MerkleAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}
 
@@ -89,7 +100,7 @@ public class UserAccountSet implements Transactional, MerkleProvable {
 	 * @return 注册成功的用户对象；
 	 */
 	public UserAccount register(Bytes address, PubKey pubKey) {
-		BaseAccount baseAccount = accountSet.register(address, pubKey);
+		MerkleAccount baseAccount = accountSet.register(address, pubKey);
 		return new UserAccount(baseAccount);
 	}
 

@@ -4,16 +4,15 @@ import com.jd.blockchain.consensus.ConsensusProvider;
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.*;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -43,6 +42,21 @@ public class LedgerInitializeWeb4Nodes {
 	public static final String[] PUB_KEYS = IntegrationBase.PUB_KEYS;
 
 	public static final String[] PRIV_KEYS = IntegrationBase.PRIV_KEYS;
+
+	static {
+		try {
+			// 首先获取当前Resource路径
+			ClassPathResource ledgerInitSettingResource = new ClassPathResource("");
+			String path = ledgerInitSettingResource.getURL().getPath();
+			System.out.println("-----" + path + "-----");
+			// 将参数注册进去
+			System.setProperty("peer.log", path);
+			System.setProperty("init.log", path);
+			System.setProperty("gateway.log", path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testMQInitByMemWith4Nodes() {
@@ -88,10 +102,10 @@ public class LedgerInitializeWeb4Nodes {
 		NetworkAddress initAddr3 = initSetting.getConsensusParticipant(3).getInitializerAddress();
 		NodeWebContext node3 = new NodeWebContext(3, initAddr3);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
@@ -125,10 +139,10 @@ public class LedgerInitializeWeb4Nodes {
 		assertEquals(ledgerHash0, ledgerHash2);
 		assertEquals(ledgerHash0, ledgerHash3);
 
-		LedgerRepository ledger0 = node0.registLedger(ledgerHash0);
-		LedgerRepository ledger1 = node1.registLedger(ledgerHash1);
-		LedgerRepository ledger2 = node2.registLedger(ledgerHash2);
-		LedgerRepository ledger3 = node3.registLedger(ledgerHash3);
+		LedgerQuery ledger0 = node0.registLedger(ledgerHash0);
+		LedgerQuery ledger1 = node1.registLedger(ledgerHash1);
+		LedgerQuery ledger2 = node2.registLedger(ledgerHash2);
+		LedgerQuery ledger3 = node3.registLedger(ledgerHash3);
 
 		assertNotNull(ledger0);
 		assertNotNull(ledger1);
@@ -139,29 +153,29 @@ public class LedgerInitializeWeb4Nodes {
 		assertEquals(0, genesisBlock.getHeight());
 		assertEquals(ledgerHash0, genesisBlock.getHash());
 
-		UserAccountSet userset0 = ledger0.getUserAccountSet(genesisBlock);
+		UserAccountQuery userset0 = ledger0.getUserAccountSet(genesisBlock);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
 		Bytes address0 = AddressEncoding.generateAddress(pubKey0);
 		System.out.printf("localNodeAddress0 = %s \r\n", address0.toBase58());
-		UserAccount user0_0 = userset0.getUser(address0);
+		UserAccount user0_0 = userset0.getAccount(address0);
 		assertNotNull(user0_0);
 
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
 		Bytes address1 = AddressEncoding.generateAddress(pubKey1);
-		UserAccount user1_0 = userset0.getUser(address1);
+		UserAccount user1_0 = userset0.getAccount(address1);
 		assertNotNull(user1_0);
 		System.out.printf("localNodeAddress1 = %s \r\n", address1.toBase58());
 
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
 		Bytes address2 = AddressEncoding.generateAddress(pubKey2);
-		UserAccount user2_0 = userset0.getUser(address2);
+		UserAccount user2_0 = userset0.getAccount(address2);
 		assertNotNull(user2_0);
 		System.out.printf("localNodeAddress2 = %s \r\n", address2.toBase58());
 
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 		Bytes address3 = AddressEncoding.generateAddress(pubKey3);
-		UserAccount user3_0 = userset0.getUser(address3);
+		UserAccount user3_0 = userset0.getAccount(address3);
 		assertNotNull(user3_0);
 		System.out.printf("localNodeAddress3 = %s \r\n", address3.toBase58());
 
@@ -213,7 +227,7 @@ public class LedgerInitializeWeb4Nodes {
 			return controller.getInitTxContent();
 		}
 
-		public LedgerInitPermission getLocalPermission() {
+		public LedgerInitProposal getLocalPermission() {
 			return controller.getLocalPermission();
 		}
 
@@ -226,9 +240,9 @@ public class LedgerInitializeWeb4Nodes {
 			this.serverAddress = serverAddress;
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash) {
+		public LedgerQuery registLedger(HashDigest ledgerHash) {
 			DbConnection conn = db.connect(dbConnConfig.getUri());
-			LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
 			return ledgerRepo;
 		}
 

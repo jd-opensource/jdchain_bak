@@ -82,7 +82,7 @@ public class CryptoConfig implements CryptoSetting {
 
 	public void setHashAlgorithm(short hashAlgorithm) {
 		if (codeAlgorithms == null || !codeAlgorithms.containsKey(hashAlgorithm)) {
-			throw new LedgerException("The specified algorithm[" + hashAlgorithm + "] has no provider!");
+			throw new LedgerException("Current CryptoConfig has no crypto provider!");
 		}
 		this.hashAlgorithm = hashAlgorithm;
 	}

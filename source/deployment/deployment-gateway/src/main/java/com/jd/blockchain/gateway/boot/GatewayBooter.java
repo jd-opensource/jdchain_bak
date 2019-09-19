@@ -23,10 +23,7 @@ public class GatewayBooter {
 	}
 
 	private static final void writePID() throws Exception {
-		URL url = GatewayBooter.class
-				.getProtectionDomain()
-				.getCodeSource()
-				.getLocation();
+		URL url = GatewayBooter.class.getProtectionDomain().getCodeSource().getLocation();
 		String currPath = java.net.URLDecoder.decode(url.getPath(), "UTF-8");
 		if (currPath.contains("!/")) {
 			currPath = currPath.substring(5, currPath.indexOf("!/"));
@@ -40,6 +37,10 @@ public class GatewayBooter {
 		String pidFilePath = homeDir + File.separator + "bin" + File.separator + "PID.log";
 		File pidFile = new File(pidFilePath);
 		if (!pidFile.exists()) {
+			File dir = pidFile.getParentFile();
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
 			pidFile.createNewFile();
 		}
 		String name = ManagementFactory.getRuntimeMXBean().getName();

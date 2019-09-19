@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.utils.io.ByteArray;
 import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 

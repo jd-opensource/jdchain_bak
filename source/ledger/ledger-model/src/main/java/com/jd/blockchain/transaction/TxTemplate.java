@@ -36,6 +36,12 @@ public class TxTemplate implements TransactionTemplate {
 	}
 
 	@Override
+	public SecurityOperationBuilder security() {
+		stateManager.operate();
+		return txBuilder.security();
+	}
+
+	@Override
 	public UserRegisterOperationBuilder users() {
 		stateManager.operate();
 		return txBuilder.users();
@@ -66,6 +72,18 @@ public class TxTemplate implements TransactionTemplate {
 	}
 
 	@Override
+	public ParticipantRegisterOperationBuilder participants() {
+		stateManager.operate();
+		return txBuilder.participants();
+	}
+
+	@Override
+	public ParticipantStateUpdateOperationBuilder states() {
+		stateManager.operate();
+		return txBuilder.states();
+	}
+
+	@Override
 	public <T> T contract(Bytes address, Class<T> contractIntf) {
 		stateManager.operate();
 		return txBuilder.contract(address, contractIntf);
@@ -80,9 +98,10 @@ public class TxTemplate implements TransactionTemplate {
 	@Override
 	public void close() throws IOException {
 		if (!stateManager.close()) {
-			Collection<OperationResultHandle>  handlers = txBuilder.getReturnValuehandlers();
+			Collection<OperationResultHandle> handlers = txBuilder.getReturnValuehandlers();
 			if (handlers.size() > 0) {
-				TransactionCancelledExeption error = new TransactionCancelledExeption("Transaction template has been cancelled!");
+				TransactionCancelledExeption error = new TransactionCancelledExeption(
+						"Transaction template has been cancelled!");
 				for (OperationResultHandle handle : handlers) {
 					handle.complete(error);
 				}

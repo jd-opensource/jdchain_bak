@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
@@ -46,9 +45,10 @@ public class BinarySerializeUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T deserialize(InputStream in) {
 		try {
-			ObjectInputStream objIn = new ObjectInputStream(in);
-			Object obj = objIn.readObject();
-			return (T) obj;
+			try(FilteredObjectInputStream objIn = new FilteredObjectInputStream(in)){
+				Object obj = objIn.readObject();
+				return (T) obj;
+			}
 		} catch (IOException e) {
 			throw new RuntimeIOException(e.getMessage(), e);
 		} catch (ClassNotFoundException e) {

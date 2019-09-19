@@ -13,13 +13,12 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.consensus.ConsensusProvider;
-import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
@@ -27,23 +26,24 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitOperation;
+import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.RolesConfigureOperation;
+import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitPermission;
-import com.jd.blockchain.ledger.core.LedgerRepository;
+import com.jd.blockchain.ledger.core.LedgerInitProposal;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.ledger.core.UserAccount;
-import com.jd.blockchain.ledger.core.UserAccountSet;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
+import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
 import com.jd.blockchain.tools.initializer.Prompter;
 import com.jd.blockchain.tools.initializer.web.InitConsensusServiceFactory;
 import com.jd.blockchain.tools.initializer.web.LedgerInitConsensusService;
 import com.jd.blockchain.tools.initializer.web.LedgerInitializeWebController;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
@@ -59,6 +59,8 @@ public class LedgerInitializeTest {
 	static {
 		DataContractRegistry.register(LedgerInitOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(RolesConfigureOperation.class);
+		DataContractRegistry.register(UserAuthorizeOperation.class);
 	}
 
 	private static final String[] SUPPORTED_PROVIDERS = { ClassicCryptoService.class.getName(),
@@ -101,22 +103,22 @@ public class LedgerInitializeTest {
 		NodeContext node3 = new NodeContext(initSetting.getConsensusParticipant(3).getInitializerAddress(),
 				serviceRegisterMap);
 
-		PrivKey privkey0 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
+		PrivKey privkey0 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD);
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri(dbConnections[0]);
 		AsyncCallback<HashDigest> callback0 = node0.startInit(0, privkey0, initSetting, testDb0, consolePrompter);
 
-		PrivKey privkey1 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
+		PrivKey privkey1 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[1], PASSWORD);
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri(dbConnections[1]);
 		AsyncCallback<HashDigest> callback1 = node1.startInit(1, privkey1, initSetting, testDb1, consolePrompter);
 
-		PrivKey privkey2 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
+		PrivKey privkey2 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[2], PASSWORD);
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri(dbConnections[2]);
 		AsyncCallback<HashDigest> callback2 = node2.startInit(2, privkey2, initSetting, testDb2, consolePrompter);
 
-		PrivKey privkey3 = KeyGenCommand.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
+		PrivKey privkey3 = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[3], PASSWORD);
 		DBConnectionConfig testDb03 = new DBConnectionConfig();
 		testDb03.setConnectionUri(dbConnections[3]);
 		AsyncCallback<HashDigest> callback3 = node3.startInit(3, privkey3, initSetting, testDb03, consolePrompter);
@@ -131,10 +133,10 @@ public class LedgerInitializeTest {
 		assertEquals(ledgerHash0, ledgerHash2);
 		assertEquals(ledgerHash0, ledgerHash3);
 
-		LedgerRepository ledger0 = node0.registLedger(ledgerHash0, dbConnections[0]);
-		LedgerRepository ledger1 = node1.registLedger(ledgerHash1, dbConnections[1]);
-		LedgerRepository ledger2 = node2.registLedger(ledgerHash2, dbConnections[2]);
-		LedgerRepository ledger3 = node3.registLedger(ledgerHash3, dbConnections[3]);
+		LedgerQuery ledger0 = node0.registLedger(ledgerHash0, dbConnections[0]);
+		LedgerQuery ledger1 = node1.registLedger(ledgerHash1, dbConnections[1]);
+		LedgerQuery ledger2 = node2.registLedger(ledgerHash2, dbConnections[2]);
+		LedgerQuery ledger3 = node3.registLedger(ledgerHash3, dbConnections[3]);
 
 		assertNotNull(ledger0);
 		assertNotNull(ledger1);
@@ -145,26 +147,26 @@ public class LedgerInitializeTest {
 		assertEquals(0, genesisBlock.getHeight());
 		assertEquals(ledgerHash0, genesisBlock.getHash());
 
-		UserAccountSet userset0 = ledger0.getUserAccountSet(genesisBlock);
+		UserAccountQuery userset0 = ledger0.getUserAccountSet(genesisBlock);
 
-		PubKey pubKey0 = KeyGenCommand.decodePubKey(PUB_KEYS[0]);
+		PubKey pubKey0 = KeyGenUtils.decodePubKey(PUB_KEYS[0]);
 		Bytes address0 = AddressEncoding.generateAddress(pubKey0);
-		UserAccount user0_0 = userset0.getUser(address0);
+		UserAccount user0_0 = userset0.getAccount(address0);
 		assertNotNull(user0_0);
 
-		PubKey pubKey1 = KeyGenCommand.decodePubKey(PUB_KEYS[1]);
+		PubKey pubKey1 = KeyGenUtils.decodePubKey(PUB_KEYS[1]);
 		Bytes address1 = AddressEncoding.generateAddress(pubKey1);
-		UserAccount user1_0 = userset0.getUser(address1);
+		UserAccount user1_0 = userset0.getAccount(address1);
 		assertNotNull(user1_0);
 
-		PubKey pubKey2 = KeyGenCommand.decodePubKey(PUB_KEYS[2]);
+		PubKey pubKey2 = KeyGenUtils.decodePubKey(PUB_KEYS[2]);
 		Bytes address2 = AddressEncoding.generateAddress(pubKey2);
-		UserAccount user2_0 = userset0.getUser(address2);
+		UserAccount user2_0 = userset0.getAccount(address2);
 		assertNotNull(user2_0);
 
-		PubKey pubKey3 = KeyGenCommand.decodePubKey(PUB_KEYS[3]);
+		PubKey pubKey3 = KeyGenUtils.decodePubKey(PUB_KEYS[3]);
 		Bytes address3 = AddressEncoding.generateAddress(pubKey3);
-		UserAccount user3_0 = userset0.getUser(address3);
+		UserAccount user3_0 = userset0.getAccount(address3);
 		assertNotNull(user3_0);
 	}
 
@@ -227,7 +229,7 @@ public class LedgerInitializeTest {
 
 		public NodeContext(NetworkAddress address, Map<NetworkAddress, LedgerInitConsensusService> serviceRegisterMap) {
 			this.initCsServiceFactory = new MultiThreadInterInvokerFactory(serviceRegisterMap);
-			LedgerInitializeWebController initController = new LedgerInitializeWebController(ledgerManager, storageDb,
+			LedgerInitializeWebController initController = new LedgerInitializeWebController(storageDb,
 					initCsServiceFactory);
 			serviceRegisterMap.put(address, initController);
 			this.initProcess = initController;
@@ -259,20 +261,23 @@ public class LedgerInitializeTest {
 			cryptoSetting.setSupportedProviders(supportedProviders);
 			cryptoSetting.setAutoVerifyHash(autoVerifyHash);
 			cryptoSetting.setHashAlgorithm(Crypto.getAlgorithm("SHA256"));
+			
+			setting.getCryptoProperties().setHashAlgorithm("SHA256");
+			setting.getCryptoProperties().setVerifyHash(autoVerifyHash);
 
 			partiKey = new AsymmetricKeypair(setting.getConsensusParticipant(0).getPubKey(), privKey);
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
 				protected HashDigest invoke() throws Exception {
-					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter, cryptoSetting);
+					return initProcess.initialize(currentId, privKey, setting, dbConnConfig, prompter);
 				}
 			};
 
 			return invoker.start();
 		}
 
-		public LedgerRepository registLedger(HashDigest ledgerHash, String memConn) {
+		public LedgerQuery registLedger(HashDigest ledgerHash, String memConn) {
 			return ledgerManager.register(ledgerHash, storageDb.connect(memConn).getStorageService());
 		}
 	}
@@ -301,10 +306,10 @@ public class LedgerInitializeTest {
 		}
 
 		@Override
-		public LedgerInitPermission requestPermission(int requesterId, SignatureDigest signature) {
-			ThreadInvoker<LedgerInitPermission> invoker = new ThreadInvoker<LedgerInitPermission>() {
+		public LedgerInitProposal requestPermission(int requesterId, SignatureDigest signature) {
+			ThreadInvoker<LedgerInitProposal> invoker = new ThreadInvoker<LedgerInitProposal>() {
 				@Override
-				protected LedgerInitPermission invoke() {
+				protected LedgerInitProposal invoke() {
 					return initCsService.requestPermission(requesterId, signature);
 				}
 			};

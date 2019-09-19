@@ -8,11 +8,7 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.6.RELEASE</version>
 	</parent>
-	<!--<parent> -->
-	<!--<groupId>org.sonatype.oss</groupId> -->
-	<!--<artifactId>oss-parent</artifactId> -->
-	<!--<version>7</version> -->
-	<!--</parent> -->
+
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
@@ -31,23 +27,23 @@
 		<module>storage</module>
 		<module>gateway</module>
 		<module>peer</module>
+		<module>manager</module>
 		<module>sdk</module>
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
-		<!--<module>bftsmart</module>-->
 	</modules>
 
 	<properties>
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
-		<bft-smart.version>0.1.1-SNAPSHOT</bft-smart.version>
+		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
 		<explorer.version>0.7.0.RELEASE</explorer.version>
-		<!-- <spring.framework.version>4.3.4.RELEASE</spring.framework.version> -->
-		<!-- <spring.mongo.version>1.9.3.RELEASE</spring.mongo.version> <spring.dao.version>2.0.8</spring.dao.version> 
-			<spring.security.version>4.2.0.RELEASE</spring.security.version> -->
+		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
+		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
 		<aspectj.version>1.8.8</aspectj.version>
+		<fastjson.version>1.2.60</fastjson.version>
 		<!-- <asm.version>5.2</asm.version> -->
 		<procyon.version>0.5.35</procyon.version>
 		<druid.version>1.0.18</druid.version>
@@ -82,6 +78,10 @@
 	</properties>
 
 	<dependencies>
+		<!--<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -115,6 +115,18 @@
 				<version>${explorer.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>ump-explorer</artifactId>
+				<version>${ump-explorer.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+
 			<!-- The test dependency -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -125,7 +137,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<!-- The thirdpart dependency -->
@@ -170,7 +181,7 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.2.58</version>
+				<version>${fastjson.version}</version>
 			</dependency>
 
 			<dependency>

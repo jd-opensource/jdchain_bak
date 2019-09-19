@@ -1,6 +1,8 @@
 package com.jd.blockchain.mocker;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.jd.blockchain.ledger.*;
+import org.mockito.Mockito;
+
+import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ClientIdentifications;
@@ -16,30 +22,31 @@ import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
-import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.CryptoConfig;
-import com.jd.blockchain.ledger.core.LedgerDataSet;
+import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
+import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerEditor;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.ledger.core.LedgerQueryService;
 import com.jd.blockchain.ledger.core.LedgerRepository;
-import com.jd.blockchain.ledger.core.impl.LedgerManager;
-import com.jd.blockchain.ledger.core.impl.LedgerQueryService;
-import com.jd.blockchain.ledger.core.impl.TransactionBatchProcessor;
+import com.jd.blockchain.ledger.core.LedgerSecurityManager;
+import com.jd.blockchain.ledger.core.SecurityPolicy;
+import com.jd.blockchain.ledger.core.TransactionBatchProcessor;
 import com.jd.blockchain.mocker.config.MockerConstant;
 import com.jd.blockchain.mocker.config.PresetAnswerPrompter;
 import com.jd.blockchain.mocker.handler.MockerContractExeHandle;
-import com.jd.blockchain.mocker.handler.MockerOperationHandleRegister;
 import com.jd.blockchain.mocker.proxy.ContractProxy;
 import com.jd.blockchain.service.TransactionBatchResultHandle;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryDBConnFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
-import com.jd.blockchain.tools.initializer.LedgerInitProperties;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
+import com.jd.blockchain.tools.initializer.web.LedgerInitConfiguration;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
@@ -55,7 +62,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 	private DbConnectionFactory dbConnFactory = new MemoryDBConnFactory();
 
-	private MockerOperationHandleRegister opHandler = new MockerOperationHandleRegister();
+	private DefaultOperationHandleRegisteration opHandler = new DefaultOperationHandleRegisteration();
 
 	private MockerContractExeHandle contractExeHandle = new MockerContractExeHandle();
 
@@ -86,13 +93,17 @@ public class MockerNodeContext implements BlockchainQueryService {
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(DataAccountRegisterOperation.class);
 		DataContractRegistry.register(UserRegisterOperation.class);
+		DataContractRegistry.register(ParticipantRegisterOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.class);
 		DataContractRegistry.register(DataAccountKVSetOperation.KVWriteEntry.class);
+		DataContractRegistry.register(ParticipantStateUpdateOperation.class);
 
 		DataContractRegistry.register(ActionRequest.class);
 		DataContractRegistry.register(ActionResponse.class);
 		DataContractRegistry.register(ClientIdentifications.class);
 		DataContractRegistry.register(ClientIdentification.class);
+
+//		DataContractRegistry.register(LedgerAdminInfo.class);
 
 		ByteArrayObjectUtil.init();
 	}
@@ -125,16 +136,16 @@ public class MockerNodeContext implements BlockchainQueryService {
 				boolean isExist = false;
 				// 通过公钥进行判断
 				for (Map.Entry<String, BlockchainKeypair> entry : participants.entrySet()) {
-					String existPubKey = KeyGenCommand.encodePubKey(entry.getValue().getPubKey());
+					String existPubKey = KeyGenUtils.encodePubKey(entry.getValue().getPubKey());
 					if (pubKeyString.equals(existPubKey)) {
 						isExist = true;
 					}
 				}
 				if (!isExist) {
 					// 加入系统中
-					PrivKey privKey = KeyGenCommand.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[i],
+					PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(MockerConstant.PRIVATE_KEYS[i],
 							MockerConstant.PASSWORD);
-					PubKey pubKey = KeyGenCommand.decodePubKey(MockerConstant.PUBLIC_KEYS[i]);
+					PubKey pubKey = KeyGenUtils.decodePubKey(MockerConstant.PUBLIC_KEYS[i]);
 					participants(new BlockchainKeypair(pubKey, privKey));
 				}
 				if (participants.size() >= 4) {
@@ -147,16 +158,19 @@ public class MockerNodeContext implements BlockchainQueryService {
 
 		MockerLedgerInitializer mockLedgerInitializer = new MockerLedgerInitializer(dbConnFactory, ledgerManager);
 
-		ledgerHash = mockLedgerInitializer.initialize(0, defaultKeypair.getPrivKey(), ledgerInitProperties,
-				dbConnectionConfig, new PresetAnswerPrompter("N"), cryptoConfig());
+		LedgerInitConfiguration initConfig = LedgerInitConfiguration.create(ledgerInitProperties);
+		initConfig.getLedgerSettings().setCryptoSetting(cryptoConfig());
+
+		ledgerHash = mockLedgerInitializer.initialize(0, defaultKeypair.getPrivKey(), initConfig, dbConnectionConfig,
+				new PresetAnswerPrompter("N"));
 
 		ledgerRepository = registerLedger(ledgerHash, dbConnectionConfig);
 
-		queryService = new LedgerQueryService(ledgerManager);
+		queryService = new LedgerQueryService(ledgerRepository);
 
 		contractExeHandle.initLedger(ledgerManager, ledgerHash);
 
-		opHandler.registerHandler(contractExeHandle);
+		opHandler.registerHandle(contractExeHandle);
 
 		return this;
 	}
@@ -242,6 +256,11 @@ public class MockerNodeContext implements BlockchainQueryService {
 	@Override
 	public LedgerInfo getLedger(HashDigest ledgerHash) {
 		return queryService.getLedger(ledgerHash);
+	}
+
+	@Override
+	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
+		return queryService.getLedgerAdminInfo(ledgerHash);
 	}
 
 	@Override
@@ -375,7 +394,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 	}
 
 	@Override
-    public ContractInfo getContract(HashDigest ledgerHash, String address) {
+	public ContractInfo getContract(HashDigest ledgerHash, String address) {
 		return queryService.getContract(ledgerHash, address);
 	}
 
@@ -404,12 +423,26 @@ public class MockerNodeContext implements BlockchainQueryService {
 		return reqBuilder.buildRequest();
 	}
 
+	private static LedgerSecurityManager getSecurityManager() {
+		LedgerSecurityManager securityManager = Mockito.mock(LedgerSecurityManager.class);
+
+		SecurityPolicy securityPolicy = Mockito.mock(SecurityPolicy.class);
+		when(securityPolicy.isEndpointEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isEndpointEnable(any(TransactionPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(LedgerPermission.class), any())).thenReturn(true);
+		when(securityPolicy.isNodeEnable(any(TransactionPermission.class), any())).thenReturn(true);
+
+		when(securityManager.createSecurityPolicy(any(), any())).thenReturn(securityPolicy);
+
+		return securityManager;
+	}
+
 	public OperationResult[] txProcess(TransactionRequest txRequest) {
 		LedgerEditor newEditor = ledgerRepository.createNextBlock();
 		LedgerBlock latestBlock = ledgerRepository.getLatestBlock();
-		LedgerDataSet previousDataSet = ledgerRepository.getDataSet(latestBlock);
-		TransactionBatchProcessor txProc = new TransactionBatchProcessor(newEditor, previousDataSet, opHandler,
-				ledgerManager);
+		LedgerDataQuery previousDataSet = ledgerRepository.getLedgerData(latestBlock);
+		TransactionBatchProcessor txProc = new TransactionBatchProcessor(getSecurityManager(), newEditor,
+				ledgerRepository, opHandler);
 		TransactionResponse txResp = txProc.schedule(txRequest);
 		TransactionBatchResultHandle handle = txProc.prepare();
 		handle.commit();
@@ -466,7 +499,7 @@ public class MockerNodeContext implements BlockchainQueryService {
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_NAME, name);
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_PUBKEY_PATH, "");
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_PUBKEY,
-					KeyGenCommand.encodePubKey(keypair.getPubKey()));
+					KeyGenUtils.encodePubKey(keypair.getPubKey()));
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_INITIALIZER_HOST, MockerConstant.LOCAL_ADDRESS);
 			ledgerProp.put(partiPrefix + LedgerInitProperties.PART_INITIALIZER_PORT,
 					String.valueOf(MockerConstant.LEDGER_INIT_PORT_START + partiIndex * 10));

@@ -5,32 +5,38 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class DataAccountSet implements MerkleProvable, Transactional {
+public class DataAccountSet implements Transactional, DataAccountQuery {
 
-	private AccountSet accountSet;
+	private MerkleAccountSet accountSet;
 
 	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
 	}
 
 	public DataAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
-	public AccountHeader[] getAccounts(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex, count);
+	@Override
+	public AccountHeader[] getHeaders(int fromIndex, int count) {
+		return accountSet.getHeaders(fromIndex, count);
 	}
 
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
+	}
+
+	void setReadonly() {
+		accountSet.setReadonly();
 	}
 
 	@Override
@@ -38,8 +44,14 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 		return accountSet.getRootHash();
 	}
 
-	public long getTotalCount() {
-		return accountSet.getTotalCount();
+	@Override
+	public long getTotal() {
+		return accountSet.getTotal();
+	}
+
+	@Override
+	public boolean contains(Bytes address) {
+		return accountSet.contains(address);
 	}
 
 	/**
@@ -52,8 +64,13 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 
 	public DataAccount register(Bytes address, PubKey pubKey, DigitalSignature addressSignature) {
 		// TODO: 未实现对地址签名的校验和记录；
-		BaseAccount accBase = accountSet.register(address, pubKey);
+		MerkleAccount accBase = accountSet.register(address, pubKey);
 		return new DataAccount(accBase);
+	}
+
+	@Override
+	public DataAccount getAccount(String address) {
+		return getAccount(Bytes.fromBase58(address));
 	}
 
 	/**
@@ -63,16 +80,18 @@ public class DataAccountSet implements MerkleProvable, Transactional {
 	 * @param address
 	 * @return
 	 */
-	public DataAccount getDataAccount(Bytes address) {
-		BaseAccount accBase = accountSet.getAccount(address);
+	@Override
+	public DataAccount getAccount(Bytes address) {
+		MerkleAccount accBase = accountSet.getAccount(address);
 		if (accBase == null) {
 			return null;
 		}
 		return new DataAccount(accBase);
 	}
 
-	public DataAccount getDataAccount(Bytes address, long version) {
-		BaseAccount accBase = accountSet.getAccount(address, version);
+	@Override
+	public DataAccount getAccount(Bytes address, long version) {
+		MerkleAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);
 	}
 

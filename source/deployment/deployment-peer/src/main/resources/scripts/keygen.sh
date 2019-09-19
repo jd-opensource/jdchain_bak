@@ -12,5 +12,5 @@ else
   else
     echo "keys file will be saved $HOME/config/keys"
   fi
-  java -jar $HOME/libs/$boot_file -o $HOME/config/keys -l $HOME/config/init/local.conf $*
+  java -jar $HOME/libs/$boot_file -o $HOME/config/keys $*
 fi
