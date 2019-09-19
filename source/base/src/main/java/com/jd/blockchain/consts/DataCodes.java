@@ -7,6 +7,8 @@ package com.jd.blockchain.consts;
  *
  */
 public interface DataCodes {
+	
+	public static final int MERKLE_SNAPSHOT = 0x070;
 
 	public static final int BYTES_VALUE = 0x080;
 
@@ -57,13 +59,13 @@ public interface DataCodes {
 	public static final int TX_RESPONSE = 0x360;
 
 	public static final int TX_OP_RESULT = 0x370;
-	
+
 	public static final int TX_OP_ROLE_CONFIGURE = 0x371;
-	
+
 	public static final int TX_OP_ROLE_CONFIGURE_ENTRY = 0x372;
-	
+
 	public static final int TX_OP_USER_ROLES_AUTHORIZE = 0x373;
-	
+
 	public static final int TX_OP_USER_ROLE_AUTHORIZE_ENTRY = 0x374;
 
 	// enum types of permissions;
@@ -74,11 +76,11 @@ public interface DataCodes {
 	public static final int PRIVILEGE_SET = 0x410;
 
 	public static final int ROLE_SET = 0x411;
-	
+
 	public static final int SECURITY_INIT_SETTING = 0x420;
 
 	public static final int SECURITY_ROLE_INIT_SETTING = 0x421;
-	
+
 	public static final int SECURITY_USER_AUTH_INIT_SETTING = 0x422;
 
 	// contract types of metadata;
@@ -103,7 +105,6 @@ public interface DataCodes {
 //
 //	public static final int METADATA_CRYPTO_SETTING = 0x642;
 
-
 	// public static final int METADATA_CONSENSUS_NODE = 0x630;
 
 	public static final int METADATA_CONSENSUS_SETTING = 0x631;
@@ -113,10 +114,10 @@ public interface DataCodes {
 	public static final int METADATA_PARTICIPANT_STATE_INFO = 0x641;
 
 	public static final int METADATA_CRYPTO_SETTING = 0x642;
-	
+
 	public static final int METADATA_CRYPTO_SETTING_PROVIDER = 0x643;
 
-	// public static final int ACCOUNT = 0x700;
+//	public static final int ACCOUNT = 0x700;
 
 	public static final int ACCOUNT_HEADER = 0x710;
 
@@ -194,5 +195,4 @@ public interface DataCodes {
 
 	public static final int CONSENSUS_MSGQUEUE_BLOCK_SETTINGS = CONSENSUS_MSGQUEUE | 0x05;
 
-	
 }

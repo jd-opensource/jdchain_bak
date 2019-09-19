@@ -17,23 +17,23 @@ import com.jd.blockchain.utils.Transactional;
  */
 public class UserAccountSet implements Transactional, UserAccountQuery {
 
-	private AccountSet accountSet;
+	private MerkleAccountSet accountSet;
 
 	public UserAccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage simpleStorage,
 			VersioningKVStorage versioningStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting, keyPrefix, simpleStorage, versioningStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, keyPrefix, simpleStorage, versioningStorage, accessPolicy);
 	}
 
 	public UserAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly,
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly,
 				accessPolicy);
 	}
 
 	@Override
 	public AccountHeader[] getHeaders(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex,count);
+		return accountSet.getHeaders(fromIndex,count);
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	 */
 	@Override
 	public long getTotal() {
-		return accountSet.getTotalCount();
+		return accountSet.getTotal();
 	}
 
 	public boolean isReadonly() {
@@ -71,7 +71,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address) {
-		BaseAccount baseAccount = accountSet.getAccount(address);
+		MerkleAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
@@ -82,7 +82,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address, long version) {
-		BaseAccount baseAccount = accountSet.getAccount(address, version);
+		MerkleAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}
 
@@ -100,7 +100,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	 * @return 注册成功的用户对象；
 	 */
 	public UserAccount register(Bytes address, PubKey pubKey) {
-		BaseAccount baseAccount = accountSet.register(address, pubKey);
+		MerkleAccount baseAccount = accountSet.register(address, pubKey);
 		return new UserAccount(baseAccount);
 	}
 

@@ -20,7 +20,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class BaseAccount implements AccountHeader, MerkleProvable, Transactional {
+public class MerkleAccount implements AccountHeader, MerkleProvable, Transactional {
 
 	private BlockchainIdentity bcid;
 
@@ -38,7 +38,7 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param address
 	 * @param pubKey
 	 */
-	public BaseAccount(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
+	public MerkleAccount(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
 		this(address, pubKey, null, cryptoSetting, keyPrefix, exStorage, verStorage, false);
 	}
@@ -58,7 +58,7 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param verStorage
 	 * @param accessPolicy
 	 */
-	public BaseAccount(BlockchainIdentity bcid, CryptoSetting cryptoSetting, String keyPrefix,
+	public MerkleAccount(BlockchainIdentity bcid, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
 		this(bcid, null, cryptoSetting, keyPrefix, exStorage, verStorage, false);
 	}
@@ -78,13 +78,13 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param readonly
 	 * @param accessPolicy
 	 */
-	public BaseAccount(Bytes address, PubKey pubKey, HashDigest dataRootHash, CryptoSetting cryptoSetting,
+	public MerkleAccount(Bytes address, PubKey pubKey, HashDigest dataRootHash, CryptoSetting cryptoSetting,
 			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
 		this(new BlockchainIdentityData(address, pubKey), dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage,
 				readonly);
 	}
 
-	public BaseAccount(BlockchainIdentity bcid, HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
+	public MerkleAccount(BlockchainIdentity bcid, HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
 		this.bcid = bcid;
 		this.dataset = new MerkleDataSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
@@ -169,7 +169,7 @@ public class BaseAccount implements AccountHeader, MerkleProvable, Transactional
 	 * @param key
 	 * @return
 	 */
-	public long getKeyVersion(Bytes key) {
+	public long getVersion(Bytes key) {
 		return dataset.getVersion(key);
 	}
 

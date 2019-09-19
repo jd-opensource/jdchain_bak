@@ -13,22 +13,22 @@ import com.jd.blockchain.utils.Transactional;
 
 public class DataAccountSet implements Transactional, DataAccountQuery {
 
-	private AccountSet accountSet;
+	private MerkleAccountSet accountSet;
 
 	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
 	}
 
 	public DataAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
 	@Override
 	public AccountHeader[] getHeaders(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex, count);
+		return accountSet.getHeaders(fromIndex, count);
 	}
 
 	public boolean isReadonly() {
@@ -46,7 +46,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	@Override
 	public long getTotal() {
-		return accountSet.getTotalCount();
+		return accountSet.getTotal();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	public DataAccount register(Bytes address, PubKey pubKey, DigitalSignature addressSignature) {
 		// TODO: 未实现对地址签名的校验和记录；
-		BaseAccount accBase = accountSet.register(address, pubKey);
+		MerkleAccount accBase = accountSet.register(address, pubKey);
 		return new DataAccount(accBase);
 	}
 
@@ -82,7 +82,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 	 */
 	@Override
 	public DataAccount getAccount(Bytes address) {
-		BaseAccount accBase = accountSet.getAccount(address);
+		MerkleAccount accBase = accountSet.getAccount(address);
 		if (accBase == null) {
 			return null;
 		}
@@ -91,7 +91,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	@Override
 	public DataAccount getAccount(Bytes address, long version) {
-		BaseAccount accBase = accountSet.getAccount(address, version);
+		MerkleAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);
 	}
 

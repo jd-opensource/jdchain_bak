@@ -13,22 +13,22 @@ import com.jd.blockchain.utils.Transactional;
 
 public class ContractAccountSet implements Transactional, ContractAccountQuery {
 
-	private AccountSet accountSet;
+	private MerkleAccountSet accountSet;
 
 	public ContractAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
 	}
 
 	public ContractAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new AccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
 	}
 
 	@Override
 	public AccountHeader[] getHeaders(int fromIndex, int count) {
-		return accountSet.getAccounts(fromIndex, count);
+		return accountSet.getHeaders(fromIndex, count);
 	}
 
 	public boolean isReadonly() {
@@ -51,7 +51,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 	 */
 	@Override
 	public long getTotal() {
-		return accountSet.getTotalCount();
+		return accountSet.getTotal();
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 
 	@Override
 	public ContractAccount getAccount(Bytes address) {
-		BaseAccount accBase = accountSet.getAccount(address);
+		MerkleAccount accBase = accountSet.getAccount(address);
 		return new ContractAccount(accBase);
 	}
 
@@ -77,7 +77,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 
 	@Override
 	public ContractAccount getAccount(Bytes address, long version) {
-		BaseAccount accBase = accountSet.getAccount(address, version);
+		MerkleAccount accBase = accountSet.getAccount(address, version);
 		return new ContractAccount(accBase);
 	}
 
@@ -92,7 +92,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 	 */
 	public ContractAccount deploy(Bytes address, PubKey pubKey, DigitalSignature addressSignature, byte[] chaincode) {
 		// TODO: 校验和记录合约地址签名；
-		BaseAccount accBase = accountSet.register(address, pubKey);
+		MerkleAccount accBase = accountSet.register(address, pubKey);
 		ContractAccount contractAcc = new ContractAccount(accBase);
 		contractAcc.setChaincode(chaincode, -1);
 		return contractAcc;
@@ -107,7 +107,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 	 * @return 返回链码的新版本号；
 	 */
 	public long update(Bytes address, byte[] chaincode, long version) {
-		BaseAccount accBase = accountSet.getAccount(address);
+		MerkleAccount accBase = accountSet.getAccount(address);
 		ContractAccount contractAcc = new ContractAccount(accBase);
 		return contractAcc.setChaincode(chaincode, version);
 	}
