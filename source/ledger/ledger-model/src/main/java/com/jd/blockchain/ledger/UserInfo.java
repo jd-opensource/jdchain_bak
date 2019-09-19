@@ -4,7 +4,7 @@ import com.jd.blockchain.binaryproto.DataContract;
 import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 
-@DataContract(code= DataCodes.USER)
+@DataContract(code= DataCodes.USER_ACCOUNT_HEADER)
 public interface UserInfo extends AccountHeader {
 	
 	PubKey getDataPubKey();
