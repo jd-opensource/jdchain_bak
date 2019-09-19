@@ -118,7 +118,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	private LedgerState retrieveLatestState() {
 		LedgerBlock latestBlock = innerGetBlock(innerGetLatestBlockHeight());
 		LedgerDataset ledgerDataset = innerGetLedgerDataset(latestBlock);
-		TransactionSet txSet = loadTransactionSet(latestBlock.getTransactionSetHash(),
+		TransactionQuery txSet = loadTransactionSet(latestBlock.getTransactionSetHash(),
 				ledgerDataset.getAdminDataset().getSettings().getCryptoSetting(), keyPrefix, exPolicyStorage,
 				versioningStorage, true);
 		this.latestState = new LedgerState(latestBlock, ledgerDataset, txSet);
@@ -253,7 +253,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public TransactionSet getTransactionSet(LedgerBlock block) {
+	public TransactionQuery getTransactionSet(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 		if (height == block.getHeight()) {
 			// 从缓存中返回最新区块的数据集；
@@ -354,7 +354,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 	}
 
 	@Override
-	public LedgerDataset getDataSet(LedgerBlock block) {
+	public LedgerDataset getLedgerData(LedgerBlock block) {
 		long height = getLatestBlockHeight();
 		if (height == block.getHeight()) {
 			return latestState.getLedgerDataset();
@@ -579,11 +579,11 @@ class LedgerRepositoryImpl implements LedgerRepository {
 
 		private final LedgerBlock block;
 
-		private final TransactionSet transactionSet;
+		private final TransactionQuery transactionSet;
 
 		private final LedgerDataset ledgerDataset;
 
-		public LedgerState(LedgerBlock block, LedgerDataset ledgerDataset, TransactionSet transactionSet) {
+		public LedgerState(LedgerBlock block, LedgerDataset ledgerDataset, TransactionQuery transactionSet) {
 			this.block = block;
 			this.ledgerDataset = ledgerDataset;
 			this.transactionSet = transactionSet;
@@ -610,7 +610,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
 			return ledgerDataset.getUserAccountSet();
 		}
 
-		public TransactionSet getTransactionSet() {
+		public TransactionQuery getTransactionSet() {
 			return transactionSet;
 		}
 

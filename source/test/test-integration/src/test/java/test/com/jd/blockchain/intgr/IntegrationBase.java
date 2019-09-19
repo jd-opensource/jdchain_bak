@@ -240,7 +240,7 @@ public class IntegrationBase {
 
 		if (keyPairType == KeyPairType.DATAACCOUNT) {
 			assertNotNull(ledgerRepository.getDataAccountSet(ledgerRepository.getLatestBlock())
-					.getDataAccount(keyPair.getAddress()));
+					.getAccount(keyPair.getAddress()));
 		}
 		System.out.printf("validKeyPair end %s \r\n", index);
 	}
@@ -264,7 +264,7 @@ public class IntegrationBase {
 
 		if (keyPairType == KeyPairType.DATAACCOUNT) {
 			assertNotNull(ledgerRepository.getDataAccountSet(ledgerRepository.getLatestBlock())
-					.getDataAccount(keyPair.getAddress()));
+					.getAccount(keyPair.getAddress()));
 		}
 		countDownLatch.countDown();
 	}
@@ -527,7 +527,7 @@ public class IntegrationBase {
 
 		LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
 		byte[] contractCodeInDb = ledgerRepository.getContractAccountSet(block)
-				.getContract(contractDeployKey.getAddress()).getChainCode();
+				.getAccount(contractDeployKey.getAddress()).getChainCode();
 		assertArrayEquals(contractCode, contractCodeInDb);
 
 		// execute the contract;

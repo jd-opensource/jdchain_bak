@@ -24,7 +24,7 @@ public interface LedgerTransactionContext {
 	 * 
 	 * @return
 	 */
-	TransactionSet getTransactionSet();
+	TransactionQuery getTransactionSet();
 
 	/**
 	 * 交易请求；

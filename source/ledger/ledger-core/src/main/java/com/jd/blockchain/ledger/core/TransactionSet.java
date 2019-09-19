@@ -13,7 +13,7 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
 
-public class TransactionSet implements Transactional, MerkleProvable {
+public class TransactionSet implements Transactional, TransactionQuery {
 
 	static {
 		DataContractRegistry.register(LedgerTransaction.class);
@@ -25,6 +25,7 @@ public class TransactionSet implements Transactional, MerkleProvable {
 
 	private MerkleDataSet txSet;
 
+	@Override
 	public LedgerTransaction[] getTxs(int fromIndex, int count) {
 		if (count > LedgerConsts.MAX_LIST_COUNT) {
 			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
@@ -38,6 +39,7 @@ public class TransactionSet implements Transactional, MerkleProvable {
 		return ledgerTransactions;
 	}
 
+	@Override
 	public byte[][] getValuesByIndex(int fromIndex, int count) {
 		byte[][] values = new byte[count][];
 		for (int i = 0; i < count; i++) {
@@ -57,6 +59,7 @@ public class TransactionSet implements Transactional, MerkleProvable {
 		return txSet.getProof(key);
 	}
 
+	@Override
 	public long getTotalCount() {
 		// 每写入一个交易，同时写入交易内容Hash与交易结果的索引，因此交易记录数为集合总记录数除以 2；
 		return txSet.getDataCount() / 2;
@@ -113,10 +116,10 @@ public class TransactionSet implements Transactional, MerkleProvable {
 	}
 
 	/**
-	 * @param txContentHash
-	 *            Base58 编码的交易内容的哈希；
+	 * @param txContentHash Base58 编码的交易内容的哈希；
 	 * @return
 	 */
+	@Override
 	public LedgerTransaction get(HashDigest txContentHash) {
 		// transaction has only one version;
 		Bytes key = new Bytes(txContentHash.toBytes());
@@ -129,7 +132,8 @@ public class TransactionSet implements Transactional, MerkleProvable {
 		return tx;
 	}
 
-	public TransactionState getTxState(HashDigest txContentHash) {
+	@Override
+	public TransactionState getState(HashDigest txContentHash) {
 		Bytes resultKey = encodeTxStateKey(txContentHash);
 		// transaction has only one version;
 		byte[] bytes = txSet.getValue(resultKey, 0);
@@ -154,7 +158,7 @@ public class TransactionSet implements Transactional, MerkleProvable {
 	public boolean isReadonly() {
 		return txSet.isReadonly();
 	}
-	
+
 	void setReadonly() {
 		txSet.setReadonly();
 	}

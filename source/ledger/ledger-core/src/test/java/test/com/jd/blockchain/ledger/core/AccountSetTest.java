@@ -14,8 +14,8 @@ import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.core.AccountSet;
-import com.jd.blockchain.ledger.core.BaseAccount;
+import com.jd.blockchain.ledger.core.MerkleAccountSet;
+import com.jd.blockchain.ledger.core.MerkleAccount;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.OpeningAccessPolicy;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
@@ -43,12 +43,12 @@ public class AccountSetTest {
 		cryptoConf.setHashAlgorithm(ClassicAlgorithm.SHA256);
 
 		String keyPrefix = "";
-		AccountSet accset = new AccountSet(cryptoConf, keyPrefix, storage, storage, accessPolicy);
+		MerkleAccountSet accset = new MerkleAccountSet(cryptoConf, keyPrefix, storage, storage, accessPolicy);
 
 		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		accset.register(userKey.getAddress(), userKey.getPubKey());
 
-		BaseAccount userAcc = accset.getAccount(userKey.getAddress());
+		MerkleAccount userAcc = accset.getAccount(userKey.getAddress());
 		assertNotNull(userAcc);
 		assertTrue(accset.contains(userKey.getAddress()));
 
@@ -56,8 +56,8 @@ public class AccountSetTest {
 		HashDigest rootHash = accset.getRootHash();
 		assertNotNull(rootHash);
 
-		AccountSet reloadAccSet = new AccountSet(rootHash, cryptoConf, keyPrefix, storage, storage, true, accessPolicy);
-		BaseAccount reloadUserAcc = reloadAccSet.getAccount(userKey.getAddress());
+		MerkleAccountSet reloadAccSet = new MerkleAccountSet(rootHash, cryptoConf, keyPrefix, storage, storage, true, accessPolicy);
+		MerkleAccount reloadUserAcc = reloadAccSet.getAccount(userKey.getAddress());
 		assertNotNull(reloadUserAcc);
 		assertTrue(reloadAccSet.contains(userKey.getAddress()));
 

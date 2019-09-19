@@ -15,7 +15,7 @@ import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.sm.SMAlgorithm;
 import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.AccountSet;
+import com.jd.blockchain.ledger.core.MerkleAccountSet;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -44,7 +44,7 @@ public class LedgerAccountTest {
 		String address = "xxxxxxxxxxxx";
 		PubKey pubKey = new PubKey(SMAlgorithm.SM2, rawDigestBytes);
 		HashDigest hashDigest = new HashDigest(ClassicAlgorithm.SHA256, rawDigestBytes);
-		AccountSet.AccountHeaderData accountHeaderData = new AccountSet.AccountHeaderData(Bytes.fromString(address),
+		MerkleAccountSet.AccountHeaderData accountHeaderData = new MerkleAccountSet.AccountHeaderData(Bytes.fromString(address),
 				pubKey, hashDigest);
 
 		// encode and decode

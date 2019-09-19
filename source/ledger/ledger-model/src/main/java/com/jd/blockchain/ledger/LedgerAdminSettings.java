@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger;
 
 public interface LedgerAdminSettings extends LedgerAdminInfo {
 
-	UserRolesSettings getUserRoles();
+	UserAuthorizationSettings getAuthorizations();
 
 	RolePrivilegeSettings getRolePrivileges();
 }

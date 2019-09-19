@@ -106,7 +106,7 @@ public class ContractInvokingTest {
 		deploy(ledgerRepo, ledgerManager, opReg, ledgerHash, contractKey);
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
@@ -181,7 +181,7 @@ public class ContractInvokingTest {
 
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
@@ -218,7 +218,7 @@ public class ContractInvokingTest {
 		TransactionBatchResultHandle txResultHandle = txbatchProcessor.prepare();
 		txResultHandle.commit();
 
-		BytesValue latestValue = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getBytes(key,
+		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getBytes(key,
 				-1);
 		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getValue().toUTF8String());
 
@@ -278,9 +278,9 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K1",
+		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1",
 				0);
-		KVDataEntry kv2 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K2",
+		KVDataEntry kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2",
 				0);
 		assertEquals(0, kv1.getVersion());
 		assertEquals(0, kv2.getVersion());
@@ -299,8 +299,8 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
-		kv2 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K2", 1);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
+		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals(1, kv2.getVersion());
 		assertEquals("V1-1", kv1.getValue());
@@ -318,10 +318,10 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals("V1-1", kv1.getValue());
-		kv1 = ledgerRepo.getDataAccountSet().getDataAccount(kpDataAccount.getAddress()).getDataEntry("K1", 2);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 2);
 		assertEquals(-1, kv1.getVersion());
 		assertEquals(null, kv1.getValue());
 
@@ -330,7 +330,7 @@ public class ContractInvokingTest {
 	private LedgerBlock buildBlock(LedgerRepository ledgerRepo, LedgerService ledgerService,
 			OperationHandleRegisteration opReg, TxDefinitor txDefinitor) {
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(preBlock);
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 		TransactionBatchProcessor txbatchProcessor = new TransactionBatchProcessor(getSecurityManager(), newBlockEditor,
 				ledgerRepo, opReg);
@@ -363,7 +363,7 @@ public class ContractInvokingTest {
 	private void registerDataAccount(LedgerRepository ledgerRepo, LedgerManager ledgerManager,
 			DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash, BlockchainKeypair kpDataAccount) {
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
@@ -393,7 +393,7 @@ public class ContractInvokingTest {
 			DefaultOperationHandleRegisteration opReg, HashDigest ledgerHash, BlockchainKeypair contractKey) {
 		// 创建新区块的交易处理器；
 		LedgerBlock preBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(preBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(preBlock);
 
 		// 加载合约
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();

@@ -10,7 +10,7 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 public interface ParticipantStateUpdateOperation extends Operation {
 
     @DataField(order = 0, refContract = true)
-    BlockchainIdentity getParticipantIdentity();
+    BlockchainIdentity getStateUpdateIdentity();
 
     @DataField(order = 1, primitiveType = PrimitiveType.BYTES)
     NetworkAddress getNetworkAddress();

@@ -17,7 +17,7 @@ import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.UserDoesNotExistException;
 import com.jd.blockchain.ledger.UserRoles;
-import com.jd.blockchain.ledger.UserRolesSettings;
+import com.jd.blockchain.ledger.UserAuthorizationSettings;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -30,7 +30,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 
 	private RolePrivilegeSettings rolePrivilegeSettings;
 
-	private UserRolesSettings userRolesSettings;
+	private UserAuthorizationSettings userRolesSettings;
 
 	// 用户的权限配置
 	private Map<Bytes, UserRolesPrivileges> userPrivilegesCache = new ConcurrentHashMap<>();
@@ -41,7 +41,7 @@ public class LedgerSecurityManagerImpl implements LedgerSecurityManager {
 	private ParticipantDataQuery participantsQuery;
 	private UserAccountQuery userAccountsQuery;
 
-	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserRolesSettings userRolesSettings,
+	public LedgerSecurityManagerImpl(RolePrivilegeSettings rolePrivilegeSettings, UserAuthorizationSettings userRolesSettings,
 			ParticipantDataQuery participantsQuery, UserAccountQuery userAccountsQuery) {
 		this.rolePrivilegeSettings = rolePrivilegeSettings;
 		this.userRolesSettings = userRolesSettings;

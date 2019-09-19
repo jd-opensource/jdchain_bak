@@ -79,10 +79,10 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		this.handlesRegisteration = handlesRegisteration;
 		
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
-		LedgerDataQuery ledgerDataQuery = ledgerRepo.getDataSet(ledgerBlock);
+		LedgerDataQuery ledgerDataQuery = ledgerRepo.getLedgerData(ledgerBlock);
 		LedgerAdminDataQuery previousAdminDataset = ledgerDataQuery.getAdminDataset();
 		this.securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousAdminDataset.getAdminInfo().getAuthorizations(), previousAdminDataset.getParticipantDataset(),
 				ledgerDataQuery.getUserAccountSet());
 		
 		this.newBlockEditor = ledgerRepo.createNextBlock();
@@ -93,12 +93,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			OperationHandleRegisteration handlesRegisteration) {
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
 		LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerBlock);
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(ledgerBlock);
 
 		LedgerAdminDataQuery previousAdminDataset = previousBlockDataset.getAdminDataset();
 		LedgerSecurityManager securityManager = new LedgerSecurityManagerImpl(
 				previousAdminDataset.getAdminInfo().getRolePrivileges(),
-				previousAdminDataset.getAdminInfo().getUserRoles(), previousAdminDataset.getParticipantDataset(),
+				previousAdminDataset.getAdminInfo().getAuthorizations(), previousAdminDataset.getParticipantDataset(),
 				previousBlockDataset.getUserAccountSet());
 
 		TransactionBatchProcessor processor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo,

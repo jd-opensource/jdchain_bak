@@ -48,7 +48,7 @@ public class ParticipantStateUpdateOperationHandle extends AbstractLedgerOperati
         ParticipantNode participantNode = null;
 
         for(int i = 0; i < participants.length; i++) {
-            if (stateUpdateOperation.getParticipantIdentity().getPubKey().equals(participants[i].getPubKey())) {
+            if (stateUpdateOperation.getStateUpdateIdentity().getPubKey().equals(participants[i].getPubKey())) {
                participantNode = new PartNode(participants[i].getId(), participants[i].getName(), participants[i].getPubKey(), ParticipantNodeState.ACTIVED);
                break;
             }

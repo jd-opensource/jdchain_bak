@@ -93,7 +93,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public long getTransactionCount(HashDigest ledgerHash, long height) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(height);
-		TransactionSet txset = ledger.getTransactionSet(block);
+		TransactionQuery txset = ledger.getTransactionSet(block);
 		return txset.getTotalCount();
 	}
 
@@ -101,7 +101,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public long getTransactionCount(HashDigest ledgerHash, HashDigest blockHash) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(blockHash);
-		TransactionSet txset = ledger.getTransactionSet(block);
+		TransactionQuery txset = ledger.getTransactionSet(block);
 		return txset.getTotalCount();
 	}
 
@@ -109,7 +109,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public long getTransactionTotalCount(HashDigest ledgerHash) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
-		TransactionSet txset = ledger.getTransactionSet(block);
+		TransactionQuery txset = ledger.getTransactionSet(block);
 		return txset.getTotalCount();
 	}
 
@@ -118,7 +118,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(height);
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		return dataAccountSet.getTotalCount();
+		return dataAccountSet.getTotal();
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(blockHash);
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		return dataAccountSet.getTotalCount();
+		return dataAccountSet.getTotal();
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		return dataAccountSet.getTotalCount();
+		return dataAccountSet.getTotal();
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(height);
 		UserAccountQuery userAccountSet = ledger.getUserAccountSet(block);
-		return userAccountSet.getTotalCount();
+		return userAccountSet.getTotal();
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(blockHash);
 		UserAccountQuery userAccountSet = ledger.getUserAccountSet(block);
-		return userAccountSet.getTotalCount();
+		return userAccountSet.getTotal();
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		UserAccountQuery userAccountSet = ledger.getUserAccountSet(block);
-		return userAccountSet.getTotalCount();
+		return userAccountSet.getTotal();
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(height);
 		ContractAccountQuery contractAccountSet = ledger.getContractAccountSet(block);
-		return contractAccountSet.getTotalCount();
+		return contractAccountSet.getTotal();
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getBlock(blockHash);
 		ContractAccountQuery contractAccountSet = ledger.getContractAccountSet(block);
-		return contractAccountSet.getTotalCount();
+		return contractAccountSet.getTotal();
 	}
 
 	@Override
@@ -182,14 +182,14 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		ContractAccountQuery contractAccountSet = ledger.getContractAccountSet(block);
-		return contractAccountSet.getTotalCount();
+		return contractAccountSet.getTotal();
 	}
 
 	@Override
 	public LedgerTransaction[] getTransactions(HashDigest ledgerHash, long height, int fromIndex, int count) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock ledgerBlock = ledger.getBlock(height);
-		TransactionSet transactionSet = ledger.getTransactionSet(ledgerBlock);
+		TransactionQuery transactionSet = ledger.getTransactionSet(ledgerBlock);
 		int lastHeightTxTotalNums = 0;
 
 		if (height > 0) {
@@ -219,7 +219,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock ledgerBlock = ledger.getBlock(blockHash);
 		long height = ledgerBlock.getHeight();
-		TransactionSet transactionSet = ledger.getTransactionSet(ledgerBlock);
+		TransactionQuery transactionSet = ledger.getTransactionSet(ledgerBlock);
 		int lastHeightTxTotalNums = 0;
 
 		if (height > 0) {
@@ -248,7 +248,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public LedgerTransaction getTransactionByContentHash(HashDigest ledgerHash, HashDigest contentHash) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
-		TransactionSet txset = ledger.getTransactionSet(block);
+		TransactionQuery txset = ledger.getTransactionSet(block);
 		return txset.get(contentHash);
 	}
 
@@ -256,8 +256,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 	public TransactionState getTransactionStateByContentHash(HashDigest ledgerHash, HashDigest contentHash) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
-		TransactionSet txset = ledger.getTransactionSet(block);
-		return txset.getTxState(contentHash);
+		TransactionQuery txset = ledger.getTransactionSet(block);
+		return txset.getState(contentHash);
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		UserAccountQuery userAccountSet = ledger.getUserAccountSet(block);
-		return userAccountSet.getUser(address);
+		return userAccountSet.getAccount(address);
 
 	}
 
@@ -274,7 +274,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		return dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+		return dataAccountSet.getAccount(Bytes.fromBase58(address));
 	}
 
 	@Override
@@ -285,7 +285,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
@@ -333,7 +333,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver = -1;
@@ -363,7 +363,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
 		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataEntriesTotalCount());
 		return dataAccount.getDataEntries(pages[0], pages[1]);
@@ -374,7 +374,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		DataAccount dataAccount = dataAccountSet.getDataAccount(Bytes.fromBase58(address));
+		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
 		return dataAccount.getDataEntriesTotalCount();
 	}
@@ -384,7 +384,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		ContractAccountQuery contractAccountSet = ledger.getContractAccountSet(block);
-		return contractAccountSet.getContract(Bytes.fromBase58(address));
+		return contractAccountSet.getAccount(Bytes.fromBase58(address));
 	}
 
 	@Override
@@ -392,8 +392,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		UserAccountQuery userAccountSet = ledger.getUserAccountSet(block);
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) userAccountSet.getTotalCount());
-		return userAccountSet.getAccounts(pages[0], pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) userAccountSet.getTotal());
+		return userAccountSet.getHeaders(pages[0], pages[1]);
 	}
 
 	@Override
@@ -401,8 +401,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccountSet.getTotalCount());
-		return dataAccountSet.getAccounts(pages[0], pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccountSet.getTotal());
+		return dataAccountSet.getHeaders(pages[0], pages[1]);
 	}
 
 	@Override
@@ -410,8 +410,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		ContractAccountQuery contractAccountSet = ledger.getContractAccountSet(block);
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) contractAccountSet.getTotalCount());
-		return contractAccountSet.getAccounts(pages[0], pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) contractAccountSet.getTotal());
+		return contractAccountSet.getHeaders(pages[0], pages[1]);
 	}
 
 }

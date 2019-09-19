@@ -13,7 +13,7 @@ import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesData;
-import com.jd.blockchain.ledger.core.BaseAccount;
+import com.jd.blockchain.ledger.core.MerkleAccount;
 import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -48,7 +48,7 @@ public class BaseAccountTest {
 		BlockchainKeypair bck = BlockchainKeyGenerator.getInstance().generate();
 
 		// 新建账户；
-		BaseAccount baseAccount = new BaseAccount(bck.getIdentity(), cryptoConf, keyPrefix, testStorage, testStorage);
+		MerkleAccount baseAccount = new MerkleAccount(bck.getIdentity(), cryptoConf, keyPrefix, testStorage, testStorage);
 		assertFalse(baseAccount.isUpdated());// 空的账户；
 		assertFalse(baseAccount.isReadonly());
 

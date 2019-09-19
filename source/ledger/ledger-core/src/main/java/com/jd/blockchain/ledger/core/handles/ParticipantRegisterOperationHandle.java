@@ -39,7 +39,7 @@ public class ParticipantRegisterOperationHandle extends AbstractLedgerOperationH
 
         LedgerAdminDataset adminAccountDataSet = newBlockDataset.getAdminDataset();
 
-        ParticipantInfo participantInfo = new ParticipantInfoData(participantRegOp.getParticipantName(), participantRegOp.getParticipantIdentity().getPubKey(), participantRegOp.getNetworkAddress());
+        ParticipantInfo participantInfo = new ParticipantInfoData(participantRegOp.getParticipantName(), participantRegOp.getParticipantRegisterIdentity().getPubKey(), participantRegOp.getNetworkAddress());
 
         ParticipantNode participantNode = new PartNode((int)(adminAccountDataSet.getParticipantCount()), participantInfo.getName(), participantInfo.getPubKey(), ParticipantNodeState.REGISTERED);
 
@@ -47,7 +47,7 @@ public class ParticipantRegisterOperationHandle extends AbstractLedgerOperationH
         adminAccountDataSet.addParticipant(participantNode);
 
         // Build UserRegisterOperation, reg participant as user
-        UserRegisterOperation userRegOp = new UserRegisterOpTemplate(participantRegOp.getParticipantIdentity());
+        UserRegisterOperation userRegOp = new UserRegisterOpTemplate(participantRegOp.getParticipantRegisterIdentity());
         handleContext.handle(userRegOp);
     }
 

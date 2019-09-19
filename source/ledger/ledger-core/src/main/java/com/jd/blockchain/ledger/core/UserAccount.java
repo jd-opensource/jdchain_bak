@@ -19,7 +19,7 @@ public class UserAccount implements UserInfo {
 
 	private static final Bytes DATA_PUB_KEY = Bytes.fromString("DATA-PUBKEY");
 
-	private BaseAccount baseAccount;
+	private MerkleAccount baseAccount;
 
 	@Override
 	public Bytes getAddress() {
@@ -36,7 +36,7 @@ public class UserAccount implements UserInfo {
 		return baseAccount.getRootHash();
 	}
 
-	public UserAccount(BaseAccount baseAccount) {
+	public UserAccount(MerkleAccount baseAccount) {
 		this.baseAccount = baseAccount;
 	}
 

@@ -13,9 +13,9 @@ import com.jd.blockchain.utils.Bytes;
 
 public class DataAccount implements AccountHeader, MerkleProvable {
 
-	private BaseAccount baseAccount;
+	private MerkleAccount baseAccount;
 
-	public DataAccount(BaseAccount accBase) {
+	public DataAccount(MerkleAccount accBase) {
 		this.baseAccount = accBase;
 	}
 
@@ -135,7 +135,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @return
 	 */
 	public long getDataVersion(String key) {
-		return baseAccount.getKeyVersion(Bytes.fromString(key));
+		return baseAccount.getVersion(Bytes.fromString(key));
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class DataAccount implements AccountHeader, MerkleProvable {
 	 * @return
 	 */
 	public long getDataVersion(Bytes key) {
-		return baseAccount.getKeyVersion(key);
+		return baseAccount.getVersion(key);
 	}
 
 	/**

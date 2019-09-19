@@ -84,8 +84,8 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getAccount(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
 		assertTrue(partiRegistered);
@@ -144,8 +144,8 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getAccount(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
 		assertTrue(partiRegistered);
@@ -183,7 +183,7 @@ public class TransactionBatchProcessorTest {
 		assertEquals(newBlock.getHash(), latestBlock.getHash());
 		assertEquals(1, newBlock.getHeight());
 
-		LedgerDataQuery ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		LedgerDataQuery ledgerDS = ledgerRepo.getLedgerData(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
 		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
 		assertTrue(existUser1);
@@ -202,8 +202,8 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getAccount(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
 		assertTrue(partiRegistered);
@@ -261,7 +261,7 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(tx3);
 		assertEquals(TransactionState.SUCCESS, tx3.getExecutionState());
 
-		LedgerDataQuery ledgerDS = ledgerRepo.getDataSet(latestBlock);
+		LedgerDataQuery ledgerDS = ledgerRepo.getLedgerData(latestBlock);
 		boolean existUser1 = ledgerDS.getUserAccountSet().contains(userKeypair1.getAddress());
 		boolean existUser2 = ledgerDS.getUserAccountSet().contains(userKeypair2.getAddress());
 		boolean existUser3 = ledgerDS.getUserAccountSet().contains(userKeypair3.getAddress());
@@ -282,8 +282,8 @@ public class TransactionBatchProcessorTest {
 		LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
 
 		// 验证参与方账户的存在；
-		LedgerDataQuery previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
-		UserAccount user0 = previousBlockDataset.getUserAccountSet().getUser(parti0.getAddress());
+		LedgerDataQuery previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
+		UserAccount user0 = previousBlockDataset.getUserAccountSet().getAccount(parti0.getAddress());
 		assertNotNull(user0);
 		boolean partiRegistered = previousBlockDataset.getUserAccountSet().contains(parti0.getAddress());
 		assertTrue(partiRegistered);
@@ -305,7 +305,7 @@ public class TransactionBatchProcessorTest {
 		newBlockEditor.commit();
 
 		assertEquals(TransactionState.SUCCESS, txResp1.getExecutionState());
-		DataAccount dataAccount = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress());
+		DataAccount dataAccount = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress());
 		assertNotNull(dataAccount);
 
 		// 正确写入 KV 数据；
@@ -321,7 +321,7 @@ public class TransactionBatchProcessorTest {
 				"K1", "V-1-2", 0, ledgerHash, parti0, parti0);
 
 		newBlockEditor = ledgerRepo.createNextBlock();
-		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
 		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo, opReg);
 
 		txbatchProcessor.schedule(txreq1);
@@ -332,13 +332,13 @@ public class TransactionBatchProcessorTest {
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
-		BytesValue v1_0 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+		BytesValue v1_0 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1",
 				0);
-		BytesValue v1_1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+		BytesValue v1_1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1",
 				1);
-		BytesValue v2 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K2",
+		BytesValue v2 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K2",
 				0);
-		BytesValue v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3",
+		BytesValue v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K3",
 				0);
 
 		assertNotNull(v1_0);
@@ -360,7 +360,7 @@ public class TransactionBatchProcessorTest {
 				"K1", "V-1-3", 0, ledgerHash, parti0, parti0);
 
 		newBlockEditor = ledgerRepo.createNextBlock();
-		previousBlockDataset = ledgerRepo.getDataSet(ledgerRepo.getLatestBlock());
+		previousBlockDataset = ledgerRepo.getLedgerData(ledgerRepo.getLatestBlock());
 		txbatchProcessor = new TransactionBatchProcessor(securityManager, newBlockEditor, ledgerRepo, opReg);
 
 		txbatchProcessor.schedule(txreq5);
@@ -376,15 +376,15 @@ public class TransactionBatchProcessorTest {
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
-		BytesValue v1 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K1");
-		v3 = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress()).getBytes("K3");
+		BytesValue v1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1");
+		v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K3");
 
 		// k1 的版本仍然为1，没有更新；
-		long k1_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+		long k1_version = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress())
 				.getDataVersion("K1");
 		assertEquals(1, k1_version);
 
-		long k3_version = ledgerRepo.getDataAccountSet().getDataAccount(dataAccountKeypair.getAddress())
+		long k3_version = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress())
 				.getDataVersion("K3");
 		assertEquals(1, k3_version);
 

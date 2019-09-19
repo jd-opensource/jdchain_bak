@@ -1,12 +1,10 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.MerkleProof;
+import com.jd.blockchain.ledger.MerkleSnapshot;
 import com.jd.blockchain.utils.Bytes;
 
-public interface MerkleProvable {
-
-	HashDigest getRootHash();
+public interface MerkleProvable extends MerkleSnapshot {
 
 	/**
 	 * Get the merkle proof of the latest version of specified key; <br>

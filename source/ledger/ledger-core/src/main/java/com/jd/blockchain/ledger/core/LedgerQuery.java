@@ -54,16 +54,30 @@ public interface LedgerQuery {
 	LedgerAdminInfo getAdminInfo();
 
 	LedgerAdminInfo getAdminInfo(LedgerBlock block);
-	
+
 	LedgerAdminSettings getAdminSettings();
-	
+
 	LedgerAdminSettings getAdminSettings(LedgerBlock block);
 
 	LedgerBlock getBlock(HashDigest hash);
 
-	LedgerDataQuery getDataSet(LedgerBlock block);
+	/**
+	 * 返回指定
+	 * @param block
+	 * @return
+	 */
+	LedgerDataQuery getLedgerData(LedgerBlock block);
+	
+	/**
+	 * 返回最新区块对应的账本数据；
+	 * 
+	 * @return
+	 */
+	default LedgerDataQuery getLedgerData() {
+		return getLedgerData(getLatestBlock());
+	}
 
-	TransactionSet getTransactionSet(LedgerBlock block);
+	TransactionQuery getTransactionSet(LedgerBlock block);
 
 	UserAccountQuery getUserAccountSet(LedgerBlock block);
 
@@ -71,11 +85,7 @@ public interface LedgerQuery {
 
 	ContractAccountQuery getContractAccountSet(LedgerBlock block);
 
-	default LedgerDataQuery getDataSet() {
-		return getDataSet(getLatestBlock());
-	}
-
-	default TransactionSet getTransactionSet() {
+	default TransactionQuery getTransactionSet() {
 		return getTransactionSet(getLatestBlock());
 	}
 
@@ -90,7 +100,7 @@ public interface LedgerQuery {
 	default ContractAccountQuery getContractAccountset() {
 		return getContractAccountSet(getLatestBlock());
 	}
-	
+
 	/**
 	 * 重新检索最新区块，同时更新缓存；
 	 * 
@@ -111,7 +121,5 @@ public interface LedgerQuery {
 	 * @return
 	 */
 	HashDigest retrieveLatestBlockHash();
-	
-	
 
 }
