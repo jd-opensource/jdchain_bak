@@ -25,7 +25,9 @@ public class PartiNode {
 
         configCharList.add(formatConfig(UmpConstant.PARTINODE_PUBKEY_FORMAT, pubKey));
 
-        configCharList.addAll(partiRoleConfigs);
+        if (partiRoleConfigs != null && !partiRoleConfigs.isEmpty()) {
+            configCharList.addAll(partiRoleConfigs);
+        }
 
         configCharList.add(formatConfig(UmpConstant.PARTINODE_INIT_HOST_FORMAT, initHost));
 

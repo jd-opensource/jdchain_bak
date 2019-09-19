@@ -1,6 +1,8 @@
 package com.jd.blockchain.ump.service;
 
 import com.jd.blockchain.ump.model.UmpConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -11,6 +13,8 @@ import java.util.Properties;
 
 @Service
 public class SecurityServiceHandler implements SecurityService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceHandler.class);
 
     static final String SECURITY_FILE = "security.config";
 
@@ -34,6 +38,7 @@ public class SecurityServiceHandler implements SecurityService {
 
     @Override
     public void init() {
+
         try {
             // 读取配置文件中的内容
             InputStream currentFileInputStream = SecurityServiceHandler.class.getResourceAsStream(
@@ -78,7 +83,8 @@ public class SecurityServiceHandler implements SecurityService {
             participantRoleConfigs.add(propBuild(UmpConstant.SECURITY_PARTI_ROLES_POLICY, partiRolesPolicyValue));
 
         } else {
-            throw new IllegalStateException("Can not find Properties from security.config");
+            // 打印日志即可
+            LOGGER.error("Can not find Properties from {}", SECURITY_FILE);
         }
     }
 

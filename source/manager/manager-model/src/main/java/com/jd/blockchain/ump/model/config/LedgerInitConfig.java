@@ -61,7 +61,9 @@ public class LedgerInitConfig {
 
         configChars.add(toConfigChars(UmpConstant.PARTINODE_COUNT, partiNodes.size()));
 
-        configChars.addAll(securityConfigs);
+        if (securityConfigs != null && !securityConfigs.isEmpty()) {
+            configChars.addAll(securityConfigs);
+        }
 
         for (PartiNode partiNode : partiNodes) {
             configChars.addAll(partiNode.toConfigChars(this.partiRolesConfigs));

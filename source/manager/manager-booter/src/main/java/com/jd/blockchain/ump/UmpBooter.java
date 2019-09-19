@@ -1,11 +1,15 @@
 package com.jd.blockchain.ump;
 
 import com.jd.blockchain.ump.web.RetrievalConfigListener;
+import com.jd.blockchain.ump.web.UmpConfiguration;
 import org.springframework.boot.SpringApplication;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -13,11 +17,13 @@ import java.util.Properties;
 
 public class UmpBooter {
 
+    private static final String ARG_HOME = "-home";
+
     private static final String ARG_PORT = "-p";
 
     private static final String ARG_HOST = "-h";
 
-    private static final String CONFIG = "BOOT-INF" + File.separator + "classes" + File.separator + "config.properties";
+    private static final String CONFIG = "/config.properties";
 
     private static final String CONFIG_APPLICATION = "BOOT-INF" + File.separator + "classes" + File.separator + "application.properties";
 
@@ -33,9 +39,20 @@ public class UmpBooter {
 
     private static final String CONFIG_PROP_DB_URL_DEFAULT = "rocksdb://#project#/jumpdb";
 
+    private static String HOME_DIR = null;
+
     public static void main(String[] args) {
-        startServer(server(args));
-        System.out.println("Unified Management Platform Server Start SUCCESS !!!");
+        try {
+            // 设置相关参数
+            Server server = server(args);
+            // 加载libs/manager下的jar包
+            loadJars();
+            // 启动Server
+            startServer(server);
+            System.out.println("Unified Management Platform Server Start SUCCESS !!!");
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
     private static void startServer(Server server) {
@@ -66,9 +83,12 @@ public class UmpBooter {
         springApplication.run(args);
     }
 
-    private static Server server(String[] args) {
+    private static Server server(String[] args) throws Exception {
         Server defaultServer = serverFromConfig();
         if (args == null || args.length == 0) {
+
+            // 获取当前Class所在路径
+            HOME_DIR = UmpBooter.class.getResource("").toURI().getPath();
             return defaultServer;
         }
         String host = null;
@@ -82,6 +102,8 @@ public class UmpBooter {
                 host = args[i + 1];
             } else if (arg.equals(ARG_PORT)) {
                 port = Integer.parseInt(args[i + 1]);
+            } else if (arg.equals(ARG_HOME)) {
+                HOME_DIR = args[i + 1];
             }
         }
 
@@ -98,7 +120,7 @@ public class UmpBooter {
 
     private static Server serverFromConfig() {
         try {
-            InputStream inputStream = UmpBooter.class.getResourceAsStream(File.separator + CONFIG);
+            InputStream inputStream = UmpBooter.class.getResourceAsStream(CONFIG);
             if (inputStream == null) {
                 System.err.println("InputStream is NULL !!!");
             }
@@ -111,6 +133,55 @@ public class UmpBooter {
             return new Server(host, port, dbUrl);
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private static void loadJars() {
+        // 获取两个路径下所有的正确的Jar包
+        URL[] libsJars = totalURLs();
+
+        URLClassLoader libClassLoader = new URLClassLoader(libsJars, UmpBooter.class.getClassLoader());
+
+        Thread.currentThread().setContextClassLoader(libClassLoader);
+    }
+
+    public static URL[] totalURLs() {
+        List<URL> totalURLs = new ArrayList<>();
+        totalURLs.addAll(libsPathURLs());
+        totalURLs.addAll(managerPathURLs());
+        URL[] totalURLArray = new URL[totalURLs.size()];
+        return totalURLs.toArray(totalURLArray);
+    }
+
+    public static List<URL> libsPathURLs() {
+        try {
+            File libsDir = new File(HOME_DIR + File.separator + "libs");
+            File[] jars = libsDir.listFiles(f -> f.getName().endsWith(".jar") && f.isFile() && !f.getName().contains("-booter-"));
+            List<URL> libsPathURLs = new ArrayList<>();
+            if (jars != null && jars.length > 0) {
+                for (int i = 0; i < jars.length; i++) {
+                    libsPathURLs.add(jars[i].toURI().toURL());
+                }
+            }
+            return libsPathURLs;
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    public static List<URL> managerPathURLs() {
+        try {
+            File managerDir = new File(HOME_DIR + File.separator + "manager");
+            File[] jars = managerDir.listFiles(f -> f.getName().endsWith(".jar") && f.isFile());
+            List<URL> managerPathURLs = new ArrayList<>();
+            if (jars != null && jars.length > 0) {
+                for (int i = 0; i < jars.length; i++) {
+                    managerPathURLs.add(jars[i].toURI().toURL());
+                }
+            }
+            return managerPathURLs;
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
@@ -142,6 +213,14 @@ public class UmpBooter {
 
         public void setPort(int port) {
             this.port = port;
+        }
+
+        public String getDbUrl() {
+            return dbUrl;
+        }
+
+        public void setDbUrl(String dbUrl) {
+            this.dbUrl = dbUrl;
         }
     }
 }

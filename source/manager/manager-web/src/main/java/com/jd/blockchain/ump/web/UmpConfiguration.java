@@ -1,4 +1,4 @@
-package com.jd.blockchain.ump;
+package com.jd.blockchain.ump.web;
 
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
