@@ -6,7 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import bftsmart.consensus.app.BlockResultImpl;
+import bftsmart.consensus.app.BatchAppResultImpl;
 import bftsmart.tom.*;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.service.*;
@@ -357,7 +357,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
      *  Used by consensus write phase, pre compute new block hash
      *
      */
-    public BlockResultImpl preComputeBlockHash(byte[][] commands) {
+    public BatchAppResultImpl preComputeAppHash(byte[][] commands) {
         String batchId = messageHandle.beginBatch(realmName);
         List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(commands.length);
         List<byte[]> responseLinkedList = new ArrayList<>();
@@ -375,7 +375,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             }
 
 
-            return new BlockResultImpl(responseLinkedList, blockHashBytes, batchId);
+            return new BatchAppResultImpl(responseLinkedList, blockHashBytes, batchId);
 
         } catch (Exception e) {
             // todo 需要处理应答码 404
@@ -391,7 +391,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
      *  Consensus write phase will terminate, new block hash values are inconsistent, update batch messages execute state
      *
      */
-    public List<byte[]> updateBatchResponses(List<byte[]> asyncResponseLinkedList) {
+    public List<byte[]> updateAppResponses(List<byte[]> asyncResponseLinkedList) {
         List<byte[]> updatedResponses = new ArrayList<>();
 
         for(int i = 0; i < asyncResponseLinkedList.size(); i++) {
@@ -409,7 +409,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
      *  Decision has been made at the consensus stage， commit block
      *
      */
-    public void preComputeBlockCommit(String batchId) {
+    public void preComputeAppCommit(String batchId) {
 
         messageHandle.commitBatch(realmName, batchId);
 
@@ -420,7 +420,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
      *  Consensus write phase will terminate, new block hash values are inconsistent, rollback block
      *
      */
-    public void preComputeBlockRollback(String batchId) {
+    public void preComputeAppRollback(String batchId) {
         messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK.CODE);
         LOGGER.debug("Rollback of operations that cause inconsistencies in the ledger");
     }
