@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,6 +20,10 @@ public class UmpBooter {
     private static final String ARG_PORT = "-p";
 
     private static final String ARG_HOST = "-h";
+
+    private static final String PROTOCOL_FILE = "file:";
+
+    private static final String TOOLS_JAR = "tools.jar";
 
     private static final String PATH_INNER_JARS = "/";
 
@@ -164,7 +169,7 @@ public class UmpBooter {
      * 自定义ClassLoader加载Jar包
      *
      */
-    private static void loadJars() {
+    private static void loadJars() throws Exception {
         // 获取两个路径下所有的正确的Jar包
         URL[] totalJars = totalURLs();
 
@@ -181,12 +186,46 @@ public class UmpBooter {
      *
      * @return
      */
-    public static URL[] totalURLs() {
+    public static URL[] totalURLs() throws Exception {
         List<URL> totalURLs = new ArrayList<>();
         totalURLs.addAll(libsPathURLs());
         totalURLs.addAll(managerPathURLs());
+        URL toolsJarURL = toolsJarURL();
+        if (toolsJarURL != null) {
+            totalURLs.add(toolsJarURL);
+        }
         URL[] totalURLArray = new URL[totalURLs.size()];
         return totalURLs.toArray(totalURLArray);
+    }
+
+    /**
+     * 加载JAVA_HOME下的tools.jar文件
+     *
+     * @return
+     */
+    public static URL toolsJarURL() throws Exception {
+        // tools.jar位于JAVA_HOME/....../lib/tools.jar
+        // 首先从classpath下进行加载
+        String classPath = System.getProperty("java.class.path");
+        String[] paths = classPath.split(":");
+        for (String path : paths) {
+            if (path.endsWith("/" + TOOLS_JAR)) {
+                // 当前路径即为tools.jar所在路径
+                return new URL(PROTOCOL_FILE + path);
+            }
+        }
+
+        // 获取其JAVA_HOME路径
+        String javaHome = System.getenv("JAVA_HOME");
+        if (javaHome != null && javaHome.length() > 0) {
+            String toolsJarPath = javaHome + File.separator + "lib" + File.separator + TOOLS_JAR;
+            File toolsJar = new File(toolsJarPath);
+            if (toolsJar.exists()) {
+                return new URL(PROTOCOL_FILE + toolsJarPath);
+            }
+        }
+
+        return null;
     }
 
     /**
