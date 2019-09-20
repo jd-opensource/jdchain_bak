@@ -36,7 +36,7 @@
 
 	<properties>
 		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
-		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
+		<bft-smart.version>0.1.1-SNAPSHOT</bft-smart.version>
 		<explorer.version>0.7.0.RELEASE</explorer.version>
 		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
