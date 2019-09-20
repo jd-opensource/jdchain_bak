@@ -1,12 +1,9 @@
 package com.jd.blockchain.ump;
 
-import com.jd.blockchain.ump.web.RetrievalConfigListener;
-import com.jd.blockchain.ump.web.UmpConfiguration;
-import org.springframework.boot.SpringApplication;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -23,9 +20,11 @@ public class UmpBooter {
 
     private static final String ARG_HOST = "-h";
 
-    private static final String CONFIG = "/config.properties";
+    private static final String PATH_INNER_JARS = "/";
 
-    private static final String CONFIG_APPLICATION = "BOOT-INF" + File.separator + "classes" + File.separator + "application.properties";
+    private static final String CONFIG = "config.properties";
+
+    private static final String CONFIG_APPLICATION = "application.properties";
 
     private static final String CONFIG_PROP_HOST = "server.host";
 
@@ -39,6 +38,8 @@ public class UmpBooter {
 
     private static final String CONFIG_PROP_DB_URL_DEFAULT = "rocksdb://#project#/jumpdb";
 
+    private static final String UMP_START_CLASS = "com.jd.blockchain.ump.UmpApplicationStarter";
+
     private static String HOME_DIR = null;
 
     public static void main(String[] args) {
@@ -49,13 +50,19 @@ public class UmpBooter {
             loadJars();
             // 启动Server
             startServer(server);
-            System.out.println("Unified Management Platform Server Start SUCCESS !!!");
+            System.out.println("JDChain Manager Server Start SUCCESS !!!");
         } catch (Exception e) {
             System.err.println(e);
         }
     }
 
-    private static void startServer(Server server) {
+    /**
+     * 启动Server
+     *
+     * @param server
+     * @throws Exception
+     */
+    private static void startServer(Server server) throws Exception {
 
         List<String> argList = new ArrayList<>();
         argList.add(String.format("--server.address=%s", server.host));
@@ -64,25 +71,37 @@ public class UmpBooter {
 
         String[] args = argList.toArray(new String[argList.size()]);
 
-        // 启动服务器；
-//        SpringApplication.run(UmpConfiguration.class, args);
-        InputStream inputStream = UmpBooter.class.getResourceAsStream(File.separator + CONFIG_APPLICATION);
+        InputStream inputStream = UmpBooter.class.getResourceAsStream(PATH_INNER_JARS + CONFIG_APPLICATION);
         if (inputStream == null) {
-            System.err.println("InputStream is NULL !!!");
+            System.err.printf("File [%s]' inputStream is NULL !!! \r\n", CONFIG_APPLICATION);
         }
         Properties props = new Properties();
         try {
             props.load(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
 
-        // 启动服务器；
-        SpringApplication springApplication = new SpringApplication(UmpConfiguration.class);
-        springApplication.addListeners(new RetrievalConfigListener(props));
-        springApplication.run(args);
+        /**
+         * 通过ClassLoader调用如下方法
+         * {@link UmpApplicationStarter#start(String[], Properties)}
+         *
+         */
+        Class<?> applicationClass = Thread.currentThread().getContextClassLoader()
+                .loadClass(UMP_START_CLASS);
+
+        Method startMethod = applicationClass.getDeclaredMethod("start", String[].class, Properties.class);
+
+        startMethod.invoke(null, args, props);
     }
 
+    /**
+     * 根据入参加载Server对象（配置）
+     *
+     * @param args
+     * @return
+     * @throws Exception
+     */
     private static Server server(String[] args) throws Exception {
         Server defaultServer = serverFromConfig();
         if (args == null || args.length == 0) {
@@ -118,11 +137,16 @@ public class UmpBooter {
         return new Server(host, port, defaultServer.dbUrl);
     }
 
+    /**
+     * 配置文件中加载Server对象
+     *
+     * @return
+     */
     private static Server serverFromConfig() {
         try {
-            InputStream inputStream = UmpBooter.class.getResourceAsStream(CONFIG);
+            InputStream inputStream = UmpBooter.class.getResourceAsStream(PATH_INNER_JARS + CONFIG);
             if (inputStream == null) {
-                System.err.println("InputStream is NULL !!!");
+                System.err.printf("File [%s]' inputStream is NULL !!! \r\n", CONFIG);
             }
             Properties props = new Properties();
             props.load(inputStream);
@@ -136,15 +160,27 @@ public class UmpBooter {
         }
     }
 
+    /**
+     * 自定义ClassLoader加载Jar包
+     *
+     */
     private static void loadJars() {
         // 获取两个路径下所有的正确的Jar包
-        URL[] libsJars = totalURLs();
+        URL[] totalJars = totalURLs();
 
-        URLClassLoader libClassLoader = new URLClassLoader(libsJars, UmpBooter.class.getClassLoader());
+        // 自定义URLClassLoader
+        URLClassLoader totalClassLoader = new URLClassLoader(totalJars,
+                Thread.currentThread().getContextClassLoader().getParent());
 
-        Thread.currentThread().setContextClassLoader(libClassLoader);
+        // 设置当前线程ClassLoader
+        Thread.currentThread().setContextClassLoader(totalClassLoader);
     }
 
+    /**
+     * 获取指定路径下的所有Jar
+     *
+     * @return
+     */
     public static URL[] totalURLs() {
         List<URL> totalURLs = new ArrayList<>();
         totalURLs.addAll(libsPathURLs());
@@ -153,6 +189,12 @@ public class UmpBooter {
         return totalURLs.toArray(totalURLArray);
     }
 
+    /**
+     * 获取libs目录下的相关Jar
+     *     排除JDChain项目中默认的其他booter对应的Jar包
+     *
+     * @return
+     */
     public static List<URL> libsPathURLs() {
         try {
             File libsDir = new File(HOME_DIR + File.separator + "libs");
@@ -160,7 +202,9 @@ public class UmpBooter {
             List<URL> libsPathURLs = new ArrayList<>();
             if (jars != null && jars.length > 0) {
                 for (int i = 0; i < jars.length; i++) {
-                    libsPathURLs.add(jars[i].toURI().toURL());
+                    URL jarURL = jars[i].toURI().toURL();
+                    libsPathURLs.add(jarURL);
+                    System.out.printf("Loaded libsPath Jar[%s]! \r\n", jarURL);
                 }
             }
             return libsPathURLs;
@@ -169,6 +213,11 @@ public class UmpBooter {
         }
     }
 
+    /**
+     * 加载manager下的所有Jar
+     *
+     * @return
+     */
     public static List<URL> managerPathURLs() {
         try {
             File managerDir = new File(HOME_DIR + File.separator + "manager");
@@ -176,7 +225,9 @@ public class UmpBooter {
             List<URL> managerPathURLs = new ArrayList<>();
             if (jars != null && jars.length > 0) {
                 for (int i = 0; i < jars.length; i++) {
-                    managerPathURLs.add(jars[i].toURI().toURL());
+                    URL jarURL = jars[i].toURI().toURL();
+                    managerPathURLs.add(jarURL);
+                    System.out.printf("Loaded ManagerPath Jar[%s]! \r\n", jarURL);
                 }
             }
             return managerPathURLs;
