@@ -198,7 +198,12 @@ public class UmpBooter {
     public static List<URL> libsPathURLs() {
         try {
             File libsDir = new File(HOME_DIR + File.separator + "libs");
-            File[] jars = libsDir.listFiles(f -> f.getName().endsWith(".jar") && f.isFile() && !f.getName().contains("-booter-"));
+            File[] jars = libsDir.listFiles(f ->
+                    f.getName().endsWith(".jar") &&
+                    f.isFile() &&
+                    !f.getName().contains("-booter-") &&
+                    !f.getName().contains("tools-initializer")
+            );
             List<URL> libsPathURLs = new ArrayList<>();
             if (jars != null && jars.length > 0) {
                 for (int i = 0; i < jars.length; i++) {

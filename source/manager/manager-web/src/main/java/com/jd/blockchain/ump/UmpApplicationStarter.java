@@ -1,7 +1,6 @@
 package com.jd.blockchain.ump;
 
 import com.jd.blockchain.ump.web.RetrievalConfigListener;
-import com.jd.blockchain.ump.web.UmpConfiguration;
 import org.springframework.boot.SpringApplication;
 
 import java.util.Properties;
