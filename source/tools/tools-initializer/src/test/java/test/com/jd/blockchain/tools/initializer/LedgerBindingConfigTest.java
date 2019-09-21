@@ -1,19 +1,19 @@
 package test.com.jd.blockchain.tools.initializer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
+import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
-import com.jd.blockchain.tools.initializer.LedgerBindingConfig.BindingConfig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class LedgerBindingConfigTest {
 
@@ -36,7 +36,34 @@ public class LedgerBindingConfigTest {
 		} finally {
 			in.close();
 		}
+	}
 
+	@Test
+	public void testLedgerBindingRegister() throws IOException {
+		LedgerManager ledgerManager = new LedgerManager();
+		ClassPathResource ledgerBindingConfigFile = new ClassPathResource("ledger-binding-1.conf");
+		InputStream in = ledgerBindingConfigFile.getInputStream();
+		Exception ex = null;
+		try {
+			LedgerBindingConfig conf = LedgerBindingConfig.resolve(in);
+//			assertLedgerBindingConfig(conf);
+
+			HashDigest[] existingLedgerHashs = ledgerManager.getLedgerHashs();
+			for (HashDigest lh : existingLedgerHashs) {
+				ledgerManager.unregister(lh);
+			}
+			HashDigest[] ledgerHashs = conf.getLedgerHashs();
+			for (HashDigest ledgerHash : ledgerHashs) {
+//				setConfig(conf,ledgerHash);
+				LedgerBindingConfig.BindingConfig bindingConfig = conf.getLedger(ledgerHash);
+			}
+		} catch (Exception e) {
+			ex =e;
+		} finally {
+			in.close();
+		}
+
+		assertNull(ex);
 	}
 
 	/**
