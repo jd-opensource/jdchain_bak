@@ -38,33 +38,33 @@ public class LedgerBindingConfigTest {
 		}
 	}
 
-	@Test
-	public void testLedgerBindingRegister() throws IOException {
-		LedgerManager ledgerManager = new LedgerManager();
-		ClassPathResource ledgerBindingConfigFile = new ClassPathResource("ledger-binding-1.conf");
-		InputStream in = ledgerBindingConfigFile.getInputStream();
-		Exception ex = null;
-		try {
-			LedgerBindingConfig conf = LedgerBindingConfig.resolve(in);
-//			assertLedgerBindingConfig(conf);
-
-			HashDigest[] existingLedgerHashs = ledgerManager.getLedgerHashs();
-			for (HashDigest lh : existingLedgerHashs) {
-				ledgerManager.unregister(lh);
-			}
-			HashDigest[] ledgerHashs = conf.getLedgerHashs();
-			for (HashDigest ledgerHash : ledgerHashs) {
-//				setConfig(conf,ledgerHash);
-				LedgerBindingConfig.BindingConfig bindingConfig = conf.getLedger(ledgerHash);
-			}
-		} catch (Exception e) {
-			ex =e;
-		} finally {
-			in.close();
-		}
-
-		assertNull(ex);
-	}
+//	@Test
+//	public void testLedgerBindingRegister() throws IOException {
+//		LedgerManager ledgerManager = new LedgerManager();
+//		ClassPathResource ledgerBindingConfigFile = new ClassPathResource("ledger-binding-1.conf");
+//		InputStream in = ledgerBindingConfigFile.getInputStream();
+//		Exception ex = null;
+//		try {
+//			LedgerBindingConfig conf = LedgerBindingConfig.resolve(in);
+////			assertLedgerBindingConfig(conf);
+//
+//			HashDigest[] existingLedgerHashs = ledgerManager.getLedgerHashs();
+//			for (HashDigest lh : existingLedgerHashs) {
+//				ledgerManager.unregister(lh);
+//			}
+//			HashDigest[] ledgerHashs = conf.getLedgerHashs();
+//			for (HashDigest ledgerHash : ledgerHashs) {
+////				setConfig(conf,ledgerHash);
+//				LedgerBindingConfig.BindingConfig bindingConfig = conf.getLedger(ledgerHash);
+//			}
+//		} catch (Exception e) {
+//			ex =e;
+//		} finally {
+//			in.close();
+//		}
+//
+//		assertNull(ex);
+//	}
 
 	/**
 	 * 判断指定的对象跟测试模板是否一致；
