@@ -84,7 +84,7 @@ public class LedgerServiceHandler implements LedgerService {
     @Override
     public String peerStartCommand(String peerPath) {
         return String.format(UmpConstant.CMD_START_UP_FORMAT,
-                peerPath + UmpConstant.PATH_STARTUP_BIN);
+                peerPath + UmpConstant.PATH_PEER_STARTUP_BIN);
     }
 
     @Override

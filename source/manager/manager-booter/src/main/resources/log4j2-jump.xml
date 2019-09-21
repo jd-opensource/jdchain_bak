@@ -13,8 +13,8 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </console>
         <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
-        <RollingFile name="UmpRollingInfo" fileName="${sys:jump.log}/logs/ump.info.log"
-                     filePattern="${sys:jump.log}/logs/$${date:yyyy-MM}/ump.info-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="UmpRollingInfo" fileName="${sys:jdchain.log}/logs/ump.info.log"
+                     filePattern="${sys:jdchain.log}/logs/$${date:yyyy-MM}/ump.info-%d{yyyy-MM-dd}-%i.log">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
@@ -23,8 +23,8 @@
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
         </RollingFile>
-        <RollingFile name="UmpRollingError" fileName="${sys:jump.log}/logs/ump.error.log"
-                     filePattern="${sys:jump.log}/logs/$${date:yyyy-MM}/ump.error-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="UmpRollingError" fileName="${sys:jdchain.log}/logs/ump.error.log"
+                     filePattern="${sys:jdchain.log}/logs/$${date:yyyy-MM}/ump.error-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
             <Policies>

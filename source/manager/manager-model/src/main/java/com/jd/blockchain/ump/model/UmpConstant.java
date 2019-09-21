@@ -106,7 +106,7 @@ public class UmpConstant {
 
     public static final String PATH_LEDGER_INIT_BIN = PATH_BIN + File.separator + "ledger-init.sh";
 
-    public static final String PATH_STARTUP_BIN = PATH_BIN + File.separator + "startup.sh";
+    public static final String PATH_PEER_STARTUP_BIN = PATH_BIN + File.separator + "peer-startup.sh";
 
     public static final String PATH_LIBS = File.separator + "libs";
 

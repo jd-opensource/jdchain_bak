@@ -193,6 +193,7 @@ public class UmpBooter {
         URL toolsJarURL = toolsJarURL();
         if (toolsJarURL != null) {
             totalURLs.add(toolsJarURL);
+            System.out.printf("Loaded tools.jar[%s]! \r\n", toolsJarURL);
         }
         URL[] totalURLArray = new URL[totalURLs.size()];
         return totalURLs.toArray(totalURLArray);
