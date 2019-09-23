@@ -69,6 +69,16 @@ public class UmpDaoHandler implements UmpDao, CommandLineRunner, DBConnection {
     }
 
     @Override
+    public <T> T get(String key, Class<T> type) {
+        return dbConnection.get(key,type);
+    }
+
+    @Override
+    public void delete(String key) {
+        dbConnection.delete(key);
+    }
+
+    @Override
     public boolean exist(String dbUrl) {
         try {
             return dbConnection.exist(dbUrl);

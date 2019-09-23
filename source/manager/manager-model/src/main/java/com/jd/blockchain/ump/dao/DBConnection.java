@@ -12,5 +12,9 @@ public interface DBConnection {
 
     String get(String key);
 
+    <T> T get(String key, Class<T> type);
+
+    void delete(String key);
+
     boolean exist(String dbUrl);
 }

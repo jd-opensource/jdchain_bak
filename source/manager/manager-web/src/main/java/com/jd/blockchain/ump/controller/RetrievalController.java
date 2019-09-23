@@ -249,8 +249,8 @@ public class RetrievalController {
     public ApiResult deleteDataAccountSchema(@PathVariable(name = "ledgerHash") String ledgerHash,
                                            @PathVariable(name = "dataAccount") String dataAccount) {
         try {
-            DataAccountSchema dataAccountSchema = dataAccountUmpService.deleteDataAcccountSchema(ledgerHash, dataAccount);
-            return new ApiResult(ErrorCode.SUCCESS,dataAccountSchema);
+            dataAccountUmpService.deleteDataAcccountSchema(ledgerHash, dataAccount);
+            return new ApiResult(ErrorCode.SUCCESS);
         } catch (Exception e) {
             return new ApiResult(ErrorCode.SERVER_ERROR,e.getMessage());
         }

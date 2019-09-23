@@ -74,6 +74,32 @@ public class RocksDBConnection implements DBConnection {
     }
 
     @Override
+    public <T> T get(String key, Class<T> type) {
+        try {
+            byte[] value = this.rocksDB.get(key.getBytes(UTF_8));
+            if (value != null && value.length > 0) {
+                String strObj = new String(value, UTF_8);
+                return JSON.parseObject(strObj,type);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public void delete(String key) {
+        try {
+            byte[] value = this.rocksDB.get(key.getBytes(UTF_8));
+            if (value != null && value.length > 0) {
+                this.rocksDB.delete(value);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
     public boolean exist(String dbUrl) {
         // 首先该dbUrl是Rocksdb
         if (dbUrl.startsWith(ROCKSDB_PROTOCOL)) {

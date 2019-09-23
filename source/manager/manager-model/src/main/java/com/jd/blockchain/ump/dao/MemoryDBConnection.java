@@ -44,4 +44,15 @@ public class MemoryDBConnection implements DBConnection {
         }
         return false;
     }
+
+    @Override
+    public <T> T get(String key, Class<T> type) {
+        String record = memory.get(key);
+        return JSON.parseObject(record,type);
+    }
+
+    @Override
+    public void delete(String key) {
+        memory.remove(key);
+    }
 }

@@ -20,7 +20,7 @@ public interface DataAccountUmpService {
      */
     boolean addDataAccountSchema(DataAccountSchema dataAccountSchema);
 
-    DataAccountSchema deleteDataAcccountSchema(String ledgerHash, String dataAccount);
+    void deleteDataAcccountSchema(String ledgerHash, String dataAccount);
 
     DataAccountSchema findDataAccountSchema(String ledgerHash, String dataAccount);
 }
