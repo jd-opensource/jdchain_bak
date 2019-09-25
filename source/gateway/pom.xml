@@ -45,7 +45,7 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>explorer</artifactId>
+			<artifactId>data-explorer</artifactId>
 		</dependency>
 
 		<dependency>

@@ -71,7 +71,7 @@
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
-            <artifactId>ump-explorer</artifactId>
+            <artifactId>manager-explorer</artifactId>
         </dependency>
 
         <dependency>
