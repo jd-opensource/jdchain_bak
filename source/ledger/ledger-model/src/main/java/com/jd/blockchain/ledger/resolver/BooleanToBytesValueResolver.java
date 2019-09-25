@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.resolver;
 
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.utils.Bytes;
@@ -21,7 +21,7 @@ public class BooleanToBytesValueResolver extends AbstractBytesValueResolver {
 		if (!isSupport(type)) {
 			throw new IllegalStateException(String.format("Un-support encode Class[%s] Object !!!", type.getName()));
 		}
-		return BytesData.fromBoolean((boolean) value);
+		return TypedBytesValue.fromBoolean((boolean) value);
 	}
 
 	@Override

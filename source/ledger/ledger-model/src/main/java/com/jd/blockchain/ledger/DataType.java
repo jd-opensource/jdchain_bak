@@ -106,12 +106,71 @@ public enum DataType {
 	 * DataContract 数据；
 	 */
 	DATA_CONTRACT((byte) (BaseType.EXT | 0x01));
+	
+	
+	
+	public static final boolean BOOLEAN_DEFAULT_VALUE = false;
+	
+	public static final byte INT8_DEFAULT_VALUE = 0;
+	
+	public static final short INT16_DEFAULT_VALUE = 0;
+	
+	public static final int INT32_DEFAULT_VALUE = 0;
+	
+	public static final long INT64_DEFAULT_VALUE = 0;
+	
+	
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;
 
 	private DataType(byte code) {
 		this.CODE = code;
+	}
+
+	/**
+	 * 是否表示“文本类型”或“文本衍生类型”；
+	 * 
+	 * @return
+	 */
+	public boolean isText() {
+		return BaseType.TEXT == (BaseType.TEXT & CODE);
+	}
+
+	/**
+	 * 是否表示“字节类型”或“字节衍生类型”；
+	 * 
+	 * @return
+	 */
+	public boolean isBytes() {
+		return BaseType.BYTES == (BaseType.BYTES & CODE);
+	}
+
+	/**
+	 * 是否表示“整数类型”或“整数衍生类型”；
+	 * 
+	 * @return
+	 */
+	public boolean isInteger() {
+		return BaseType.INTEGER == (BaseType.INTEGER & CODE);
+	}
+	
+	/**
+	 * 是否表示“布尔类型”；
+	 * 
+	 * @return
+	 */
+	public boolean isBoolean() {
+		return BaseType.BOOLEAN == (BaseType.BOOLEAN & CODE);
+	}
+	
+	/**
+	 * 是否表示“扩展类型”；
+	 * 
+	 * @return
+	 */
+	public boolean isExt() {
+		return BaseType.EXT == (BaseType.EXT & CODE);
 	}
 
 	public static DataType valueOf(byte code) {

@@ -8,7 +8,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.utils.Bytes;
 
 @DataContract(code= DataCodes.ACCOUNT_HEADER)
-public interface AccountHeader extends MerkleSnapshot{
+public interface AccountHeader { //extends MerkleSnapshot{
 	
 	@DataField(order=1, primitiveType = PrimitiveType.BYTES)
 	Bytes getAddress();

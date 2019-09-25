@@ -151,7 +151,7 @@ public class ClientResolveUtil {
 			String realValBase58 = valueObj.getJSONObject("value").getString("value");
 			String key = currWriteSetObj.getString("key");
 			DataType dataType = DataType.valueOf(typeStr);
-			BytesValue bytesValue = BytesData.fromType(dataType, Base58Utils.decode(realValBase58));
+			BytesValue bytesValue = TypedBytesValue.fromType(dataType, Base58Utils.decode(realValBase58));
 			KVData kvData = new KVData(key, bytesValue, expectedVersion);
 			kvOperation.set(kvData);
 		}
@@ -200,7 +200,7 @@ public class ClientResolveUtil {
 				JSONObject pubKeyObj = currConsensusParticipant.getJSONObject("pubKey");
 				String pubKeyBase58 = pubKeyObj.getString("value");
 				// 生成ParticipantNode对象
-                ParticipantCertData participantCertData = new ParticipantCertData(id, address, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
+                ParticipantCertData participantCertData = new ParticipantCertData(id, address, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()), null);
 				participantNodes[i] = participantCertData;
 			}
 			ledgerInitSettingData.setConsensusParticipants(participantNodes);
@@ -294,11 +294,12 @@ public class ClientResolveUtil {
 			this.pubKey = participantNode.getPubKey();
 		}
 
-        public ParticipantCertData(int id, Bytes address, String name, PubKey pubKey) {
+        public ParticipantCertData(int id, Bytes address, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
 			this.id = id;
 			this.address = address;
 			this.name = name;
 			this.pubKey = pubKey;
+			
             this.participantNodeState = participantNodeState;
 		}
 

@@ -68,7 +68,7 @@ public class BytesValueEncoding {
 			}
 			// 将对象序列化
 			byte[] serialBytes = BinaryProtocol.encode(value, type);
-			return BytesData.fromType(DataType.DATA_CONTRACT, serialBytes);
+			return TypedBytesValue.fromType(DataType.DATA_CONTRACT, serialBytes);
 		}
 		BytesValueResolver bytesValueResolver = CLASS_RESOLVER_MAP.get(type);
 		if (bytesValueResolver == null) {

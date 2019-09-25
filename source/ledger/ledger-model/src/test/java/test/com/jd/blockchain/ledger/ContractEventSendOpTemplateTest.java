@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.BytesDataList;
 import com.jd.blockchain.ledger.BytesValueList;
 import com.jd.blockchain.ledger.ContractEventSendOperation;
@@ -41,7 +41,7 @@ public class ContractEventSendOpTemplateTest {
 		DataContractRegistry.register(ContractEventSendOperation.class);
 		DataContractRegistry.register(Operation.class);
 		String contractAddress = "zhangsan-address", event = "zhangsan-event";
-		BytesValueList args = new BytesDataList(BytesData.fromText("zhangsan-args"));
+		BytesValueList args = new BytesDataList(TypedBytesValue.fromText("zhangsan-args"));
 		data = new ContractEventSendOpTemplate(Bytes.fromString(contractAddress), event, args);
 	}
 

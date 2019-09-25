@@ -1,8 +1,8 @@
 package com.jd.blockchain.storage.service.impl.redis;
 
-import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.VersioningKVEntry;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

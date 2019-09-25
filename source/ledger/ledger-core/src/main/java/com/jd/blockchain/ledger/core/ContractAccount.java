@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.MerkleProof;
@@ -44,16 +44,16 @@ public class ContractAccount implements ContractInfo {
 	}
 
 	public long setChaincode(byte[] chaincode, long version) {
-		BytesValue bytesValue = BytesData.fromBytes(chaincode);
-		return accBase.setBytes(CHAIN_CODE_KEY, bytesValue, version);
+		BytesValue bytesValue = TypedBytesValue.fromBytes(chaincode);
+		return accBase.setValue(CHAIN_CODE_KEY, bytesValue, version);
 	}
 
 	public byte[] getChainCode() {
-		return accBase.getBytes(CHAIN_CODE_KEY).getValue().toBytes();
+		return accBase.getValue(CHAIN_CODE_KEY).getValue().toBytes();
 	}
 
 	public byte[] getChainCode(long version) {
-		return accBase.getBytes(CHAIN_CODE_KEY, version).getValue().toBytes();
+		return accBase.getValue(CHAIN_CODE_KEY, version).getValue().toBytes();
 	}
 
 	public long getChaincodeVersion() {
@@ -61,18 +61,18 @@ public class ContractAccount implements ContractInfo {
 	}
 
 	public long setProperty(Bytes key, String value, long version) {
-		BytesValue bytesValue = BytesData.fromText(value);
-		return accBase.setBytes(encodePropertyKey(key), bytesValue, version);
+		BytesValue bytesValue = TypedBytesValue.fromText(value);
+		return accBase.setValue(encodePropertyKey(key), bytesValue, version);
 	}
 
 	public String getProperty(Bytes key) {
-		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key));
-		return BytesData.toText(bytesValue);
+		BytesValue bytesValue = accBase.getValue(encodePropertyKey(key));
+		return TypedBytesValue.toText(bytesValue);
 	}
 
 	public String getProperty(Bytes key, long version) {
-		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key), version);
-		return BytesData.toText(bytesValue);
+		BytesValue bytesValue = accBase.getValue(encodePropertyKey(key), version);
+		return TypedBytesValue.toText(bytesValue);
 	}
 
 	private Bytes encodePropertyKey(Bytes key) {

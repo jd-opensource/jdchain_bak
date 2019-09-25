@@ -332,13 +332,13 @@ public class TransactionBatchProcessorTest {
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
-		BytesValue v1_0 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+		BytesValue v1_0 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K1",
 				0);
-		BytesValue v1_1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1",
+		BytesValue v1_1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K1",
 				1);
-		BytesValue v2 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K2",
+		BytesValue v2 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K2",
 				0);
-		BytesValue v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K3",
+		BytesValue v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K3",
 				0);
 
 		assertNotNull(v1_0);
@@ -376,8 +376,8 @@ public class TransactionBatchProcessorTest {
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
 
-		BytesValue v1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1");
-		v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K3");
+		BytesValue v1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K1");
+		v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getValue("K3");
 
 		// k1 的版本仍然为1，没有更新；
 		long k1_version = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress())

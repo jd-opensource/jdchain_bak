@@ -10,6 +10,7 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
+import com.jd.blockchain.utils.VersioningMap;
 
 /**
  * @author huanghaiquan
@@ -71,7 +72,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address) {
-		MerkleAccount baseAccount = accountSet.getAccount(address);
+		VersioningMap baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
@@ -82,7 +83,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address, long version) {
-		MerkleAccount baseAccount = accountSet.getAccount(address, version);
+		VersioningMap baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}
 
@@ -100,7 +101,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	 * @return 注册成功的用户对象；
 	 */
 	public UserAccount register(Bytes address, PubKey pubKey) {
-		MerkleAccount baseAccount = accountSet.register(address, pubKey);
+		VersioningMap baseAccount = accountSet.register(address, pubKey);
 		return new UserAccount(baseAccount);
 	}
 

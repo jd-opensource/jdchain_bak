@@ -132,7 +132,7 @@ public class ContractInvokingTest {
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
 
-		byte[] expectedRetnBytes = BinaryProtocol.encode(BytesData.fromInt64(issueAmount), BytesValue.class);
+		byte[] expectedRetnBytes = BinaryProtocol.encode(TypedBytesValue.fromInt64(issueAmount), BytesValue.class);
 		byte[] reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
 		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
 
@@ -218,7 +218,7 @@ public class ContractInvokingTest {
 		TransactionBatchResultHandle txResultHandle = txbatchProcessor.prepare();
 		txResultHandle.commit();
 
-		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getBytes(key,
+		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getValue(key,
 				-1);
 		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getValue().toUTF8String());
 

@@ -13,10 +13,10 @@ import com.jd.blockchain.ledger.RolesPolicy;
 import com.jd.blockchain.ledger.UserRoles;
 import com.jd.blockchain.ledger.UserAuthorizationSettings;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
-import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
+import com.jd.blockchain.utils.VersioningKVEntry;
 
 /**
  * User-Role authorization data set;

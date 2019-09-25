@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.transaction.KVData;
@@ -38,7 +38,7 @@ public class KVDataTest {
 		byte[] value = "test-value".getBytes();
 		long expectedVersion = 9999L;
 
-		kvData = new KVData(key, BytesData.fromBytes(value), expectedVersion);
+		kvData = new KVData(key, TypedBytesValue.fromBytes(value), expectedVersion);
 	}
 
 	@Test

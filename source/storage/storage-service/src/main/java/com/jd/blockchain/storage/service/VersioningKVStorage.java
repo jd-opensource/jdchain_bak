@@ -1,6 +1,7 @@
 package com.jd.blockchain.storage.service;
 
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.VersioningKVEntry;
 
 /**
  * Versioning Key-Value Storage
@@ -40,7 +41,7 @@ public interface VersioningKVStorage extends BatchStorageService {
 	 * @param version
 	 * @return
 	 */
-	VersioningKVEntry getEntry(Bytes key, long version);
+	VersioningKVEntry<Bytes, byte[]> getEntry(Bytes key, long version);
 	
 	/**
 	 * Return the specified verson's value; <br>

@@ -14,18 +14,18 @@ public class BytesDataList implements BytesValueList {
 	}
 
 	public static BytesValueList singleText(String value) {
-		return new BytesDataList(BytesData.fromText(value));
+		return new BytesDataList(TypedBytesValue.fromText(value));
 	}
 	
 	public static BytesValueList singleLong(long value) {
-		return new BytesDataList(BytesData.fromInt64(value));
+		return new BytesDataList(TypedBytesValue.fromInt64(value));
 	}
 	
 	public static BytesValueList singleInt(int value) {
-		return new BytesDataList(BytesData.fromInt32(value));
+		return new BytesDataList(TypedBytesValue.fromInt32(value));
 	}
 	
 	public static BytesValueList singleBoolean(boolean value) {
-		return new BytesDataList(BytesData.fromBoolean(value));
+		return new BytesDataList(TypedBytesValue.fromBoolean(value));
 	}
 }

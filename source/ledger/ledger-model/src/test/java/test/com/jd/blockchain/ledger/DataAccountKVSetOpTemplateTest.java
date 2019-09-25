@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
@@ -41,11 +41,11 @@ public class DataAccountKVSetOpTemplateTest {
         String accountAddress = "zhangsandhakhdkah";
         data = new DataAccountKVSetOpTemplate(Bytes.fromString(accountAddress));
         KVData kvData1 =
-                new KVData("test1", BytesData.fromText("zhangsan"), 9999L);
+                new KVData("test1", TypedBytesValue.fromText("zhangsan"), 9999L);
         KVData kvData2 =
-                new KVData("test2", BytesData.fromText("lisi"), 9990L);
+                new KVData("test2", TypedBytesValue.fromText("lisi"), 9990L);
         KVData kvData3 =
-                new KVData("test3", BytesData.fromText("wangwu"), 1990L);
+                new KVData("test3", TypedBytesValue.fromText("wangwu"), 1990L);
         data.set(kvData1);
         data.set(kvData2);
         data.set(kvData3);
