@@ -31,11 +31,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	 */
 	public static final int MAX_SIZE_OF_VALUE = 4 * 1024 * 1024;
 
-	public static final String ORIG_KEY_SEPERATOR = LedgerConsts.KEY_SEPERATOR;
-
-	public static final Bytes SN_PREFIX = Bytes.fromString("SN" + ORIG_KEY_SEPERATOR);
-	public static final Bytes DATA_PREFIX = Bytes.fromString("KV" + ORIG_KEY_SEPERATOR);
-	public static final Bytes MERKLE_TREE_PREFIX = Bytes.fromString("MKL" + ORIG_KEY_SEPERATOR);
+	public static final Bytes SN_PREFIX = Bytes.fromString("SN" + LedgerConsts.KEY_SEPERATOR);
+	public static final Bytes DATA_PREFIX = Bytes.fromString("KV" + LedgerConsts.KEY_SEPERATOR);
+	public static final Bytes MERKLE_TREE_PREFIX = Bytes.fromString("MKL" + LedgerConsts.KEY_SEPERATOR);
 
 	private final Bytes snKeyPrefix;
 	private final Bytes dataKeyPrefix;
