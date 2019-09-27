@@ -16,7 +16,7 @@ public class PeerLocalConfig extends PeerSharedConfig {
 
     private String peerPath;
 
-    private String consensusConf = "bftsmart.config"; // 默认为bftsmart配置
+    private String consensusConf = "bftsmart.default.config"; // 默认为bftsmart配置
 
     private String privKey;
 

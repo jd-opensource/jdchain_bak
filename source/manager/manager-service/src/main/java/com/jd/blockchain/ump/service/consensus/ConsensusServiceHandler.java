@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class ConsensusServiceHandler implements ConsensusService {
 
+    private static final String PATH_INNER = "/";
+
     private static final Map<String, ConsensusProvider> CONSENSUS_PROVIDERS = new ConcurrentHashMap<>();
 
     static {
@@ -60,7 +62,7 @@ public class ConsensusServiceHandler implements ConsensusService {
 
                         // 根据value读取配置文件中的内容
                         InputStream currentFileInputStream = ConsensusServiceHandler.class.getResourceAsStream(
-                                File.separator + provider.configFilePath());
+                                PATH_INNER + provider.configFilePath());
 
                         Properties currentProps = new Properties();
 

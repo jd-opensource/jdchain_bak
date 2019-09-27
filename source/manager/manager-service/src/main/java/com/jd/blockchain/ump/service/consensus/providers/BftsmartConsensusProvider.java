@@ -12,7 +12,7 @@ public class BftsmartConsensusProvider implements ConsensusProvider {
 
     public static final String BFTSMART_PROVIDER = "com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider";
 
-    public static final String BFTSMART_CONFIG_FILE = "bftsmart.config";
+    public static final String BFTSMART_CONFIG_FILE = "bftsmart.default.config";
 
     private static final int MIN_PARTI_SIZE = 4;
 
