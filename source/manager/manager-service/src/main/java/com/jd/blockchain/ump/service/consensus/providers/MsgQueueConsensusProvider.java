@@ -10,7 +10,7 @@ public class MsgQueueConsensusProvider implements ConsensusProvider {
 
     private static final String MSGQUEUE_PROVIDER = "com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider";
 
-    private static final String MSGQUEUE_CONFIG_FILE = "mq.config";
+    private static final String MSGQUEUE_CONFIG_FILE = "mq.default.config";
 
     private Properties msgQueueProps;
 

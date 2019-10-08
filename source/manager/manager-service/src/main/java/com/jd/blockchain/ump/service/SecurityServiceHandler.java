@@ -14,9 +14,11 @@ import java.util.Properties;
 @Service
 public class SecurityServiceHandler implements SecurityService {
 
+    private static final String PATH_INNER = "/";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceHandler.class);
 
-    static final String SECURITY_FILE = "security.config";
+    static final String SECURITY_FILE = "security.default.config";
 
     private List<String> securityConfigs = new ArrayList<>();
 
@@ -42,7 +44,7 @@ public class SecurityServiceHandler implements SecurityService {
         try {
             // 读取配置文件中的内容
             InputStream currentFileInputStream = SecurityServiceHandler.class.getResourceAsStream(
-                    File.separator + SECURITY_FILE);
+                    PATH_INNER + SECURITY_FILE);
 
             Properties currentProps = new Properties();
 
