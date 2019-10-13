@@ -23,19 +23,20 @@ public class GatewayConfigPropertiesTest {
 		ClassPathResource gatewayConfigResource = new ClassPathResource("gateway.conf");
 		try (InputStream in = gatewayConfigResource.getInputStream()) {
 			GatewayConfigProperties configProps = GatewayConfigProperties.resolve(in);
-			assertEquals("192.168.10.108", configProps.http().getHost());
-			assertEquals(80, configProps.http().getPort());
+			assertEquals("0.0.0.0", configProps.http().getHost());
+			assertEquals(8081, configProps.http().getPort());
 			assertNull(configProps.http().getContextPath());
 
-			assertEquals("10.1.6.61", configProps.masterPeerAddress().getHost());
-			assertEquals(7100, configProps.masterPeerAddress().getPort());
+			assertEquals("127.0.0.1", configProps.masterPeerAddress().getHost());
+			assertEquals(12000, configProps.masterPeerAddress().getPort());
 			assertTrue(configProps.masterPeerAddress().isSecure());
 
-			assertEquals("http://192.168.1.1:10001", configProps.dataRetrievalUrl());
-			
-			assertEquals("keys/default.priv", configProps.keys().getDefault().getPrivKeyPath());
-			assertEquals("64hnH4a8n48LeEmNxUPcaZ1J", configProps.keys().getDefault().getPrivKeyValue());
-			assertEquals("a8n48LeEP", configProps.keys().getDefault().getPrivKeyPassword());
+			assertEquals("http://127.0.0.1:10001", configProps.dataRetrievalUrl());
+
+			assertEquals("3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9", configProps.keys().getDefault().getPubKeyValue());
+			assertNull(configProps.keys().getDefault().getPrivKeyPath());
+			assertEquals("177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x", configProps.keys().getDefault().getPrivKeyValue());
+			assertEquals("DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY", configProps.keys().getDefault().getPrivKeyPassword());
 
 		} catch (IOException e) {
 			throw new IllegalStateException(e.getMessage(), e);

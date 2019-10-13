@@ -11,7 +11,7 @@
 
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>jdchain</description>
 
@@ -35,10 +35,9 @@
 	</modules>
 
 	<properties>
-		<my.utils.version>0.8.1-SNAPSHOT</my.utils.version>
-		<bft-smart.version>0.0.8.RELEASE</bft-smart.version>
-		<explorer.version>0.7.0.RELEASE</explorer.version>
-		<ump-explorer.version>1.0.0-SNAPSHOT</ump-explorer.version>
+		<bft-smart.version>0.2.0.RELEASE</bft-smart.version>
+		<data-explorer.version>1.1.0.RELEASE</data-explorer.version>
+		<manager-explorer.version>1.1.0.RELEASE</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
@@ -111,14 +110,14 @@
 
 			<dependency>
 				<groupId>com.jd.blockchain</groupId>
-				<artifactId>explorer</artifactId>
-				<version>${explorer.version}</version>
+				<artifactId>data-explorer</artifactId>
+				<version>${data-explorer.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.jd.blockchain</groupId>
-				<artifactId>ump-explorer</artifactId>
-				<version>${ump-explorer.version}</version>
+				<artifactId>manager-explorer</artifactId>
+				<version>${manager-explorer.version}</version>
 			</dependency>
 
 			<dependency>

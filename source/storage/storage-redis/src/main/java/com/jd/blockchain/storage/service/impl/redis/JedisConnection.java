@@ -18,7 +18,7 @@ public class JedisConnection implements DbConnection {
 
 	@Override
 	public void close() {
-		jedisPool.close();
+//		jedisPool.close();
 	}
 
 	@Override

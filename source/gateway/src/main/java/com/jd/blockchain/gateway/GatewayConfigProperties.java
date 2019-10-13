@@ -32,6 +32,7 @@ public class GatewayConfigProperties {
 
 	// 数据检索服务URL地址
 	public static final String DATA_RETRIEVAL_URL="data.retrieval.url";
+	public static final String SCHEMA_RETRIEVAL_URL="schema.retrieval.url";
 
 	// 密钥相关配置项的键的前缀；
 	public static final String KEYS_PREFIX = "keys.";
@@ -54,6 +55,7 @@ public class GatewayConfigProperties {
 	private NetworkAddress masterPeerAddress;
 
 	private String dataRetrievalUrl;
+	private String schemaRetrievalUrl;
 
 	private KeysConfig keys = new KeysConfig();
 
@@ -71,6 +73,14 @@ public class GatewayConfigProperties {
 
 	public void setDataRetrievalUrl(String dataRetrievalUrl) {
 		this.dataRetrievalUrl = dataRetrievalUrl;
+	}
+
+	public String getSchemaRetrievalUrl() {
+		return schemaRetrievalUrl;
+	}
+
+	public void setSchemaRetrievalUrl(String schemaRetrievalUrl) {
+		this.schemaRetrievalUrl = schemaRetrievalUrl;
 	}
 
 	public ProviderConfig providerConfig() {
@@ -119,6 +129,9 @@ public class GatewayConfigProperties {
 
 		String dataRetrievalUrl = getProperty(props, DATA_RETRIEVAL_URL, true);
 		configProps.dataRetrievalUrl = dataRetrievalUrl;
+
+		String schemaRetrievalUrl = getProperty(props, SCHEMA_RETRIEVAL_URL, true);
+		configProps.schemaRetrievalUrl = schemaRetrievalUrl;
 
 		String providers = getProperty(props, PEER_PROVIDERS, true);
 		if (providers == null || providers.length() <= 0) {

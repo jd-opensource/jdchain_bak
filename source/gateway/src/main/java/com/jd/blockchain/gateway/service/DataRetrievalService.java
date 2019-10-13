@@ -18,4 +18,5 @@ package com.jd.blockchain.gateway.service;
 public interface DataRetrievalService {
 
     String retrieval(String url) throws Exception;
+    String retrievalPost(String url, String queryString) throws Exception;
 }

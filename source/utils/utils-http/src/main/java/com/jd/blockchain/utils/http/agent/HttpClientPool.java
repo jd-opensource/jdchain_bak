@@ -25,6 +25,7 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -266,5 +268,20 @@ public class HttpClientPool {
         String result = EntityUtils.toString(entity, DEFAULT_CHARSET);
         EntityUtils.consume(entity);
         return result;
+    }
+
+    public static String jsonPost(String url, String json) throws IOException {
+        HttpPost httpPost = new HttpPost(url);
+        config(httpPost);
+        setJsonPostParams(httpPost, json);
+        try (CloseableHttpResponse response = httpPost(url, httpPost)) {
+            return parseResponse(response);
+        }
+    }
+
+    private static void setJsonPostParams(HttpPost httpPost, String json) {
+        httpPost.addHeader("Content-type","application/json; charset=utf-8");
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setEntity(new StringEntity(json, Charset.forName("UTF-8")));
     }
 }

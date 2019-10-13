@@ -5,7 +5,13 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import bftsmart.consensus.app.BatchAppResultImpl;
 import bftsmart.tom.*;
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.consensus.service.*;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,18 +21,11 @@ import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartTopology;
-import com.jd.blockchain.consensus.service.MessageHandle;
-import com.jd.blockchain.consensus.service.NodeServer;
-import com.jd.blockchain.consensus.service.ServerSettings;
-import com.jd.blockchain.consensus.service.StateHandle;
-import com.jd.blockchain.consensus.service.StateMachineReplicate;
-import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.utils.PropertiesUtils;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import com.jd.blockchain.utils.io.BytesUtils;
 import bftsmart.reconfiguration.util.HostsConfig;
 import bftsmart.reconfiguration.util.TOMConfiguration;
-import bftsmart.tom.core.messages.TOMMessage;
 import bftsmart.tom.server.defaultservices.DefaultRecoverable;
 
 public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer {
@@ -189,94 +188,243 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return messageHandle.processUnordered(bytes).get();
     }
 
-    @Override
-    public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus) {
-        return appExecuteBatch(commands, msgCtxs, fromConsensus, null);
-    }
+    /**
+     *
+     *  Only block, no reply， used by state transfer when peer start
+     *
+     */
+    private void block(List<byte[]> manageConsensusCmds) {
 
-    @Override
-    public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus, List<ReplyContextMessage> replyList) {
-
-        if (replyList == null || replyList.size() == 0) {
-            throw new IllegalArgumentException();
-        }
-        // todo 此部分需要重新改造
-        /**
-         * 默认BFTSmart接口提供的commands是一个或多个共识结果的顺序集合
-         * 根据共识的规定，目前的做法是将其根据msgCtxs的内容进行分组，每组都作为一个结块标识来处理
-         * 从msgCtxs可以获取对应commands的分组情况
-         */
-        int manageConsensusId = msgCtxs[0].getConsensusId();
-        List<byte[]> manageConsensusCmds = new ArrayList<>();
-        List<ReplyContextMessage> manageReplyMsgs = new ArrayList<>();
-
-        int index = 0;
-        for (MessageContext msgCtx : msgCtxs) {
-            if (msgCtx.getConsensusId() == manageConsensusId) {
-                manageConsensusCmds.add(commands[index]);
-                manageReplyMsgs.add(replyList.get(index));
-            } else {
-                // 达到结块标准，需要进行结块并应答
-                blockAndReply(manageConsensusCmds, manageReplyMsgs);
-                // 重置链表和共识ID
-                manageConsensusCmds = new ArrayList<>();
-                manageReplyMsgs = new ArrayList<>();
-                manageConsensusId = msgCtx.getConsensusId();
-                manageConsensusCmds.add(commands[index]);
-                manageReplyMsgs.add(replyList.get(index));
-            }
-            index++;
-        }
-        // 结束时，肯定有最后一个结块请求未处理
-        if (!manageConsensusCmds.isEmpty()) {
-            blockAndReply(manageConsensusCmds, manageReplyMsgs);
-        }
-        return null;
-    }
-
-    private void blockAndReply(List<byte[]> manageConsensusCmds, List<ReplyContextMessage> replyList) {
         String batchId = messageHandle.beginBatch(realmName);
-        List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(manageConsensusCmds.size());
         try {
             int msgId = 0;
             for (byte[] txContent : manageConsensusCmds) {
                 AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
-                asyncFutureLinkedList.add(asyncFuture);
             }
             messageHandle.completeBatch(realmName, batchId);
             messageHandle.commitBatch(realmName, batchId);
         } catch (Exception e) {
             // todo 需要处理应答码 404
-        	LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
+            LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
             messageHandle.rollbackBatch(realmName, batchId, TransactionState.CONSENSUS_ERROR.CODE);
         }
 
-        // 通知线程单独处理应答
-        notifyReplyExecutors.execute(() -> {
-            // 应答对应的结果
-            int replyIndex = 0;
-            for(ReplyContextMessage msg : replyList) {
-                msg.setReply(asyncFutureLinkedList.get(replyIndex).get());
-                TOMMessage request = msg.getTomMessage();
-                ReplyContext replyContext = msg.getReplyContext();
-                request.reply = new TOMMessage(replyContext.getId(), request.getSession(), request.getSequence(),
-                        request.getOperationId(), msg.getReply(), replyContext.getCurrentViewId(),
-                        request.getReqType());
+    }
 
-                if (replyContext.getNumRepliers() > 0) {
-                    bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
-                            + request.getSender() + " with sequence number " + request.getSequence()
-                            + " and operation ID " + request.getOperationId() + " via ReplyManager");
-                    replyContext.getRepMan().send(request);
-                } else {
-                    bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
-                            + request.getSender() + " with sequence number " + request.getSequence()
-                            + " and operation ID " + request.getOperationId());
-                    replyContext.getReplier().manageReply(request, msg.getMessageContext());
-                }
-                replyIndex++;
+    /**
+     *
+     *  Local peer has cid diff with remote peer, used by state transfer when peer start
+     *
+     */
+    private byte[][] appExecuteDiffBatch(byte[][] commands, MessageContext[] msgCtxs) {
+
+        int manageConsensusId = msgCtxs[0].getConsensusId();
+        List<byte[]> manageConsensusCmds = new ArrayList<>();
+
+        int index = 0;
+        for (MessageContext msgCtx : msgCtxs) {
+            if (msgCtx.getConsensusId() == manageConsensusId) {
+                manageConsensusCmds.add(commands[index]);
+            } else {
+                // 达到结块标准，需要进行结块并应答
+                block(manageConsensusCmds);
+                // 重置链表和共识ID
+                manageConsensusCmds = new ArrayList<>();
+                manageConsensusId = msgCtx.getConsensusId();
+                manageConsensusCmds.add(commands[index]);
             }
-        });
+            index++;
+        }
+        // 结束时，肯定有最后一个结块请求未处理
+        if (!manageConsensusCmds.isEmpty()) {
+            block(manageConsensusCmds);
+        }
+        return null;
+
+    }
+
+    /**
+     *
+     *  Invoked by state transfer when peer start
+     *
+     */
+    @Override
+    public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus) {
+
+        // Not from consensus outcomes， from state transfer
+        if (!fromConsensus) {
+            return appExecuteDiffBatch(commands, msgCtxs);
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     *  From consensus outcomes, do nothing now
+     *  The operation of executing the batch was moved to the consensus stage 2 and 3, in order to guaranteed ledger consistency
+     */
+    @Override
+    public byte[][] appExecuteBatch(byte[][] commands, MessageContext[] msgCtxs, boolean fromConsensus, List<ReplyContextMessage> replyList) {
+
+//        if (replyList == null || replyList.size() == 0) {
+//            throw new IllegalArgumentException();
+//        }
+//        // todo 此部分需要重新改造
+//        /**
+//         * 默认BFTSmart接口提供的commands是一个或多个共识结果的顺序集合
+//         * 根据共识的规定，目前的做法是将其根据msgCtxs的内容进行分组，每组都作为一个结块标识来处理
+//         * 从msgCtxs可以获取对应commands的分组情况
+//         */
+//        int manageConsensusId = msgCtxs[0].getConsensusId();
+//        List<byte[]> manageConsensusCmds = new ArrayList<>();
+//        List<ReplyContextMessage> manageReplyMsgs = new ArrayList<>();
+//
+//        int index = 0;
+//        for (MessageContext msgCtx : msgCtxs) {
+//            if (msgCtx.getConsensusId() == manageConsensusId) {
+//                manageConsensusCmds.add(commands[index]);
+//                manageReplyMsgs.add(replyList.get(index));
+//            } else {
+//                // 达到结块标准，需要进行结块并应答
+//                blockAndReply(manageConsensusCmds, manageReplyMsgs);
+//                // 重置链表和共识ID
+//                manageConsensusCmds = new ArrayList<>();
+//                manageReplyMsgs = new ArrayList<>();
+//                manageConsensusId = msgCtx.getConsensusId();
+//                manageConsensusCmds.add(commands[index]);
+//                manageReplyMsgs.add(replyList.get(index));
+//            }
+//            index++;
+//        }
+//        // 结束时，肯定有最后一个结块请求未处理
+//        if (!manageConsensusCmds.isEmpty()) {
+//            blockAndReply(manageConsensusCmds, manageReplyMsgs);
+//        }
+        return null;
+    }
+
+    /**
+     *
+     *  Block and reply are moved to consensus completion stage
+     *
+     */
+    private void blockAndReply(List<byte[]> manageConsensusCmds, List<ReplyContextMessage> replyList) {
+//        consensusBatchId = messageHandle.beginBatch(realmName);
+//        List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(manageConsensusCmds.size());
+//        try {
+//            int msgId = 0;
+//            for (byte[] txContent : manageConsensusCmds) {
+//                AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, consensusBatchId);
+//                asyncFutureLinkedList.add(asyncFuture);
+//            }
+//            messageHandle.completeBatch(realmName, consensusBatchId);
+//            messageHandle.commitBatch(realmName, consensusBatchId);
+//        } catch (Exception e) {
+//            // todo 需要处理应答码 404
+//        	LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
+//            messageHandle.rollbackBatch(realmName, consensusBatchId, TransactionState.CONSENSUS_ERROR.CODE);
+//        }
+//
+//        // 通知线程单独处理应答
+//        notifyReplyExecutors.execute(() -> {
+//            // 应答对应的结果
+//            int replyIndex = 0;
+//            for(ReplyContextMessage msg : replyList) {
+//                msg.setReply(asyncFutureLinkedList.get(replyIndex).get());
+//                TOMMessage request = msg.getTomMessage();
+//                ReplyContext replyContext = msg.getReplyContext();
+//                request.reply = new TOMMessage(replyContext.getId(), request.getSession(), request.getSequence(),
+//                        request.getOperationId(), msg.getReply(), replyContext.getCurrentViewId(),
+//                        request.getReqType());
+//
+//                if (replyContext.getNumRepliers() > 0) {
+//                    bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
+//                            + request.getSender() + " with sequence number " + request.getSequence()
+//                            + " and operation ID " + request.getOperationId() + " via ReplyManager");
+//                    replyContext.getRepMan().send(request);
+//                } else {
+//                    bftsmart.tom.util.Logger.println("(ServiceReplica.receiveMessages) sending reply to "
+//                            + request.getSender() + " with sequence number " + request.getSequence()
+//                            + " and operation ID " + request.getOperationId());
+//                    replyContext.getReplier().manageReply(request, msg.getMessageContext());
+//                }
+//                replyIndex++;
+//            }
+//        });
+    }
+
+    /**
+     *
+     *  Used by consensus write phase, pre compute new block hash
+     *
+     */
+    public BatchAppResultImpl preComputeAppHash(byte[][] commands) {
+        String batchId = messageHandle.beginBatch(realmName);
+        List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(commands.length);
+        List<byte[]> responseLinkedList = new ArrayList<>();
+        try {
+            int msgId = 0;
+            for (byte[] txContent : commands) {
+                AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
+                asyncFutureLinkedList.add(asyncFuture);
+            }
+            StateSnapshot stateSnapshot =  messageHandle.completeBatch(realmName, batchId);
+            byte[] blockHashBytes = stateSnapshot.getSnapshot();
+
+            for (int i = 0; i< asyncFutureLinkedList.size(); i++) {
+                responseLinkedList.add(asyncFutureLinkedList.get(i).get());
+            }
+
+
+            return new BatchAppResultImpl(responseLinkedList, blockHashBytes, batchId);
+
+        } catch (Exception e) {
+            // todo 需要处理应答码 404
+            LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
+            messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK.CODE);
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     *  Consensus write phase will terminate, new block hash values are inconsistent, update batch messages execute state
+     *
+     */
+    public List<byte[]> updateAppResponses(List<byte[]> asyncResponseLinkedList) {
+        List<byte[]> updatedResponses = new ArrayList<>();
+
+        for(int i = 0; i < asyncResponseLinkedList.size(); i++) {
+            TransactionResponse txResponse = BinaryProtocol.decode(asyncResponseLinkedList.get(i));
+            TxResponseMessage resp = new TxResponseMessage(txResponse.getContentHash());
+            resp.setExecutionState(TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK);
+            updatedResponses.add(BinaryProtocol.encode(resp, TransactionResponse.class));
+        }
+
+        return updatedResponses;
+    }
+
+    /**
+     *
+     *  Decision has been made at the consensus stage， commit block
+     *
+     */
+    public void preComputeAppCommit(String batchId) {
+
+        messageHandle.commitBatch(realmName, batchId);
+
+    }
+
+    /**
+     *
+     *  Consensus write phase will terminate, new block hash values are inconsistent, rollback block
+     *
+     */
+    public void preComputeAppRollback(String batchId) {
+        messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK.CODE);
+        LOGGER.debug("Rollback of operations that cause inconsistencies in the ledger");
     }
 
     //notice

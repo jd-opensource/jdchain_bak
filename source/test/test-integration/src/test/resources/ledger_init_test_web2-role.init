@@ -1,0 +1,133 @@
+#账本的种子；一段16进制字符，最长可以包含64个字符；可以用字符“-”分隔，以便更容易读取；
+ledger.seed=932dfe23-fe23232f-283f32fa-dd32aa76-8322ca2f-56236cda-7136b322-cb323ffe
+
+#账本的描述名称；此属性不参与共识，仅仅在当前参与方的本地节点用于描述用途；
+ledger.name==myledger
+
+#声明的账本创建时间；格式为 “yyyy-MM-dd HH:mm:ss.SSSZ”，表示”年-月-日 时:分:秒:毫秒时区“；例如：“2019-08-01 14:26:58.069+0800”，其中，+0800 表示时区是东8区
+created-time=2019-08-01 14:26:58.069+0800
+
+#-----------------------------------------------
+# 初始的角色名称列表；可选项；
+# 角色名称不区分大小写，最长不超过20个字符；多个角色名称之间用半角的逗点“,”分隔；
+# 系统会预置一个默认角色“DEFAULT”，所有未指定角色的用户都以赋予该角色的权限；若初始化时未配置默认角色的权限，则为默认角色分配所有权限；
+#
+# 注：如果声明了角色，但未声明角色对应的权限清单，这会忽略该角色的初始化；
+#
+security.roles=DEFAULT, ADMIN, MANAGER, GUEST
+
+# 赋予角色的账本权限清单；可选项；
+# 可选的权限如下；
+# AUTHORIZE_ROLES, SET_CONSENSUS, SET_CRYPTO, REGISTER_PARTICIPANT,
+# REGISTER_USER, REGISTER_DATA_ACCOUNT, REGISTER_CONTRACT, UPGRADE_CONTRACT,
+# SET_USER_ATTRIBUTES, WRITE_DATA_ACCOUNT,
+# APPROVE_TX, CONSENSUS_TX
+# 多项权限之间用逗点“,”分隔；
+#
+security.role.DEFAULT.ledger-privileges=REGISTER_USER, REGISTER_DATA_ACCOUNT
+
+# 赋予角色的交易权限清单；可选项；
+# 可选的权限如下；
+# DIRECT_OPERATION, CONTRACT_OPERATION
+# 多项权限之间用逗点“,”分隔；
+#
+security.role.DEFAULT.tx-privileges=DIRECT_OPERATION, CONTRACT_OPERATION
+
+# 其它角色的配置示例；
+# 系统管理员角色：只能操作全局性的参数配置和用户注册，只能执行直接操作指令；
+security.role.ADMIN.ledger-privileges=CONFIGURE_ROLES, AUTHORIZE_USER_ROLES, SET_CONSENSUS, SET_CRYPTO, REGISTER_PARTICIPANT, REGISTER_USER, APPROVE_TX,REGISTER_DATA_ACCOUNT,WRITE_DATA_ACCOUNT
+security.role.ADMIN.tx-privileges=DIRECT_OPERATION
+
+# 业务主管角色：只能够执行账本数据相关的操作，包括注册用户、注册数据账户、注册合约、升级合约、写入数据等；能够执行直接操作指令和调用合约；
+security.role.MANAGER.ledger-privileges=CONFIGURE_ROLES, AUTHORIZE_USER_ROLES, REGISTER_USER, REGISTER_DATA_ACCOUNT, REGISTER_CONTRACT, UPGRADE_CONTRACT, SET_USER_ATTRIBUTES, WRITE_DATA_ACCOUNT, APPROVE_TX,REGISTER_PARTICIPANT
+security.role.MANAGER.tx-privileges=DIRECT_OPERATION, CONTRACT_OPERATION
+
+# 访客角色：不具备任何的账本权限，只有数据读取的操作；也只能够通过调用合约来读取数据；
+security.role.GUEST.ledger-privileges=APPROVE_TX,REGISTER_DATA_ACCOUNT,CONFIGURE_ROLES
+security.role.GUEST.tx-privileges=CONTRACT_OPERATION,DIRECT_OPERATION
+
+
+
+#-----------------------------------------------
+
+#共识服务提供者；必须；
+consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
+
+#共识服务的参数配置；必须；
+consensus.conf=classpath:bftsmart.config
+
+#密码服务提供者列表，以英文逗点“,”分隔；必须；
+crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
+com.jd.blockchain.crypto.service.sm.SMCryptoService
+
+
+#参与方的个数，后续以 cons_parti.id 分别标识每一个参与方的配置；
+cons_parti.count=4
+
+#第0个参与方的名称；
+cons_parti.0.name=jd.com
+#第0个参与方的公钥文件路径；
+cons_parti.0.pubkey-path=keys/jd-com.pub
+#第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
+cons_parti.0.pubkey=3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9
+#第0个参与方的角色清单；可选项；
+cons_parti.0.roles=ADMIN, MANAGER
+#第0个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
+cons_parti.0.roles-policy=INTERSECT
+#第0个参与方的账本初始服务的主机；
+cons_parti.0.initializer.host=127.0.0.1
+#第0个参与方的账本初始服务的端口；
+cons_parti.0.initializer.port=9800
+#第0个参与方的账本初始服务是否开启安全连接；
+cons_parti.0.initializer.secure=false
+
+#第1个参与方的名称；
+cons_parti.1.name=at.com
+#第1个参与方的公钥文件路径；
+cons_parti.1.pubkey-path=keys/at-com.pub
+#第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
+cons_parti.1.pubkey=3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX
+#第1个参与方的角色清单；可选项；
+cons_parti.1.roles=MANAGER
+#第1个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
+cons_parti.1.roles-policy=UNION
+#第1个参与方的账本初始服务的主机；
+cons_parti.1.initializer.host=127.0.0.1
+#第1个参与方的账本初始服务的端口；
+cons_parti.1.initializer.port=9810
+#第1个参与方的账本初始服务是否开启安全连接；
+cons_parti.1.initializer.secure=false
+
+#第2个参与方的名称；
+cons_parti.2.name=bt.com
+#第2个参与方的公钥文件路径；
+cons_parti.2.pubkey-path=keys/bt-com.pub
+#第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
+cons_parti.2.pubkey=3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x
+#第2个参与方的角色清单；可选项；
+cons_parti.2.roles=MANAGER
+#第2个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
+cons_parti.2.roles-policy=UNION
+#第2个参与方的账本初始服务的主机；
+cons_parti.2.initializer.host=127.0.0.1
+#第2个参与方的账本初始服务的端口；
+cons_parti.2.initializer.port=9820
+#第2个参与方的账本初始服务是否开启安全连接；
+cons_parti.2.initializer.secure=false
+
+#第3个参与方的名称；
+cons_parti.3.name=xt.com
+#第3个参与方的公钥文件路径；
+cons_parti.3.pubkey-path=keys/xt-com.pub
+#第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
+cons_parti.3.pubkey=3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk
+#第3个参与方的角色清单；可选项；
+cons_parti.3.roles=GUEST
+#第3个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
+cons_parti.3.roles-policy=INTERSECT
+#第3个参与方的账本初始服务的主机；
+cons_parti.3.initializer.host=127.0.0.1
+#第3个参与方的账本初始服务的端口；
+cons_parti.3.initializer.port=9830
+#第3个参与方的账本初始服务是否开启安全连接；
+cons_parti.3.initializer.secure=false
