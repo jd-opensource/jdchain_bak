@@ -45,6 +45,10 @@ public class QueryUtil {
         }
         rtn[0] = fromIndex;
         rtn[1] = count;
+
+        //now use descend; first show the latest record;
+        rtn[0] = maxNum - fromIndex - count;
+        rtn[1] = count;
         return rtn;
     }
 }
