@@ -110,16 +110,16 @@ public class ContractJarUtils {
         return dotClassName;
     }
 
-    public static void verify(byte[] chainCode) {
+    public static void verify(String contractPath, byte[] chainCode) {
         if (chainCode == null || chainCode.length == 0) {
             throw new IllegalStateException("Contract's chaincode is empty !!!");
         }
         // 首先生成合约文件
-        File jarFile = newJarFile();
+        File jarFile = newJarFile(contractPath);
         try {
             FileUtils.writeByteArrayToFile(jarFile, chainCode);
             // 校验合约文件
-            verify(jarFile);
+            verify(contractPath, jarFile);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         } finally {
@@ -132,7 +132,11 @@ public class ContractJarUtils {
         }
     }
 
-    private static void verify(File jarFile) throws Exception {
+    public static void verify(byte[] chainCode) {
+        verify(null, chainCode);
+    }
+
+    private static void verify(String contractPath, File jarFile) throws Exception {
         // 首先判断jarFile中是否含有META-INF/JDCHAIN.TXT，并将其读出
         URL jarUrl = new URL("jar:file:" + jarFile.getPath() + "!/" + CONTRACT_MF);
         InputStream inputStream = jarUrl.openStream();
@@ -152,7 +156,7 @@ public class ContractJarUtils {
         String txt = new String(bytes, StandardCharsets.UTF_8);
 
         // 生成新的Jar包文件，该文件路径与JarFile基本一致
-        File tempJar = newJarFile();
+        File tempJar = newJarFile(contractPath);
 
         // 复制除JDCHAIN.TXT之外的部分
         copy(jarFile, tempJar, null, null, CONTRACT_MF);
@@ -223,7 +227,16 @@ public class ContractJarUtils {
         }
     }
 
-    private static File newJarFile() {
+    private static File newJarFile(String contractPath) {
+
+        if (contractPath != null && contractPath.length() > 0) {
+            return new File(contractPath + File.separator +
+                    "contract-" +
+                    System.currentTimeMillis() + "-" +
+                    System.nanoTime() + "-" +
+                    FILE_RANDOM.nextInt(1024) +
+                    ".jar");
+        }
         return new File("contract-" +
                 System.currentTimeMillis() + "-" +
                 System.nanoTime() + "-" +
