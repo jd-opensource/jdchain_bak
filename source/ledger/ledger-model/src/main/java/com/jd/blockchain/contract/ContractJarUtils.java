@@ -139,7 +139,12 @@ public class ContractJarUtils {
         if (inputStream == null) {
             throw new IllegalStateException(CONTRACT_MF + " IS NULL !!!");
         }
-        byte[] bytes = IOUtils.toByteArray(inputStream);
+        byte[] bytes;
+        try {
+            bytes = IOUtils.toByteArray(inputStream);
+        } finally {
+            inputStream.close();
+        }
         if (bytes == null || bytes.length == 0) {
             throw new IllegalStateException(CONTRACT_MF + " IS Illegal !!!");
         }
