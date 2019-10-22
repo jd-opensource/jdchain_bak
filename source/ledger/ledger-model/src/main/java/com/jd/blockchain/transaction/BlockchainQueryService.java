@@ -3,7 +3,7 @@ package com.jd.blockchain.transaction;
 import org.springframework.cglib.core.Block;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
@@ -250,7 +250,7 @@ public interface BlockchainQueryService {
 	 * @param address
 	 * @return
 	 */
-	AccountHeader getDataAccount(HashDigest ledgerHash, String address);
+	BlockchainIdentity getDataAccount(HashDigest ledgerHash, String address);
 
 	/**
 	 * 返回数据账户中指定的键的最新值； <br>
@@ -306,7 +306,7 @@ public interface BlockchainQueryService {
 	 * @param count
 	 * @return
 	 */
-	AccountHeader[] getUsers(HashDigest ledgerHash, int fromIndex, int count);
+	BlockchainIdentity[] getUsers(HashDigest ledgerHash, int fromIndex, int count);
 
 	/**
 	 * get data accounts by ledgerHash and its range;
@@ -316,7 +316,7 @@ public interface BlockchainQueryService {
 	 * @param count
 	 * @return
 	 */
-	AccountHeader[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count);
+	BlockchainIdentity[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count);
 
 	/**
 	 * get contract accounts by ledgerHash and its range;
@@ -326,5 +326,5 @@ public interface BlockchainQueryService {
 	 * @param count
 	 * @return
 	 */
-	AccountHeader[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count);
+	BlockchainIdentity[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count);
 }

@@ -35,7 +35,7 @@ public class UserRoleDataset implements Transactional, MerkleProvable, UserAutho
 
 	public UserRoleDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
-		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
+		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, Bytes.fromString(prefix), exPolicyStorage, verStorage, readonly);
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class UserRoleDataset implements Transactional, MerkleProvable, UserAutho
 	@Override
 	public UserRoles getUserRoles(Bytes userAddress) {
 		// 只返回最新版本；
-		VersioningKVEntry kv = dataset.getDataEntry(userAddress);
+		VersioningKVEntry<Bytes, byte[]> kv = dataset.getDataEntry(userAddress);
 		if (kv == null) {
 			return null;
 		}
@@ -178,7 +178,7 @@ public class UserRoleDataset implements Transactional, MerkleProvable, UserAutho
 
 	@Override
 	public UserRoles[] getUserRoles() {
-		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(0, (int) dataset.getDataCount());
+		VersioningKVEntry<Bytes, byte[]>[] kvEntries = dataset.getLatestDataEntries(0, (int) dataset.getDataCount());
 		UserRoles[] pns = new UserRoles[kvEntries.length];
 		RoleSet roleset;
 		for (int i = 0; i < pns.length; i++) {

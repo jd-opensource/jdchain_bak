@@ -30,7 +30,8 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 
 	public RolePrivilegeDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
-		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
+		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, Bytes.fromString(prefix), exPolicyStorage,
+				verStorage, readonly);
 	}
 
 	@Override
@@ -255,7 +256,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	public RolePrivileges getRolePrivilege(String roleName) {
 		// 只返回最新版本；
 		Bytes key = encodeKey(roleName);
-		VersioningKVEntry kv = dataset.getDataEntry(key);
+		VersioningKVEntry<Bytes, byte[]> kv = dataset.getDataEntry(key);
 		if (kv == null) {
 			return null;
 		}
@@ -265,7 +266,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 
 	@Override
 	public RolePrivileges[] getRolePrivileges(int index, int count) {
-		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(index, count);
+		VersioningKVEntry<Bytes, byte[]>[] kvEntries = dataset.getLatestDataEntries(index, count);
 		RolePrivileges[] pns = new RolePrivileges[kvEntries.length];
 		PrivilegeSet privilege;
 		for (int i = 0; i < pns.length; i++) {

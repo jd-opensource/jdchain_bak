@@ -8,8 +8,8 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
@@ -18,21 +18,19 @@ import com.jd.blockchain.ledger.MerkleSnapshot;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.RegionMap;
 import com.jd.blockchain.utils.Transactional;
-import com.jd.blockchain.utils.VersioningMap;
 
-public abstract class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<MerkleAccount> {
+public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<MerkleAccount> {
 
-	private static final Bytes ACCOUNT_ROOT_PREFIX = Bytes.fromString("ROOT/");
+//	private static final Bytes ACCOUNT_ROOT_PREFIX = Bytes.fromString("ROOT/");
 
 	static {
 		DataContractRegistry.register(MerkleSnapshot.class);
-		DataContractRegistry.register(AccountHeader.class);
+		DataContractRegistry.register(BlockchainIdentity.class);
 	}
 
 	private final Bytes keyPrefix;
-	
+
 	/**
 	 * 账户根哈希的数据集；
 	 */
@@ -216,28 +214,24 @@ public abstract class MerkleAccountSet implements Transactional, MerkleProvable,
 		}
 
 		// Now, be sure that "acc == null", so get account from storage;
-
-		byte[] bytes = merkleDataset.getValue(address, version);
-		if (bytes == null) {
-			return null;
-		}
-
 		// Set readonly for the old version account;
 		boolean readonly = (version > -1 && version < latestVersion) || isReadonly();
 
-		// String prefix = address.concat(LedgerConsts.KEY_SEPERATOR);
-		// ExPolicyKVStorage ss = PrefixAppender.prefix(prefix, baseExStorage);
-		// VersioningKVStorage vs = PrefixAppender.prefix(prefix, baseVerStorage);
-		// BaseAccount accDS = deserialize(bytes, cryptoSetting, ss, vs, readonly);
-
-		Bytes prefix = keyPrefix.concat(address);
-		acc = deserialize(bytes, cryptoSetting, prefix, readonly, latestVersion);
+		// load account from storage;
+		acc = loadAccount(address, readonly, version);
+		if (acc == null) {
+			return null;
+		}
 		if (!readonly) {
 			// cache the latest version witch enable reading and writing;
 			// readonly version of account not necessary to be cached;
 			latestAccountsCache.put(address, acc);
 		}
 		return acc;
+	}
+
+	public MerkleAccount register(Bytes address, PubKey pubKey) {
+		return register(new BlockchainIdentityData(address, pubKey));
 	}
 
 	/**
@@ -287,7 +281,7 @@ public abstract class MerkleAccountSet implements Transactional, MerkleProvable,
 		// accExStorage, accVerStorage);
 
 		Bytes prefix = keyPrefix.concat(address);
-		InnerMerkleAccount acc = createInstance(accountId, cryptoSetting, prefix, -1);
+		InnerMerkleAccount acc = createInstance(accountId, cryptoSetting, prefix);
 		latestAccountsCache.put(address, acc);
 		updated = true;
 
@@ -301,24 +295,43 @@ public abstract class MerkleAccountSet implements Transactional, MerkleProvable,
 		}
 	}
 
-	private InnerMerkleAccount createInstance(BlockchainIdentity header, CryptoSetting cryptoSetting, Bytes keyPrefix,
-			long version) {
-		return new InnerMerkleAccount(header, version, cryptoSetting, keyPrefix, baseExStorage, baseVerStorage);
+	private InnerMerkleAccount createInstance(BlockchainIdentity header, CryptoSetting cryptoSetting, Bytes keyPrefix) {
+		return new InnerMerkleAccount(header, cryptoSetting, keyPrefix, baseExStorage, baseVerStorage);
 	}
 
-	private InnerMerkleAccount deserialize(byte[] bytes, CryptoSetting cryptoSetting, Bytes keyPrefix, boolean readonly,
-			long version) {
-		BlockchainIdentity id = BinaryProtocol.decodeAs(bytes, BlockchainIdentity.class);
+	private InnerMerkleAccount loadAccount(Bytes address, boolean readonly, long version) {
+		// prefix;
+		Bytes prefix = keyPrefix.concat(address);
+		byte[] rootHashBytes = merkleDataset.getValue(address, version);
+		if (rootHashBytes == null) {
+			return null;
+		}
+		HashDigest rootHash = new HashDigest(rootHashBytes);
 
-		return new InnerMerkleAccount(header.getID(), version, header.getRootHash(), cryptoSetting, keyPrefix,
-				baseExStorage, baseVerStorage, readonly);
+		return new InnerMerkleAccount(address, version, rootHash, cryptoSetting, prefix, baseExStorage, baseVerStorage,
+				readonly);
 
 	}
 
-	// TODO: 优化：区块链身份(地址+公钥)与其 Merkle
-	// 树根哈希分开独立存储；不必作为一个整块，避免状态数据写入时频繁重写公钥，尤其某些算法的公钥可能很大；
-	private byte[] serialize(MerkleAccountHeader account) {
-		return BinaryProtocol.encode(account, MerkleAccountHeader.class);
+	// TODO:优化：区块链身份(地址+公钥)与其Merkle树根哈希分开独立存储；
+	// 不必作为一个整块，避免状态数据写入时频繁重写公钥，尤其某些算法的公钥可能很大；
+
+	/**
+	 * 保存账户的根哈希，返回账户的新版本；
+	 * 
+	 * @param account
+	 * @return
+	 */
+	private long saveAccount(InnerMerkleAccount account) {
+		// 提交更改，更新哈希；
+		long version = account.version;
+		account.commit();
+		long newVersion = merkleDataset.setValue(account.getAddress(), account.getRootHash().toBytes(), version);
+		if (newVersion < 0) {
+			// Update fail;
+			throw new LedgerException("Account updating fail! --[Address=" + account.getAddress() + "]");
+		}
+		return newVersion;
 	}
 
 	@Override
@@ -335,15 +348,7 @@ public abstract class MerkleAccountSet implements Transactional, MerkleProvable,
 			for (InnerMerkleAccount acc : latestAccountsCache.values()) {
 				// updated or new created;
 				if (acc.isUpdated() || acc.version < 0) {
-					// 提交更改，更新哈希；
-					acc.commit();
-					byte[] value = serialize(acc);
-					long ver = merkleDataset.setValue(acc.getID().getAddress(), value, acc.version);
-					if (ver < 0) {
-						// Update fail;
-						throw new LedgerException(
-								"Account updating fail! --[Address=" + acc.getID().getAddress() + "]");
-					}
+					saveAccount(acc);
 				}
 			}
 			merkleDataset.commit();
@@ -370,17 +375,22 @@ public abstract class MerkleAccountSet implements Transactional, MerkleProvable,
 		updated = false;
 	}
 
+	/**
+	 * 内部实现的账户，监听和同步账户数据的变更；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
 	private class InnerMerkleAccount extends MerkleAccount {
 
-		public InnerMerkleAccount(BlockchainIdentity accountID, long version, CryptoSetting cryptoSetting,
-				Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
-			super(accountID, version, cryptoSetting, keyPrefix, exStorage, verStorage);
+		public InnerMerkleAccount(BlockchainIdentity accountID, CryptoSetting cryptoSetting, Bytes keyPrefix,
+				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
+			super(accountID, cryptoSetting, keyPrefix, exStorage, verStorage);
 		}
 
-		public InnerMerkleAccount(BlockchainIdentity accountID, long version, HashDigest dataRootHash,
-				CryptoSetting cryptoSetting, Bytes keyPrefix, ExPolicyKVStorage exStorage,
-				VersioningKVStorage verStorage, boolean readonly) {
-			super(accountID, version, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+		public InnerMerkleAccount(Bytes address, long version, HashDigest dataRootHash, CryptoSetting cryptoSetting,
+				Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
+			super(address, version, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
 		}
 
 		@Override

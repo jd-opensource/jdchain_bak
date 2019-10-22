@@ -23,7 +23,7 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.service.DataRetrievalService;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
@@ -252,7 +252,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts/address/{address}")
 	@Override
-	public AccountHeader getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@PathVariable(name = "address") String address) {
 
 		return peerService.getQueryService().getDataAccount(ledgerHash, address);
@@ -594,7 +594,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/users")
 	@Override
-	public AccountHeader[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return peerService.getQueryService().getUsers(ledgerHash, fromIndex, count);
@@ -602,7 +602,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts")
 	@Override
-	public AccountHeader[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count);
@@ -610,7 +610,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts")
 	@Override
-	public AccountHeader[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count);

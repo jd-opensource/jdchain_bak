@@ -28,7 +28,7 @@ public class ParticipantDataset implements Transactional, MerkleProvable, Partic
 
 	public ParticipantDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
-		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
+		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, Bytes.fromString(prefix), exPolicyStorage, verStorage, readonly);
 	}
 
 	@Override

@@ -326,7 +326,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts/address/{address}")
 	@Override
-	public AccountHeader getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@PathVariable(name = "address") String address) {
 		LedgerQuery ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
@@ -350,11 +350,11 @@ public class LedgerQueryController implements BlockchainQueryService {
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
-			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
+			ver = dataAccount.getDataset().getVersion(Bytes.fromString(keys[i]));
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, null);
 			} else {
-				BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+				BytesValue value = dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver);
 				entries[i] = new KVDataObject(keys[i], ver, value);
 			}
 		}
@@ -405,11 +405,11 @@ public class LedgerQueryController implements BlockchainQueryService {
 				entries[i] = new KVDataObject(keys[i], -1, null);
 			} else {
 				if (dataAccount.getDataEntriesTotalCount() == 0
-						|| dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null) {
+						|| dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver) == null) {
 					// is the address is not exist; the result is null;
 					entries[i] = new KVDataObject(keys[i], -1, null);
 				} else {
-					BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+					BytesValue value = dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver);
 					entries[i] = new KVDataObject(keys[i], ver, value);
 				}
 			}
@@ -468,7 +468,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/users")
 	@Override
-	public AccountHeader[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		LedgerQuery ledger = ledgerService.getLedger(ledgerHash);
@@ -488,7 +488,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts")
 	@Override
-	public AccountHeader[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		LedgerQuery ledger = ledgerService.getLedger(ledgerHash);
@@ -500,7 +500,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts")
 	@Override
-	public AccountHeader[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		LedgerQuery ledger = ledgerService.getLedger(ledgerHash);

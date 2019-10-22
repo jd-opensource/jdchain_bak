@@ -10,7 +10,7 @@ import com.jd.blockchain.ledger.HashProof;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.MerkleSnapshot;
-import com.jd.blockchain.ledger.TypedBytesValue;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -42,7 +42,7 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	private MerkleDatasetAdapter headerDS;
 
 	private MerkleDatasetAdapter dataDS;
-	
+
 	protected long version;
 
 	/**
@@ -55,18 +55,17 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	 * account's merkle dataset, but is stored by the outer invoker;
 	 *
 	 * @param accountID     身份；
-	 * @param version       版本；
 	 * @param cryptoSetting 密码参数；
 	 * @param keyPrefix     数据前缀；
 	 * @param exStorage
 	 * @param verStorage
 	 */
-	public MerkleAccount(BlockchainIdentity accountID, long version, CryptoSetting cryptoSetting, Bytes keyPrefix,
+	public MerkleAccount(BlockchainIdentity accountID, CryptoSetting cryptoSetting, Bytes keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
-		this(accountID.getAddress(), accountID.getPubKey(), version, null, cryptoSetting, keyPrefix, exStorage,
-				verStorage, false);
+		this(accountID.getAddress(), accountID.getPubKey(), -1, null, cryptoSetting, keyPrefix, exStorage, verStorage,
+				false);
 
-		savePubKey(accountID.getPubKey());
+		initPubKey(accountID.getPubKey());
 	}
 
 	/**
@@ -89,14 +88,30 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		this(address, null, version, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
 	}
 
-	private MerkleAccount(Bytes address, PubKey pubKey, long version, HashDigest dataRootHash,
-			CryptoSetting cryptoSetting, Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage,
-			boolean readonly) {
-		this.accountID = new BlockchainIdentityProxy(address, pubKey);
-		this.version = version;
-		this.rootDS = new MerkleDataSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+	/**
+	 * 内部构造器；
+	 * 
+	 * @param address       账户地址；
+	 * @param pubKey        账户公钥； 如果为空，则会进行加载验证；
+	 * @param version       账户版本；
+	 * @param rootHash      账户根哈希；
+	 * @param cryptoSetting 密码参数设置；
+	 * @param keyPrefix     当前账户的 Key 前缀；
+	 * @param exStorage     单键存储服务；
+	 * @param verStorage    多版本存储服务；
+	 * @param readonly      是否只读；
+	 */
+	private MerkleAccount(Bytes address, PubKey pubKey, long version, HashDigest rootHash, CryptoSetting cryptoSetting,
+			Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
+		// 初始化账户的身份；
+		this.accountID = new AutoloadingID(address, pubKey);
 
-		// 初始化数据；
+		this.version = version;
+
+		// 加载“根数据集”
+		this.rootDS = new MerkleDataSet(rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+
+		// 初始化数据修改监听器；
 		DataChangedListener dataChangedListener = new DataChangedListener() {
 			@Override
 			public void onChanged(Bytes key, BytesValue value, long newVersion) {
@@ -104,17 +119,20 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 			}
 		};
 
+		// 加载“头数据集”；
 		HashDigest headerRoot = loadHeaderRoot();
 		Bytes headerPrefix = keyPrefix.concat(HEADER_PREFIX);
 		MerkleDataSet headerDataset = new MerkleDataSet(headerRoot, cryptoSetting, headerPrefix, exStorage, verStorage,
 				readonly);
 		this.headerDS = new MerkleDatasetAdapter(headerDataset, dataChangedListener);
 
+		// 加载“主数据集”
 		HashDigest dataRoot = loadDataRoot();
 		Bytes dataPrefix = keyPrefix.concat(DATA_PREFIX);
 		MerkleDataSet dataDataset = new MerkleDataSet(dataRoot, cryptoSetting, dataPrefix, exStorage, verStorage,
 				readonly);
 		this.dataDS = new MerkleDatasetAdapter(dataDataset, dataChangedListener);
+
 	}
 
 	private HashDigest loadHeaderRoot() {
@@ -133,6 +151,14 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		return new HashDigest(hashBytes);
 	}
 
+	private long getHeaderRootVersion() {
+		return rootDS.getVersion(KEY_HEADER_ROOT);
+	}
+
+	private long getDataRootVersion() {
+		return rootDS.getVersion(KEY_DATA_ROOT);
+	}
+
 	public Bytes getAddress() {
 		return accountID.getAddress();
 	}
@@ -144,6 +170,10 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	@Override
 	public BlockchainIdentity getID() {
 		return accountID;
+	}
+
+	protected VersioningMap<Bytes, BytesValue> getHeaders() {
+		return headerDS;
 	}
 
 	@Override
@@ -190,12 +220,12 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	}
 
 	/**
-	 * 保存公钥；
+	 * 初始化账户的公钥；
 	 * 
 	 * @param pubKey
 	 */
-	private void savePubKey(PubKey pubKey) {
-		long v = headerDS.setValue(KEY_PUBKEY, TypedBytesValue.fromPubKey(pubKey), -1);
+	private void initPubKey(PubKey pubKey) {
+		long v = headerDS.setValue(KEY_PUBKEY, TypedValue.fromPubKey(pubKey), -1);
 		if (v < 0) {
 			throw new LedgerException("PubKey storage conflict!");
 		}
@@ -208,7 +238,7 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	 */
 	private PubKey loadPubKey() {
 		BytesValue bytesValue = headerDS.getValue(KEY_PUBKEY);
-		return TypedBytesValue.wrap(bytesValue).pubKeyValue();
+		return TypedValue.wrap(bytesValue).pubKeyValue();
 	}
 
 	/**
@@ -221,6 +251,19 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	protected void onUpdated(Bytes key, BytesValue value, long newVersion) {
 	}
 
+	/**
+	 * 当账户数据提交后触发此方法；<br>
+	 * 
+	 * 此方法默认会返回新的账户版本号，等于当前版本号加 1 ；
+	 * 
+	 * @param newRootHash
+	 * @param currentVersion
+	 * @return
+	 */
+	protected long onCommited(HashDigest newRootHash, long currentVersion) {
+		return currentVersion + 1;
+	}
+
 	@Override
 	public boolean isUpdated() {
 		return dataDS.getDataset().isUpdated() || headerDS.getDataset().isUpdated() || rootDS.isUpdated();
@@ -228,26 +271,39 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 
 	@Override
 	public void commit() {
-		dataDS.getDataset().commit();
-		headerDS.getDataset().commit();
-		
-		rootDS.setValue(key, value, version)
-		
-		baseDS.commit();
+		if (headerDS.dataset.isUpdated()) {
+			headerDS.getDataset().commit();
+			long version = getHeaderRootVersion();
+			rootDS.setValue(KEY_HEADER_ROOT, headerDS.dataset.getRootHash().toBytes(), version);
+		}
+		if (dataDS.dataset.isUpdated()) {
+			long version = getDataRootVersion();
+			dataDS.getDataset().commit();
+			rootDS.setValue(KEY_DATA_ROOT, dataDS.dataset.getRootHash().toBytes(), version);
+		}
+
+		if (rootDS.isUpdated()) {
+			rootDS.commit();
+			this.version = onCommited(rootDS.getRootHash(), version);
+		}
 	}
 
 	@Override
 	public void cancel() {
-		baseDS.cancel();
+		headerDS.getDataset().cancel();
+		dataDS.getDataset().cancel();
+		rootDS.cancel();
 	}
 
-	private class BlockchainIdentityProxy implements BlockchainIdentity {
+	// ----------------------
+
+	private class AutoloadingID implements BlockchainIdentity {
 
 		private Bytes address;
 
 		private PubKey pubKey;
 
-		public BlockchainIdentityProxy(Bytes address, PubKey pubKey) {
+		public AutoloadingID(Bytes address, PubKey pubKey) {
 			this.address = address;
 			this.pubKey = pubKey;
 		}
@@ -266,8 +322,6 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		}
 
 	}
-
-	// ----------------------
 
 	private static class MerkleDatasetAdapter implements VersioningMap<Bytes, BytesValue> {
 

@@ -5,7 +5,7 @@ import com.jd.blockchain.consts.DataCodes;
 import com.jd.blockchain.crypto.PubKey;
 
 @DataContract(code= DataCodes.USER_ACCOUNT_HEADER)
-public interface UserAccountHeader extends AccountHeader {
+public interface UserAccountHeader extends BlockchainIdentity {
 	
 	PubKey getDataPubKey();
 	

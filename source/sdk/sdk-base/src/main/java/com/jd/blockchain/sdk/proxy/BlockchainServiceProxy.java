@@ -1,7 +1,7 @@
 package com.jd.blockchain.sdk.proxy;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
@@ -156,7 +156,7 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	}
 
 	@Override
-	public AccountHeader getDataAccount(HashDigest ledgerHash, String address) {
+	public BlockchainIdentity getDataAccount(HashDigest ledgerHash, String address) {
 		return getQueryService(ledgerHash).getDataAccount(ledgerHash, address);
 	}
 
@@ -189,17 +189,17 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	}
 
 	@Override
-	public AccountHeader[] getUsers(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getUsers(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getUsers(ledgerHash, fromIndex, count);
 	}
 
 	@Override
-	public AccountHeader[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getDataAccounts(ledgerHash, fromIndex, count);
 	}
 
 	@Override
-	public AccountHeader[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getContractAccounts(ledgerHash, fromIndex, count);
 	}
 }

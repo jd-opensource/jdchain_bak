@@ -15,29 +15,29 @@ import com.jd.blockchain.utils.io.BytesUtils;
  * @author huanghaiquan
  *
  */
-public class TypedBytesValue implements BytesValue {
+public class TypedValue implements BytesValue {
 	
-	public static final BytesValue NIL = new TypedBytesValue();
+	public static final BytesValue NIL = new TypedValue();
 	
 	private DataType type;
 	private Bytes value;
 
-	private TypedBytesValue(DataType type, byte[] bytes) {
+	private TypedValue(DataType type, byte[] bytes) {
 		this.type = type;
 		this.value = new Bytes(bytes);
 	}
 
-	private TypedBytesValue(DataType type, Bytes bytes) {
+	private TypedValue(DataType type, Bytes bytes) {
 		this.type = type;
 		this.value = bytes;
 	}
 	
-	private TypedBytesValue(BytesValue bytesValue) {
+	private TypedValue(BytesValue bytesValue) {
 		this.type = bytesValue.getType();
 		this.value = bytesValue.getValue();
 	}
 	
-	private TypedBytesValue() {
+	private TypedValue() {
 		this.type = DataType.NIL;
 	}
 	
@@ -383,28 +383,28 @@ public class TypedBytesValue implements BytesValue {
 		return new SignatureDigest(toBytesArray());
 	}
 	
-	public static TypedBytesValue wrap(BytesValue value) {
-		return new TypedBytesValue(value);
+	public static TypedValue wrap(BytesValue value) {
+		return new TypedValue(value);
 	}
 
-	public static TypedBytesValue fromType(DataType type, byte[] value) {
-		return new TypedBytesValue(type, value);
+	public static TypedValue fromType(DataType type, byte[] value) {
+		return new TypedValue(type, value);
 	}
 
-	public static TypedBytesValue fromBytes(byte[] value) {
-		return new TypedBytesValue(DataType.BYTES, value);
+	public static TypedValue fromBytes(byte[] value) {
+		return new TypedValue(DataType.BYTES, value);
 	}
 
-	public static TypedBytesValue fromBytes(Bytes value) {
-		return new TypedBytesValue(DataType.BYTES, value);
+	public static TypedValue fromBytes(Bytes value) {
+		return new TypedValue(DataType.BYTES, value);
 	}
 
-	public static TypedBytesValue fromImage(byte[] value) {
-		return new TypedBytesValue(DataType.IMG, value);
+	public static TypedValue fromImage(byte[] value) {
+		return new TypedValue(DataType.IMG, value);
 	}
 
-	public static TypedBytesValue fromImage(Bytes value) {
-		return new TypedBytesValue(DataType.IMG, value);
+	public static TypedValue fromImage(Bytes value) {
+		return new TypedValue(DataType.IMG, value);
 	}
 
 	/**
@@ -413,43 +413,43 @@ public class TypedBytesValue implements BytesValue {
 	 * @param value
 	 * @return
 	 */
-	public static TypedBytesValue fromText(String value) {
-		return new TypedBytesValue(DataType.TEXT, BytesUtils.toBytes(value));
+	public static TypedValue fromText(String value) {
+		return new TypedValue(DataType.TEXT, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromJSON(String value) {
-		return new TypedBytesValue(DataType.JSON, BytesUtils.toBytes(value));
+	public static TypedValue fromJSON(String value) {
+		return new TypedValue(DataType.JSON, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromXML(String value) {
-		return new TypedBytesValue(DataType.XML, BytesUtils.toBytes(value));
+	public static TypedValue fromXML(String value) {
+		return new TypedValue(DataType.XML, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromInt32(int value) {
-		return new TypedBytesValue(DataType.INT32, BytesUtils.toBytes(value));
+	public static TypedValue fromInt32(int value) {
+		return new TypedValue(DataType.INT32, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromInt64(long value) {
-		return new TypedBytesValue(DataType.INT64, BytesUtils.toBytes(value));
+	public static TypedValue fromInt64(long value) {
+		return new TypedValue(DataType.INT64, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromInt16(short value) {
-		return new TypedBytesValue(DataType.INT16, BytesUtils.toBytes(value));
+	public static TypedValue fromInt16(short value) {
+		return new TypedValue(DataType.INT16, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromInt8(byte value) {
-		return new TypedBytesValue(DataType.INT8, BytesUtils.toBytes(value));
+	public static TypedValue fromInt8(byte value) {
+		return new TypedValue(DataType.INT8, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromTimestamp(long value) {
-		return new TypedBytesValue(DataType.TIMESTAMP, BytesUtils.toBytes(value));
+	public static TypedValue fromTimestamp(long value) {
+		return new TypedValue(DataType.TIMESTAMP, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromBoolean(boolean value) {
-		return new TypedBytesValue(DataType.BOOLEAN, BytesUtils.toBytes(value));
+	public static TypedValue fromBoolean(boolean value) {
+		return new TypedValue(DataType.BOOLEAN, BytesUtils.toBytes(value));
 	}
 
-	public static TypedBytesValue fromPubKey(PubKey pubKey) {
-		return new TypedBytesValue(DataType.PUB_KEY, pubKey.toBytes());
+	public static TypedValue fromPubKey(PubKey pubKey) {
+		return new TypedValue(DataType.PUB_KEY, pubKey.toBytes());
 	}
 }

@@ -37,7 +37,7 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 		KVWriteEntry[] writeSet = kvWriteOp.getWriteSet();
 		long v = -1L;
 		for (KVWriteEntry kvw : writeSet) {
-			v = account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
+			v = account.getDataset().setValue(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
 			if (v < 0) {
 				throw new DataVersionConflictException();
 			}

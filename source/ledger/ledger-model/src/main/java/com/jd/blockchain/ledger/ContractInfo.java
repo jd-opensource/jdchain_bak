@@ -6,7 +6,7 @@ import com.jd.blockchain.binaryproto.PrimitiveType;
 import com.jd.blockchain.consts.DataCodes;
 
 @DataContract(code= DataCodes.CONTRACT_ACCOUNT_HEADER)
-public interface ContractInfo extends AccountHeader {
+public interface ContractInfo extends BlockchainIdentity {
 
     @DataField(order=4, primitiveType= PrimitiveType.BYTES)
     byte[] getChainCode();

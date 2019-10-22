@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.MerkleProof;
@@ -10,7 +10,6 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
-import com.jd.blockchain.utils.VersioningMap;
 
 /**
  * @author huanghaiquan
@@ -22,19 +21,20 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	public UserAccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage simpleStorage,
 			VersioningKVStorage versioningStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new MerkleAccountSet(cryptoSetting, keyPrefix, simpleStorage, versioningStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, Bytes.fromString(keyPrefix), simpleStorage, versioningStorage,
+				accessPolicy);
 	}
 
 	public UserAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly,
-				accessPolicy);
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, Bytes.fromString(keyPrefix), exStorage,
+				verStorage, readonly, accessPolicy);
 	}
 
 	@Override
-	public AccountHeader[] getHeaders(int fromIndex, int count) {
-		return accountSet.getHeaders(fromIndex,count);
+	public BlockchainIdentity[] getHeaders(int fromIndex, int count) {
+		return accountSet.getHeaders(fromIndex, count);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	public boolean isReadonly() {
 		return accountSet.isReadonly();
 	}
-	
+
 	void setReadonly() {
 		accountSet.setReadonly();
 	}
@@ -64,7 +64,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	public MerkleProof getProof(Bytes key) {
 		return accountSet.getProof(key);
 	}
-	
+
 	@Override
 	public UserAccount getAccount(String address) {
 		return getAccount(Bytes.fromBase58(address));
@@ -72,7 +72,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address) {
-		VersioningMap baseAccount = accountSet.getAccount(address);
+		MerkleAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
@@ -83,7 +83,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address, long version) {
-		VersioningMap baseAccount = accountSet.getAccount(address, version);
+		MerkleAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}
 
@@ -94,14 +94,12 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	 * 
 	 * 如果指定的地址和公钥不匹配，则会引发 {@link LedgerException} 异常；
 	 * 
-	 * @param address
-	 *            区块链地址；
-	 * @param pubKey
-	 *            公钥；
+	 * @param address 区块链地址；
+	 * @param pubKey  公钥；
 	 * @return 注册成功的用户对象；
 	 */
 	public UserAccount register(Bytes address, PubKey pubKey) {
-		VersioningMap baseAccount = accountSet.register(address, pubKey);
+		MerkleAccount baseAccount = accountSet.register(address, pubKey);
 		return new UserAccount(baseAccount);
 	}
 

@@ -49,17 +49,17 @@ public class MerkleDataCluster implements Transactional, MerkleSnapshot {
 		return rootDS.isUpdated();
 	}
 
-	public VersioningMap<Bytes, byte[]> getPartition(Bytes name) {
-		return getPartition(name, false);
-	}
-
-	public VersioningMap<Bytes, byte[]> getPartition(Bytes name, boolean create) {
-		
-	}
-
-	public VersioningMap<Bytes, byte[]> createPartition(Bytes name) {
-
-	}
+//	public VersioningMap<Bytes, byte[]> getPartition(Bytes name) {
+//		return getPartition(name, false);
+//	}
+//
+//	public VersioningMap<Bytes, byte[]> getPartition(Bytes name, boolean create) {
+//		
+//	}
+//
+//	public VersioningMap<Bytes, byte[]> createPartition(Bytes name) {
+//
+//	}
 
 	@Override
 	public void commit() {

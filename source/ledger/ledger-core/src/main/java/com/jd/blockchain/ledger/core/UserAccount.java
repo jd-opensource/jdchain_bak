@@ -1,12 +1,11 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.TypedBytesValue;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.UserAccountHeader;
+import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.TypedValue;
+import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningMap;
 
 /**
  * 用户账户；
@@ -14,34 +13,54 @@ import com.jd.blockchain.utils.VersioningMap;
  * @author huanghaiquan
  *
  */
-public class UserAccount extends MerkleAccount{ //implements UserInfo {
+public class UserAccount extends AccountDecorator implements UserInfo { // implements UserInfo {
 
 	private static final Bytes USER_INFO_PREFIX = Bytes.fromString("PROP" + LedgerConsts.KEY_SEPERATOR);
 
 	private static final Bytes DATA_PUB_KEY = Bytes.fromString("DATA-PUBKEY");
 
-//	private MerkleAccount baseAccount;
-
-	public UserAccount(VersioningMap baseAccount) {
-		this.baseAccount = baseAccount;
+	public UserAccount(MerkleAccount mklAccount) {
+		super(mklAccount);
 	}
 
+	private PubKey dataPubKey;
+	
+
+	@Override
+	public Bytes getAddress() {
+		return getID().getAddress();
+	}
+
+	@Override
+	public PubKey getPubKey() {
+		return getID().getPubKey();
+	}
+	
+	@Override
 	public PubKey getDataPubKey() {
-		BytesValue pkBytes = baseAccount.getValue(DATA_PUB_KEY);
-		if (pkBytes == null) {
-			return null;
+		if (dataPubKey == null) {
+			BytesValue pkBytes = getHeaders().getValue(DATA_PUB_KEY);
+			if (pkBytes == null) {
+				return null;
+			}
+			dataPubKey = new PubKey(pkBytes.getValue().toBytes());
 		}
-		return new PubKey(pkBytes.getValue().toBytes());
+		return dataPubKey;
 	}
 
-	public long setDataPubKey(PubKey pubKey) {
-		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setValue(DATA_PUB_KEY, TypedBytesValue.fromBytes(pkBytes), -1);
+	public void setDataPubKey(PubKey pubKey) {
+		long version = getHeaders().getVersion(DATA_PUB_KEY);
+		setDataPubKey(pubKey, version);
 	}
 
-	public long setDataPubKey(PubKey pubKey, long version) {
-		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setValue(DATA_PUB_KEY, TypedBytesValue.fromBytes(pkBytes), version);
+	public void setDataPubKey(PubKey pubKey, long version) {
+		TypedValue value = TypedValue.fromPubKey(dataPubKey);
+		long newVersion = getHeaders().setValue(DATA_PUB_KEY, value, version);
+		if (newVersion > -1) {
+			dataPubKey = pubKey;
+		} else {
+			throw new LedgerException("Data public key was updated failed!");
+		}
 	}
 
 	public long setProperty(String key, String value, long version) {
@@ -49,22 +68,22 @@ public class UserAccount extends MerkleAccount{ //implements UserInfo {
 	}
 
 	public long setProperty(Bytes key, String value, long version) {
-		return baseAccount.setValue(encodePropertyKey(key), TypedBytesValue.fromText(value), version);
+		return getHeaders().setValue(encodePropertyKey(key), TypedValue.fromText(value), version);
 	}
 
 	public String getProperty(Bytes key) {
-		BytesValue value = baseAccount.getValue(encodePropertyKey(key));
+		BytesValue value = getHeaders().getValue(encodePropertyKey(key));
 		return value == null ? null : value.getValue().toUTF8String();
 	}
 
 	public String getProperty(Bytes key, long version) {
-		BytesValue value = baseAccount.getValue(encodePropertyKey(key), version);
+		BytesValue value = getHeaders().getValue(encodePropertyKey(key), version);
 		return value == null ? null : value.getValue().toUTF8String();
 	}
 
 	private Bytes encodePropertyKey(Bytes key) {
-		// return key.concatTo(USER_INFO_PREFIX);
 		return USER_INFO_PREFIX.concat(key);
 	}
+
 
 }

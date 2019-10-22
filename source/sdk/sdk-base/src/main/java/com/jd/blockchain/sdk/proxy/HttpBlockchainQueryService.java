@@ -487,7 +487,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/accounts/address/{address}")
 	@Override
-	AccountHeader getDataAccount(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	BlockchainIdentity getDataAccount(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
                                  @PathParam(name="address") String address);
 
 	/**
@@ -569,7 +569,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method = HttpMethod.GET, path = "ledgers/{ledgerHash}/users")
 	@Override
-	AccountHeader[] getUsers(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	BlockchainIdentity[] getUsers(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
 							 @RequestParam(name="fromIndex", required = false) int fromIndex,
 							 @RequestParam(name="count", required = false) int count);
 
@@ -582,7 +582,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method = HttpMethod.GET, path = "ledgers/{ledgerHash}/accounts")
 	@Override
-	AccountHeader[] getDataAccounts(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	BlockchainIdentity[] getDataAccounts(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
 							 @RequestParam(name="fromIndex", required = false) int fromIndex,
 							 @RequestParam(name="count", required = false) int count);
 
@@ -595,7 +595,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method = HttpMethod.GET, path = "ledgers/{ledgerHash}/contracts")
 	@Override
-	AccountHeader[] getContractAccounts(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	BlockchainIdentity[] getContractAccounts(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
 									@RequestParam(name="fromIndex", required = false) int fromIndex,
 									@RequestParam(name="count", required = false) int count);
 

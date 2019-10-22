@@ -21,7 +21,7 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
@@ -420,7 +420,7 @@ public class IntegrationTest {
 		UserInfo userInfo = blockchainService.getUser(ledgerHash, userAddress.toString());
 
 		// getDataAccount
-		AccountHeader accountHeader = blockchainService.getDataAccount(ledgerHash, dataAddress.toString());
+		BlockchainIdentity accountHeader = blockchainService.getDataAccount(ledgerHash, dataAddress.toString());
 
 		// getDataEntries
 
@@ -660,9 +660,9 @@ public class IntegrationTest {
 		LedgerQuery ledgerOfNode0 = node0.getLedgerManager().getLedger(ledgerHash);
 		LedgerBlock block = ledgerOfNode0.getBlock(txResp.getBlockHeight());
 		BytesValue val1InDb = ledgerOfNode0.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
-				.getBytes("A");
+				.getDataset().getValue("A");
 		BytesValue val2InDb = ledgerOfNode0.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
-				.getBytes(KEY_TOTAL);
+				.getDataset().getValue(KEY_TOTAL);
 	}
 
 	/**

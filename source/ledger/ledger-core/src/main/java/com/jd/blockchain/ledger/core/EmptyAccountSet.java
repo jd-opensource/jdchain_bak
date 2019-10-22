@@ -1,13 +1,13 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.utils.Bytes;
 
 public class EmptyAccountSet<T> implements AccountQuery<T> {
 	
-	private static final AccountHeader[] EMPTY = {};
+	private static final BlockchainIdentity[] EMPTY = {};
 
 	@Override
 	public HashDigest getRootHash() {
@@ -20,7 +20,7 @@ public class EmptyAccountSet<T> implements AccountQuery<T> {
 	}
 
 	@Override
-	public AccountHeader[] getHeaders(int fromIndex, int count) {
+	public BlockchainIdentity[] getHeaders(int fromIndex, int count) {
 		return EMPTY;
 	}
 

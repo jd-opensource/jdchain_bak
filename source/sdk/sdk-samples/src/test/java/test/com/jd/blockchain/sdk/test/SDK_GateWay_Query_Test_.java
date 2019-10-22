@@ -19,7 +19,7 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
@@ -98,7 +98,7 @@ public class SDK_GateWay_Query_Test_ {
 		System.out.println("contractCount=" + count);
 		count = service.getContractCount(ledgerHash, hashDigest);
 		System.out.println("contractCount=" + count);
-		AccountHeader contract = service.getContract(ledgerHash, "12345678");
+		BlockchainIdentity contract = service.getContract(ledgerHash, "12345678");
 		System.out.println(contract);
 
 		LedgerBlock block = service.getBlock(ledgerHash, hashDigest);
@@ -109,7 +109,7 @@ public class SDK_GateWay_Query_Test_ {
 		count = service.getDataAccountCount(ledgerHash, hashDigest);
 		System.out.println("dataAccountCount=" + count);
 
-		AccountHeader dataAccount = service.getDataAccount(ledgerHash, "1245633");
+		BlockchainIdentity dataAccount = service.getDataAccount(ledgerHash, "1245633");
 		System.out.println(dataAccount.getAddress());
 
 		count = service.getTransactionCount(ledgerHash, hashDigest);

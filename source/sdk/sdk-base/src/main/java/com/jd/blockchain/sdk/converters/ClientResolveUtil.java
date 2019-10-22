@@ -151,7 +151,7 @@ public class ClientResolveUtil {
 			String realValBase58 = valueObj.getJSONObject("value").getString("value");
 			String key = currWriteSetObj.getString("key");
 			DataType dataType = DataType.valueOf(typeStr);
-			BytesValue bytesValue = TypedBytesValue.fromType(dataType, Base58Utils.decode(realValBase58));
+			BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
 			KVData kvData = new KVData(key, bytesValue, expectedVersion);
 			kvOperation.set(kvData);
 		}

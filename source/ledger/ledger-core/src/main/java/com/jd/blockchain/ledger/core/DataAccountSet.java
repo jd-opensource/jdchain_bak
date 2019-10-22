@@ -2,7 +2,7 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.MerkleProof;
@@ -17,17 +17,18 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
-		accountSet = new MerkleAccountSet(cryptoSetting, prefix, exStorage, verStorage, accessPolicy);
+		accountSet = new MerkleAccountSet(cryptoSetting, Bytes.fromString(prefix), exStorage, verStorage, accessPolicy);
 	}
 
 	public DataAccountSet(HashDigest dataRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
-		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, prefix, exStorage, verStorage, readonly, accessPolicy);
+		accountSet = new MerkleAccountSet(dataRootHash, cryptoSetting, Bytes.fromString(prefix), exStorage, verStorage,
+				readonly, accessPolicy);
 	}
 
 	@Override
-	public AccountHeader[] getHeaders(int fromIndex, int count) {
+	public BlockchainIdentity[] getHeaders(int fromIndex, int count) {
 		return accountSet.getHeaders(fromIndex, count);
 	}
 

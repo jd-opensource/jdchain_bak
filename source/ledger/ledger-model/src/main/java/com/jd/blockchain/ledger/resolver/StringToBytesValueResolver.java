@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.resolver;
 
-import com.jd.blockchain.ledger.TypedBytesValue;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.utils.Bytes;
@@ -26,10 +26,10 @@ public class StringToBytesValueResolver extends AbstractBytesValueResolver {
         // 类型判断
         String valString = (String)value;
         if (JSONSerializeUtils.isJSON(valString)) {
-            return TypedBytesValue.fromJSON(valString);
+            return TypedValue.fromJSON(valString);
         }
         // 暂不处理XML格式
-        return TypedBytesValue.fromText(valString);
+        return TypedValue.fromText(valString);
     }
 
     @Override
