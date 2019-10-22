@@ -115,7 +115,7 @@ public class ContractJarUtils {
             throw new IllegalStateException("Contract's chaincode is empty !!!");
         }
         // 首先生成合约文件
-        File jarFile = newJarFile(contractPath);
+        File jarFile = newJarTempFile();
         try {
             FileUtils.writeByteArrayToFile(jarFile, chainCode);
             // 校验合约文件
@@ -125,9 +125,9 @@ public class ContractJarUtils {
         } finally {
             // 删除文件
             try {
-                FileUtils.forceDelete(jarFile);
+                jarFile.deleteOnExit();
             } catch (Exception e) {
-                throw new IllegalStateException(e);
+                // DO NOTHING
             }
         }
     }
@@ -144,6 +144,7 @@ public class ContractJarUtils {
             throw new IllegalStateException(CONTRACT_MF + " IS NULL !!!");
         }
         byte[] bytes;
+
         try {
             bytes = IOUtils.toByteArray(inputStream);
         } finally {
@@ -156,20 +157,25 @@ public class ContractJarUtils {
         String txt = new String(bytes, StandardCharsets.UTF_8);
 
         // 生成新的Jar包文件，该文件路径与JarFile基本一致
-        File tempJar = newJarFile(contractPath);
+        File tempJar = newJarTempFile();
+        try {
+            // 复制除JDCHAIN.TXT之外的部分
+            copy(jarFile, tempJar, null, null, CONTRACT_MF);
 
-        // 复制除JDCHAIN.TXT之外的部分
-        copy(jarFile, tempJar, null, null, CONTRACT_MF);
+            // 生成新Jar包对应的Hash内容
+            String verifyTxt = contractMF(FileUtils.readFileToByteArray(tempJar));
 
-        // 生成新Jar包对应的Hash内容
-        String verifyTxt = contractMF(FileUtils.readFileToByteArray(tempJar));
-
-        // 删除临时文件
-        FileUtils.forceDelete(tempJar);
-
-        // 校验Jar包内容
-        if (!txt.equals(verifyTxt)) {
-            throw new IllegalStateException(String.format("Jar [%s] verify Illegal !!!", jarFile.getName()));
+            // 校验Jar包内容
+            if (!txt.equals(verifyTxt)) {
+                throw new IllegalStateException(String.format("Jar [%s] verify Illegal !!!", jarFile.getName()));
+            }
+        } finally {
+            try {
+                // 删除临时文件
+                tempJar.deleteOnExit();
+            } catch (Exception e) {
+                // DO NOTHING
+            }
         }
     }
 
@@ -227,20 +233,30 @@ public class ContractJarUtils {
         }
     }
 
-    private static File newJarFile(String contractPath) {
+    private static File newJarTempFile() {
 
-        if (contractPath != null && contractPath.length() > 0) {
-            return new File(contractPath + File.separator +
-                    "contract-" +
+        try {
+            return File.createTempFile("contract-" +
                     System.currentTimeMillis() + "-" +
                     System.nanoTime() + "-" +
-                    FILE_RANDOM.nextInt(1024) +
-                    ".jar");
+                    FILE_RANDOM.nextInt(1024), ".jar");
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
-        return new File("contract-" +
-                System.currentTimeMillis() + "-" +
-                System.nanoTime() + "-" +
-                FILE_RANDOM.nextInt(1024) +
-                ".jar");
+//
+//        if (contractPath != null && contractPath.length() > 0) {
+//            return new File(contractPath + File.separator +
+//                    "contract-" +
+//                    System.currentTimeMillis() + "-" +
+//                    System.nanoTime() + "-" +
+//                    FILE_RANDOM.nextInt(1024) +
+//                    ".jar");
+//        }
+//
+//        return new File("contract-" +
+//                System.currentTimeMillis() + "-" +
+//                System.nanoTime() + "-" +
+//                FILE_RANDOM.nextInt(1024) +
+//                ".jar");
     }
 }
