@@ -34,7 +34,7 @@ public class TypedValue implements BytesValue {
 	
 	private TypedValue(BytesValue bytesValue) {
 		this.type = bytesValue.getType();
-		this.value = bytesValue.getValue();
+		this.value = bytesValue.getBytes();
 	}
 	
 	private TypedValue() {
@@ -48,11 +48,11 @@ public class TypedValue implements BytesValue {
 	}
 
 	@Override
-	public Bytes getValue() {
+	public Bytes getBytes() {
 		return this.value;
 	}
 
-	public Object getTypedValue() {
+	public Object getValue() {
 		if (isNil()) {
 			return null;
 		}

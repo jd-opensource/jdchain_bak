@@ -43,7 +43,7 @@ public class UserAccount extends AccountDecorator implements UserInfo { // imple
 			if (pkBytes == null) {
 				return null;
 			}
-			dataPubKey = new PubKey(pkBytes.getValue().toBytes());
+			dataPubKey = new PubKey(pkBytes.getBytes().toBytes());
 		}
 		return dataPubKey;
 	}
@@ -69,12 +69,12 @@ public class UserAccount extends AccountDecorator implements UserInfo { // imple
 
 	public String getProperty(String key) {
 		BytesValue value = getHeaders().getValue(encodePropertyKey(key));
-		return value == null ? null : value.getValue().toUTF8String();
+		return value == null ? null : value.getBytes().toUTF8String();
 	}
 
 	public String getProperty(String key, long version) {
 		BytesValue value = getHeaders().getValue(encodePropertyKey(key), version);
-		return value == null ? null : value.getValue().toUTF8String();
+		return value == null ? null : value.getBytes().toUTF8String();
 	}
 
 	private String encodePropertyKey(String key) {

@@ -49,68 +49,60 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 
 	private Dataset<String, TypedValue> typedData;
 
-	private long version;
+//	private long version;
 
 	/**
-	 * Create a new Account with the specified address and pubkey; <br>
+	 * Create a new Account with the specified identity(address and pubkey); <br>
 	 *
 	 * At the same time, a empty merkle dataset is also created for this account,
 	 * which is used for storing data of this account.<br>
+	 * 
+	 * This new account will be writable. <br>
 	 *
-	 * Note that, the blockchain identity of the account is not stored in the
-	 * account's merkle dataset, but is stored by the outer invoker;
-	 *
-	 * @param accountID     身份；
-	 * @param cryptoSetting 密码参数；
-	 * @param keyPrefix     数据前缀；
-	 * @param exStorage
-	 * @param verStorage
+	 * @param accountID     Identity of this new account;
+	 * @param cryptoSetting Settings about crypto operations；
+	 * @param keyPrefix     Prefix of all keys in this account's dataset;
+	 * @param exStorage     The base storage for existance operation;
+	 * @param verStorage    The base storage for versioning operation;
 	 */
 	public MerkleAccount(BlockchainIdentity accountID, CryptoSetting cryptoSetting, Bytes keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
-		this(accountID.getAddress(), accountID.getPubKey(), -1, null, cryptoSetting, keyPrefix, exStorage, verStorage,
-				false);
+		// 初始化数据集；
+		initializeDatasets(null, cryptoSetting, keyPrefix, exStorage, verStorage, false);
 
 		initPubKey(accountID.getPubKey());
+		this.accountID = accountID;
 	}
 
 	/**
-	 * Create a account instance with the specified address and pubkey and load it's
+	 * Create a account instance with the specified address and root hash; load it's
 	 * merkle dataset from the specified root hash. This merkle dateset is used for
 	 * storing data of this account.<br>
 	 *
-	 * @param accountID     identity of this account;
-	 * @param version
-	 * @param dataRootHash  merkle root hash of account's data; if set to a null
-	 *                      value, an empty merkle dataset is created;
-	 * @param cryptoSetting
-	 * @param keyPrefix
-	 * @param exStorage
-	 * @param verStorage
-	 * @param readonly
+	 * @param address       Address of this account;
+	 * @param rootHash      Merkle root hash of this account; It can not be null;
+	 * @param cryptoSetting Settings about crypto operations；
+	 * @param keyPrefix     Prefix of all keys in this account's dataset;
+	 * @param exStorage     The base storage for existance operation;
+	 * @param verStorage    The base storage for versioning operation;
+	 * @param readonly      Readonly about this account's dataset;
 	 */
-	public MerkleAccount(Bytes address, long version, HashDigest dataRootHash, CryptoSetting cryptoSetting,
-			Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
-		this(address, null, version, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+	public MerkleAccount(Bytes address, HashDigest rootHash, CryptoSetting cryptoSetting, Bytes keyPrefix,
+			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
+		if (rootHash == null) {
+			throw new IllegalArgumentException("Specified a null root hash for account[" + address.toBase58() + "]!");
+		}
+
+		// 初始化数据集；
+		initializeDatasets(rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+
+		// 初始化账户的身份；
+		PubKey pubKey = loadPubKey();
+		this.accountID = new AccountID(address, pubKey);
 	}
 
-	/**
-	 * 内部构造器；
-	 * 
-	 * @param address       账户地址；
-	 * @param pubKey        账户公钥； 如果为空，则会进行加载验证；
-	 * @param version       账户版本；
-	 * @param rootHash      账户根哈希；
-	 * @param cryptoSetting 密码参数设置；
-	 * @param keyPrefix     当前账户的 Key 前缀；
-	 * @param exStorage     单键存储服务；
-	 * @param verStorage    多版本存储服务；
-	 * @param readonly      是否只读；
-	 */
-	private MerkleAccount(Bytes address, PubKey pubKey, long version, HashDigest rootHash, CryptoSetting cryptoSetting,
-			Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
-		this.version = version;
-
+	private void initializeDatasets(HashDigest rootHash, CryptoSetting cryptoSetting, Bytes keyPrefix,
+			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
 		// 加载“根数据集”
 		this.rootDataset = new MerkleDataSet(rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
 
@@ -148,15 +140,6 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		Bytes dataPrefix = keyPrefix.concat(DATA_PREFIX);
 		this.dataDataset = new MerkleDataSet(dataRoot, cryptoSetting, dataPrefix, exStorage, verStorage, readonly);
 		this.typedData = DatasetHelper.listen(DatasetHelper.map(dataDataset, valueMapper), dataChangedListener);
-
-		// 初始化账户的身份；
-		if (pubKey == null) {
-			if (version < 0) {
-				throw new IllegalArgumentException("Specified a null PubKey for newly Account!");
-			}
-			pubKey = loadPubKey();
-		}
-		this.accountID = new AccountID(address, pubKey);
 	}
 
 	private HashDigest loadHeaderRoot() {
@@ -258,6 +241,9 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	 */
 	private PubKey loadPubKey() {
 		TypedValue value = typedHeader.getValue(KEY_PUBKEY);
+		if (value == null) {
+			return null;
+		}
 		return value.pubKeyValue();
 	}
 
@@ -276,12 +262,10 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 	 * 
 	 * 此方法默认会返回新的账户版本号，等于当前版本号加 1 ；
 	 * 
-	 * @param newRootHash
-	 * @param currentVersion
-	 * @return
+	 * @param previousRootHash 提交前的根哈希；如果是新账户的首次提交，则为 null；
+	 * @param newRootHash      新的根哈希；
 	 */
-	protected long onCommited(HashDigest newRootHash, long currentVersion) {
-		return currentVersion + 1;
+	protected void onCommited(HashDigest previousRootHash, HashDigest newRootHash) {
 	}
 
 	@Override
@@ -303,8 +287,9 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		}
 
 		if (rootDataset.isUpdated()) {
+			HashDigest previousRootHash = rootDataset.getRootHash();
 			rootDataset.commit();
-			this.version = onCommited(rootDataset.getRootHash(), version);
+			onCommited(previousRootHash, rootDataset.getRootHash());
 		}
 	}
 
@@ -338,10 +323,6 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 			return pubKey;
 		}
 
-	}
-
-	public long getVersion() {
-		return version;
 	}
 
 //	private static class MerkleDatasetAdapter implements Dataset<String, BytesValue> {

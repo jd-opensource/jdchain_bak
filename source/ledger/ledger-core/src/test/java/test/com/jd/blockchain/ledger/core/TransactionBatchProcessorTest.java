@@ -346,10 +346,10 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(v2);
 		assertNotNull(v3);
 
-		assertEquals("V-1-1", v1_0.getValue().toUTF8String());
-		assertEquals("V-1-2", v1_1.getValue().toUTF8String());
-		assertEquals("V-2-1", v2.getValue().toUTF8String());
-		assertEquals("V-3-1", v3.getValue().toUTF8String());
+		assertEquals("V-1-1", v1_0.getBytes().toUTF8String());
+		assertEquals("V-1-2", v1_1.getBytes().toUTF8String());
+		assertEquals("V-2-1", v2.getBytes().toUTF8String());
+		assertEquals("V-3-1", v3.getBytes().toUTF8String());
 
 		// 提交多笔数据写入的交易，包含存在数据版本冲突的交易，验证交易是否正确回滚；
 		// 先写一笔正确的交易； k3 的版本将变为 1 ；
@@ -390,8 +390,8 @@ public class TransactionBatchProcessorTest {
 
 		assertNotNull(v1);
 		assertNotNull(v3);
-		assertEquals("V-1-2", v1.getValue().toUTF8String());
-		assertEquals("V-3-2", v3.getValue().toUTF8String());
+		assertEquals("V-1-2", v1.getBytes().toUTF8String());
+		assertEquals("V-3-2", v3.getBytes().toUTF8String());
 
 //		// 验证正确性；
 //		ledgerManager = new LedgerManager();

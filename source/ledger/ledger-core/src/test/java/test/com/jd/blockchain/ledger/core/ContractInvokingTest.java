@@ -27,7 +27,6 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
 import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerPermission;
@@ -65,6 +64,7 @@ import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.BooleanValueHolder;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 import test.com.jd.blockchain.ledger.TxTestContract;
@@ -243,7 +243,7 @@ public class ContractInvokingTest {
 
 		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getValue(key,
 				-1);
-		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getValue().toUTF8String());
+		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getBytes().toUTF8String());
 
 		boolean readable = readableHolder.get();
 		assertTrue(readable);
@@ -301,9 +301,9 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1",
+		DataEntry<String, TypedValue> kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1",
 				0);
-		KVDataEntry kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2",
+		DataEntry<String, TypedValue> kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2",
 				0);
 		assertEquals(0, kv1.getVersion());
 		assertEquals(0, kv2.getVersion());
@@ -322,8 +322,8 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
-		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2", 1);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 1);
+		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals(1, kv2.getVersion());
 		assertEquals("V1-1", kv1.getValue());
@@ -341,10 +341,10 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals("V1-1", kv1.getValue());
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 2);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 2);
 		assertEquals(-1, kv1.getVersion());
 		assertEquals(null, kv1.getValue());
 

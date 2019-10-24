@@ -331,7 +331,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 		LedgerQuery ledger = ledgerService.getLedger(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
-		return dataAccountSet.getAccount(Bytes.fromBase58(address));
+		return dataAccountSet.getAccount(Bytes.fromBase58(address)).getID();
 	}
 
 	@RequestMapping(method = { RequestMethod.GET,
@@ -350,11 +350,11 @@ public class LedgerQueryController implements BlockchainQueryService {
 		KVDataEntry[] entries = new KVDataEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
-			ver = dataAccount.getDataset().getVersion(Bytes.fromString(keys[i]));
+			ver = dataAccount.getDataset().getVersion(keys[i]);
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, null);
 			} else {
-				BytesValue value = dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver);
+				BytesValue value = dataAccount.getDataset().getValue(keys[i], ver);
 				entries[i] = new KVDataObject(keys[i], ver, value);
 			}
 		}
@@ -404,12 +404,12 @@ public class LedgerQueryController implements BlockchainQueryService {
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, null);
 			} else {
-				if (dataAccount.getDataEntriesTotalCount() == 0
-						|| dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver) == null) {
+				if (dataAccount.getDataset().getDataCount() == 0
+						|| dataAccount.getDataset().getValue(keys[i], ver) == null) {
 					// is the address is not exist; the result is null;
 					entries[i] = new KVDataObject(keys[i], -1, null);
 				} else {
-					BytesValue value = dataAccount.getDataset().getValue(Bytes.fromString(keys[i]), ver);
+					BytesValue value = dataAccount.getDataset().getValue(keys[i], ver);
 					entries[i] = new KVDataObject(keys[i], ver, value);
 				}
 			}
@@ -431,7 +431,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataEntriesTotalCount());
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
 		return dataAccount.getDataEntries(pages[0], pages[1]);
 	}
 
@@ -445,7 +445,7 @@ public class LedgerQueryController implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		return dataAccount.getDataEntriesTotalCount();
+		return dataAccount.getDataset().getDataCount();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts/address/{address}")

@@ -164,8 +164,8 @@ public class TransactionSetTest {
 		for (int i = 0; i < acutualKVWriteSet.length; i++) {
 			assertEquals(expKVWriteSet[i].getKey(), acutualKVWriteSet[i].getKey());
 			assertEquals(expKVWriteSet[i].getExpectedVersion(), acutualKVWriteSet[i].getExpectedVersion());
-			assertTrue(BytesUtils.equals(expKVWriteSet[i].getValue().getValue().toBytes(),
-					acutualKVWriteSet[i].getValue().getValue().toBytes()));
+			assertTrue(BytesUtils.equals(expKVWriteSet[i].getValue().getBytes().toBytes(),
+					acutualKVWriteSet[i].getValue().getBytes().toBytes()));
 		}
 
 		ContractCodeDeployOperation actualContractDplOp = (ContractCodeDeployOperation) actualOperations[3];

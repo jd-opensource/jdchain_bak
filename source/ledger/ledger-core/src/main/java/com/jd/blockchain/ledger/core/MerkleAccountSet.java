@@ -94,7 +94,8 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 		BlockchainIdentity[] ids = new BlockchainIdentity[results.length];
 		for (int i = 0; i < results.length; i++) {
-			InnerMerkleAccount account = createAccount(results[i].getKey(), new HashDigest(results[i].getValue()), results[i].getVersion(), true);
+			InnerMerkleAccount account = createAccount(results[i].getKey(), new HashDigest(results[i].getValue()),
+					results[i].getVersion(), true);
 			ids[i] = account.getID();
 		}
 		return ids;
@@ -284,11 +285,11 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 		return createAccount(address, rootHash, version, readonly);
 	}
-	
-	private InnerMerkleAccount createAccount(Bytes address,HashDigest rootHash, long version, boolean readonly) {
+
+	private InnerMerkleAccount createAccount(Bytes address, HashDigest rootHash, long version, boolean readonly) {
 		// prefix;
 		Bytes prefix = keyPrefix.concat(address);
-		
+
 		return new InnerMerkleAccount(address, version, rootHash, cryptoSetting, prefix, baseExStorage, baseVerStorage,
 				readonly);
 	}
@@ -358,14 +359,18 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 */
 	private class InnerMerkleAccount extends MerkleAccount {
 
+		private long version;
+
 		public InnerMerkleAccount(BlockchainIdentity accountID, CryptoSetting cryptoSetting, Bytes keyPrefix,
 				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
 			super(accountID, cryptoSetting, keyPrefix, exStorage, verStorage);
+			this.version = -1;
 		}
 
 		public InnerMerkleAccount(Bytes address, long version, HashDigest dataRootHash, CryptoSetting cryptoSetting,
 				Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
-			super(address, version, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+			super(address, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+			this.version = version;
 		}
 
 		@Override
@@ -374,13 +379,17 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 
 		@Override
-		protected long onCommited(HashDigest newRootHash, long currentVersion) {
-			long newVersion = merkleDataset.setValue(this.getAddress(), newRootHash.toBytes(), currentVersion);
+		protected void onCommited(HashDigest previousRootHash, HashDigest newRootHash) {
+			long newVersion = merkleDataset.setValue(this.getAddress(), newRootHash.toBytes(), version);
 			if (newVersion < 0) {
 				// Update fail;
 				throw new LedgerException("Account updating fail! --[Address=" + this.getAddress() + "]");
 			}
-			return newVersion;
+			this.version = newVersion;
+		}
+
+		public long getVersion() {
+			return version;
 		}
 
 	}

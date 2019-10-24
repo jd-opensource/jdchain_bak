@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
@@ -293,12 +292,12 @@ public class LedgerQueryService implements BlockchainQueryService {
 		for (int i = 0; i < entries.length; i++) {
 			final String currKey = keys[i];
 
-			ver = dataAccount == null ? -1 : dataAccount.getDataset().getVersion(Bytes.fromString(currKey));
+			ver = dataAccount == null ? -1 : dataAccount.getDataset().getVersion(currKey);
 
 			if (ver < 0) {
 				entries[i] = new KVDataObject(currKey, -1, null);
 			} else {
-				BytesValue value = dataAccount.getDataset().getValue(Bytes.fromString(currKey), ver);
+				BytesValue value = dataAccount.getDataset().getValue(currKey, ver);
 				entries[i] = new KVDataObject(currKey, ver, value);
 			}
 		}

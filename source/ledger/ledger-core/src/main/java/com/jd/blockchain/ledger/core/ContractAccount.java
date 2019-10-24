@@ -40,11 +40,11 @@ public class ContractAccount extends AccountDecorator implements ContractInfo {
 	}
 
 	public byte[] getChainCode() {
-		return getHeaders().getValue(CHAIN_CODE_KEY).getValue().toBytes();
+		return getHeaders().getValue(CHAIN_CODE_KEY).getBytes().toBytes();
 	}
 
 	public byte[] getChainCode(long version) {
-		return getHeaders().getValue(CHAIN_CODE_KEY, version).getValue().toBytes();
+		return getHeaders().getValue(CHAIN_CODE_KEY, version).getBytes().toBytes();
 	}
 
 	public long getChaincodeVersion() {

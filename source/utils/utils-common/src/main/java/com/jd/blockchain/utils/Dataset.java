@@ -4,28 +4,6 @@ public interface Dataset<K, V> {
 	
 	long getDataCount();
 
-//	/**
-//	 * Create or update the value associated the specified key if the version
-//	 * checking is passed.<br>
-//	 * 
-//	 * The value of the key will be updated only if it's latest version equals the
-//	 * specified version argument. <br>
-//	 * If the key doesn't exist, it will be created when the version arg was -1.
-//	 * <p>
-//	 * If updating is performed, the version of the key increase by 1. <br>
-//	 * If creating is performed, the version of the key initialize by 0. <br>
-//	 * 
-//	 * @param key     The key of data;
-//	 * @param value   The value of data;
-//	 * @param version The expected latest version of the key.
-//	 * @return The new version of the key. <br>
-//	 *         If the key is new created success, then return 0; <br>
-//	 *         If the key is updated success, then return the new version;<br>
-//	 *         If this operation fail by version checking or other reason, then
-//	 *         return -1;
-//	 */
-//	long setValue(String key, byte[] value, long version);
-
 	/**
 	 * Create or update the value associated the specified key if the version
 	 * checking is passed.<br>

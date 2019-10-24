@@ -109,7 +109,7 @@ public class LedgerEditorTest {
 		// 验证数据读写的一致性；
 		BytesValue bytes = dataAccount.getDataset().getValue("A");
 		assertEquals(DataType.TEXT, bytes.getType());
-		String textValue = bytes.getValue().toUTF8String();
+		String textValue = bytes.getBytes().toUTF8String();
 		assertEquals("abc", textValue);
 	}
 

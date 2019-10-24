@@ -48,7 +48,7 @@ public class KVDataTest {
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedKvData.getKey(), kvData.getKey());
 		assertEquals(resolvedKvData.getExpectedVersion(), kvData.getExpectedVersion());
-		assertArrayEquals(resolvedKvData.getValue().getValue().toBytes(), kvData.getValue().getValue().toBytes());
+		assertArrayEquals(resolvedKvData.getValue().getBytes().toBytes(), kvData.getValue().getBytes().toBytes());
 		System.out.println("------Assert OK ------");
 	}
 }

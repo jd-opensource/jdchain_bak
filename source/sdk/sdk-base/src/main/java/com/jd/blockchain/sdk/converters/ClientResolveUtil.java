@@ -108,7 +108,7 @@ public class ClientResolveUtil {
 
 	public static Object readValueByBytesValue(BytesValue bytesValue) {
 		DataType dataType = bytesValue.getType();
-		Bytes saveVal = bytesValue.getValue();
+		Bytes saveVal = bytesValue.getBytes();
 		Object showVal;
 		switch (dataType) {
 		case BYTES:

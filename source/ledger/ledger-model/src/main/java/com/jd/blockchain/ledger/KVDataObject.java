@@ -72,15 +72,15 @@ public class KVDataObject implements KVDataEntry {
 		case NIL:
 			return null;
 		case TEXT:
-			return bytesValue.getValue().toUTF8String();
+			return bytesValue.getBytes().toUTF8String();
 		case BYTES:
-			return ByteArray.toHex(bytesValue.getValue().toBytes());
+			return ByteArray.toHex(bytesValue.getBytes().toBytes());
 		case INT64:
-			return BytesUtils.toLong(bytesValue.getValue().toBytes());
+			return BytesUtils.toLong(bytesValue.getBytes().toBytes());
 		case JSON:
-			return bytesValue.getValue().toUTF8String();
+			return bytesValue.getBytes().toUTF8String();
 		case XML:
-			return bytesValue.getValue().toUTF8String();
+			return bytesValue.getBytes().toUTF8String();
 
 		default:
 			throw new IllegalStateException("Unsupported value type[" + getType() + "] to resolve!");
@@ -106,7 +106,7 @@ public class KVDataObject implements KVDataEntry {
 	 * @return
 	 */
 	Bytes bytesArray() {
-		return bytesValue.getValue();
+		return bytesValue.getBytes();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public byte tinyValue() {
 		if (DataType.INT8 == getType()) {
-			return bytesValue.getValue().toBytes()[0];
+			return bytesValue.getBytes().toBytes()[0];
 		}
 		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT8, getType()));
 	}
@@ -140,7 +140,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public short shortValue() {
 		if (DataType.INT16 == getType()) {
-			return BytesUtils.toShort(bytesValue.getValue().toBytes(), 0);
+			return BytesUtils.toShort(bytesValue.getBytes().toBytes(), 0);
 		}
 		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT16, getType()));
 	}
@@ -158,7 +158,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public int intValue() {
 		if (DataType.INT32 == getType()) {
-			return BytesUtils.toInt(bytesValue.getValue().toBytes(), 0);
+			return BytesUtils.toInt(bytesValue.getBytes().toBytes(), 0);
 		}
 		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT32, getType()));
 	}
@@ -176,7 +176,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public long longValue() {
 		if (DataType.INT64 == getType()) {
-			return BytesUtils.toLong(bytesValue.getValue().toBytes(), 0);
+			return BytesUtils.toLong(bytesValue.getBytes().toBytes(), 0);
 		}
 		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT64, getType()));
 
@@ -195,7 +195,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public BigInteger bigIntValue() {
 		if (DataType.BIG_INT == getType()) {
-			return new BigInteger(bytesValue.getValue().toBytes());
+			return new BigInteger(bytesValue.getBytes().toBytes());
 		}
 		throw new IllegalStateException(
 				String.format("Expected type [%s], but [%s]", DataType.BIG_INT, getType()));
@@ -214,7 +214,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public boolean boolValue() {
 		if (DataType.BOOLEAN == getType()) {
-			return BytesUtils.toBoolean(bytesValue.getValue().toBytes()[0]);
+			return BytesUtils.toBoolean(bytesValue.getBytes().toBytes()[0]);
 		}
 		throw new IllegalStateException(
 				String.format("Expected type [%s], but [%s]", DataType.BOOLEAN, getType()));
@@ -233,7 +233,7 @@ public class KVDataObject implements KVDataEntry {
 	 */
 	public Date datetimeValue() {
 		if (DataType.TIMESTAMP == getType()) {
-			long ts = BytesUtils.toLong(bytesValue.getValue().toBytes());
+			long ts = BytesUtils.toLong(bytesValue.getBytes().toBytes());
 			return new Date(ts);
 		}
 		throw new IllegalStateException(
@@ -255,7 +255,7 @@ public class KVDataObject implements KVDataEntry {
 	public String stringValue() {
 		DataType type = getType();
 		if (DataType.TEXT == type || DataType.JSON == type || DataType.XML == type) {
-			return bytesValue.getValue().toUTF8String();
+			return bytesValue.getBytes().toUTF8String();
 		}
 		throw new IllegalStateException(String.format("Expected type [%s] or [%s] or [%s] , but [%s]",
 				PrimitiveType.TEXT, DataType.JSON, DataType.XML, type));

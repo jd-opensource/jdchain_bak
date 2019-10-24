@@ -77,8 +77,8 @@ public class TxContentBlobTest {
 			for (int j = 0; j < dataKv.length; j++) {
 				assertEquals(dataKv[i].getKey(), resolvedKv[i].getKey());
 				assertEquals(dataKv[i].getExpectedVersion(), resolvedKv[i].getExpectedVersion());
-				assertArrayEquals(dataKv[i].getValue().getValue().toBytes(),
-						resolvedKv[i].getValue().getValue().toBytes());
+				assertArrayEquals(dataKv[i].getValue().getBytes().toBytes(),
+						resolvedKv[i].getValue().getBytes().toBytes());
 			}
 		}
 	}
@@ -108,8 +108,8 @@ public class TxContentBlobTest {
 			for (int j = 0; j < dataKv.length; j++) {
 				assertEquals(dataKv[i].getKey(), resolvedKv[i].getKey());
 				assertEquals(dataKv[i].getExpectedVersion(), resolvedKv[i].getExpectedVersion());
-				assertArrayEquals(dataKv[i].getValue().getValue().toBytes(),
-						resolvedKv[i].getValue().getValue().toBytes());
+				assertArrayEquals(dataKv[i].getValue().getBytes().toBytes(),
+						resolvedKv[i].getValue().getBytes().toBytes());
 			}
 		}
 	}

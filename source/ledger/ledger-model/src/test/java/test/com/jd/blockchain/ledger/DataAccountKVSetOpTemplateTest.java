@@ -63,7 +63,7 @@ public class DataAccountKVSetOpTemplateTest {
         assertEquals(dataKv.length, resolvedKv.length);
         for (int i = 0; i < dataKv.length; i++) {
             assertEquals(dataKv[i].getKey(), resolvedKv[i].getKey());
-            assertArrayEquals(dataKv[i].getValue().getValue().toBytes(), resolvedKv[i].getValue().getValue().toBytes());
+            assertArrayEquals(dataKv[i].getValue().getBytes().toBytes(), resolvedKv[i].getValue().getBytes().toBytes());
             assertEquals(dataKv[i].getValue().getType().CODE, resolvedKv[i].getValue().getType().CODE);
 
             assertEquals(dataKv[i].getExpectedVersion(), resolvedKv[i].getExpectedVersion());

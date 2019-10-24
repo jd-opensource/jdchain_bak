@@ -236,13 +236,13 @@ public class IntegrationTestAll4Redis {
 		assertEquals(ledgerRepository.retrieveLatestBlockHeight(), txResp.getBlockHeight());
 
 		assertEquals("Value_A_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataset().getValue("A").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("A").getBytes().toUTF8String());
 		assertEquals("Value_B_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataset().getValue("B").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("B").getBytes().toUTF8String());
 		assertEquals("Value_C_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataset().getValue("C").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("C").getBytes().toUTF8String());
 		assertEquals("Value_D_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataset().getValue("D").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("D").getBytes().toUTF8String());
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
 				.getAccount(dataKey.getAddress()).getDataset().getVersion("A"));
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
@@ -473,7 +473,7 @@ public class IntegrationTestAll4Redis {
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
 		assertEquals(dataAddress, dataAccountSet.getAccount(dataAddress).getID().getAddress());
 		assertEquals("hello",
-				dataAccountSet.getAccount(dataAddress).getDataset().getValue(KEY_TOTAL, -1).getValue().toUTF8String());
+				dataAccountSet.getAccount(dataAddress).getDataset().getValue(KEY_TOTAL, -1).getBytes().toUTF8String());
 
 		// 验证userAccount，从合约内部赋值，然后外部验证;内部定义动态key，外部不便于得到，临时屏蔽;
 		// UserAccountSet userAccountSet =
@@ -504,8 +504,8 @@ public class IntegrationTestAll4Redis {
 				.getDataset().getValue("A");
 		BytesValue val2InDb = ledgerRepository.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
 				.getDataset().getValue(KEY_TOTAL);
-		assertEquals("Value_A_0", val1InDb.getValue().toUTF8String());
-		assertEquals("total value,dataAccount", val2InDb.getValue().toUTF8String());
+		assertEquals("Value_A_0", val1InDb.getBytes().toUTF8String());
+		assertEquals("total value,dataAccount", val2InDb.getBytes().toUTF8String());
 	}
 
 	/**
