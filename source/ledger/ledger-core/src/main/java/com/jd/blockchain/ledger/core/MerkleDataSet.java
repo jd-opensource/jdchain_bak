@@ -12,8 +12,8 @@ import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
 import com.jd.blockchain.storage.service.utils.VersioningKVData;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
-import com.jd.blockchain.utils.VersioningKVEntry;
-import com.jd.blockchain.utils.VersioningMap;
+import com.jd.blockchain.utils.DataEntry;
+import com.jd.blockchain.utils.Dataset;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
@@ -24,7 +24,7 @@ import com.jd.blockchain.utils.io.BytesUtils;
  * @author huanghaiquan
  *
  */
-public class MerkleDataSet implements Transactional, MerkleProvable, VersioningMap<Bytes, byte[]> {
+public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Bytes, byte[]> {
 
 	/**
 	 * 4 MB MaxSize of value;
@@ -70,6 +70,18 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	 */
 	public MerkleDataSet(CryptoSetting setting, String keyPrefix, ExPolicyKVStorage exPolicyStorage,
 			VersioningKVStorage versioningStorage) {
+		this(setting, Bytes.fromString(keyPrefix), exPolicyStorage, versioningStorage);
+	}
+
+	/**
+	 * 创建一个新的 MerkleDataSet；
+	 * 
+	 * @param setting           密码设置；
+	 * @param exPolicyStorage   默克尔树的存储；
+	 * @param versioningStorage 数据的存储；
+	 */
+	public MerkleDataSet(CryptoSetting setting, Bytes keyPrefix, ExPolicyKVStorage exPolicyStorage,
+			VersioningKVStorage versioningStorage) {
 		// 缓冲对KV的写入；
 		this.bufferedStorage = new BufferedKVStorage(exPolicyStorage, versioningStorage, false);
 
@@ -78,18 +90,32 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 		// bufferedStorage);
 		// this.snStorage = PrefixAppender.prefix(SN_PREFIX, (ExPolicyKVStorage)
 		// bufferedStorage);
-		snKeyPrefix = Bytes.fromString(keyPrefix + SN_PREFIX);
-		dataKeyPrefix = Bytes.fromString(keyPrefix + DATA_PREFIX);
+		snKeyPrefix = keyPrefix.concat(SN_PREFIX);
+		dataKeyPrefix = keyPrefix.concat(DATA_PREFIX);
 		this.valueStorage = bufferedStorage;
 		this.snStorage = bufferedStorage;
 
 		// MerkleTree 本身是可缓冲的；
 		// ExPolicyKVStorage merkleTreeStorage =
 		// PrefixAppender.prefix(MERKLE_TREE_PREFIX, exPolicyStorage);
-		merkleKeyPrefix = Bytes.fromString(keyPrefix + MERKLE_TREE_PREFIX);
+		merkleKeyPrefix = keyPrefix.concat(MERKLE_TREE_PREFIX);
 		ExPolicyKVStorage merkleTreeStorage = exPolicyStorage;
 		this.merkleTree = new MerkleTree(setting, merkleKeyPrefix, merkleTreeStorage);
 		this.snGenerator = new MerkleSequenceSNGenerator(merkleTree);
+	}
+
+	/**
+	 * 从指定的 Merkle 根构建的 MerkleDataSet；
+	 * 
+	 * @param dataStorage
+	 * @param defaultMerkleHashAlgorithm
+	 * @param verifyMerkleHashOnLoad
+	 * @param merkleTreeStorage
+	 * @param snGenerator
+	 */
+	public MerkleDataSet(HashDigest merkleRootHash, CryptoSetting setting, String keyPrefix,
+			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage versioningStorage, boolean readonly) {
+		this(merkleRootHash, setting, Bytes.fromString(keyPrefix), exPolicyStorage, versioningStorage, readonly);
 	}
 
 	/**
@@ -131,6 +157,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 		this.readonly = true;
 	}
 
+	@Override
 	public long getDataCount() {
 		return merkleTree.getDataCount();
 	}
@@ -155,7 +182,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 		return values;
 	}
 
-	public VersioningKVEntry<Bytes, byte[]>[] getLatestDataEntries(int fromIndex, int count) {
+	public DataEntry<Bytes, byte[]>[] getLatestDataEntries(int fromIndex, int count) {
 		if (count > LedgerConsts.MAX_LIST_COUNT) {
 			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
 		}
@@ -163,7 +190,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 			throw new IllegalArgumentException("Index out of bound!");
 		}
 		@SuppressWarnings("unchecked")
-		VersioningKVEntry<Bytes, byte[]>[] values = new VersioningKVEntry[count];
+		DataEntry<Bytes, byte[]>[] values = new DataEntry[count];
 		byte[] bytesValue;
 		for (int i = 0; i < count; i++) {
 			MerkleDataNode dataNode = merkleTree.getData(fromIndex + i);
@@ -194,7 +221,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	 */
 	public String getKeyAtIndex(int fromIndex) {
 		MerkleDataNode dataNode = merkleTree.getData(fromIndex);
-		//TODO: 未去掉前缀；
+		// TODO: 未去掉前缀；
 		return dataNode.getKey().toUTF8String();
 	}
 
@@ -428,8 +455,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 		return getMerkleVersion(key);
 	}
 
-//	public VersioningKVEntry getDataEntry(String key) {
-//		return getDataEntry(Bytes.fromString(key));
+//	@Override
+//	public VersioningKVEntry<String, byte[]> getDataEntry(String key) {
+//		return getDataEntry(key, -1);
 //	}
 
 	/**
@@ -438,21 +466,30 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	 * @return Null if the key doesn't exist!
 	 */
 	@Override
-	public VersioningKVEntry<Bytes, byte[]> getDataEntry(Bytes key) {
-		long latestVersion = getMerkleVersion(key);
-		if (latestVersion < 0) {
-			return null;
-		}
-		Bytes dataKey = encodeDataKey(key);
-		byte[] value = valueStorage.get(dataKey, latestVersion);
-		if (value == null) {
-			return null;
-		}
-		return new VersioningKVData<Bytes, byte[]>(key, latestVersion, value);
+	public DataEntry<Bytes, byte[]> getDataEntry(Bytes key) {
+		return getDataEntry(key, -1);
 	}
 
+//	@Override
+//	public VersioningKVEntry<String, byte[]> getDataEntry(String key, long version) {
+//		Bytes keyBytes = Bytes.fromString(key);
+//		long latestVersion = getMerkleVersion(keyBytes);
+//		if (latestVersion < 0 || version > latestVersion) {
+//			// key not exist, or the specified version is out of the latest version indexed
+//			// by the current merkletree;
+//			return null;
+//		}
+//		version = version < 0 ? latestVersion : version;
+//		Bytes dataKey = encodeDataKey(keyBytes);
+//		byte[] value = valueStorage.get(dataKey, version);
+//		if (value == null) {
+//			return null;
+//		}
+//		return new VersioningKVData<String, byte[]>(key, version, value);
+//	}
+
 	@Override
-	public VersioningKVEntry<Bytes, byte[]> getDataEntry(Bytes key, long version) {
+	public DataEntry<Bytes, byte[]> getDataEntry(Bytes key, long version) {
 		long latestVersion = getMerkleVersion(key);
 		if (latestVersion < 0 || version > latestVersion) {
 			// key not exist, or the specified version is out of the latest version indexed
@@ -469,7 +506,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	}
 
 	public MerkleDataEntry getMerkleEntry(Bytes key, long version) {
-		VersioningKVEntry<Bytes, byte[]> dataEntry = getDataEntry(key, version);
+		DataEntry<Bytes, byte[]> dataEntry = getDataEntry(key, version);
 		if (dataEntry == null) {
 			return null;
 		}
@@ -478,7 +515,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	}
 
 	public MerkleDataEntry getMerkleEntry(Bytes key) {
-		VersioningKVEntry<Bytes, byte[]> dataEntry = getDataEntry(key);
+		DataEntry<Bytes, byte[]> dataEntry = getDataEntry(key);
 		if (dataEntry == null) {
 			return null;
 		}
@@ -505,23 +542,23 @@ public class MerkleDataSet implements Transactional, MerkleProvable, VersioningM
 	}
 
 	/**
-	 * A wrapper for {@link VersioningKVEntry} and {@link MerkleProof};
+	 * A wrapper for {@link DataEntry} and {@link MerkleProof};
 	 * 
 	 * @author huanghaiquan
 	 *
 	 */
 	private static class MerkleDataEntryWrapper implements MerkleDataEntry {
 
-		private VersioningKVEntry<Bytes, byte[]> data;
+		private DataEntry<Bytes, byte[]> data;
 		private MerkleProof proof;
 
-		public MerkleDataEntryWrapper(VersioningKVEntry<Bytes, byte[]> data, MerkleProof proof) {
+		public MerkleDataEntryWrapper(DataEntry<Bytes, byte[]> data, MerkleProof proof) {
 			this.data = data;
 			this.proof = proof;
 		}
 
 		@Override
-		public VersioningKVEntry<Bytes, byte[]> getData() {
+		public DataEntry<Bytes, byte[]> getData() {
 			return data;
 		}
 

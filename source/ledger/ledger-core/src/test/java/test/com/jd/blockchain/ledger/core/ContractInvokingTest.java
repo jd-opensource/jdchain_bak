@@ -301,7 +301,7 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1",
+		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1",
 				0);
 		KVDataEntry kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2",
 				0);

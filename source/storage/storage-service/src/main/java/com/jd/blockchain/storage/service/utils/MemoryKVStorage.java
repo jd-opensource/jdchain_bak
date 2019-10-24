@@ -7,7 +7,7 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.KVStorageService;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningKVEntry;
+import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.io.BytesMap;
 
 public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, KVStorageService, BytesMap<Bytes> {
@@ -21,7 +21,7 @@ public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, 
 	}
 
 	@Override
-	public VersioningKVEntry getEntry(Bytes key, long version) {
+	public DataEntry getEntry(Bytes key, long version) {
 		return verStorage.getEntry(key, version);
 	}
 

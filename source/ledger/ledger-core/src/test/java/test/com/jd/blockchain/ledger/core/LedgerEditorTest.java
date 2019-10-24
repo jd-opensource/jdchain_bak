@@ -8,12 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.CryptoProvider;
 import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
 import com.jd.blockchain.crypto.service.classic.ClassicCryptoService;
 import com.jd.blockchain.crypto.service.sm.SMCryptoService;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -25,7 +22,7 @@ import com.jd.blockchain.ledger.LedgerInitSetting;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.core.CryptoConfig;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerEditor;
@@ -33,11 +30,6 @@ import com.jd.blockchain.ledger.core.LedgerTransactionContext;
 import com.jd.blockchain.ledger.core.LedgerTransactionalEditor;
 import com.jd.blockchain.ledger.core.UserAccount;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
-import com.jd.blockchain.transaction.ConsensusParticipantData;
-import com.jd.blockchain.transaction.LedgerInitData;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.BytesUtils;
-import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class LedgerEditorTest {
 
@@ -102,7 +94,7 @@ public class LedgerEditorTest {
 
 		DataAccount dataAccount = ldgDS.getDataAccountSet().register(dataKP.getAddress(), dataKP.getPubKey(), null);
 
-		dataAccount.setBytes(Bytes.fromString("A"), "abc", -1);
+		dataAccount.getDataset().setValue("A", TypedValue.fromText("abc"), -1);
 
 		LedgerTransaction tx = genisisTxCtx.commit(TransactionState.SUCCESS);
 		LedgerBlock block = ldgEdt.prepare();
@@ -115,7 +107,7 @@ public class LedgerEditorTest {
 		assertEquals(0, block.getHeight());
 
 		// 验证数据读写的一致性；
-		BytesValue bytes = dataAccount.getBytes("A");
+		BytesValue bytes = dataAccount.getDataset().getValue("A");
 		assertEquals(DataType.TEXT, bytes.getType());
 		String textValue = bytes.getValue().toUTF8String();
 		assertEquals("abc", textValue);

@@ -1,8 +1,8 @@
 package com.jd.blockchain.storage.service.utils;
 
-import com.jd.blockchain.utils.VersioningKVEntry;
+import com.jd.blockchain.utils.DataEntry;
 
-public class VersioningKVData<K, V> implements VersioningKVEntry<K, V> {
+public class VersioningKVData<K, V> implements DataEntry<K, V> {
 
 		private K key;
 

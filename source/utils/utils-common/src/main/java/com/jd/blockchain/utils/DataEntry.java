@@ -6,12 +6,12 @@ package com.jd.blockchain.utils;
  * @author huanghaiquan
  *
  */
-public interface VersioningKVEntry<K, V>{
-	
-	K getKey();
-	
-	long getVersion();
+public interface DataEntry<K, V> {
 
-	V getValue();
+	public K getKey();
+
+	public long getVersion();
+
+	public V getValue();
 
 }

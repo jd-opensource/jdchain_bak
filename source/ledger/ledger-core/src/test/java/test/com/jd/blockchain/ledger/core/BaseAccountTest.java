@@ -55,33 +55,33 @@ public class BaseAccountTest {
 		assertFalse(baseAccount.isReadonly());
 
 		// 在空白状态下写入数据；
-		long v = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A"), 0);
+		long v = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A"), 0);
 		// 预期失败；
 		assertEquals(-1, v);
 
-		v = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A"), 1);
+		v = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A"), 1);
 		// 预期失败；
 		assertEquals(-1, v);
 
-		v = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A"), -1);
+		v = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A"), -1);
 		// 预期成功；
 		assertEquals(0, v);
 
-		v = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A-1"), -1);
+		v = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A-1"), -1);
 		// 已经存在版本，指定版本号-1，预期导致失败；
 		assertEquals(-1, v);
 
 		baseAccount.commit();
 		v = 0;
 		for (int i = 0; i < 10; i++) {
-			long s = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A_" + i), v);
+			long s = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A_" + i), v);
 			baseAccount.commit();
 			// 预期成功；
 			assertEquals(v + 1, s);
 			v++;
 		}
 
-		v = baseAccount.getDataset().setValue(Bytes.fromString("A"), TypedValue.fromText("VALUE_A_" + v), v + 1);
+		v = baseAccount.getDataset().setValue("A", TypedValue.fromText("VALUE_A_" + v), v + 1);
 		// 预期成功；
 		assertEquals(-1, v);
 

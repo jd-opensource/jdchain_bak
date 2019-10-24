@@ -2,7 +2,7 @@ package com.jd.blockchain.storage.service.impl.redis;
 
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningKVEntry;
+import com.jd.blockchain.utils.DataEntry;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -45,7 +45,7 @@ public class RedisVerioningStorage implements VersioningKVStorage {
 	}
 
 	@Override
-	public VersioningKVEntry getEntry(Bytes key, long version) {
+	public DataEntry getEntry(Bytes key, long version) {
 		byte[] value = get(key, version);
 		if (value == null) {
 			return null;
@@ -101,7 +101,7 @@ public class RedisVerioningStorage implements VersioningKVStorage {
 	}
 
 
-	private static class VersioningKVData implements VersioningKVEntry{
+	private static class VersioningKVData implements DataEntry{
 
 		private Bytes key;
 

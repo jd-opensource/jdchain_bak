@@ -15,9 +15,9 @@ import com.jd.blockchain.utils.Bytes;
  */
 public class UserAccount extends AccountDecorator implements UserInfo { // implements UserInfo {
 
-	private static final Bytes USER_INFO_PREFIX = Bytes.fromString("PROP" + LedgerConsts.KEY_SEPERATOR);
+	private static final String USER_INFO_PREFIX = "PROP" + LedgerConsts.KEY_SEPERATOR;
 
-	private static final Bytes DATA_PUB_KEY = Bytes.fromString("DATA-PUBKEY");
+	private static final String DATA_PUB_KEY = "DATA-PUBKEY";
 
 	public UserAccount(MerkleAccount mklAccount) {
 		super(mklAccount);
@@ -64,25 +64,21 @@ public class UserAccount extends AccountDecorator implements UserInfo { // imple
 	}
 
 	public long setProperty(String key, String value, long version) {
-		return setProperty(Bytes.fromString(key), value, version);
-	}
-
-	public long setProperty(Bytes key, String value, long version) {
 		return getHeaders().setValue(encodePropertyKey(key), TypedValue.fromText(value), version);
 	}
 
-	public String getProperty(Bytes key) {
+	public String getProperty(String key) {
 		BytesValue value = getHeaders().getValue(encodePropertyKey(key));
 		return value == null ? null : value.getValue().toUTF8String();
 	}
 
-	public String getProperty(Bytes key, long version) {
+	public String getProperty(String key, long version) {
 		BytesValue value = getHeaders().getValue(encodePropertyKey(key), version);
 		return value == null ? null : value.getValue().toUTF8String();
 	}
 
-	private Bytes encodePropertyKey(Bytes key) {
-		return USER_INFO_PREFIX.concat(key);
+	private String encodePropertyKey(String key) {
+		return USER_INFO_PREFIX+key;
 	}
 
 

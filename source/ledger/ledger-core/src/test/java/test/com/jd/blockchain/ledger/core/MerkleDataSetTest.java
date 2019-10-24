@@ -25,7 +25,9 @@ import com.jd.blockchain.ledger.core.CryptoConfig;
 import com.jd.blockchain.ledger.core.MerkleDataSet;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningKVEntry;
+import com.jd.blockchain.utils.DataEntry;
+import com.jd.blockchain.utils.Dataset;
+import com.jd.blockchain.utils.DatasetHelper;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 public class MerkleDataSetTest {
@@ -53,9 +55,9 @@ public class MerkleDataSetTest {
 		MemoryKVStorage storage = new MemoryKVStorage();
 		
 		MerkleDataSet mds = new MerkleDataSet(cryptoConfig, keyPrefix, storage, storage);
-		mds.setValue("A", "A".getBytes(), -1);
-		mds.setValue("B", "B".getBytes(), -1);
-		mds.setValue("C", "C".getBytes(), -1);
+		mds.setValue(Bytes.fromString("A"), "A".getBytes(), -1);
+		mds.setValue(Bytes.fromString("B"), "B".getBytes(), -1);
+		mds.setValue(Bytes.fromString("C"), "C".getBytes(), -1);
 		
 		mds.commit();
 		
@@ -85,22 +87,23 @@ public class MerkleDataSetTest {
 		MemoryKVStorage storage = new MemoryKVStorage();
 
 		MerkleDataSet mds = new MerkleDataSet(cryptoConfig, keyPrefix, storage, storage);
-		mds.setValue("A", "A".getBytes(), -1);
-		mds.setValue("B", "B".getBytes(), -1);
-		mds.setValue("C", "C".getBytes(), -1);
+		Dataset<String, byte[]> ds = DatasetHelper.map(mds);
+		ds.setValue("A", "A".getBytes(), -1);
+		ds.setValue("B", "B".getBytes(), -1);
+		ds.setValue("C", "C".getBytes(), -1);
 
 		mds.commit();
 
-		byte[] va = mds.getValue("A");
+		byte[] va = ds.getValue("A");
 		assertNotNull(va);
 		assertEquals("A", new String(va));
 		
-		byte[] vc = mds.getValue("C");
-		VersioningKVEntry ventry = mds.getDataEntry("C");
+		byte[] vc = ds.getValue("C");
+		DataEntry<String, byte[]> ventry = ds.getDataEntry("C");
 		assertNotNull(vc);
 		assertNotNull(ventry);
 		assertEquals("C", new String(vc));
-		assertEquals("C", ventry.getKey().toUTF8String());
+		assertEquals("C", ventry.getKey());
 
 		HashDigest root1 = mds.getRootHash();
 	
@@ -111,8 +114,8 @@ public class MerkleDataSetTest {
 		int expStorageCount = 10;
 		assertEquals(expStorageCount, storage.getStorageCount());
 
-		mds.setValue("B", "B".getBytes(), 0);
-		mds.setValue("C", "C".getBytes(), 0);
+		ds.setValue("B", "B".getBytes(), 0);
+		ds.setValue("C", "C".getBytes(), 0);
 		mds.commit();
 		HashDigest root2 = mds.getRootHash();
 		assertNotEquals(root1, root2);
@@ -122,7 +125,7 @@ public class MerkleDataSetTest {
 		expStorageCount = expStorageCount + 3;
 		assertEquals(expStorageCount, storage.getStorageCount());
 
-		mds.setValue("D", "DValue".getBytes(), -1);
+		ds.setValue("D", "DValue".getBytes(), -1);
 		mds.commit();
 		HashDigest root3 = mds.getRootHash();
 		assertNotEquals(root2, root3);
@@ -135,31 +138,31 @@ public class MerkleDataSetTest {
 		assertEquals(expStorageCount, storage.getStorageCount());
 
 		// Check rollback function: Add some keys, and then rollback;
-		long v = mds.setValue("E", "E-values".getBytes(), -1);
+		long v = ds.setValue("E", "E-values".getBytes(), -1);
 		assertEquals(v, 0);
-		String expEValue = new String(mds.getValue("E"));
+		String expEValue = new String(ds.getValue("E"));
 		assertEquals(expEValue, "E-values");
 
-		v = mds.setValue("F", "F-values".getBytes(), -1);
+		v = ds.setValue("F", "F-values".getBytes(), -1);
 		assertEquals(v, 0);
-		String expFValue = new String(mds.getValue("F"));
+		String expFValue = new String(ds.getValue("F"));
 		assertEquals(expFValue, "F-values");
 
-		v = mds.setValue("E", "E-values-1".getBytes(), 0);
+		v = ds.setValue("E", "E-values-1".getBytes(), 0);
 		assertEquals(v, 1);
-		expEValue = new String(mds.getValue("E"));
+		expEValue = new String(ds.getValue("E"));
 		assertEquals(expEValue, "E-values-1");
 
 		mds.cancel();
 
-		byte[] bv = mds.getValue("E");
+		byte[] bv = ds.getValue("E");
 		assertNull(bv);
-		bv = mds.getValue("F");
+		bv = ds.getValue("F");
 		assertNull(bv);
 
-		v = mds.getVersion("E");
+		v = ds.getVersion("E");
 		assertEquals(-1, v);
-		v = mds.getVersion("F");
+		v = ds.getVersion("F");
 		assertEquals(-1, v);
 
 		// Expect that states has been recover;
@@ -194,10 +197,11 @@ public class MerkleDataSetTest {
 		MemoryKVStorage storage = new MemoryKVStorage();
 
 		MerkleDataSet mds = new MerkleDataSet(cryptoConfig, keyPrefix, storage, storage);
+		Dataset<String, byte[]> ds = DatasetHelper.map(mds);
 
 		// 初始的时候没有任何数据，总是返回 null；
-		VersioningKVEntry verKVEntry = mds.getDataEntry("NULL_KEY");
-		byte[] vbytes = mds.getValue("NULL_KEY");
+		DataEntry verKVEntry = ds.getDataEntry("NULL_KEY");
+		byte[] vbytes = ds.getValue("NULL_KEY");
 		assertNull(verKVEntry);
 		assertNull(vbytes);
 
@@ -217,7 +221,7 @@ public class MerkleDataSetTest {
 		for (int i = 0; i < count; i++) {
 			key = "data" + i;
 			rand.nextBytes(data);
-			v = mds.setValue(key, data, -1);
+			v = ds.setValue(key, data, -1);
 			dataVersions.put(key, v);
 			dataValues.put(key + "_" + v, data);
 			assertEquals(v, 0);
@@ -237,7 +241,7 @@ public class MerkleDataSetTest {
 
 				KeySnapshot ks = new KeySnapshot();
 				ks.proof = proof;
-				ks.maxVersion = mds.getVersion(key);
+				ks.maxVersion = ds.getVersion(key);
 
 				snapshot.put(key, ks);
 			}
@@ -271,7 +275,7 @@ public class MerkleDataSetTest {
 				key = "data" + i;
 				rand.nextBytes(data);
 				expVer = dataVersions.get(key);
-				v = mds.setValue(key, data, expVer);
+				v = ds.setValue(key, data, expVer);
 
 				assertEquals(v, expVer + 1);
 
@@ -300,7 +304,7 @@ public class MerkleDataSetTest {
 
 					KeySnapshot ks = new KeySnapshot();
 					ks.proof = proof;
-					ks.maxVersion = mds.getVersion(key);
+					ks.maxVersion = ds.getVersion(key);
 					snapshot.put(key, ks);
 				}
 				history.put(rootHash, snapshot);
@@ -316,6 +320,7 @@ public class MerkleDataSetTest {
 
 				MerkleDataSet mdsReload = new MerkleDataSet(hisRootHash, cryptoConfig, keyPrefix, storage, storage,
 						true);
+				Dataset<String, byte[]> dsReload = DatasetHelper.map(mdsReload);
 				assertEquals(hisRootHash, mdsReload.getRootHash());
 
 				// verify every keys;
@@ -323,7 +328,7 @@ public class MerkleDataSetTest {
 					key = "data" + i;
 					// 最新版本一致；
 					long expLatestVersion = snapshot.get(key).maxVersion;
-					long actualLatestVersion = mdsReload.getVersion(key);
+					long actualLatestVersion = dsReload.getVersion(key);
 					assertEquals(expLatestVersion, actualLatestVersion);
 
 					// 数据证明一致；
@@ -339,7 +344,7 @@ public class MerkleDataSetTest {
 					for (long j = 0; j < actualLatestVersion; j++) {
 						String keyver = key + "_" + j;
 						byte[] expValue = dataValues.get(keyver);
-						byte[] actualValue = mdsReload.getValue(key, j);
+						byte[] actualValue = dsReload.getValue(key, j);
 						assertTrue(BytesUtils.equals(expValue, actualValue));
 					}
 				}
@@ -365,10 +370,11 @@ public class MerkleDataSetTest {
 		MemoryKVStorage storage = new MemoryKVStorage();
 
 		MerkleDataSet mds = new MerkleDataSet(cryptoConfig, keyPrefix, storage, storage);
+		Dataset<String, byte[]> ds = DatasetHelper.map(mds);
 
 		// 初始的时候没有任何数据，总是返回 null；
-		VersioningKVEntry verKVEntry = mds.getDataEntry("NULL_KEY");
-		byte[] vbytes = mds.getValue("NULL_KEY");
+		DataEntry verKVEntry = ds.getDataEntry("NULL_KEY");
+		byte[] vbytes = ds.getValue("NULL_KEY");
 		assertNull(verKVEntry);
 		assertNull(vbytes);
 
@@ -388,7 +394,7 @@ public class MerkleDataSetTest {
 		MerkleProof proof;
 		for (int i = 0; i < count; i++) {
 			key = "data" + i;
-			v = mds.setValue(key, data, -1);
+			v = ds.setValue(key, data, -1);
 			dataVersions.put(key, v);
 			// dataValues.put(key + "_" + v, data);
 			assertEquals(v, 0);
@@ -408,7 +414,7 @@ public class MerkleDataSetTest {
 
 				KeySnapshot ks = new KeySnapshot();
 				ks.proof = proof;
-				ks.maxVersion = mds.getVersion(key);
+				ks.maxVersion = ds.getVersion(key);
 
 				snapshot.put(key, ks);
 			}
@@ -418,6 +424,7 @@ public class MerkleDataSetTest {
 		// verify;
 		{
 			MerkleDataSet mdsReload = new MerkleDataSet(rootHash, cryptoConfig, keyPrefix, storage, storage, true);
+			Dataset<String, byte[]> dsReload = DatasetHelper.map(mdsReload);
 			// verify every keys;
 			Map<String, KeySnapshot> snapshot = history.get(rootHash);
 			MerkleProof expProof;
@@ -429,7 +436,7 @@ public class MerkleDataSetTest {
 				expProof = snapshot.get(key).proof;
 				assertEquals(expProof.toString(), proof.toString());
 
-				byte[] value = mdsReload.getValue(key);
+				byte[] value = dsReload.getValue(key);
 				assertTrue(BytesUtils.equals(data, value));
 			}
 		}

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningKVEntry;
+import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.io.BytesMap;
 
 public class VersioningKVStorageMap implements VersioningKVStorage, BytesMap<Bytes> {
@@ -42,7 +42,7 @@ public class VersioningKVStorageMap implements VersioningKVStorage, BytesMap<Byt
 	}
 
 	@Override
-	public VersioningKVEntry getEntry(Bytes key, long version) {
+	public DataEntry getEntry(Bytes key, long version) {
 		VersioningWritingSet ws = versioningCache.get(key);
 		if (ws == null) {
 			return null;
@@ -195,7 +195,7 @@ public class VersioningKVStorageMap implements VersioningKVStorage, BytesMap<Byt
 			return startingVersion;
 		}
 
-		public VersioningKVEntry getEntry(long version) {
+		public DataEntry getEntry(long version) {
 			byte[] value = get(version);
 			if (value == null) {
 				return null;

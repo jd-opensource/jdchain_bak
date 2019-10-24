@@ -29,16 +29,16 @@ import com.jd.blockchain.utils.QueryUtil;
 public class LedgerQueryService implements BlockchainQueryService {
 
 	private static final KVDataEntry[] EMPTY_ENTRIES = new KVDataEntry[0];
-	
+
 	private HashDigest[] ledgerHashs;
 
 	private LedgerQuery ledger;
 
 	public LedgerQueryService(LedgerQuery ledger) {
 		this.ledger = ledger;
-		this.ledgerHashs = new HashDigest[] {ledger.getHash()};
+		this.ledgerHashs = new HashDigest[] { ledger.getHash() };
 	}
-	
+
 	private void checkLedgerHash(HashDigest ledgerHash) {
 		if (!ledgerHashs[0].equals(ledgerHash)) {
 			throw new LedgerException("Unsupport cross chain query!");
@@ -59,7 +59,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		ledgerInfo.setLatestBlockHeight(ledger.getLatestBlockHeight());
 		return ledgerInfo;
 	}
-	
+
 	@Override
 	public LedgerAdminInfo getLedgerAdminInfo(HashDigest ledgerHash) {
 		checkLedgerHash(ledgerHash);
@@ -345,12 +345,12 @@ public class LedgerQueryService implements BlockchainQueryService {
 			if (ver < 0) {
 				entries[i] = new KVDataObject(keys[i], -1, null);
 			} else {
-				if (dataAccount.getDataset().getDataEntriesTotalCount() == 0
-						|| dataAccount.getBytes(Bytes.fromString(keys[i]), ver) == null) {
+				if (dataAccount.getDataset().getDataCount() == 0
+						|| dataAccount.getDataset().getValue(keys[i], ver) == null) {
 					// is the address is not exist; the result is null;
 					entries[i] = new KVDataObject(keys[i], -1, null);
 				} else {
-					BytesValue value = dataAccount.getBytes(Bytes.fromString(keys[i]), ver);
+					BytesValue value = dataAccount.getDataset().getValue(keys[i], ver);
 					entries[i] = new KVDataObject(keys[i], ver, value);
 				}
 			}
@@ -366,8 +366,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataEntriesTotalCount());
-		return dataAccount.getDataEntries(pages[0], pages[1]);
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
+		return dataAccount.getDataset()..getDataEntries(pages[0], pages[1]);
 	}
 
 	@Override
@@ -377,7 +377,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		return dataAccount.getDataEntriesTotalCount();
+		return dataAccount.getDataset().getDataCount();
 	}
 
 	@Override

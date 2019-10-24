@@ -1,8 +1,8 @@
 package com.jd.blockchain.utils;
 
-public interface VersioningMap<K, V> {
+public interface Dataset<K, V> {
 	
-//	long getDataCount();
+	long getDataCount();
 
 //	/**
 //	 * Create or update the value associated the specified key if the version
@@ -109,8 +109,8 @@ public interface VersioningMap<K, V> {
 	 * @param key
 	 * @return Null if the key doesn't exist!
 	 */
-	VersioningKVEntry<K, V> getDataEntry(K key);
+	DataEntry<K, V> getDataEntry(K key);
 
-	VersioningKVEntry<K, V> getDataEntry(K key, long version);
+	DataEntry<K, V> getDataEntry(K key, long version);
 
 }

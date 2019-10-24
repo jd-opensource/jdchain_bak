@@ -1,8 +1,39 @@
 package test.com.jd.blockchain.intgr;
 
-import com.jd.blockchain.crypto.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
+
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.Crypto;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerInitProperties;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.DataAccountQuery;
 import com.jd.blockchain.ledger.core.LedgerManage;
@@ -17,18 +48,9 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.HexUtils;
 import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
 import com.jd.blockchain.utils.net.NetworkAddress;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
+
 import test.com.jd.blockchain.intgr.contract.AssetContract;
 import test.com.jd.blockchain.intgr.initializer.LedgerInitializeWeb4SingleStepsTest;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Random;
-
-import static org.junit.Assert.*;
 
 public class IntegrationTestAll4Redis {
 
@@ -214,21 +236,21 @@ public class IntegrationTestAll4Redis {
 		assertEquals(ledgerRepository.retrieveLatestBlockHeight(), txResp.getBlockHeight());
 
 		assertEquals("Value_A_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getBytes("A").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("A").getValue().toUTF8String());
 		assertEquals("Value_B_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getBytes("B").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("B").getValue().toUTF8String());
 		assertEquals("Value_C_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getBytes("C").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("C").getValue().toUTF8String());
 		assertEquals("Value_D_0", ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getBytes("D").getValue().toUTF8String());
+				.getAccount(dataKey.getAddress()).getDataset().getValue("D").getValue().toUTF8String());
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataVersion("A"));
+				.getAccount(dataKey.getAddress()).getDataset().getVersion("A"));
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataVersion("B"));
+				.getAccount(dataKey.getAddress()).getDataset().getVersion("B"));
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataVersion("C"));
+				.getAccount(dataKey.getAddress()).getDataset().getVersion("C"));
 		assertEquals(0, ledgerRepository.getDataAccountSet(ledgerRepository.retrieveLatestBlock())
-				.getAccount(dataKey.getAddress()).getDataVersion("D"));
+				.getAccount(dataKey.getAddress()).getDataset().getVersion("D"));
 
 		return;
 	}
@@ -449,9 +471,9 @@ public class IntegrationTestAll4Redis {
 		AsymmetricKeypair key = Crypto.getSignatureFunction("ED25519").generateKeypair();
 		PubKey pubKey = key.getPubKey();
 		Bytes dataAddress = AddressEncoding.generateAddress(pubKey);
-		assertEquals(dataAddress, dataAccountSet.getAccount(dataAddress).getAddress());
+		assertEquals(dataAddress, dataAccountSet.getAccount(dataAddress).getID().getAddress());
 		assertEquals("hello",
-				dataAccountSet.getAccount(dataAddress).getBytes(KEY_TOTAL, -1).getValue().toUTF8String());
+				dataAccountSet.getAccount(dataAddress).getDataset().getValue(KEY_TOTAL, -1).getValue().toUTF8String());
 
 		// 验证userAccount，从合约内部赋值，然后外部验证;内部定义动态key，外部不便于得到，临时屏蔽;
 		// UserAccountSet userAccountSet =
@@ -479,9 +501,9 @@ public class IntegrationTestAll4Redis {
 		// 验证结果；
 		LedgerBlock block = ledgerRepository.getBlock(txResp.getBlockHeight());
 		BytesValue val1InDb = ledgerRepository.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
-				.getBytes("A");
+				.getDataset().getValue("A");
 		BytesValue val2InDb = ledgerRepository.getDataAccountSet(block).getAccount(contractDataKey.getAddress())
-				.getBytes(KEY_TOTAL);
+				.getDataset().getValue(KEY_TOTAL);
 		assertEquals("Value_A_0", val1InDb.getValue().toUTF8String());
 		assertEquals("total value,dataAccount", val2InDb.getValue().toUTF8String());
 	}

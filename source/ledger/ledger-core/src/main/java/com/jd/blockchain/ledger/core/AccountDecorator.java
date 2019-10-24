@@ -2,11 +2,11 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.HashProof;
 import com.jd.blockchain.ledger.MerkleSnapshot;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.VersioningMap;
+import com.jd.blockchain.utils.Dataset;
 
 public class AccountDecorator implements LedgerAccount, HashProvable, MerkleSnapshot{
 	
@@ -16,7 +16,7 @@ public class AccountDecorator implements LedgerAccount, HashProvable, MerkleSnap
 		this.mklAccount = mklAccount;
 	}
 	
-	protected VersioningMap<Bytes, BytesValue> getHeaders() {
+	protected Dataset<String, TypedValue> getHeaders() {
 		return mklAccount.getHeaders();
 	}
 
@@ -37,7 +37,7 @@ public class AccountDecorator implements LedgerAccount, HashProvable, MerkleSnap
 	}
 
 	@Override
-	public VersioningMap<Bytes, BytesValue> getDataset() {
+	public Dataset<String, TypedValue> getDataset() {
 		return mklAccount.getDataset();
 	}
 
