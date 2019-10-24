@@ -25,7 +25,7 @@ import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.service.DataRetrievalService;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -261,7 +261,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/{address}/entries")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address, @RequestParam("keys") String... keys) {
 		return peerService.getQueryService().getDataEntries(ledgerHash, address, keys);
 	}
@@ -269,7 +269,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/{address}/entries-version")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address, @RequestBody KVInfoVO kvInfoVO) {
 		return peerService.getQueryService().getDataEntries(ledgerHash, address, kvInfoVO);
 	}
@@ -277,7 +277,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {

@@ -1,7 +1,7 @@
 package com.jd.blockchain.utils;
 
 /**
- * 版本化的键值数据项；
+ * Versioning Key-Value data entry；
  * 
  * @author huanghaiquan
  *

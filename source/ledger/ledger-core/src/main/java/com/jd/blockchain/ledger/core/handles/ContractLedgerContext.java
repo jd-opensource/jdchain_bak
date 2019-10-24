@@ -10,7 +10,7 @@ import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountRegisterOperation;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -172,17 +172,17 @@ public class ContractLedgerContext implements LedgerContext {
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
 		return innerQueryService.getDataEntries(ledgerHash, address, keys);
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
 		return innerQueryService.getDataEntries(ledgerHash, address, kvInfoVO);
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
 		return innerQueryService.getDataEntries(ledgerHash, address, fromIndex, count);
 	}
 

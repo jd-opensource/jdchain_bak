@@ -8,8 +8,9 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.TypedKVEntry;
+import com.jd.blockchain.ledger.TypedValue;
+import com.jd.blockchain.ledger.TypedKVData;
 import com.jd.blockchain.ledger.KVDataVO;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
@@ -22,12 +23,15 @@ import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.utils.ArrayUtils;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
+import com.jd.blockchain.utils.DataIterator;
 import com.jd.blockchain.utils.QueryUtil;
 
 public class LedgerQueryService implements BlockchainQueryService {
 
-	private static final KVDataEntry[] EMPTY_ENTRIES = new KVDataEntry[0];
+	private static final TypedKVEntry[] EMPTY_ENTRIES = new TypedKVEntry[0];
 
 	private HashDigest[] ledgerHashs;
 
@@ -278,7 +282,7 @@ public class LedgerQueryService implements BlockchainQueryService {
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
 		if (keys == null || keys.length == 0) {
 			return EMPTY_ENTRIES;
 		}
@@ -287,7 +291,8 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		KVDataEntry[] entries = new KVDataEntry[keys.length];
+		
+		TypedKVEntry[] entries = new TypedKVEntry[keys.length];
 		long ver;
 		for (int i = 0; i < entries.length; i++) {
 			final String currKey = keys[i];
@@ -295,17 +300,17 @@ public class LedgerQueryService implements BlockchainQueryService {
 			ver = dataAccount == null ? -1 : dataAccount.getDataset().getVersion(currKey);
 
 			if (ver < 0) {
-				entries[i] = new KVDataObject(currKey, -1, null);
+				entries[i] = new TypedKVData(currKey, -1, null);
 			} else {
 				BytesValue value = dataAccount.getDataset().getValue(currKey, ver);
-				entries[i] = new KVDataObject(currKey, ver, value);
+				entries[i] = new TypedKVData(currKey, ver, value);
 			}
 		}
 
 		return entries;
 	}
 
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
 		// parse kvInfoVO;
 		List<String> keyList = new ArrayList<>();
 		List<Long> versionList = new ArrayList<>();
@@ -335,22 +340,22 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		KVDataEntry[] entries = new KVDataEntry[keys.length];
+		TypedKVEntry[] entries = new TypedKVEntry[keys.length];
 		long ver = -1;
 		for (int i = 0; i < entries.length; i++) {
 //			ver = dataAccount.getDataVersion(Bytes.fromString(keys[i]));
 //			dataAccount.getBytes(Bytes.fromString(keys[i]),1);
 			ver = versions[i];
 			if (ver < 0) {
-				entries[i] = new KVDataObject(keys[i], -1, null);
+				entries[i] = new TypedKVData(keys[i], -1, null);
 			} else {
 				if (dataAccount.getDataset().getDataCount() == 0
 						|| dataAccount.getDataset().getValue(keys[i], ver) == null) {
 					// is the address is not exist; the result is null;
-					entries[i] = new KVDataObject(keys[i], -1, null);
+					entries[i] = new TypedKVData(keys[i], -1, null);
 				} else {
 					BytesValue value = dataAccount.getDataset().getValue(keys[i], ver);
-					entries[i] = new KVDataObject(keys[i], ver, value);
+					entries[i] = new TypedKVData(keys[i], ver, value);
 				}
 			}
 		}
@@ -359,14 +364,22 @@ public class LedgerQueryService implements BlockchainQueryService {
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
 		checkLedgerHash(ledgerHash);
 		LedgerBlock block = ledger.getLatestBlock();
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
-		return dataAccount.getDataset()..getDataEntries(pages[0], pages[1]);
+//		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
+//		return dataAccount.getDataset().getDataEntry(key, version).getDataEntries(pages[0], pages[1]);
+		
+		DataIterator<String, TypedValue> iterator = dataAccount.getDataset().iterator();
+		iterator.skip(fromIndex);
+		DataEntry<String, TypedValue>[] dataEntries = iterator.next(count);
+		
+		TypedKVEntry[] typedKVEntries = ArrayUtils.castTo(dataEntries, TypedKVEntry.class,
+				e -> e == null ? null : new TypedKVData(e.getKey(), e.getVersion(), e.getValue()));
+		return typedKVEntries;
 	}
 
 	@Override

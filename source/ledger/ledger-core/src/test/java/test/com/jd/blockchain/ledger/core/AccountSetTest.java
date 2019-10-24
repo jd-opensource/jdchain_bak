@@ -48,7 +48,8 @@ public class AccountSetTest {
 
 		BlockchainKeypair userKey = BlockchainKeyGenerator.getInstance().generate();
 		accset.register(userKey.getAddress(), userKey.getPubKey());
-
+		
+		//尚未提交之前，可以检索到账户的存在，但版本仍然标记为 -1；
 		MerkleAccount userAcc = accset.getAccount(userKey.getAddress());
 		assertNotNull(userAcc);
 		assertTrue(accset.contains(userKey.getAddress()));

@@ -107,9 +107,9 @@ public class SDK_InsertData_Demo extends SDK_Base_Demo {
 //		KVDataEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, objKeys);
 
 		// 获取数据账户下所有的KV列表
-		KVDataEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, 0, 100);
+		TypedKVEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, 0, 100);
 		if (kvData != null && kvData.length > 0) {
-			for (KVDataEntry kvDatum : kvData) {
+			for (TypedKVEntry kvDatum : kvData) {
 				System.out.println("kvData.key=" + kvDatum.getKey());
 				System.out.println("kvData.version=" + kvDatum.getVersion());
 				System.out.println("kvData.type=" + kvDatum.getType());

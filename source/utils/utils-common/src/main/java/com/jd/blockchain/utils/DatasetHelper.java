@@ -1,8 +1,12 @@
 package com.jd.blockchain.utils;
 
+/**
+ * Helper for {@link Dataset};
+ * 
+ * @author huanghaiquan
+ *
+ */
 public class DatasetHelper {
-	
-	
 
 	public static final TypeMapper<Bytes, String> UTF8_STRING_BYTES_MAPPER = new TypeMapper<Bytes, String>() {
 
@@ -29,7 +33,7 @@ public class DatasetHelper {
 			return Bytes.fromString(t2);
 		}
 	};
-	
+
 	/**
 	 * 适配两个不同类型参数的数据集；
 	 * 
@@ -121,8 +125,8 @@ public class DatasetHelper {
 		T2 decode(T1 t1);
 
 	}
-	
-	private static class EmptyMapper<T> implements TypeMapper<T, T>{
+
+	private static class EmptyMapper<T> implements TypeMapper<T, T> {
 
 		@Override
 		public T encode(T t) {
@@ -133,7 +137,7 @@ public class DatasetHelper {
 		public T decode(T t) {
 			return t;
 		}
-		
+
 	}
 
 	private static class DatasetUpdatingMonitor<K, V> implements Dataset<K, V> {
@@ -184,6 +188,16 @@ public class DatasetHelper {
 		@Override
 		public DataEntry<K, V> getDataEntry(K key, long version) {
 			return dataset.getDataEntry(key, version);
+		}
+
+		@Override
+		public DataIterator<K, V> iterator() {
+			return dataset.iterator();
+		}
+
+		@Override
+		public DataIterator<K, V> iteratorDesc() {
+			return dataset.iteratorDesc();
 		}
 
 	}
@@ -267,6 +281,73 @@ public class DatasetHelper {
 			}
 			V2 v = valueMapper.decode(entry.getValue());
 			return new KeyValueEntry<K2, V2>(key, v, entry.getVersion());
+		}
+
+		@Override
+		public DataIterator<K2, V2> iterator() {
+			DataIterator<K1, V1> it = dataset.iterator();
+			return new DataIteratorAdapter<K1, K2, V1, V2>(it, keyMapper, valueMapper);
+		}
+
+		@Override
+		public DataIterator<K2, V2> iteratorDesc() {
+			DataIterator<K1, V1> it = dataset.iteratorDesc();
+			return new DataIteratorAdapter<K1, K2, V1, V2>(it, keyMapper, valueMapper);
+		}
+
+	}
+
+	private static class DataIteratorAdapter<K1, K2, V1, V2> implements DataIterator<K2, V2> {
+
+		private DataIterator<K1, V1> iterator;
+
+		private TypeMapper<K1, K2> keyMapper;
+		private TypeMapper<V1, V2> valueMapper;
+
+		public DataIteratorAdapter(DataIterator<K1, V1> iterator, TypeMapper<K1, K2> keyMapper,
+				TypeMapper<V1, V2> valueMapper) {
+			this.iterator = iterator;
+			this.keyMapper = keyMapper;
+			this.valueMapper = valueMapper;
+		}
+
+		@Override
+		public void skip(long count) {
+			iterator.skip(count);
+		}
+
+		@Override
+		public DataEntry<K2, V2> next() {
+			DataEntry<K1, V1> entry = iterator.next();
+			return cast(entry);
+		}
+
+		private DataEntry<K2, V2> cast(DataEntry<K1, V1> entry) {
+			if (entry == null) {
+				return null;
+			}
+
+			K2 k = keyMapper.decode(entry.getKey());
+			V2 v = valueMapper.decode(entry.getValue());
+			return new KeyValueEntry<K2, V2>(k, v, entry.getVersion());
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public DataEntry<K2, V2>[] next(int count) {
+			DataEntry<K1, V1>[] entries = iterator.next(count);
+			if (entries == null) {
+				return null;
+			}
+			if (entries.length == 0) {
+				return (DataEntry<K2, V2>[]) entries;
+			}
+			return ArrayUtils.castTo(entries, DataEntry.class, e -> cast(e));
+		}
+
+		@Override
+		public boolean hasNext() {
+			return iterator.hasNext();
 		}
 
 	}

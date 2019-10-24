@@ -26,7 +26,7 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.LedgerInitProperties;
@@ -302,9 +302,9 @@ public class IntegrationTestAll4Redis {
 		assertEquals(txResp.getContentHash(), prepTx.getHash());
 		assertEquals(txResp.getBlockHash(), ledgerRepository.getLatestBlockHash());
 
-		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, dataAccountAddress.toString(),
+		TypedKVEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, dataAccountAddress.toString(),
 				dataKey);
-		for (KVDataEntry kvDataEntry : kvDataEntries) {
+		for (TypedKVEntry kvDataEntry : kvDataEntries) {
 			assertEquals(dataKey, kvDataEntry.getKey());
 			String valHexText = (String) kvDataEntry.getValue();
 			byte[] valBytes = HexUtils.decode(valHexText);

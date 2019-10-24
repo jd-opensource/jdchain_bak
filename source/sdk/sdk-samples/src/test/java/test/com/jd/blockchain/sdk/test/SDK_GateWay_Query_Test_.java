@@ -24,7 +24,7 @@ import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -149,8 +149,8 @@ public class SDK_GateWay_Query_Test_ {
 
 		String commerceAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
 		String[] objKeys = new String[] { "x001", "x002" };
-		KVDataEntry[] kvData = service.getDataEntries(ledgerHash, commerceAccount, objKeys);
-		for (KVDataEntry kvDatum : kvData) {
+		TypedKVEntry[] kvData = service.getDataEntries(ledgerHash, commerceAccount, objKeys);
+		for (TypedKVEntry kvDatum : kvData) {
 			System.out.println("kvData.key=" + kvDatum.getKey());
 			System.out.println("kvData.version=" + kvDatum.getVersion());
 			System.out.println("kvData.value=" + kvDatum.getValue());

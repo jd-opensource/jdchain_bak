@@ -39,14 +39,14 @@ import com.jd.blockchain.utils.io.BytesUtils;
 
 public class ClientResolveUtil {
 
-	public static KVDataEntry[] read(KVDataEntry[] kvDataEntries) {
+	public static TypedKVEntry[] read(TypedKVEntry[] kvDataEntries) {
 		if (kvDataEntries == null || kvDataEntries.length == 0) {
 			return kvDataEntries;
 		}
-		KVDataEntry[] resolveKvDataEntries = new KVDataEntry[kvDataEntries.length];
+		TypedKVEntry[] resolveKvDataEntries = new TypedKVEntry[kvDataEntries.length];
 		// kvDataEntries是代理对象，需要处理
 		for (int i = 0; i < kvDataEntries.length; i++) {
-			KVDataEntry kvDataEntry = kvDataEntries[i];
+			TypedKVEntry kvDataEntry = kvDataEntries[i];
 			String key = kvDataEntry.getKey();
 			long version = kvDataEntry.getVersion();
 			DataType dataType = kvDataEntry.getType();
@@ -330,7 +330,7 @@ public class ClientResolveUtil {
 
 	}
 
-	public static class KvData implements KVDataEntry {
+	public static class KvData implements TypedKVEntry {
 
 		private String key;
 

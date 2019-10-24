@@ -136,7 +136,12 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @return
 	 */
 	public boolean contains(Bytes address) {
-		long latestVersion = getVersion(address);
+		InnerMerkleAccount acc = latestAccountsCache.get(address);
+		if (acc != null) {
+			// 无论是新注册未提交的，还是缓存已提交的账户实例，都认为是存在；
+			return true;
+		}
+		long latestVersion = merkleDataset.getVersion(address);
 		return latestVersion > -1;
 	}
 

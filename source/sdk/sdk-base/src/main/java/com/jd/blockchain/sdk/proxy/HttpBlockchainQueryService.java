@@ -504,13 +504,13 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method=HttpMethod.POST, path="ledgers/{ledgerHash}/accounts/{address}/entries")
 	@Override
-	KVDataEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	TypedKVEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
                                  @PathParam(name="address") String address,
                                  @RequestParam(name="keys", array = true) String... keys);
 
 	@HttpAction(method=HttpMethod.POST, path="ledgers/{ledgerHash}/accounts/{address}/entries-version")
 	@Override
-	KVDataEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
+	TypedKVEntry[] getDataEntries(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
 								 @PathParam(name="address") String address,
 								 @RequestBody KVInfoVO kvInfoVO);
 
@@ -531,7 +531,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 */
 	@HttpAction(method = HttpMethod.POST, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
 	@Override
-	KVDataEntry[] getDataEntries(@PathParam(name = "ledgerHash") HashDigest ledgerHash,
+	TypedKVEntry[] getDataEntries(@PathParam(name = "ledgerHash") HashDigest ledgerHash,
 										@PathParam(name = "address") String address,
 										@RequestParam(name = "fromIndex", required = false) int fromIndex,
 										@RequestParam(name = "count", required = false) int count);

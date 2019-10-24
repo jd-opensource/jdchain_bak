@@ -16,9 +16,9 @@ import com.jd.blockchain.utils.io.BytesUtils;
  *
  */
 public class TypedValue implements BytesValue {
-	
+
 	public static final BytesValue NIL = new TypedValue();
-	
+
 	private DataType type;
 	private Bytes value;
 
@@ -31,16 +31,19 @@ public class TypedValue implements BytesValue {
 		this.type = type;
 		this.value = bytes;
 	}
-	
+
 	private TypedValue(BytesValue bytesValue) {
-		this.type = bytesValue.getType();
-		this.value = bytesValue.getBytes();
+		if (bytesValue == null) {
+			this.type = DataType.NIL;
+		} else {
+			this.type = bytesValue.getType();
+			this.value = bytesValue.getBytes();
+		}
 	}
-	
+
 	private TypedValue() {
 		this.type = DataType.NIL;
 	}
-	
 
 	@Override
 	public DataType getType() {
@@ -229,8 +232,7 @@ public class TypedValue implements BytesValue {
 		if (DataType.BIG_INT == type) {
 			return toBigInteger();
 		}
-		throw new IllegalStateException(
-				String.format("Type [%s] cannot be convert to BigInteger!", type));
+		throw new IllegalStateException(String.format("Type [%s] cannot be convert to BigInteger!", type));
 	}
 
 	private BigInteger toBigInteger() {
@@ -280,8 +282,7 @@ public class TypedValue implements BytesValue {
 		if (DataType.TIMESTAMP == type) {
 			return toDatetime();
 		}
-		throw new IllegalStateException(
-				String.format("Type [%s] cannot be convert to datetime!", type));
+		throw new IllegalStateException(String.format("Type [%s] cannot be convert to datetime!", type));
 	}
 
 	private Date toDatetime() {
@@ -346,8 +347,7 @@ public class TypedValue implements BytesValue {
 		if (DataType.HASH_DIGEST == type) {
 			return toHashDegist();
 		}
-		throw new IllegalStateException(
-				String.format("Type [%s] cannot be convert to hash digest!", type));
+		throw new IllegalStateException(String.format("Type [%s] cannot be convert to hash digest!", type));
 	}
 
 	private HashDigest toHashDegist() {
@@ -375,14 +375,13 @@ public class TypedValue implements BytesValue {
 		if (DataType.SIGNATURE_DIGEST == type) {
 			return toSignatureDigest();
 		}
-		throw new IllegalStateException(
-				String.format("Type [%s] cannot be convert to signature digest!", type));
+		throw new IllegalStateException(String.format("Type [%s] cannot be convert to signature digest!", type));
 	}
 
 	private SignatureDigest toSignatureDigest() {
 		return new SignatureDigest(toBytesArray());
 	}
-	
+
 	public static TypedValue wrap(BytesValue value) {
 		return new TypedValue(value);
 	}

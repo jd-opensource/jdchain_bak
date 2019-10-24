@@ -1,7 +1,20 @@
 package com.jd.blockchain.utils;
 
+/**
+ * Key-Value data set;
+ * 
+ * @author huanghaiquan
+ *
+ * @param <K>
+ * @param <V>
+ */
 public interface Dataset<K, V> {
-	
+
+	/**
+	 * Total count of data entries;
+	 * 
+	 * @return
+	 */
 	long getDataCount();
 
 	/**
@@ -26,17 +39,6 @@ public interface Dataset<K, V> {
 	 */
 	long setValue(K key, V value, long version);
 
-//	/**
-//	 * Return the specified version's value;<br>
-//	 * 
-//	 * If the key with the specified version doesn't exist, then return null;<br>
-//	 * If the version is specified to -1, then return the latest version's value;
-//	 * 
-//	 * @param key
-//	 * @param version
-//	 */
-//	byte[] getValue(String key, long version);
-
 	/**
 	 * Return the specified version's value;<br>
 	 * 
@@ -48,47 +50,51 @@ public interface Dataset<K, V> {
 	 */
 	V getValue(K key, long version);
 
-//	/**
-//	 * Return the latest version's value;
-//	 * 
-//	 * @param key
-//	 * @return return null if not exist;
-//	 */
-//	byte[] getValue(String key);
-
 	/**
-	 * Return the latest version's value;
+	 * Return the value of the latest version;
 	 * 
 	 * @param key
 	 * @return return null if not exist;
 	 */
 	V getValue(K key);
 
-//	/**
-//	 * Return the latest version entry associated the specified key; If the key
-//	 * doesn't exist, then return -1;
-//	 * 
-//	 * @param key
-//	 * @return
-//	 */
-//	long getVersion(String key);
-
 	/**
-	 * Return the latest version entry associated the specified key; If the key
-	 * doesn't exist, then return -1;
+	 * Return the latest version number of the specified key;
 	 * 
 	 * @param key
-	 * @return
+	 * @return The version number of the specified key; If the key doesn't exist,
+	 *         then return -1;
 	 */
 	long getVersion(K key);
 
 	/**
+	 * Return data entry
 	 * 
 	 * @param key
 	 * @return Null if the key doesn't exist!
 	 */
 	DataEntry<K, V> getDataEntry(K key);
 
+	/**
+	 * 
+	 * @param key
+	 * @param version
+	 * @return
+	 */
 	DataEntry<K, V> getDataEntry(K key, long version);
+
+	/**
+	 * Ascending iterator；
+	 * 
+	 * @return
+	 */
+	DataIterator<K, V> iterator();
+
+	/**
+	 * Descending iterator；
+	 * 
+	 * @return
+	 */
+	DataIterator<K, V> iteratorDesc();
 
 }

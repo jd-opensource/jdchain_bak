@@ -10,10 +10,12 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage.ExPolicy;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
 import com.jd.blockchain.storage.service.utils.VersioningKVData;
+import com.jd.blockchain.utils.ArrayUtils;
 import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.Transactional;
 import com.jd.blockchain.utils.DataEntry;
+import com.jd.blockchain.utils.DataIterator;
 import com.jd.blockchain.utils.Dataset;
+import com.jd.blockchain.utils.Transactional;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
@@ -38,6 +40,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 	private final Bytes snKeyPrefix;
 	private final Bytes dataKeyPrefix;
 	private final Bytes merkleKeyPrefix;
+
+	@SuppressWarnings("unchecked")
+	private static final DataEntry<Bytes, byte[]>[] EMPTY_ENTRIES = new DataEntry[0];
 
 	private BufferedKVStorage bufferedStorage;
 
@@ -162,11 +167,16 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 		return merkleTree.getDataCount();
 	}
 
+	/**
+	 * 返回理论上允许的最大数据索引；
+	 * 
+	 * @return
+	 */
 	public long getMaxIndex() {
 		return merkleTree.getMaxSn();
 	}
 
-	public byte[][] getLatestValues(int fromIndex, int count) {
+	public byte[][] getLatestValues(long fromIndex, int count) {
 		if (count > LedgerConsts.MAX_LIST_COUNT) {
 			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
 		}
@@ -182,12 +192,15 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 		return values;
 	}
 
-	public DataEntry<Bytes, byte[]>[] getLatestDataEntries(int fromIndex, int count) {
+	public DataEntry<Bytes, byte[]>[] getLatestDataEntries(long fromIndex, int count) {
 		if (count > LedgerConsts.MAX_LIST_COUNT) {
 			throw new IllegalArgumentException("Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
 		}
 		if (fromIndex < 0 || (fromIndex + count) > merkleTree.getDataCount()) {
 			throw new IllegalArgumentException("Index out of bound!");
+		}
+		if (count == 0) {
+			return EMPTY_ENTRIES;
 		}
 		@SuppressWarnings("unchecked")
 		DataEntry<Bytes, byte[]>[] values = new DataEntry[count];
@@ -199,6 +212,19 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 			values[i] = new VersioningKVData<Bytes, byte[]>(dataNode.getKey(), dataNode.getVersion(), bytesValue);
 		}
 		return values;
+	}
+
+	public DataEntry<Bytes, byte[]> getLatestDataEntry(long index) {
+		if (index < 0 || index + 1 > merkleTree.getDataCount()) {
+			throw new IllegalArgumentException("Index out of bound!");
+		}
+		byte[] bytesValue;
+		MerkleDataNode dataNode = merkleTree.getData(index);
+		Bytes dataKey = encodeDataKey(dataNode.getKey());
+		bytesValue = valueStorage.get(dataKey, dataNode.getVersion());
+		DataEntry<Bytes, byte[]> entry = new VersioningKVData<Bytes, byte[]>(dataNode.getKey(), dataNode.getVersion(),
+				bytesValue);
+		return entry;
 	}
 
 	/**
@@ -505,6 +531,16 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 		return new VersioningKVData<Bytes, byte[]>(key, version, value);
 	}
 
+	@Override
+	public DataIterator<Bytes, byte[]> iterator() {
+		return new AscDataInterator(getDataCount());
+	}
+
+	@Override
+	public DataIterator<Bytes, byte[]> iteratorDesc() {
+		return new DescDataInterator(getDataCount());
+	}
+
 	public MerkleDataEntry getMerkleEntry(Bytes key, long version) {
 		DataEntry<Bytes, byte[]> dataEntry = getDataEntry(key, version);
 		if (dataEntry == null) {
@@ -586,4 +622,119 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 		merkleTree.cancel();
 		snGenerator = new MerkleSequenceSNGenerator(merkleTree);
 	}
+
+	// ----------------------------------------------------------
+
+	private class AscDataInterator implements DataIterator<Bytes, byte[]> {
+
+		private final long total;
+
+		private long cursor = 0;
+
+		public AscDataInterator(long total) {
+			this.total = total;
+		}
+
+		@Override
+		public void skip(long count) {
+			cursor = nextCursor(count);
+		}
+
+		private long nextCursor(long skippingCount) {
+			long c = cursor + skippingCount;
+			return c > total ? total : c;
+		}
+
+		@Override
+		public DataEntry<Bytes, byte[]> next() {
+			if (hasNext()) {
+				DataEntry<Bytes, byte[]> entry = getLatestDataEntry(cursor);
+				cursor = nextCursor(1);
+				return entry;
+			}
+			return null;
+		}
+
+		@Override
+		public DataEntry<Bytes, byte[]>[] next(int count) {
+			if (hasNext()) {
+				long from = cursor;
+				long nextCursor = nextCursor(count);
+				long c = nextCursor - cursor;
+				if (c > LedgerConsts.MAX_LIST_COUNT) {
+					throw new IllegalArgumentException(
+							"Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
+				}
+				DataEntry<Bytes, byte[]>[] entries = getLatestDataEntries(from, (int) c);
+				cursor = nextCursor;
+				return entries;
+			}
+			return EMPTY_ENTRIES;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return cursor < total;
+		}
+
+	}
+
+	private class DescDataInterator implements DataIterator<Bytes, byte[]> {
+
+		private final long total;
+
+		private long cursor;
+
+		public DescDataInterator(long total) {
+			this.total = total;
+			this.cursor = total - 1;
+		}
+
+		@Override
+		public void skip(long count) {
+			cursor = nextCursor(count);
+		}
+
+		private long nextCursor(long skippingCount) {
+			long c = cursor - skippingCount;
+			return c < 0 ? -1 : c;
+		}
+
+		@Override
+		public DataEntry<Bytes, byte[]> next() {
+			if (hasNext()) {
+				DataEntry<Bytes, byte[]> entry = getLatestDataEntry(cursor);
+				cursor = nextCursor(1);
+				return entry;
+			}
+			return null;
+		}
+
+		@Override
+		public DataEntry<Bytes, byte[]>[] next(int count) {
+			if (hasNext()) {
+				long nextCursor = nextCursor(count);
+				long from = nextCursor + 1;
+				long c = cursor - nextCursor;
+				if (c > LedgerConsts.MAX_LIST_COUNT) {
+					throw new IllegalArgumentException(
+							"Count exceed the upper limit[" + LedgerConsts.MAX_LIST_COUNT + "]!");
+				}
+				DataEntry<Bytes, byte[]>[] entries = getLatestDataEntries(from, (int) c);
+				// reverse;
+				ArrayUtils.reverse(entries);
+
+				cursor = nextCursor;
+				return entries;
+			}
+			return EMPTY_ENTRIES;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return cursor < total;
+		}
+
+	}
+
 }

@@ -1,7 +1,7 @@
 package com.jd.blockchain.contract;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 
 @Contract
 public class ReadContractImpl implements EventProcessingAware, ReadContract {
@@ -24,7 +24,7 @@ public class ReadContractImpl implements EventProcessingAware, ReadContract {
     @Override
     @ContractEvent(name = "read-key")
     public String read(String address, String key) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, key);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, key);
 
         if (kvDataEntries != null && kvDataEntries.length == 1) {
             return kvDataEntries[0].getValue().toString();
@@ -35,7 +35,7 @@ public class ReadContractImpl implements EventProcessingAware, ReadContract {
     @Override
     @ContractEvent(name = "version-key")
     public Long readVersion(String address, String key) {
-        KVDataEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, key);
+        TypedKVEntry[] kvDataEntries = eventContext.getLedger().getDataEntries(ledgerHash, address, key);
 
         if (kvDataEntries != null && kvDataEntries.length == 1) {
             return kvDataEntries[0].getVersion();

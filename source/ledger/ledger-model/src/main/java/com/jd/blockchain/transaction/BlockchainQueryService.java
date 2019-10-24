@@ -5,7 +5,7 @@ import org.springframework.cglib.core.Block;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -264,9 +264,9 @@ public interface BlockchainQueryService {
 	 * @param keys
 	 * @return
 	 */
-	KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys);
+	TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys);
 
-	KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO);
+	TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO);
 
 	/**
 	 * 返回指定数据账户中KV数据的总数； <br>
@@ -287,7 +287,7 @@ public interface BlockchainQueryService {
 	 *                   如果参数值为 -1，则返回全部的记录；<br>
 	 * @return
 	 */
-	KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count);
+	TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count);
 
 	/**
 	 * 返回合约账户信息；

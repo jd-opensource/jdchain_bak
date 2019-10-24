@@ -2,8 +2,8 @@ package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.TypedKVEntry;
+import com.jd.blockchain.ledger.TypedKVData;
 import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.utils.Bytes;
