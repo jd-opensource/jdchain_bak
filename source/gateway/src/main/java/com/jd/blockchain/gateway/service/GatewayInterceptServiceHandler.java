@@ -5,14 +5,25 @@ import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.ledger.ContractCodeDeployOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionRequest;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
+
+import java.io.File;
+import java.net.URL;
 
 @Service
 public class GatewayInterceptServiceHandler implements GatewayInterceptService {
 
+    private static String contractsPath;
+
     @Autowired
     private PeerService peerService;
+
+    static {
+        contractsPath = jarRootDir();
+    }
 
     @Override
     public void intercept(TransactionRequest txRequest) {
@@ -29,7 +40,34 @@ public class GatewayInterceptServiceHandler implements GatewayInterceptService {
     }
 
     private void contractCheck(final ContractCodeDeployOperation contractOP) {
+
         // 校验chainCode
         ContractJarUtils.verify(contractOP.getChainCode());
+    }
+
+    private static String jarRootDir() {
+
+        try {
+            URL url = GatewayInterceptServiceHandler.class.getProtectionDomain().getCodeSource().getLocation();
+            String currPath = java.net.URLDecoder.decode(url.getPath(), "UTF-8");
+            if (currPath.contains("!/")) {
+                currPath = currPath.substring(5, currPath.indexOf("!/"));
+            }
+            if (currPath.endsWith(".jar")) {
+                currPath = currPath.substring(0, currPath.lastIndexOf("/") + 1);
+            }
+            File file = new File(currPath);
+
+            String homeDir = file.getParent();
+
+            String jarRootPath = homeDir + File.separator + "contracts";
+
+            FileUtils.forceMkdir(new File(jarRootPath));
+
+            return jarRootPath;
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
