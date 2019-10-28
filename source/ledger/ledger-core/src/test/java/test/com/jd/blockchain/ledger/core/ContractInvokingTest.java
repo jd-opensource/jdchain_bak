@@ -307,8 +307,8 @@ public class ContractInvokingTest {
 				0);
 		assertEquals(0, kv1.getVersion());
 		assertEquals(0, kv2.getVersion());
-		assertEquals("V1-0", kv1.getValue());
-		assertEquals("V2-0", kv2.getValue());
+		assertEquals("V1-0", kv1.getValue().stringValue());
+		assertEquals("V2-0", kv2.getValue().stringValue());
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		buildBlock(ledgerRepo, ledgerManager, opReg, new TxDefinitor() {
@@ -326,8 +326,8 @@ public class ContractInvokingTest {
 		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals(1, kv2.getVersion());
-		assertEquals("V1-1", kv1.getValue());
-		assertEquals("V2-1", kv2.getValue());
+		assertEquals("V1-1", kv1.getValue().stringValue());
+		assertEquals("V2-1", kv2.getValue().stringValue());
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		buildBlock(ledgerRepo, ledgerManager, opReg, new TxDefinitor() {
@@ -337,16 +337,17 @@ public class ContractInvokingTest {
 				contractProxy.testRollbackWhileVersionConfliction(kpDataAccount.getAddress().toBase58(), "K1", "V1-2",
 						1);
 				contractProxy.testRollbackWhileVersionConfliction(kpDataAccount.getAddress().toBase58(), "K2", "V2-2",
-						0);
+						0);//预期会回滚；
 			}
 		});
-		// 预期数据都能够正常写入；
+		// 预期数据回滚，账本没有发生变更；
 		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 1);
 		assertEquals(1, kv1.getVersion());
-		assertEquals("V1-1", kv1.getValue());
+		assertEquals("V1-1", kv1.getValue().stringValue());
 		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 2);
-		assertEquals(-1, kv1.getVersion());
-		assertEquals(null, kv1.getValue());
+		assertNull(kv1);
+		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2", 1);
+		assertEquals(1, kv2.getVersion());
 
 	}
 

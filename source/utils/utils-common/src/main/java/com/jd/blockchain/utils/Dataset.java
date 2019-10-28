@@ -68,7 +68,7 @@ public interface Dataset<K, V> {
 	long getVersion(K key);
 
 	/**
-	 * Return data entry
+	 * Return the data entry with the specified key;
 	 * 
 	 * @param key
 	 * @return Null if the key doesn't exist!
@@ -76,10 +76,11 @@ public interface Dataset<K, V> {
 	DataEntry<K, V> getDataEntry(K key);
 
 	/**
+	 * Return the data entry with the specified key and version;
 	 * 
 	 * @param key
 	 * @param version
-	 * @return
+	 * @return Null if the key doesn't exist!
 	 */
 	DataEntry<K, V> getDataEntry(K key, long version);
 
