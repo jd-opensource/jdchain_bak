@@ -121,12 +121,16 @@ public interface DataCodes {
 
 	public static final int ACCOUNT_HEADER = 0x710;
 
-	public static final int USER = 0x800;
+	public static final int USER_ACCOUNT_HEADER = 0x800;
+	
+	public static final int USER_INFO = 0x801;
 
 	public static final int DATA = 0x900;
 
 	// contract related;
-	public static final int CONTRACT = 0xA00;
+	public static final int CONTRACT_ACCOUNT_HEADER = 0xA00;
+	
+	public static final int CONTRACT_INFO = 0xA01;
 
 	// ...0xA19
 	public static final int HASH = 0xB00;

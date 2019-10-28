@@ -1,9 +1,9 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.LedgerException;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.utils.Bytes;
 
@@ -13,72 +13,73 @@ import com.jd.blockchain.utils.Bytes;
  * @author huanghaiquan
  *
  */
-public class UserAccount implements UserInfo {
+public class UserAccount extends AccountDecorator implements UserInfo { // implements UserInfo {
 
-	private static final Bytes USER_INFO_PREFIX = Bytes.fromString("PROP" + LedgerConsts.KEY_SEPERATOR);
+	private static final String USER_INFO_PREFIX = "PROP" + LedgerConsts.KEY_SEPERATOR;
 
-	private static final Bytes DATA_PUB_KEY = Bytes.fromString("DATA-PUBKEY");
+	private static final String DATA_PUB_KEY = "DATA-PUBKEY";
 
-	private MerkleAccount baseAccount;
+	public UserAccount(CompositeAccount baseAccount) {
+		super(baseAccount);
+	}
+
+	private PubKey dataPubKey;
+	
 
 	@Override
 	public Bytes getAddress() {
-		return baseAccount.getAddress();
+		return getID().getAddress();
 	}
 
 	@Override
 	public PubKey getPubKey() {
-		return baseAccount.getPubKey();
+		return getID().getPubKey();
 	}
-
+	
 	@Override
-	public HashDigest getRootHash() {
-		return baseAccount.getRootHash();
-	}
-
-	public UserAccount(MerkleAccount baseAccount) {
-		this.baseAccount = baseAccount;
-	}
-
 	public PubKey getDataPubKey() {
-		BytesValue pkBytes = baseAccount.getBytes(DATA_PUB_KEY);
-		if (pkBytes == null) {
-			return null;
+		if (dataPubKey == null) {
+			BytesValue pkBytes = getHeaders().getValue(DATA_PUB_KEY);
+			if (pkBytes == null) {
+				return null;
+			}
+			dataPubKey = new PubKey(pkBytes.getBytes().toBytes());
 		}
-		return new PubKey(pkBytes.getValue().toBytes());
+		return dataPubKey;
 	}
 
-	public long setDataPubKey(PubKey pubKey) {
-		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, BytesData.fromBytes(pkBytes), -1);
+	public void setDataPubKey(PubKey pubKey) {
+		long version = getHeaders().getVersion(DATA_PUB_KEY);
+		setDataPubKey(pubKey, version);
 	}
 
-	public long setDataPubKey(PubKey pubKey, long version) {
-		byte[] pkBytes = pubKey.toBytes();
-		return baseAccount.setBytes(DATA_PUB_KEY, BytesData.fromBytes(pkBytes), version);
+	public void setDataPubKey(PubKey pubKey, long version) {
+		TypedValue value = TypedValue.fromPubKey(dataPubKey);
+		long newVersion = getHeaders().setValue(DATA_PUB_KEY, value, version);
+		if (newVersion > -1) {
+			dataPubKey = pubKey;
+		} else {
+			throw new LedgerException("Data public key was updated failed!");
+		}
 	}
 
 	public long setProperty(String key, String value, long version) {
-		return setProperty(Bytes.fromString(key), value, version);
+		return getHeaders().setValue(encodePropertyKey(key), TypedValue.fromText(value), version);
 	}
 
-	public long setProperty(Bytes key, String value, long version) {
-		return baseAccount.setBytes(encodePropertyKey(key), BytesData.fromText(value), version);
+	public String getProperty(String key) {
+		BytesValue value = getHeaders().getValue(encodePropertyKey(key));
+		return value == null ? null : value.getBytes().toUTF8String();
 	}
 
-	public String getProperty(Bytes key) {
-		BytesValue value = baseAccount.getBytes(encodePropertyKey(key));
-		return value == null ? null : value.getValue().toUTF8String();
+	public String getProperty(String key, long version) {
+		BytesValue value = getHeaders().getValue(encodePropertyKey(key), version);
+		return value == null ? null : value.getBytes().toUTF8String();
 	}
 
-	public String getProperty(Bytes key, long version) {
-		BytesValue value = baseAccount.getBytes(encodePropertyKey(key), version);
-		return value == null ? null : value.getValue().toUTF8String();
+	private String encodePropertyKey(String key) {
+		return USER_INFO_PREFIX+key;
 	}
 
-	private Bytes encodePropertyKey(Bytes key) {
-		// return key.concatTo(USER_INFO_PREFIX);
-		return USER_INFO_PREFIX.concat(key);
-	}
 
 }

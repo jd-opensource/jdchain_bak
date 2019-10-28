@@ -1,24 +1,23 @@
 package com.jd.blockchain.storage.service.utils;
 
-import com.jd.blockchain.storage.service.VersioningKVEntry;
-import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
 
-public class VersioningKVData implements VersioningKVEntry {
+public class VersioningKVData<K, V> implements DataEntry<K, V> {
 
-		private Bytes key;
+		private K key;
 
 		private long version;
 
-		private byte[] value;
+		private V value;
 
-		public VersioningKVData(Bytes key, long version, byte[] value) {
+		public VersioningKVData(K key, long version, V value) {
 			this.key = key;
 			this.version = version;
 			this.value = value;
 		}
 
 		@Override
-		public Bytes getKey() {
+		public K getKey() {
 			return key;
 		}
 
@@ -28,7 +27,7 @@ public class VersioningKVData implements VersioningKVEntry {
 		}
 
 		@Override
-		public byte[] getValue() {
+		public V getValue() {
 			return value;
 		}
 

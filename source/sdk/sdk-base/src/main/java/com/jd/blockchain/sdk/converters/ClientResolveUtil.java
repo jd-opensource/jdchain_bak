@@ -39,14 +39,14 @@ import com.jd.blockchain.utils.io.BytesUtils;
 
 public class ClientResolveUtil {
 
-	public static KVDataEntry[] read(KVDataEntry[] kvDataEntries) {
+	public static TypedKVEntry[] read(TypedKVEntry[] kvDataEntries) {
 		if (kvDataEntries == null || kvDataEntries.length == 0) {
 			return kvDataEntries;
 		}
-		KVDataEntry[] resolveKvDataEntries = new KVDataEntry[kvDataEntries.length];
+		TypedKVEntry[] resolveKvDataEntries = new TypedKVEntry[kvDataEntries.length];
 		// kvDataEntries是代理对象，需要处理
 		for (int i = 0; i < kvDataEntries.length; i++) {
-			KVDataEntry kvDataEntry = kvDataEntries[i];
+			TypedKVEntry kvDataEntry = kvDataEntries[i];
 			String key = kvDataEntry.getKey();
 			long version = kvDataEntry.getVersion();
 			DataType dataType = kvDataEntry.getType();
@@ -108,7 +108,7 @@ public class ClientResolveUtil {
 
 	public static Object readValueByBytesValue(BytesValue bytesValue) {
 		DataType dataType = bytesValue.getType();
-		Bytes saveVal = bytesValue.getValue();
+		Bytes saveVal = bytesValue.getBytes();
 		Object showVal;
 		switch (dataType) {
 		case BYTES:
@@ -151,7 +151,7 @@ public class ClientResolveUtil {
 			String realValBase58 = valueObj.getJSONObject("value").getString("value");
 			String key = currWriteSetObj.getString("key");
 			DataType dataType = DataType.valueOf(typeStr);
-			BytesValue bytesValue = BytesData.fromType(dataType, Base58Utils.decode(realValBase58));
+			BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
 			KVData kvData = new KVData(key, bytesValue, expectedVersion);
 			kvOperation.set(kvData);
 		}
@@ -200,7 +200,7 @@ public class ClientResolveUtil {
 				JSONObject pubKeyObj = currConsensusParticipant.getJSONObject("pubKey");
 				String pubKeyBase58 = pubKeyObj.getString("value");
 				// 生成ParticipantNode对象
-                ParticipantCertData participantCertData = new ParticipantCertData(id, address, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()));
+                ParticipantCertData participantCertData = new ParticipantCertData(id, address, name, new PubKey(Bytes.fromBase58(pubKeyBase58).toBytes()), null);
 				participantNodes[i] = participantCertData;
 			}
 			ledgerInitSettingData.setConsensusParticipants(participantNodes);
@@ -294,11 +294,12 @@ public class ClientResolveUtil {
 			this.pubKey = participantNode.getPubKey();
 		}
 
-        public ParticipantCertData(int id, Bytes address, String name, PubKey pubKey) {
+        public ParticipantCertData(int id, Bytes address, String name, PubKey pubKey, ParticipantNodeState participantNodeState) {
 			this.id = id;
 			this.address = address;
 			this.name = name;
 			this.pubKey = pubKey;
+			
             this.participantNodeState = participantNodeState;
 		}
 
@@ -329,7 +330,7 @@ public class ClientResolveUtil {
 
 	}
 
-	public static class KvData implements KVDataEntry {
+	public static class KvData implements TypedKVEntry {
 
 		private String key;
 

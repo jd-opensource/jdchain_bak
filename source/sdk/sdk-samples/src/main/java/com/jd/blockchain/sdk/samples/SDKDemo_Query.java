@@ -4,7 +4,7 @@ import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.Transaction;
@@ -67,7 +67,7 @@ public class SDKDemo_Query {
 		// 获取数据；
 		String commerceAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
 		String[] objKeys = new String[] { "x001", "x002" };
-		KVDataEntry[] kvData = service.getDataEntries(LEDGER_HASH, commerceAccount, objKeys);
+		TypedKVEntry[] kvData = service.getDataEntries(LEDGER_HASH, commerceAccount, objKeys);
 
 		long payloadVersion = kvData[0].getVersion();
 

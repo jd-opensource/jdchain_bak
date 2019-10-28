@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
@@ -41,11 +41,11 @@ public class DataAccountKVSetOpTemplateTest {
         String accountAddress = "zhangsandhakhdkah";
         data = new DataAccountKVSetOpTemplate(Bytes.fromString(accountAddress));
         KVData kvData1 =
-                new KVData("test1", BytesData.fromText("zhangsan"), 9999L);
+                new KVData("test1", TypedValue.fromText("zhangsan"), 9999L);
         KVData kvData2 =
-                new KVData("test2", BytesData.fromText("lisi"), 9990L);
+                new KVData("test2", TypedValue.fromText("lisi"), 9990L);
         KVData kvData3 =
-                new KVData("test3", BytesData.fromText("wangwu"), 1990L);
+                new KVData("test3", TypedValue.fromText("wangwu"), 1990L);
         data.set(kvData1);
         data.set(kvData2);
         data.set(kvData3);
@@ -63,7 +63,7 @@ public class DataAccountKVSetOpTemplateTest {
         assertEquals(dataKv.length, resolvedKv.length);
         for (int i = 0; i < dataKv.length; i++) {
             assertEquals(dataKv[i].getKey(), resolvedKv[i].getKey());
-            assertArrayEquals(dataKv[i].getValue().getValue().toBytes(), resolvedKv[i].getValue().getValue().toBytes());
+            assertArrayEquals(dataKv[i].getValue().getBytes().toBytes(), resolvedKv[i].getValue().getBytes().toBytes());
             assertEquals(dataKv[i].getValue().getType().CODE, resolvedKv[i].getValue().getType().CODE);
 
             assertEquals(dataKv[i].getExpectedVersion(), resolvedKv[i].getExpectedVersion());

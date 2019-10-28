@@ -21,8 +21,6 @@ class DynamicDataContract implements InvocationHandler {
 
 	private DataContractEncoderImpl contractEncoder;
 
-//	private BytesSlice contractBytes;
-
 	// 字段的数据片段列表，首个是 HeaderSlice，其次是按字段顺序排列的数据片段；
 	private BytesSlices[] dataSlices;
 

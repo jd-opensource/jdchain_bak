@@ -22,13 +22,13 @@ public class IntegerToBytesValueResolverTest {
 
         BytesValue intBytesValue2 = resolver.encode(intVal, Integer.class);
 
-        assertEquals(intBytesValue.getValue(), intBytesValue1.getValue());
+        assertEquals(intBytesValue.getBytes(), intBytesValue1.getBytes());
 
-        assertEquals(intBytesValue.getValue(), intBytesValue2.getValue());
+        assertEquals(intBytesValue.getBytes(), intBytesValue2.getBytes());
 
         Bytes intBytes = Bytes.fromInt(intVal);
 
-        assertEquals(intBytes, intBytesValue.getValue());
+        assertEquals(intBytes, intBytesValue.getBytes());
 
         assertEquals(intBytesValue.getType(), DataType.INT32);
 

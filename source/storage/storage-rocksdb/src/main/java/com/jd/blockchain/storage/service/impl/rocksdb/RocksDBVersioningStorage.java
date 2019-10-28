@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.collections4.map.LRUMap;
 import org.rocksdb.*;
 
-import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 /**
@@ -127,7 +127,7 @@ public class RocksDBVersioningStorage implements VersioningKVStorage {
 	}
 
 	@Override
-	public VersioningKVEntry getEntry(Bytes key, long version) {
+	public DataEntry getEntry(Bytes key, long version) {
 		byte[] value = get(key, version);
 		if (value == null) {
 			return null;
@@ -226,7 +226,7 @@ public class RocksDBVersioningStorage implements VersioningKVStorage {
 		}
 	}
 
-	private static class VersioningKVData implements VersioningKVEntry {
+	private static class VersioningKVData implements DataEntry {
 
 		private Bytes key;
 

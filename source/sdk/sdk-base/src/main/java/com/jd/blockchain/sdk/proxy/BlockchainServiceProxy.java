@@ -1,9 +1,9 @@
 package com.jd.blockchain.sdk.proxy;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -156,25 +156,25 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	}
 
 	@Override
-	public AccountHeader getDataAccount(HashDigest ledgerHash, String address) {
+	public BlockchainIdentity getDataAccount(HashDigest ledgerHash, String address) {
 		return getQueryService(ledgerHash).getDataAccount(ledgerHash, address);
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
-		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, keys);
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, String... keys) {
+		TypedKVEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, keys);
 		return ClientResolveUtil.read(kvDataEntries);
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
-		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, kvInfoVO);
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, KVInfoVO kvInfoVO) {
+		TypedKVEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, kvInfoVO);
 		return ClientResolveUtil.read(kvDataEntries);
 	}
 
 	@Override
-	public KVDataEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
-		KVDataEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, fromIndex, count);
+	public TypedKVEntry[] getDataEntries(HashDigest ledgerHash, String address, int fromIndex, int count) {
+		TypedKVEntry[] kvDataEntries = getQueryService(ledgerHash).getDataEntries(ledgerHash, address, fromIndex, count);
 		return ClientResolveUtil.read(kvDataEntries);
 	}
 
@@ -189,17 +189,17 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	}
 
 	@Override
-	public AccountHeader[] getUsers(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getUsers(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getUsers(ledgerHash, fromIndex, count);
 	}
 
 	@Override
-	public AccountHeader[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getDataAccounts(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getDataAccounts(ledgerHash, fromIndex, count);
 	}
 
 	@Override
-	public AccountHeader[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count) {
+	public BlockchainIdentity[] getContractAccounts(HashDigest ledgerHash, int fromIndex, int count) {
 		return getQueryService(ledgerHash).getContractAccounts(ledgerHash, fromIndex, count);
 	}
 }

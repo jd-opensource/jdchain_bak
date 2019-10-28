@@ -23,13 +23,13 @@ public class LongToBytesValueResolverTest {
 
         BytesValue longBytesValue2 = resolver.encode(longVal, Long.class);
 
-        assertEquals(longBytesValue.getValue(), longBytesValue1.getValue());
+        assertEquals(longBytesValue.getBytes(), longBytesValue1.getBytes());
 
-        assertEquals(longBytesValue.getValue(), longBytesValue2.getValue());
+        assertEquals(longBytesValue.getBytes(), longBytesValue2.getBytes());
 
         Bytes longBytes = Bytes.fromLong(longVal);
 
-        assertEquals(longBytes, longBytesValue.getValue());
+        assertEquals(longBytes, longBytesValue.getBytes());
 
         assertEquals(longBytesValue.getType(), DataType.INT64);
 

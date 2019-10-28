@@ -9,8 +9,8 @@ import com.jd.blockchain.contract.ContractException;
 import com.jd.blockchain.contract.EventProcessingAware;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.KVDataEntry;
-import com.jd.blockchain.ledger.KVDataObject;
+import com.jd.blockchain.ledger.TypedKVEntry;
+import com.jd.blockchain.ledger.TypedKVData;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -47,16 +47,16 @@ public class AssetContractImpl implements EventProcessingAware, AssetContract {
 		}
 
 		// 查询当前值；
-		KVDataEntry[] kvEntries = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS, KEY_TOTAL,
+		TypedKVEntry[] kvEntries = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS, KEY_TOTAL,
 				assetHolderAddress);
 
 		// 计算资产的发行总数；
-		KVDataObject currTotal = (KVDataObject) kvEntries[0];
+		TypedKVData currTotal = (TypedKVData) kvEntries[0];
 		long newTotal = currTotal.longValue() + amount;
 		eventContext.getLedger().dataAccount(ASSET_ADDRESS).setInt64(KEY_TOTAL, newTotal, currTotal.getVersion());
 		
 		// 分配到持有者账户；
-		KVDataObject holderAmount = (KVDataObject) kvEntries[1];
+		TypedKVData holderAmount = (TypedKVData) kvEntries[1];
 		long newHodlerAmount = holderAmount.longValue() + amount;
 		eventContext.getLedger().dataAccount(ASSET_ADDRESS)
 				.setInt64(assetHolderAddress, newHodlerAmount, holderAmount.getVersion()).setText("K2", "info2", -1)
@@ -77,10 +77,10 @@ public class AssetContractImpl implements EventProcessingAware, AssetContract {
 		checkSignerPermission(fromAddress);
 
 		// 查询现有的余额；
-		KVDataEntry[] origBalances = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS,
+		TypedKVEntry[] origBalances = eventContext.getLedger().getDataEntries(currentLedgerHash(), ASSET_ADDRESS,
 				fromAddress, toAddress);
-		KVDataEntry fromBalanceKV = origBalances[0];
-		KVDataEntry toBalanceKV = origBalances[1];
+		TypedKVEntry fromBalanceKV = origBalances[0];
+		TypedKVEntry toBalanceKV = origBalances[1];
 		long fromBalance = fromBalanceKV.getVersion() == -1 ? 0 : (long) fromBalanceKV.getValue();
 		long toBalance = toBalanceKV.getVersion() == -1 ? 0 : (long) toBalanceKV.getValue();
 

@@ -5,6 +5,7 @@ import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation.KVWriteEntry;
 import com.jd.blockchain.ledger.DataVersionConflictException;
 import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.core.DataAccount;
 import com.jd.blockchain.ledger.core.LedgerDataset;
 import com.jd.blockchain.ledger.core.LedgerQuery;
@@ -37,7 +38,7 @@ public class DataAccountKVSetOperationHandle extends AbstractLedgerOperationHand
 		KVWriteEntry[] writeSet = kvWriteOp.getWriteSet();
 		long v = -1L;
 		for (KVWriteEntry kvw : writeSet) {
-			v = account.setBytes(Bytes.fromString(kvw.getKey()), kvw.getValue(), kvw.getExpectedVersion());
+			v = account.getDataset().setValue(kvw.getKey(), TypedValue.wrap(kvw.getValue()), kvw.getExpectedVersion());
 			if (v < 0) {
 				throw new DataVersionConflictException();
 			}
