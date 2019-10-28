@@ -72,7 +72,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address) {
-		MerkleAccount baseAccount = accountSet.getAccount(address);
+		CompositeAccount baseAccount = accountSet.getAccount(address);
 		return new UserAccount(baseAccount);
 	}
 
@@ -83,7 +83,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 
 	@Override
 	public UserAccount getAccount(Bytes address, long version) {
-		MerkleAccount baseAccount = accountSet.getAccount(address, version);
+		CompositeAccount baseAccount = accountSet.getAccount(address, version);
 		return new UserAccount(baseAccount);
 	}
 
@@ -99,7 +99,7 @@ public class UserAccountSet implements Transactional, UserAccountQuery {
 	 * @return 注册成功的用户对象；
 	 */
 	public UserAccount register(Bytes address, PubKey pubKey) {
-		MerkleAccount baseAccount = accountSet.register(address, pubKey);
+		CompositeAccount baseAccount = accountSet.register(address, pubKey);
 		return new UserAccount(baseAccount);
 	}
 

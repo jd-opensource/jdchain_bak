@@ -65,7 +65,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	public DataAccount register(Bytes address, PubKey pubKey, DigitalSignature addressSignature) {
 		// TODO: 未实现对地址签名的校验和记录；
-		MerkleAccount accBase = accountSet.register(address, pubKey);
+		CompositeAccount accBase = accountSet.register(address, pubKey);
 		return new DataAccount(accBase);
 	}
 
@@ -83,7 +83,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 	 */
 	@Override
 	public DataAccount getAccount(Bytes address) {
-		MerkleAccount accBase = accountSet.getAccount(address);
+		CompositeAccount accBase = accountSet.getAccount(address);
 		if (accBase == null) {
 			return null;
 		}
@@ -92,7 +92,7 @@ public class DataAccountSet implements Transactional, DataAccountQuery {
 
 	@Override
 	public DataAccount getAccount(Bytes address, long version) {
-		MerkleAccount accBase = accountSet.getAccount(address, version);
+		CompositeAccount accBase = accountSet.getAccount(address, version);
 		return new DataAccount(accBase);
 	}
 

@@ -67,7 +67,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 
 	@Override
 	public ContractAccount getAccount(Bytes address) {
-		MerkleAccount accBase = accountSet.getAccount(address);
+		CompositeAccount accBase = accountSet.getAccount(address);
 		return new ContractAccount(accBase);
 	}
 
@@ -78,7 +78,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 
 	@Override
 	public ContractAccount getAccount(Bytes address, long version) {
-		MerkleAccount accBase = accountSet.getAccount(address, version);
+		CompositeAccount accBase = accountSet.getAccount(address, version);
 		return new ContractAccount(accBase);
 	}
 
@@ -93,7 +93,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 	 */
 	public ContractAccount deploy(Bytes address, PubKey pubKey, DigitalSignature addressSignature, byte[] chaincode) {
 		// TODO: 校验和记录合约地址签名；
-		MerkleAccount accBase = accountSet.register(address, pubKey);
+		CompositeAccount accBase = accountSet.register(address, pubKey);
 		ContractAccount contractAcc = new ContractAccount(accBase);
 		contractAcc.setChaincode(chaincode, -1);
 		return contractAcc;
@@ -108,7 +108,7 @@ public class ContractAccountSet implements Transactional, ContractAccountQuery {
 	 * @return 返回链码的新版本号；
 	 */
 	public long update(Bytes address, byte[] chaincode, long version) {
-		MerkleAccount accBase = accountSet.getAccount(address);
+		CompositeAccount accBase = accountSet.getAccount(address);
 		ContractAccount contractAcc = new ContractAccount(accBase);
 		return contractAcc.setChaincode(chaincode, version);
 	}

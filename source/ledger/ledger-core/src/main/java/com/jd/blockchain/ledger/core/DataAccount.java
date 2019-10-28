@@ -1,16 +1,8 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.TypedKVEntry;
-import com.jd.blockchain.ledger.TypedKVData;
-import com.jd.blockchain.ledger.MerkleProof;
-import com.jd.blockchain.ledger.TypedValue;
-import com.jd.blockchain.utils.Bytes;
-
 public class DataAccount extends AccountDecorator {
 
-	public DataAccount(MerkleAccount mklAccount) {
+	public DataAccount(CompositeAccount mklAccount) {
 		super(mklAccount);
 	}
 

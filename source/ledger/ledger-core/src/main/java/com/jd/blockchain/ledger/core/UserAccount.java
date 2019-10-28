@@ -19,8 +19,8 @@ public class UserAccount extends AccountDecorator implements UserInfo { // imple
 
 	private static final String DATA_PUB_KEY = "DATA-PUBKEY";
 
-	public UserAccount(MerkleAccount mklAccount) {
-		super(mklAccount);
+	public UserAccount(CompositeAccount baseAccount) {
+		super(baseAccount);
 	}
 
 	private PubKey dataPubKey;

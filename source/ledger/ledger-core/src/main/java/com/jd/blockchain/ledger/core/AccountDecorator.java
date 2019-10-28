@@ -1,6 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.Account;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.HashProof;
 import com.jd.blockchain.ledger.MerkleSnapshot;
@@ -8,11 +9,11 @@ import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Dataset;
 
-public class AccountDecorator implements LedgerAccount, HashProvable, MerkleSnapshot{
+public class AccountDecorator implements Account, HashProvable, MerkleSnapshot{
 	
-	private MerkleAccount mklAccount;
+	private CompositeAccount mklAccount;
 	
-	public AccountDecorator(MerkleAccount mklAccount) {
+	public AccountDecorator(CompositeAccount mklAccount) {
 		this.mklAccount = mklAccount;
 	}
 	

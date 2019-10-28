@@ -20,7 +20,7 @@ import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.Transactional;
 
-public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<MerkleAccount> {
+public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<CompositeAccount> {
 
 	static {
 		DataContractRegistry.register(MerkleSnapshot.class);
@@ -111,7 +111,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	}
 
 	@Override
-	public MerkleAccount getAccount(String address) {
+	public CompositeAccount getAccount(String address) {
 		return getAccount(Bytes.fromBase58(address));
 	}
 
@@ -122,7 +122,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @return
 	 */
 	@Override
-	public MerkleAccount getAccount(Bytes address) {
+	public CompositeAccount getAccount(Bytes address) {
 		return this.getAccount(address, -1);
 	}
 
@@ -174,7 +174,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @param version 账户版本；如果指定为 -1，则返回最新版本；
 	 * @return
 	 */
-	public MerkleAccount getAccount(Bytes address, long version) {
+	public CompositeAccount getAccount(Bytes address, long version) {
 		version = version < 0 ? -1 : version;
 		InnerMerkleAccount acc = latestAccountsCache.get(address);
 		if (acc != null && version == -1) {
@@ -206,9 +206,10 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		// Now, be sure that "acc == null", so get account from storage;
 		// Set readonly for the old version account;
 		boolean readonly = (version > -1 && version < latestVersion) || isReadonly();
-
+		
+		long qVersion = version == -1 ? latestVersion : version;
 		// load account from storage;
-		acc = loadAccount(address, readonly, version);
+		acc = loadAccount(address, readonly, qVersion);
 		if (acc == null) {
 			return null;
 		}
@@ -220,7 +221,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		return acc;
 	}
 
-	public MerkleAccount register(Bytes address, PubKey pubKey) {
+	public CompositeAccount register(Bytes address, PubKey pubKey) {
 		return register(new BlockchainIdentityData(address, pubKey));
 	}
 
@@ -235,7 +236,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @param pubKey  公钥；
 	 * @return 注册成功的账户对象；
 	 */
-	public MerkleAccount register(BlockchainIdentity accountId) {
+	public CompositeAccount register(BlockchainIdentity accountId) {
 		if (isReadonly()) {
 			throw new IllegalArgumentException("This AccountSet is readonly!");
 		}
@@ -281,6 +282,14 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		return new InnerMerkleAccount(header, cryptoSetting, keyPrefix, baseExStorage, baseVerStorage);
 	}
 
+	/**
+	 * 加载指定版本的账户；
+	 * 
+	 * @param address  账户地址；
+	 * @param readonly 是否只读；
+	 * @param version  账户的版本；大于等于 0 ；
+	 * @return
+	 */
 	private InnerMerkleAccount loadAccount(Bytes address, boolean readonly, long version) {
 		byte[] rootHashBytes = merkleDataset.getValue(address, version);
 		if (rootHashBytes == null) {

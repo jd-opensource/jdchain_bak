@@ -4,13 +4,11 @@ import java.util.Map;
 
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.MerkleSnapshot;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
-import com.jd.blockchain.utils.Dataset;
 
 public class MerkleDataCluster implements Transactional, MerkleSnapshot {
 

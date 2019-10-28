@@ -26,7 +26,7 @@ import com.jd.blockchain.utils.Transactional;
  * @author huanghaiquan
  *
  */
-public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapshot, Transactional {
+public class MerkleAccount implements CompositeAccount, HashProvable, MerkleSnapshot, Transactional {
 
 	private static final Bytes HEADER_PREFIX = Bytes.fromString("HD/");
 	private static final Bytes DATA_PREFIX = Bytes.fromString("DT/");
@@ -179,7 +179,7 @@ public class MerkleAccount implements LedgerAccount, HashProvable, MerkleSnapsho
 		return accountID;
 	}
 
-	protected Dataset<String, TypedValue> getHeaders() {
+	public Dataset<String, TypedValue> getHeaders() {
 		return typedHeader;
 	}
 

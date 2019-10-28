@@ -340,6 +340,7 @@ public class TransactionBatchProcessorTest {
 				0);
 		BytesValue v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getDataset().getValue("K3",
 				0);
+		
 
 		assertNotNull(v1_0);
 		assertNotNull(v1_1);

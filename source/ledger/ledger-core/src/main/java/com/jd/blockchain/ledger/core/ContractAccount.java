@@ -12,7 +12,7 @@ public class ContractAccount extends AccountDecorator implements ContractInfo {
 
 	private static final String CHAIN_CODE_KEY = "CHAIN-CODE";
 
-	public ContractAccount(MerkleAccount mklAccount) {
+	public ContractAccount(CompositeAccount mklAccount) {
 		super(mklAccount);
 	}
 

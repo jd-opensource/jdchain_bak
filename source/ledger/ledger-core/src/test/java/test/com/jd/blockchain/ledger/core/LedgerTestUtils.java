@@ -44,12 +44,18 @@ public class LedgerTestUtils {
 		partiKeys[1] = BlockchainKeyGenerator.getInstance().generate();
 		return createLedgerInitSetting(partiKeys);
 	}
-
-	public static LedgerInitSetting createLedgerInitSetting(BlockchainKeypair[] partiKeys) {
+	
+	public static CryptoProvider[] getContextProviders() {
 		CryptoProvider[] supportedProviders = new CryptoProvider[SUPPORTED_PROVIDERS.length];
 		for (int i = 0; i < SUPPORTED_PROVIDERS.length; i++) {
 			supportedProviders[i] = Crypto.getProvider(SUPPORTED_PROVIDERS[i]);
 		}
+		
+		return supportedProviders;
+	}
+
+	public static LedgerInitSetting createLedgerInitSetting(BlockchainKeypair[] partiKeys) {
+		CryptoProvider[] supportedProviders =getContextProviders();
 
 		CryptoConfig defCryptoSetting = new CryptoConfig();
 		defCryptoSetting.setSupportedProviders(supportedProviders);
