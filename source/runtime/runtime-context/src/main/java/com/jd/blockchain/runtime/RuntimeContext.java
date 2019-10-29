@@ -240,7 +240,7 @@ public abstract class RuntimeContext {
 
 		private static void initBlacks() {
 			try {
-				InputStream inputStream = ContractURLClassLoader.class.getResourceAsStream(File.separator + BLACK_CONFIG);
+				InputStream inputStream = ContractURLClassLoader.class.getResourceAsStream("/"+ BLACK_CONFIG);
 				String text = FileUtils.readText(inputStream);
 				String[] textArray = text.split("\n");
 				for (String setting : textArray) {
