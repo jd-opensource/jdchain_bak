@@ -597,7 +597,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return peerService.getQueryService().getUsers(ledgerHash, fromIndex, count);
+		return revertAccountHeader(peerService.getQueryService().getUsers(ledgerHash, fromIndex, count));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts")
@@ -605,7 +605,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count);
+		return revertAccountHeader(peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count));
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts")
@@ -613,6 +613,20 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count);
+		return revertAccountHeader(peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count));
+	}
+
+	/**
+	 * reverse the AccountHeader[] content; the latest record show first;
+	 * @return
+	 */
+	private AccountHeader[] revertAccountHeader(AccountHeader[] accountHeaders){
+		AccountHeader[] accounts = new AccountHeader[accountHeaders.length];
+		if(accountHeaders!=null && accountHeaders.length>0){
+			for (int i = 0; i < accountHeaders.length; i++) {
+				accounts[accountHeaders.length-1-i] = accountHeaders[i];
+			}
+		}
+		return accounts;
 	}
 }

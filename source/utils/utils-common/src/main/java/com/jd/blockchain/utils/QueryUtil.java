@@ -47,4 +47,21 @@ public class QueryUtil {
         rtn[1] = count;
         return rtn;
     }
+
+    /**
+     * cal the data by descend;
+     * @param fromIndex
+     * @param count
+     * @param maxNum
+     * @return
+     */
+    public static int[] calFromIndexAndCountDescend(int fromIndex, int count, int maxNum){
+        int rtn[] = new int[2];
+        int results[] = calFromIndexAndCount(fromIndex,count,maxNum);
+
+        //now use descend; first show the latest record;
+        rtn[0] = maxNum - results[0] - results[1];
+        rtn[1] = results[1];
+        return rtn;
+    }
 }

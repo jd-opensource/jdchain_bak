@@ -42,7 +42,7 @@ public class GatewayInterceptServiceHandler implements GatewayInterceptService {
     private void contractCheck(final ContractCodeDeployOperation contractOP) {
 
         // 校验chainCode
-        ContractJarUtils.verify(contractOP.getChainCode());
+        ContractJarUtils.verify(contractsPath, contractOP.getChainCode());
     }
 
     private static String jarRootDir() {

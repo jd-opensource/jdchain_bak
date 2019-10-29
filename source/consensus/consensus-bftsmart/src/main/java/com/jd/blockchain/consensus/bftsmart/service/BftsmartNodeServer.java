@@ -400,19 +400,20 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             int msgId = 0;
 
             boolean isOK = true;
+            TransactionState transactionState = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
 
             for (int i = 0; i < commands.length; i++) {
-
                 byte[] txContent = commands[i];
                 try {
                     AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
                     asyncFutureLinkedList.add(asyncFuture);
                 } catch (BlockRollbackException e) {
-
                     LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
-
                     isOK = false;
-
+                    // TODO: handle the BlockRollbackException in detail；
+                    if (e instanceof DataVersionConflictException) {
+                        transactionState = TransactionState.DATA_VERSION_CONFLICT;
+                    }
                     break;
                 }
             }
@@ -432,7 +433,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             } else {
 
                 for (int i = 0; i < commands.length; i++) {
-                    responseLinkedList.add(createAppResponse(commands[i]));
+                    responseLinkedList.add(createAppResponse(commands[i],transactionState));
                 }
 
                 Random random = new Random();
@@ -451,11 +452,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         }
     }
 
-    public byte[] createAppResponse(byte[] command) {
+    public byte[] createAppResponse(byte[] command, TransactionState transactionState) {
         TransactionRequest txRequest = BinaryProtocol.decode(command);
 
         TxResponseMessage resp = new TxResponseMessage(txRequest.getTransactionContent().getHash());
-        resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
+//        resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
+        resp.setExecutionState(transactionState);
 
         return BinaryProtocol.encode(resp, TransactionResponse.class);
     }

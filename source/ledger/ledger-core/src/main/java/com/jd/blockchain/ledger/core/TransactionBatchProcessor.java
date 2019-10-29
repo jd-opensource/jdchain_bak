@@ -5,29 +5,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.jd.blockchain.ledger.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.BlockRollbackException;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.ContractDoesNotExistException;
-import com.jd.blockchain.ledger.DataAccountDoesNotExistException;
-import com.jd.blockchain.ledger.IllegalTransactionException;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerException;
-import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.LedgerSecurityException;
-import com.jd.blockchain.ledger.Operation;
-import com.jd.blockchain.ledger.OperationResult;
-import com.jd.blockchain.ledger.OperationResultData;
-import com.jd.blockchain.ledger.ParticipantDoesNotExistException;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionRollbackException;
-import com.jd.blockchain.ledger.TransactionState;
-import com.jd.blockchain.ledger.UserDoesNotExistException;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension.Credential;
 import com.jd.blockchain.service.TransactionBatchProcess;
 import com.jd.blockchain.service.TransactionBatchResult;
@@ -63,7 +45,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/**
 	 * @param newBlockEditor 新区块的数据编辑器；
-	 * @param ledgerQueryer  账本查询器，只包含新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
+	 * @param newBlockEditor  账本查询器，只包含新区块的前一个区块的数据集；即未提交新区块之前的经过共识的账本最新数据集；
 	 * @param opHandles      操作处理对象注册表；
 	 */
 	public TransactionBatchProcessor(LedgerSecurityManager securityManager, LedgerEditor newBlockEditor,
@@ -153,6 +135,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 		} catch (BlockRollbackException e) {
 			// 发生区块级别的处理异常，向上重新抛出异常进行处理，整个区块可能被丢弃；
+			resp = discard(request, e.getState());
 			LOGGER.error(String.format(
 					"Ignore transaction caused by BlockRollbackException! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
@@ -287,8 +270,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 		} catch (BlockRollbackException e) {
-			// 回滚整个区块；
+			// rollback all the block；
+			// TODO: handle the BlockRollbackException in detail；
 			result = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
+			if (e instanceof DataVersionConflictException) {
+				result = TransactionState.DATA_VERSION_CONFLICT;
+			}
 			txCtx.rollback();
 			LOGGER.error(
 					String.format("Transaction was rolled back! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
