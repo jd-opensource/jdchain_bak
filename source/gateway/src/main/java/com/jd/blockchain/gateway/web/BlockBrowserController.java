@@ -5,9 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.jd.blockchain.gateway.service.GatewayQueryService;
-import com.jd.blockchain.sdk.LedgerBaseSettings;
-import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +20,9 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.service.DataRetrievalService;
+import com.jd.blockchain.gateway.service.GatewayQueryService;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -34,11 +31,14 @@ import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
 import com.jd.blockchain.sdk.ContractSettings;
+import com.jd.blockchain.sdk.LedgerBaseSettings;
 import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.ConsoleUtils;
+import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 
 @RestController
 @RequestMapping(path = "/")
@@ -597,7 +597,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return revertAccountHeader(peerService.getQueryService().getUsers(ledgerHash, fromIndex, count));
+		return peerService.getQueryService().getUsers(ledgerHash, fromIndex, count);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts")
@@ -605,7 +605,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return revertAccountHeader(peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count));
+		return peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts")
@@ -613,20 +613,20 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	public BlockchainIdentity[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
-		return revertAccountHeader(peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count));
+		return peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count);
 	}
 
-	/**
-	 * reverse the AccountHeader[] content; the latest record show first;
-	 * @return
-	 */
-	private AccountHeader[] revertAccountHeader(AccountHeader[] accountHeaders){
-		AccountHeader[] accounts = new AccountHeader[accountHeaders.length];
-		if(accountHeaders!=null && accountHeaders.length>0){
-			for (int i = 0; i < accountHeaders.length; i++) {
-				accounts[accountHeaders.length-1-i] = accountHeaders[i];
-			}
-		}
-		return accounts;
-	}
+//	/**
+//	 * reverse the AccountHeader[] content; the latest record show first;
+//	 * @return
+//	 */
+//	private AccountHeader[] revertAccountHeader(AccountHeader[] accountHeaders){
+//		AccountHeader[] accounts = new AccountHeader[accountHeaders.length];
+//		if(accountHeaders!=null && accountHeaders.length>0){
+//			for (int i = 0; i < accountHeaders.length; i++) {
+//				accounts[accountHeaders.length-1-i] = accountHeaders[i];
+//			}
+//		}
+//		return accounts;
+//	}
 }
