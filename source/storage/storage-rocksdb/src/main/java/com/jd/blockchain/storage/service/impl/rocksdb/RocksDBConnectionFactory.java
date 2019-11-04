@@ -21,6 +21,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 
 	static {
 		RocksDB.loadLibrary();
+		isWindows = isWindows();
 	}
 
 	public static final String URI_SCHEME = "rocksdb";
@@ -29,6 +30,13 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 			.compile("^\\w+\\://(/)?\\w+(/.*)*$");
 
 	private Map<String, RocksDBConnection> connections = new ConcurrentHashMap<>();
+
+	private static boolean isWindows;
+
+	private static boolean isWindows() {
+		String os = System.getProperty("os.name");
+		return (os.indexOf("Windows") >= 0 || os.indexOf("windows") >= 0);
+	}
 
 	@Override
 	public DbConnection connect(String dbUri) {
@@ -49,7 +57,13 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		String uriHead = dbPrefix();
 		int beginIndex = dbConnectionString.indexOf(uriHead);
 		String dbPath = dbConnectionString.substring(beginIndex + uriHead.length());
-		if (!dbPath.startsWith(File.separator)) {
+		int pos = dbPath.indexOf("\\");
+		if (pos < 0) {
+			pos = dbPath.indexOf("/");
+		}
+		if (isWindows && pos > 0) {
+			dbPath = dbPath.substring(0, pos) + ":" + dbPath.substring(pos);
+		} else if (!dbPath.startsWith(File.separator)) {
 			dbPath = File.separator + dbPath;
 		}
 
@@ -58,14 +72,19 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 			return conn;
 		}
 
-		Options options = initOptions();
+		Options options = null;
+		if (isWindows()) {
+			options = initWindowsOptions();
+		} else {
+			options = initOptions();
+		}
+
 
 		conn = new RocksDBConnection(dbPath, options);
 		connections.put(dbPath, conn);
 
 		return conn;
 	}
-
 
 	@Override
 	public String dbPrefix() {
@@ -120,6 +139,34 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 				.setCompressionPerLevel(compressionLevels)
 				.setNumLevels(7)
 				.setCompressionType(CompressionType.SNAPPY_COMPRESSION)
+				.setCompactionStyle(CompactionStyle.UNIVERSAL)
+				.setMemTableConfig(new SkipListMemTableConfig())
+				;
+		return options;
+	}
+
+	private Options initWindowsOptions() {
+		final Filter bloomFilter = new BloomFilter(32);
+		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
+				.setFilter(bloomFilter)
+				.setBlockSize(4 * SizeUnit.KB)
+				.setBlockSizeDeviation(10)
+				.setBlockCacheSize(64 * SizeUnit.GB)
+				.setNoBlockCache(false)
+				.setCacheIndexAndFilterBlocks(true)
+				.setBlockRestartInterval(16)
+				;
+
+		Options options = new Options()
+				.setAllowConcurrentMemtableWrite(true)
+				.setEnableWriteThreadAdaptiveYield(true)
+				.setCreateIfMissing(true)
+				.setMaxWriteBufferNumber(3)
+				.setTableFormatConfig(tableOptions)
+				.setMaxBackgroundCompactions(10)
+				.setMaxBackgroundFlushes(4)
+				.setBloomLocality(10)
+				.setMinWriteBufferNumberToMerge(4)
 				.setCompactionStyle(CompactionStyle.UNIVERSAL)
 				.setMemTableConfig(new SkipListMemTableConfig())
 				;

@@ -1,1 +1,1 @@
-java -jar peer-0.0.1-SNAPSHOT.jar --spring.config.location=file:config/application.properties
+java -jar peer-1.1.1-RELEASE.jar --spring.config.location=file:config/application.properties
