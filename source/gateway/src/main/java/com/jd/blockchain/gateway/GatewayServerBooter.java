@@ -37,62 +37,57 @@ public class GatewayServerBooter {
 	//网关配置文件  gateway.conf
 	private static String configFile;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		boolean debug = false;
-		try {
-			ArgumentSet arguments = ArgumentSet.resolve(args, ArgumentSet.setting().prefix(HOST_ARG, SPRING_CF_LOCATION).option(DEBUG_OPT));
-			debug = arguments.hasOption(DEBUG_OPT);
-			ArgEntry argHost = arguments.getArg(HOST_ARG);
-			String configFile = argHost == null ? null : argHost.getValue();
-			GatewayConfigProperties configProps;
-			if (configFile == null) {
-				ConsoleUtils.info("Load build-in default configuration ...");
-				ClassPathResource configResource = new ClassPathResource("gateway.conf");
-				try (InputStream in = configResource.getInputStream()) {
-					configProps = GatewayConfigProperties.resolve(in);
-				}
-			} else {
-				ConsoleUtils.info("Load configuration ...");
-				GatewayServerBooter.configFile = configFile;
-				configProps = GatewayConfigProperties.resolve(argHost.getValue());
+
+		ArgumentSet arguments = ArgumentSet.resolve(args, ArgumentSet.setting().prefix(HOST_ARG, SPRING_CF_LOCATION).option(DEBUG_OPT));
+		debug = arguments.hasOption(DEBUG_OPT);
+		ArgEntry argHost = arguments.getArg(HOST_ARG);
+		String configFile = argHost == null ? null : argHost.getValue();
+		GatewayConfigProperties configProps;
+		if (configFile == null) {
+			ConsoleUtils.info("Load build-in default configuration ...");
+			ClassPathResource configResource = new ClassPathResource("gateway.conf");
+			try (InputStream in = configResource.getInputStream()) {
+				configProps = GatewayConfigProperties.resolve(in);
 			}
-
-			//spring config location;
-			String springConfigLocation=null;
-			ArgumentSet.ArgEntry spConfigLocation = arguments.getArg(SPRING_CF_LOCATION);
-			if (spConfigLocation != null) {
-				springConfigLocation = spConfigLocation.getValue();
-			}else {
-				//if no the config file, then should tip as follows. but it's not a good feeling, so we create it by inputStream;
-				ConsoleUtils.info("no param:-sp, format: -sp /x/xx.properties, use the default application-gw.properties 	");
-				ClassPathResource configResource = new ClassPathResource(DEFAULT_GATEWAY_PROPS);
-				InputStream in = configResource.getInputStream();
-
-				// 将文件写入至config目录下
-				String configPath = bootPath() + "config" + File.separator + DEFAULT_GATEWAY_PROPS;
-				File targetFile = new File(configPath);
-
-				// 先将原来文件删除再Copy
-				if (targetFile.exists()) {
-					FileUtils.forceDelete(targetFile);
-				}
-
-				FileUtils.copyInputStreamToFile(in, targetFile);
-				springConfigLocation = "file:" + targetFile.getAbsolutePath();
-			}
-
-			// 启动服务器；
-			ConsoleUtils.info("Starting web server......");
-			GatewayServerBooter booter = new GatewayServerBooter(configProps,springConfigLocation);
-			booter.start();
-
-			ConsoleUtils.info("Peer[%s] is connected success!", configProps.masterPeerAddress().toString());
-		} catch (Exception e) {
-			ConsoleUtils.error("Error!! %s", e.getMessage());
-			if (debug) {
-				e.printStackTrace();
-			}
+		} else {
+			ConsoleUtils.info("Load configuration ...");
+			GatewayServerBooter.configFile = configFile;
+			configProps = GatewayConfigProperties.resolve(argHost.getValue());
 		}
+
+		//spring config location;
+		String springConfigLocation=null;
+		ArgumentSet.ArgEntry spConfigLocation = arguments.getArg(SPRING_CF_LOCATION);
+		if (spConfigLocation != null) {
+			springConfigLocation = spConfigLocation.getValue();
+		}else {
+			//if no the config file, then should tip as follows. but it's not a good feeling, so we create it by inputStream;
+			ConsoleUtils.info("no param:-sp, format: -sp /x/xx.properties, use the default application-gw.properties 	");
+			ClassPathResource configResource = new ClassPathResource(DEFAULT_GATEWAY_PROPS);
+			InputStream in = configResource.getInputStream();
+
+			// 将文件写入至config目录下
+			String configPath = bootPath() + "config" + File.separator + DEFAULT_GATEWAY_PROPS;
+			File targetFile = new File(configPath);
+
+			// 先将原来文件删除再Copy
+			if (targetFile.exists()) {
+				FileUtils.forceDelete(targetFile);
+			}
+
+			FileUtils.copyInputStreamToFile(in, targetFile);
+			springConfigLocation = "file:" + targetFile.getAbsolutePath();
+		}
+
+		// 启动服务器；
+		ConsoleUtils.info("Starting web server......");
+		GatewayServerBooter booter = new GatewayServerBooter(configProps,springConfigLocation);
+		booter.start();
+
+		ConsoleUtils.info("Peer[%s] is connected success!", configProps.masterPeerAddress().toString());
+
 	}
 
 	private volatile ConfigurableApplicationContext appCtx;

@@ -94,6 +94,8 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 		if (peerProviders == null || peerProviders.isEmpty()) {
 			throw new AuthenticationException("No peer Provider was set!");
 		}
+		System.out.println("[gateway] authIdProvider peer privateKey=" + gatewayKey.getPrivKey().toBase58());
+		System.out.println("[gateway] authIdProvider peer publicKey =" + gatewayKey.getPubKey().toBase58());
 		ClientIdentificationsProvider authIdProvider = authIdProvider(gatewayKey, peerProviders);
 
 		GatewayIncomingSetting incomingSetting = auth(peerAddr, authIdProvider);
