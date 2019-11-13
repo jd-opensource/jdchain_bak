@@ -34,6 +34,8 @@ public class GatewayServerBooter {
 
 	// 是否输出调试信息；
 	private static final String DEBUG_OPT = "-debug";
+	//网关配置文件  gateway.conf
+	private static String configFile;
 
 	public static void main(String[] args) {
 		boolean debug = false;
@@ -51,6 +53,7 @@ public class GatewayServerBooter {
 				}
 			} else {
 				ConsoleUtils.info("Load configuration ...");
+				GatewayServerBooter.configFile = configFile;
 				configProps = GatewayConfigProperties.resolve(argHost.getValue());
 			}
 
@@ -96,6 +99,7 @@ public class GatewayServerBooter {
 	private GatewayConfigProperties config;
 	private AsymmetricKeypair defaultKeyPair;
 	private String springConfigLocation;
+
 	public GatewayServerBooter(GatewayConfigProperties config, String springConfigLocation) {
 		this.config = config;
 		this.springConfigLocation = springConfigLocation;
@@ -131,7 +135,8 @@ public class GatewayServerBooter {
 		blockBrowserController.setDataRetrievalUrl(config.dataRetrievalUrl());
 		blockBrowserController.setSchemaRetrievalUrl(config.getSchemaRetrievalUrl());
 		PeerConnector peerConnector = appCtx.getBean(PeerConnector.class);
-		peerConnector.connect(config.masterPeerAddress(), defaultKeyPair, config.providerConfig().getProviders());
+
+        peerConnector.connect(config.masterPeerAddress(), defaultKeyPair, config.providerConfig().getProviders());
 		ConsoleUtils.info("Peer[%s] is connected success!", config.masterPeerAddress().toString());
 	}
 
@@ -150,6 +155,17 @@ public class GatewayServerBooter {
 		if(springConfigLocation != null){
 			argList.add(String.format("--spring.config.location=%s", springConfigLocation));
 		}
+
+		if (configFile != null) {
+			argList.add(HOST_ARG);
+			argList.add(configFile);
+		}
+
+		if (springConfigLocation != null) {
+			argList.add(SPRING_CF_LOCATION);
+			argList.add(springConfigLocation);
+		}
+
 
 		if (contextPath != null) {
 			argList.add(String.format("--server.context-path=%s", contextPath));
