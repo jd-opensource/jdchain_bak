@@ -10,6 +10,14 @@ public interface HashFunction extends CryptoFunction {
 	 */
 	HashDigest hash(byte[] data);
 	
+	/**
+	 * 计算指定数据的 hash；
+	 * 
+	 * @param data
+	 * @return
+	 */
+	HashDigest hash(byte[] data, int offset, int len);
+	
 
 	/**
 	 * 校验 hash 摘要与指定的数据是否匹配；

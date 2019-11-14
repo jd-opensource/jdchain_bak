@@ -556,6 +556,9 @@ public class MerkleTreeTest {
 	/**
 	 * 测试从存储重新加载 Merkle 树的正确性；
 	 */
+	/**
+	 * 
+	 */
 	@Test
 	public void testMerkleReload() {
 		CryptoSetting setting = Mockito.mock(CryptoSetting.class);
@@ -563,7 +566,7 @@ public class MerkleTreeTest {
 		when(setting.getAutoVerifyHash()).thenReturn(true);
 
 		// 保存所有写入的数据节点的 SN-Hash 映射表；
-		TreeMap<Long, HashDigest> dataNodes = new TreeMap<>();
+		TreeMap<Long, HashDigest> expectedDataNodes = new TreeMap<>();
 		MerkleNode nd;
 
 		// 测试从空的树开始，顺序增加数据节点；
@@ -580,7 +583,7 @@ public class MerkleTreeTest {
 		for (int i = 0; i < count; i++) {
 			rand.nextBytes(dataBuf);
 			nd = mkt.setData(sn, "KEY-" + sn, 0, dataBuf);
-			dataNodes.put(sn, nd.getNodeHash());
+			expectedDataNodes.put(sn, nd.getNodeHash());
 			sn++;
 		}
 		mkt.commit();
@@ -610,6 +613,24 @@ public class MerkleTreeTest {
 			// 预期扩展为 4 层16叉树，由 3 层满16叉树扩展 1 新分支（4个路径节点）而形成；
 			long expectedNodes = getMaxPathNodeCount(3) + 4 + 4097;
 			assertEquals(expectedNodes, storage.getCount());
+			
+			//重新加载，判断数据是否正确；
+			MerkleTree r1_mkt = new MerkleTree(r1_rootHash, setting, keyPrefix, storage, true);
+			{
+				// 验证每一个数据节点都产生了存在性证明；
+				MerkleProof proof = null;
+				HashDigest expectedNodeHash = null;
+				MerkleDataNode reallyDataNode = null;
+				for (long n = 0; n < maxSN; n++) {
+					expectedNodeHash = expectedDataNodes.get(n);
+					reallyDataNode = r1_mkt.getData(n);
+					assertEquals(expectedNodeHash, reallyDataNode.getNodeHash());
+					
+					proof = r1_mkt.getProof(n);
+					assertNotNull(proof);
+					assertEquals(expectedNodeHash, proof.getHash(0));
+				}
+			}
 		}
 
 		// 覆盖到每一路分支修改数据节点；
@@ -621,7 +642,7 @@ public class MerkleTreeTest {
 			rand.nextBytes(dataBuf);
 			sn = i;
 			nd = mkt.setData(sn, "KEY-" + sn, 0, dataBuf);
-			dataNodes.put(sn, nd.getNodeHash());
+			expectedDataNodes.put(sn, nd.getNodeHash());
 		}
 
 		mkt.commit();
@@ -658,16 +679,18 @@ public class MerkleTreeTest {
 			rand.nextBytes(dataBuf);
 			sn = maxSN + 1 + i;
 			nd = mkt.setData(sn, "KEY-" + sn, 0, dataBuf);
-			dataNodes.put(sn, nd.getNodeHash());
+			expectedDataNodes.put(sn, nd.getNodeHash());
 		}
 		mkt.commit();
 
-		// 验证每一个数据节点都产生了存在性证明；
-		MerkleProof proof = null;
-		for (Long n : dataNodes.keySet()) {
-			proof = mkt.getProof(n.longValue());
-			assertNotNull(proof);
-			assertEquals(dataNodes.get(n), proof.getHash(0));
+		{
+			// 验证每一个数据节点都产生了存在性证明；
+			MerkleProof proof = null;
+			for (Long n : expectedDataNodes.keySet()) {
+				proof = mkt.getProof(n.longValue());
+				assertNotNull(proof);
+				assertEquals(expectedDataNodes.get(n), proof.getHash(0));
+			}
 		}
 
 		// 记录一次提交的根哈希以及部分节点信息，用于后续的加载校验；
@@ -700,6 +723,7 @@ public class MerkleTreeTest {
 		assertEquals(r1_proof1, r1_mkt.getProof(r1_sn1).toString());
 		assertEquals(r1_proof2, r1_mkt.getProof(r1_sn2).toString());
 
+
 		// 从第 2 轮提交的 Merkle 根哈希加载；
 		// 第 2 轮生成的 Merkle 树是对第 1 轮的数据的全部节点的修改，因此同一个 SN 的节点的证明是不同的；
 		MerkleTree r2_mkt = new MerkleTree(r2_rootHash, setting, keyPrefix, storage, true);
@@ -730,10 +754,13 @@ public class MerkleTreeTest {
 		assertEquals(r3_proof3, r3_mkt.getProof(r3_sn3).toString());
 
 		// 验证每一个数据节点都产生了存在性证明；
-		for (Long n : dataNodes.keySet()) {
-			proof = r3_mkt.getProof(n.longValue());
-			assertNotNull(proof);
-			assertEquals(dataNodes.get(n), proof.getHash(0));
+		{
+			MerkleProof proof = null;
+			for (Long n : expectedDataNodes.keySet()) {
+				proof = r3_mkt.getProof(n.longValue());
+				assertNotNull(proof);
+				assertEquals(expectedDataNodes.get(n), proof.getHash(0));
+			}
 		}
 	}
 
@@ -772,8 +799,7 @@ public class MerkleTreeTest {
 	 * 注：此方法不处理溢出；调用者需要自行规避；
 	 * 
 	 * @param value
-	 * @param x
-	 *            大于等于 0 的整数；
+	 * @param x     大于等于 0 的整数；
 	 * @return
 	 */
 	private static long power(long value, int x) {

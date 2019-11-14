@@ -11,14 +11,14 @@ import com.jd.blockchain.ledger.HashProof;
  * @author huanghaiquan
  *
  */
-public class HashDegistList implements HashProof {
+public class HashDigestList implements HashProof {
 
 	private List<HashDigest> proofs = new ArrayList<HashDigest>();
 
-	public HashDegistList() {
+	public HashDigestList() {
 	}
 
-	public HashDegistList(HashProof proof) {
+	public HashDigestList(HashProof proof) {
 		concat(proof);
 	}
 
