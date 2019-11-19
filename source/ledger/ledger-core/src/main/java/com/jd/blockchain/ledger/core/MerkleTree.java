@@ -52,8 +52,9 @@ public class MerkleTree implements Transactional {
 
 	public static final int TREE_DEGREE = 16;
 
-	public static final int MAX_LEVEL = 15;
+	public static final int MAX_LEVEL = 14;
 
+	// 正好是 2 的 56 次方(7字节），将 SN 8个字节中的首个字节预留作为 DataNode 的编码格式版本标记；
 	public static final long MAX_DATACOUNT = power(TREE_DEGREE, MAX_LEVEL);
 
 	public static final long MAX_SN = MAX_DATACOUNT - 1;
@@ -147,14 +148,10 @@ public class MerkleTree implements Transactional {
 	/**
 	 * 创建 Merkle 树；
 	 * 
-	 * @param rootHash
-	 *            节点的根Hash; 如果指定为 null，则实际上创建一个空的 Merkle Tree；
-	 * @param verifyOnLoad
-	 *            从外部存储加载节点时是否校验节点的哈希；
-	 * @param kvStorage
-	 *            保存 Merkle 节点的存储服务；
-	 * @param readonly
-	 *            是否只读；
+	 * @param rootHash     节点的根Hash; 如果指定为 null，则实际上创建一个空的 Merkle Tree；
+	 * @param verifyOnLoad 从外部存储加载节点时是否校验节点的哈希；
+	 * @param kvStorage    保存 Merkle 节点的存储服务；
+	 * @param readonly     是否只读；
 	 */
 	public MerkleTree(HashDigest rootHash, CryptoSetting setting, String keyPrefix, ExPolicyKVStorage kvStorage,
 			boolean readonly) {
@@ -164,14 +161,10 @@ public class MerkleTree implements Transactional {
 	/**
 	 * 创建 Merkle 树；
 	 * 
-	 * @param rootHash
-	 *            节点的根Hash; 如果指定为 null，则实际上创建一个空的 Merkle Tree；
-	 * @param verifyOnLoad
-	 *            从外部存储加载节点时是否校验节点的哈希；
-	 * @param kvStorage
-	 *            保存 Merkle 节点的存储服务；
-	 * @param readonly
-	 *            是否只读；
+	 * @param rootHash     节点的根Hash; 如果指定为 null，则实际上创建一个空的 Merkle Tree；
+	 * @param verifyOnLoad 从外部存储加载节点时是否校验节点的哈希；
+	 * @param kvStorage    保存 Merkle 节点的存储服务；
+	 * @param readonly     是否只读；
 	 */
 	public MerkleTree(HashDigest rootHash, CryptoSetting setting, Bytes keyPrefix, ExPolicyKVStorage kvStorage,
 			boolean readonly) {
@@ -205,8 +198,7 @@ public class MerkleTree implements Transactional {
 	 * <p>
 	 * 如果 sn 超出范围，则引发 {@link IndexOutOfBoundsException} ；
 	 * 
-	 * @param sn
-	 *            数据的序列号；
+	 * @param sn 数据的序列号；
 	 * @return 默克尔证明的实例；
 	 */
 	public MerkleProof getProof(long sn) {
@@ -242,13 +234,10 @@ public class MerkleTree implements Transactional {
 	 * 注：默克尔树只保存指定数据的哈希以及关联的键，而不会保存数据原文，因此调用者需要自己处理对数据的存储； <br>
 	 * 此外，哈希计算是把键和数据内容拼接一起进行计算的；
 	 * 
-	 * @param sn
-	 *            与此数据唯一相关的序列号；sn 必须大于等于 0 ；
-	 * @param key
-	 *            与此数据唯一相关的键；
+	 * @param sn         与此数据唯一相关的序列号；sn 必须大于等于 0 ；
+	 * @param key        与此数据唯一相关的键；
 	 * @param version
-	 * @param hashedData
-	 *            要参与哈希计算的数据内容；注：此参数值并不会被默克尔树保存；
+	 * @param hashedData 要参与哈希计算的数据内容；注：此参数值并不会被默克尔树保存；
 	 * @return
 	 */
 	public MerkleDataNode setData(long sn, String key, long version, byte[] hashedData) {
@@ -266,13 +255,10 @@ public class MerkleTree implements Transactional {
 	 * 注：默克尔树只保存指定数据的哈希以及关联的键，而不会保存数据原文，因此调用者需要自己处理对数据的存储； <br>
 	 * 此外，哈希计算是把键和数据内容拼接一起进行计算的；
 	 * 
-	 * @param sn
-	 *            与此数据唯一相关的序列号；sn 必须大于等于 0 ；
-	 * @param key
-	 *            与此数据唯一相关的键；
+	 * @param sn         与此数据唯一相关的序列号；sn 必须大于等于 0 ；
+	 * @param key        与此数据唯一相关的键；
 	 * @param version
-	 * @param hashedData
-	 *            要参与哈希计算的数据内容；注：此参数值并不会被默克尔树保存；
+	 * @param hashedData 要参与哈希计算的数据内容；注：此参数值并不会被默克尔树保存；
 	 * @return
 	 */
 	public MerkleDataNode setData(long sn, Bytes key, long version, byte[] hashedData) {
@@ -285,7 +271,8 @@ public class MerkleTree implements Transactional {
 		if (sn > MAX_SN) {
 			throw new IllegalArgumentException("The sn is great than MAX[" + MAX_SN + "]!");
 		}
-		DataNode dataNode = MerkleTreeEncoder.newDataNode(setting.getHashAlgorithm(), sn, key, version, hashedData);
+		DataNode dataNode = MerkleTreeEncoder.LATEST_DATANODE_ENCODER.create(setting.getHashAlgorithm(), sn, key,
+				version, hashedData);
 		updatedDataNodes.put(sn, dataNode);
 		return dataNode;
 	}
@@ -591,10 +578,8 @@ public class MerkleTree implements Transactional {
 	/**
 	 * 重新计算所有子节点以及自身的哈希，并返回新加入的数据节点的数量；
 	 * 
-	 * @param pathNode
-	 *            需要重新计算 hash 的路径节点；
-	 * @param updatedNodes
-	 *            用于记录已更新节点的列表；
+	 * @param pathNode     需要重新计算 hash 的路径节点；
+	 * @param updatedNodes 用于记录已更新节点的列表；
 	 * @return
 	 */
 	@SuppressWarnings("unused")
@@ -732,12 +717,10 @@ public class MerkleTree implements Transactional {
 	 * 
 	 * 如果 sn 超出范围，则引发 {@link IndexOutOfBoundsException} ；
 	 * 
-	 * @param sn
-	 *            数据节点的序列号；
-	 * @param path
-	 *            用于记录节点路径的列表，长度必须大于等于当前默克尔树的总的层级（即 path.length 大于等于 root.level +
-	 *            1）；<br>
-	 *            如果参数为 null，则不记录；
+	 * @param sn   数据节点的序列号；
+	 * @param path 用于记录节点路径的列表，长度必须大于等于当前默克尔树的总的层级（即 path.length 大于等于 root.level +
+	 *             1）；<br>
+	 *             如果参数为 null，则不记录；
 	 * @return 序列号对应的数据节点；<br>
 	 *         如果不存在，则返回 null，注意，此时指定的路径参数 path 依然写入了查找过程的路径；
 	 */
@@ -844,7 +827,8 @@ public class MerkleTree implements Transactional {
 		if (bytes == null || bytes.length == 0) {
 			return null;
 		}
-		DataNode dataNode = MerkleTreeEncoder.parse(bytes);
+
+		DataNode dataNode = MerkleTreeEncoder.resolve(bytes);
 		if (verify && !hashBytes.equals(dataNode.nodeHash)) {
 			String keyStr = hashBytes.toBase58();
 			String actualHashStr = dataNode.nodeHash.toBase58();
@@ -861,8 +845,7 @@ public class MerkleTree implements Transactional {
 	 * 注：此方法不处理溢出；调用者需要自行规避；
 	 * 
 	 * @param value
-	 * @param x
-	 *            大于等于 0 的整数；
+	 * @param x     大于等于 0 的整数；
 	 * @return
 	 */
 	private static long power(long value, int x) {
@@ -1140,14 +1123,10 @@ public class MerkleTree implements Transactional {
 		/**
 		 * 创建一个路径节点；
 		 * 
-		 * @param hashAlgorithm
-		 *            生成节点采用的哈希算法；
-		 * @param startingSN
-		 *            路径节点表示的子树的起始序列号；
-		 * @param level
-		 *            路径节点的层级深度；路径节点的深度从 1 开始往上递增（数据节点作为树的深度为 0）；
-		 * @param dataCount
-		 *            路径节点表示的子树所包含的数据节点的数量；
+		 * @param hashAlgorithm 生成节点采用的哈希算法；
+		 * @param startingSN    路径节点表示的子树的起始序列号；
+		 * @param level         路径节点的层级深度；路径节点的深度从 1 开始往上递增（数据节点作为树的深度为 0）；
+		 * @param dataCount     路径节点表示的子树所包含的数据节点的数量；
 		 */
 		private PathNode(CryptoAlgorithm hashAlgorithm, long startingSN, int level, long dataCount) {
 			this(hashAlgorithm, startingSN, level, dataCount, new HashDigest[TREE_DEGREE], null);
@@ -1338,10 +1317,8 @@ public class MerkleTree implements Transactional {
 		/**
 		 * 从指定的字节数组反序列化节点；
 		 * 
-		 * @param bytes
-		 *            字节数组；合法的输入应等同于 {@link #toBytes()} 方法的输出；
-		 * @param checkHash
-		 *            是否重新计算并校验节点的哈希；
+		 * @param bytes     字节数组；合法的输入应等同于 {@link #toBytes()} 方法的输出；
+		 * @param checkHash 是否重新计算并校验节点的哈希；
 		 * @return
 		 */
 		private static PathNode parse(byte[] bytes, boolean checkHash) {
@@ -1437,16 +1414,18 @@ public class MerkleTree implements Transactional {
 
 		private long version;
 
-		private byte[] dataNodeBytes;
+		private byte[] nodeBytes;
 
-		DataNode(long sn, Bytes key, long version, HashDigest dataHash, byte[] dataBytes) {
+		private HashDigest valueHash;
+
+		DataNode(HashDigest nodeHash, long sn, Bytes key, long version, HashDigest valueHash, byte[] nodeBytes) {
 			this.sn = sn;
 			this.key = key;
 			this.version = version;
-			this.nodeHash = dataHash;
-			this.dataNodeBytes = dataBytes;
+			this.nodeHash = nodeHash;
+			this.valueHash = valueHash;
+			this.nodeBytes = nodeBytes;
 		}
-
 
 		@Override
 		protected long getStartingSN() {
@@ -1499,6 +1478,11 @@ public class MerkleTree implements Transactional {
 		}
 
 		@Override
+		public HashDigest getValueHash() {
+			return valueHash;
+		}
+
+		@Override
 		public byte[] toBytes() {
 			// ByteArrayOutputStream out = new ByteArrayOutputStream();
 			//
@@ -1525,7 +1509,7 @@ public class MerkleTree implements Transactional {
 			//
 			// System.arraycopy(nodeHash.toBytes(), 0, totalBytes, offset, hashSize);
 
-			return dataNodeBytes;
+			return nodeBytes;
 		}
 
 		@Override

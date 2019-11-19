@@ -763,7 +763,7 @@ public class MerkleTreeTest {
 			}
 		}
 	}
-
+	
 	@SuppressWarnings("unused")
 	private static int getLevel(long dataCount) {
 		if (dataCount < 0) {
