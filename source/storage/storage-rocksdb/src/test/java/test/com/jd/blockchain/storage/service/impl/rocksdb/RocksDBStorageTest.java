@@ -1,5 +1,6 @@
 package test.com.jd.blockchain.storage.service.impl.rocksdb;
 
+import static com.jd.blockchain.storage.service.impl.rocksdb.RocksDBConnectionFactory.URI_PATTER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -7,6 +8,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -133,4 +136,18 @@ public class RocksDBStorageTest {
 		return dbURI;
 	}
 
+	@Test
+	// test rocksDB uri patter
+	public void testRocksDBUriPatter() {
+		Map<String, Boolean> cases = new HashMap<>();
+		cases.put("rocksdb:///home/peer0/rocksdb", true);
+		cases.put("rocksdb://D:\\home\\rocksdb", true);
+		cases.put("rocksdb://\\home\\rocksdb", false);
+		cases.put("rocksdb://:\\home\\rocksdb", false);
+		cases.put("rocksdb://D:\\home\\", true);
+		cases.put("rocksdb:///home/peer0/", true);
+		for(Map.Entry<String, Boolean> entity : cases.entrySet()) {
+			assertEquals(URI_PATTER.matcher(entity.getKey()).matches(), entity.getValue());
+		}
+	}
 }
