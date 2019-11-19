@@ -16,7 +16,7 @@ public class UmpConstant {
 
     public static final String PRIVATE_KEY_SUFFIX = ".priv";
 
-    public static final String PUBLIC_KEY_SUFFIX = ".priv";
+    public static final String PUBLIC_KEY_SUFFIX = ".pub";
 
     public static final String PWD_SUFFIX = ".pwd";
 
