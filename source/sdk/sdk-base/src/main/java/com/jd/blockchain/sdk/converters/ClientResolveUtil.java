@@ -147,8 +147,8 @@ public class ClientResolveUtil {
 			long expectedVersion = currWriteSetObj.getLong("expectedVersion");
 			JSONObject valueObj = currWriteSetObj.getJSONObject("value");
 			String typeStr = valueObj.getString("type");
-			// Base58Utils.decode(valueObj.getJSONObject("value").getString("value"))
-			String realValBase58 = valueObj.getJSONObject("value").getString("value");
+			// Base58Utils.decode(valueObj.getJSONObject("bytes").getString("value"))
+			String realValBase58 = valueObj.getJSONObject("bytes").getString("value");
 			String key = currWriteSetObj.getString("key");
 			DataType dataType = DataType.valueOf(typeStr);
 			BytesValue bytesValue = TypedValue.fromType(dataType, Base58Utils.decode(realValBase58));
