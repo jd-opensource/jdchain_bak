@@ -208,7 +208,7 @@ public class MerkleAccount implements CompositeAccount, HashProvable, MerkleSnap
 		if (rootProof == null) {
 			return null;
 		}
-		HashDegistList proof = new HashDegistList(rootProof);
+		HashDigestList proof = new HashDigestList(rootProof);
 		proof.concat(dataProof);
 		return proof;
 	}
