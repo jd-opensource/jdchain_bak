@@ -365,16 +365,15 @@ public class TransactionBatchProcessorTest {
 
 		txbatchProcessor.schedule(txreq5);
 		// 预期会产生版本冲突异常； DataVersionConflictionException;
-		DataVersionConflictException versionConflictionException = null;
-		try {
-			txbatchProcessor.schedule(txreq6);
-		} catch (DataVersionConflictException e) {
-			versionConflictionException = e;
-		}
-		assertNotNull(versionConflictionException);
+		TransactionResponse resp = txbatchProcessor.schedule(txreq6);
+		assertFalse(resp.isSuccess());
 
+		// 提交新区块
 		newBlock = newBlockEditor.prepare();
 		newBlockEditor.commit();
+
+		// 预期区块高度为3
+		assertEquals(3, ledgerRepo.getLatestBlockHeight());
 
 		BytesValue v1 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K1");
 		v3 = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress()).getBytes("K3");
@@ -383,7 +382,7 @@ public class TransactionBatchProcessorTest {
 		long k1_version = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress())
 				.getDataVersion("K1");
 		assertEquals(1, k1_version);
-
+		// K3 的版本增1
 		long k3_version = ledgerRepo.getDataAccountSet().getAccount(dataAccountKeypair.getAddress())
 				.getDataVersion("K3");
 		assertEquals(1, k3_version);
@@ -392,20 +391,6 @@ public class TransactionBatchProcessorTest {
 		assertNotNull(v3);
 		assertEquals("V-1-2", v1.getValue().toUTF8String());
 		assertEquals("V-3-2", v3.getValue().toUTF8String());
-
-//		// 验证正确性；
-//		ledgerManager = new LedgerManager();
-//		ledgerRepo = ledgerManager.register(ledgerHash, STORAGE);
-//
-//		LedgerBlock latestBlock = ledgerRepo.getLatestBlock();
-//		assertEquals(newBlock.getHash(), latestBlock.getHash());
-//		assertEquals(1, newBlock.getHeight());
-//
-//		LedgerTransaction tx1 = ledgerRepo.getTransactionSet()
-//				.get(transactionRequest1.getTransactionContent().getHash());
-//
-//		assertNotNull(tx1);
-//		assertEquals(TransactionState.SUCCESS, tx1.getExecutionState());
 
 	}
 

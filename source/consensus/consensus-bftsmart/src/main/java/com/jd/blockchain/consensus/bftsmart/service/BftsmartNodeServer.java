@@ -410,10 +410,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 } catch (BlockRollbackException e) {
                     LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
                     isOK = false;
-                    // TODO: handle the BlockRollbackException in detail；
-                    if (e instanceof DataVersionConflictException) {
-                        transactionState = TransactionState.DATA_VERSION_CONFLICT;
-                    }
                     break;
                 }
             }

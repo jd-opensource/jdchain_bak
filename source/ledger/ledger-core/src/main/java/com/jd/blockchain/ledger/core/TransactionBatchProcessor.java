@@ -273,9 +273,6 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			// rollback all the block；
 			// TODO: handle the BlockRollbackException in detail；
 			result = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
-			if (e instanceof DataVersionConflictException) {
-				result = TransactionState.DATA_VERSION_CONFLICT;
-			}
 			txCtx.rollback();
 			LOGGER.error(
 					String.format("Transaction was rolled back! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
@@ -295,6 +292,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 				result = TransactionState.CONTRACT_DOES_NOT_EXIST;
 			} else if (e instanceof ParticipantDoesNotExistException) {
 				result = TransactionState.PARTICIPANT_DOES_NOT_EXIST;
+			} else if (e instanceof DataVersionConflictException) {
+				result = TransactionState.DATA_VERSION_CONFLICT;
 			}
 			txCtx.discardAndCommit(result, operationResults);
 			LOGGER.error(String.format(

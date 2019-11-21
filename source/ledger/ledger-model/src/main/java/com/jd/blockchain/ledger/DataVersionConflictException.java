@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-public class DataVersionConflictException extends BlockRollbackException {
+public class DataVersionConflictException extends LedgerException {
 
 	private static final long serialVersionUID = 3583192000738807503L;
 
