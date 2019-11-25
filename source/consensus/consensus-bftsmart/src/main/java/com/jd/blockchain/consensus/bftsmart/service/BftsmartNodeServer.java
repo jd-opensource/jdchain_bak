@@ -402,16 +402,15 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             boolean isOK = true;
             TransactionState transactionState = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
 
-            for (int i = 0; i < commands.length; i++) {
-                byte[] txContent = commands[i];
-                try {
+            try {
+                for (int i = 0; i < commands.length; i++) {
+                    byte[] txContent = commands[i];
                     AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
                     asyncFutureLinkedList.add(asyncFuture);
-                } catch (BlockRollbackException e) {
+                }
+            } catch (BlockRollbackException e) {
                     LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
                     isOK = false;
-                    break;
-                }
             }
 
             if (isOK) {
@@ -448,22 +447,21 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         }
     }
 
+    // Block full rollback responses, generated in pre compute phase, due to tx fail
     public byte[] createAppResponse(byte[] command, TransactionState transactionState) {
         TransactionRequest txRequest = BinaryProtocol.decode(command);
 
         TxResponseMessage resp = new TxResponseMessage(txRequest.getTransactionContent().getHash());
-//        resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
+
         resp.setExecutionState(transactionState);
 
         return BinaryProtocol.encode(resp, TransactionResponse.class);
     }
 
-    /**
-     *
-     *  Consensus write phase will terminate, new block hash values are inconsistent, update batch messages execute state
-     *
-     */
-    public List<byte[]> updateAppResponses(List<byte[]> asyncResponseLinkedList) {
+
+
+    //Pre compute block hash values are inconsistent, update batch messages to new state
+    public List<byte[]> preCompInconsistentAppResps(List<byte[]> asyncResponseLinkedList) {
         List<byte[]> updatedResponses = new ArrayList<>();
 
         for(int i = 0; i < asyncResponseLinkedList.size(); i++) {
@@ -476,15 +474,33 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return updatedResponses;
     }
 
+
+    //Consensus accept phase will terminate, pre compute commit exception occurs, update batch messages execute state to block full rollback
+    public List<byte[]> blockRollbackAppResps(List<byte[]> asyncResponseLinkedList) {
+        List<byte[]> updatedResponses = new ArrayList<>();
+
+        for(int i = 0; i < asyncResponseLinkedList.size(); i++) {
+            TransactionResponse txResponse = BinaryProtocol.decode(asyncResponseLinkedList.get(i));
+            TxResponseMessage resp = new TxResponseMessage(txResponse.getContentHash());
+            resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
+            updatedResponses.add(BinaryProtocol.encode(resp, TransactionResponse.class));
+        }
+
+        return updatedResponses;
+    }
+
     /**
      *
      *  Decision has been made at the consensus stage， commit block
      *
      */
     public void preComputeAppCommit(String batchId) {
-
-        messageHandle.commitBatch(realmName, batchId);
-
+        try {
+            messageHandle.commitBatch(realmName, batchId);
+        } catch (BlockRollbackException e) {
+            LOGGER.error("Error occurred while pre compute commit --" + e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**

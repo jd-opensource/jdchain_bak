@@ -12,6 +12,8 @@ import com.jd.blockchain.utils.io.BytesMap;
 
 public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, KVStorageService, BytesMap<Bytes> {
 
+	public static boolean isBlockFullRollbackTest = false;
+
 	private ExistancePolicyKVStorageMap exStorage = new ExistancePolicyKVStorageMap();
 	private VersioningKVStorageMap verStorage = new VersioningKVStorageMap();
 
@@ -32,6 +34,9 @@ public class MemoryKVStorage implements ExPolicyKVStorage, VersioningKVStorage, 
 	
 	@Override
 	public long set(Bytes key, byte[] value, long version) {
+		if (isBlockFullRollbackTest) {
+			return -1;
+		}
 		return verStorage.set(key, value, version);
 	}
 

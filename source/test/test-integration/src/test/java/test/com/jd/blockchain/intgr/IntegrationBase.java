@@ -103,6 +103,36 @@ public class IntegrationBase {
 		return keyPairResponse;
 	}
 
+	public static KeyPairResponse testSDK_BlockFullRollBack(AsymmetricKeypair adminKey, HashDigest ledgerHash,
+															  BlockchainService blockchainService) {
+
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
+
+		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
+
+		//Register user account
+		txTpl.users().register(user.getIdentity());
+
+		PreparedTransaction prepTx = txTpl.prepare();
+
+		HashDigest transactionHash = prepTx.getHash();
+
+		prepTx.sign(adminKey);
+
+		//Commit transaction
+		TransactionResponse transactionResponse = prepTx.commit();
+
+		//The whole block will rollback, due to storage error
+		assertEquals(transactionResponse.getExecutionState().CODE, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK.CODE);
+
+		KeyPairResponse keyPairResponse = new KeyPairResponse();
+		keyPairResponse.keyPair = user;
+		keyPairResponse.txResp = transactionResponse;
+		keyPairResponse.txHash = transactionHash;
+		return keyPairResponse;
+	}
+
+
 	public static KeyPairResponse testSDK_RegisterDataAccount(AsymmetricKeypair adminKey, HashDigest ledgerHash,
 			BlockchainService blockchainService) {
 		// 注册数据账户，并验证最终写入；

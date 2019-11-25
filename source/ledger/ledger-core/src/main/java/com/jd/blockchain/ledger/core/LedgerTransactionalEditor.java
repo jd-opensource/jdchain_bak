@@ -355,7 +355,11 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			throw new IllegalStateException("The current block is not ready yet!");
 		}
 
-		baseStorage.flush();
+		try {
+			baseStorage.flush();
+		} catch (Exception e) {
+			throw new BlockRollbackException(e.getMessage(), e);
+		}
 
 		committed = true;
 	}
