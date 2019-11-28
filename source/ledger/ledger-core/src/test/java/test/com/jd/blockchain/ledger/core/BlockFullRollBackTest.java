@@ -4,24 +4,17 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.ledger.core.*;
-import com.jd.blockchain.storage.service.ExPolicyKVStorage;
-import com.jd.blockchain.storage.service.KVStorageService;
-import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
-import com.jd.blockchain.utils.Bytes;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.lang.reflect.Method;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public class BlockFullRollBackTest {
@@ -41,8 +34,6 @@ public class BlockFullRollBackTest {
 
     private HashDigest ledgerHash = null;
 
-    private boolean isRollBack = false;
-
     private BlockchainKeypair parti0 = BlockchainKeyGenerator.getInstance().generate();
     private BlockchainKeypair parti1 = BlockchainKeyGenerator.getInstance().generate();
     private BlockchainKeypair parti2 = BlockchainKeyGenerator.getInstance().generate();
@@ -56,72 +47,7 @@ public class BlockFullRollBackTest {
 
         final MemoryKVStorage STORAGE = new MemoryKVStorage();
 
-        final MemoryKVStorage STORAGE_Mock = Mockito.mock(MemoryKVStorage.class);
-
-
-        Answer<String> answers = new Answer() {
-
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-
-                Method method = invocationOnMock.getMethod();
-                if (method.getName().equalsIgnoreCase("set")) {
-                    Object arg2Obj = invocationOnMock.getArguments()[2];
-                    if (isRollBack) {
-                        if (arg2Obj instanceof ExPolicyKVStorage.ExPolicy) {
-                            return false;
-                        } else {
-                            return -1;
-                        }
-                    } else {
-                        if (arg2Obj instanceof ExPolicyKVStorage.ExPolicy) {
-                            return STORAGE.set((Bytes) (invocationOnMock.getArguments()[0]), (byte[])(invocationOnMock.getArguments()[1]), (ExPolicyKVStorage.ExPolicy)(arg2Obj));
-                        } else {
-                            return STORAGE.set((Bytes) (invocationOnMock.getArguments()[0]), (byte[])(invocationOnMock.getArguments()[1]), (long)(arg2Obj));
-                        }
-                    }
-                } else if ((method.getName().equalsIgnoreCase("get")) && (method.getParameterCount() == 1)) {
-                    return STORAGE.get((Bytes)(invocationOnMock.getArguments()[0]));
-                } else if ((method.getName().equalsIgnoreCase("get")) && (method.getParameterCount() == 2)) {
-                    return STORAGE.get((Bytes)(invocationOnMock.getArguments()[0]), (long)(invocationOnMock.getArguments()[1]));
-                } else if (method.getName().equalsIgnoreCase("getVersion")) {
-                    return STORAGE.getVersion((Bytes)(invocationOnMock.getArguments()[0]));
-                } else if (method.getName().equalsIgnoreCase("getEntry")) {
-                    return STORAGE.get((Bytes)(invocationOnMock.getArguments()[0]), (long)(invocationOnMock.getArguments()[1]));
-                } else if (method.getName().equalsIgnoreCase("exist")) {
-                    return STORAGE.get((Bytes)(invocationOnMock.getArguments()[0]));
-                } else if (method.getName().equalsIgnoreCase("keySet")) {
-                    return STORAGE.keySet();
-                } else if (method.getName().equalsIgnoreCase("getStorageKeySet")) {
-                    return STORAGE.getStorageKeySet();
-                } else if (method.getName().equalsIgnoreCase("getValue")) {
-                    return STORAGE.getValue((Bytes)(invocationOnMock.getArguments()[0]));
-                } else if (method.getName().equalsIgnoreCase("getStorageCount")) {
-                    return STORAGE.getStorageCount();
-                } else if (method.getName().equalsIgnoreCase("getExPolicyKVStorage")) {
-                    return STORAGE.getExPolicyKVStorage();
-                } else if (method.getName().equalsIgnoreCase("getVersioningKVStorage")) {
-                    return STORAGE.getVersioningKVStorage();
-                }
-
-                return null;
-            }
-        };
-
-        when(STORAGE_Mock.set(any(), any(), anyLong())).thenAnswer(answers);
-        when(STORAGE_Mock.set(any(), any(), any(ExPolicyKVStorage.ExPolicy.class))).thenAnswer(answers);
-        when(STORAGE_Mock.get(any())).thenAnswer(answers);
-        when(STORAGE_Mock.get(any(), anyLong())).thenAnswer(answers);
-        when(STORAGE_Mock.getVersion(any())).thenAnswer(answers);
-        when(STORAGE_Mock.getEntry(any(), anyLong())).thenAnswer(answers);
-        when(STORAGE_Mock.exist(any())).thenAnswer(answers);
-        when(STORAGE_Mock.keySet()).thenAnswer(answers);
-        when(STORAGE_Mock.getStorageKeySet()).thenAnswer(answers);
-        when(STORAGE_Mock.getValue(any())).thenAnswer(answers);
-        when(STORAGE_Mock.getStorageCount()).thenAnswer(answers);
-        when(STORAGE_Mock.getExPolicyKVStorage()).thenAnswer(answers);
-        when(STORAGE_Mock.getVersioningKVStorage()).thenAnswer(answers);
-
+        final MemoryKVStorage STORAGE_Mock = Mockito.spy(STORAGE);
 
         // 初始化账本到指定的存储库；
         ledgerHash = initLedger(STORAGE_Mock, parti0, parti1, parti2, parti3);
@@ -131,22 +57,11 @@ public class BlockFullRollBackTest {
         // 加载账本；
         LedgerManager ledgerManager = new LedgerManager();
 
-        KVStorageService kvStorageService = new KVStorageService() {
-            @Override
-            public ExPolicyKVStorage getExPolicyKVStorage() {
-                return STORAGE_Mock;
-            }
-
-            @Override
-            public VersioningKVStorage getVersioningKVStorage() {
-                return STORAGE_Mock;
-            }
-        };
-
-        LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, kvStorageService);
+        LedgerRepository ledgerRepo = ledgerManager.register(ledgerHash, STORAGE_Mock);
 
         // 构造存储错误，并产生区块回滚
-        isRollBack = true;
+        doThrow(BlockRollbackException.class).when(STORAGE_Mock).set(any(), any(), anyLong());
+
         LedgerEditor newBlockEditor = ledgerRepo.createNextBlock();
 
         OperationHandleRegisteration opReg = new DefaultOperationHandleRegisteration();
@@ -179,8 +94,9 @@ public class BlockFullRollBackTest {
 
         assertFalse(existUser);
 
+        doCallRealMethod().when(STORAGE_Mock).set(any(), any(), anyLong());
+
         //区块正常提交
-        isRollBack = false;
         // 生成新区块；
         LedgerEditor newBlockEditor1 = ledgerRepo.createNextBlock();
 
