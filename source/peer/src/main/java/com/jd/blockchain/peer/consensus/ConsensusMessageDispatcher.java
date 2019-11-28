@@ -236,12 +236,17 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 				currBatchId = null;
 				txResponseMap = null;
 				txBatchProcess = null;
+				batchResultHandle =null;
 			} finally {
 				realmLock.unlock();
 			}
 		}
 
 		public void rollback(int reasonCode) {
+
+			if (batchResultHandle == null) {
+				return;
+			}
 			realmLock.lock();
 			try {
 				batchResultHandle.cancel(TransactionState.valueOf((byte)reasonCode));

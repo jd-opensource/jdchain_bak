@@ -355,96 +355,59 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     /**
-     *
-     *  Used by consensus write phase, pre compute new block hash
-     *
-     */
-//    public BatchAppResultImpl preComputeAppHash(byte[][] commands) {
-//        String batchId = messageHandle.beginBatch(realmName);
-//        List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(commands.length);
-//        List<byte[]> responseLinkedList = new ArrayList<>();
-//        try {
-//            int msgId = 0;
-//            for (byte[] txContent : commands) {
-//                AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
-//                asyncFutureLinkedList.add(asyncFuture);
-//            }
-//            StateSnapshot stateSnapshot =  messageHandle.completeBatch(realmName, batchId);
-//            byte[] blockHashBytes = stateSnapshot.getSnapshot();
-//
-//            for (int i = 0; i< asyncFutureLinkedList.size(); i++) {
-//                responseLinkedList.add(asyncFutureLinkedList.get(i).get());
-//            }
-//
-//
-//            return new BatchAppResultImpl(responseLinkedList, blockHashBytes, batchId);
-//
-//        } catch (Exception e) {
-//            // todo 需要处理应答码 404
-//            LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
-//            messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK.CODE);
-//        }
-//
-//        return null;
-//    }
-
-    /**
      * Used by consensus write phase, pre compute new block hash
      */
     public BatchAppResultImpl preComputeAppHash(byte[][] commands) {
         String batchId = messageHandle.beginBatch(realmName);
         List<AsyncFuture<byte[]>> asyncFutureLinkedList = new ArrayList<>(commands.length);
         List<byte[]> responseLinkedList = new ArrayList<>();
+        StateSnapshot stateSnapshot = null;
         BatchAppResultImpl result;
+        int msgId = 0;
+        boolean isOK = true;
+        TransactionState transactionState = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
+
         try {
-            int msgId = 0;
-
-            boolean isOK = true;
-            TransactionState transactionState = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
-
-            try {
-                for (int i = 0; i < commands.length; i++) {
-                    byte[] txContent = commands[i];
-                    AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
-                    asyncFutureLinkedList.add(asyncFuture);
-                }
-            } catch (BlockRollbackException e) {
-                    LOGGER.error("Error occurred while processing ordered messages! --" + e.getMessage(), e);
-                    isOK = false;
+            for (int i = 0; i < commands.length; i++) {
+                byte[] txContent = commands[i];
+                AsyncFuture<byte[]> asyncFuture = messageHandle.processOrdered(msgId++, txContent, realmName, batchId);
+                asyncFutureLinkedList.add(asyncFuture);
             }
-
-            if (isOK) {
-                StateSnapshot stateSnapshot = messageHandle.completeBatch(realmName, batchId);
-                byte[] blockHashBytes = stateSnapshot.getSnapshot();
-
-                for (int i = 0; i < asyncFutureLinkedList.size(); i++) {
-                    responseLinkedList.add(asyncFutureLinkedList.get(i).get());
-                }
-
-                result = new BatchAppResultImpl(responseLinkedList, blockHashBytes, batchId);
-                result.setErrorCode((byte) 0);
-
-                return result;
-            } else {
-
-                for (int i = 0; i < commands.length; i++) {
-                    responseLinkedList.add(createAppResponse(commands[i],transactionState));
-                }
-
-                Random random = new Random();
-                byte[] rand = new byte[4];
-                random.nextBytes(rand);
-
-                result = new BatchAppResultImpl(responseLinkedList, rand, batchId);
-                result.setErrorCode((byte) 1);
-
-                return result;
-            }
-
+            stateSnapshot = messageHandle.completeBatch(realmName, batchId);
         } catch (Exception e) {
-            LOGGER.error("Error occurred while genearte batch app result! --" + e.getMessage(), e);
-            throw e;
+            LOGGER.error("Error occurred while processing ordered messages or complete batch! --" + e.getMessage(), e);
+            messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_CONSENSUS_PHASE_PRECOMPUTE_ROLLBACK.CODE);
+            isOK = false;
         }
+
+        if (isOK) {
+
+            byte[] blockHashBytes = stateSnapshot.getSnapshot();
+
+            for (int i = 0; i < asyncFutureLinkedList.size(); i++) {
+                responseLinkedList.add(asyncFutureLinkedList.get(i).get());
+            }
+
+            result = new BatchAppResultImpl(responseLinkedList, blockHashBytes, batchId);
+            result.setErrorCode((byte) 0);
+
+            return result;
+        } else {
+
+            for (int i = 0; i < commands.length; i++) {
+                responseLinkedList.add(createAppResponse(commands[i],transactionState));
+            }
+
+            Random random = new Random();
+            byte[] rand = new byte[4];
+            random.nextBytes(rand);
+
+            result = new BatchAppResultImpl(responseLinkedList, rand, batchId);
+            result.setErrorCode((byte) 1);
+
+            return result;
+        }
+
     }
 
     // Block full rollback responses, generated in pre compute phase, due to tx fail
