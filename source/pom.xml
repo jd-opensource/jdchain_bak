@@ -36,8 +36,8 @@
 
 	<properties>
 		<bft-smart.version>0.3.0.RELEASE</bft-smart.version>
-		<data-explorer.version>1.1.0.RELEASE</data-explorer.version>
-		<manager-explorer.version>1.1.0.RELEASE</manager-explorer.version>
+		<data-explorer.version>1.1.1.RELEASE</data-explorer.version>
+		<manager-explorer.version>1.1.1.RELEASE</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
@@ -226,7 +226,7 @@
 				<version>${aspectj.version}</version>
 			</dependency>
 
-			<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId> 
+			<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId>
 				<version>${asm.version}</version> </dependency> -->
 
 			<dependency>
@@ -388,7 +388,7 @@
 								<goal>copy-dependencies</goal>
 							</goals>
 							<configuration>
-								<!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录； 
+								<!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录；
 									也可以使用“自定义文件夹/自定义文件夹 例如：a/b”，也可以使用绝对路径如：“D:\test” -->
 								<outputDirectory>${project.build.directory}/libs</outputDirectory>
 								<excludeTransitive>false</excludeTransitive>
