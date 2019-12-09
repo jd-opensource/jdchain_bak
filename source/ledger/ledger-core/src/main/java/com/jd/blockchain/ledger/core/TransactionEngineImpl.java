@@ -48,6 +48,16 @@ public class TransactionEngineImpl implements TransactionEngine {
 		return batchs.get(ledgerHash);
 	}
 
+	public void freeBatch(HashDigest ledgerHash) {
+		finishBatch(ledgerHash);
+	}
+
+	public void resetNewBlockEditor(HashDigest ledgerHash) {
+
+		LedgerRepository ledgerRepo = ledgerService.getLedger(ledgerHash);
+		((LedgerRepositoryImpl)ledgerRepo).resetNextBlockEditor();
+	}
+
 	private void finishBatch(HashDigest ledgerHash) {
 		batchs.remove(ledgerHash);
 	}

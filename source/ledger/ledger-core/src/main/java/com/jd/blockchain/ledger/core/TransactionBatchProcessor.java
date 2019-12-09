@@ -39,6 +39,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	private TransactionBatchResult batchResult;
 
+	public byte[] getPrevLatestBlockHash() {
+		return ledger.getLatestBlockHash().toBytes();
+	}
+
+	public long getPreLatestBlockHeight() {
+		return ledger.getLatestBlockHeight();
+	}
+
 	public HashDigest getLedgerHash() {
 		return ledger.getHash();
 	}
