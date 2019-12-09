@@ -316,8 +316,8 @@ public class IntegrationBase {
 		assertEquals(txResp.getContentHash(), transactionHash);
 		assertEquals(txResp.getBlockHash(), ledgerRepository.getLatestBlockHash());
 
-		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, daAddress, dataKey);
-		for (KVDataEntry kvDataEntry : kvDataEntries) {
+		TypedKVEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, daAddress, dataKey);
+		for (TypedKVEntry kvDataEntry : kvDataEntries) {
 			assertEquals(dataKey, kvDataEntry.getKey());
 			String valHexText = (String) kvDataEntry.getValue();
 			assertEquals(dataVal, valHexText);

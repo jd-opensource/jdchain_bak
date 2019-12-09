@@ -79,11 +79,11 @@ public class SDK_Contract_Random_Demo extends SDK_Base_Demo {
 	}
 
 	private long readByKvOperation(String address, String account) {
-		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, address, account);
+		TypedKVEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHash, address, account);
 		if (kvDataEntries == null || kvDataEntries.length == 0) {
 			throw new IllegalStateException(String.format("Ledger %s Service inner Error !!!", ledgerHash.toBase58()));
 		}
-		KVDataEntry kvDataEntry = kvDataEntries[0];
+		TypedKVEntry kvDataEntry = kvDataEntries[0];
 		if (kvDataEntry.getVersion() == -1) {
 			return 0L;
 		}

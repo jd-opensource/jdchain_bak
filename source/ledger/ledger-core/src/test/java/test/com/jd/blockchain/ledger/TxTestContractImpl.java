@@ -3,7 +3,7 @@ package test.com.jd.blockchain.ledger;
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.ContractLifecycleAware;
 import com.jd.blockchain.contract.EventProcessingAware;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.utils.Bytes;
 
 public class TxTestContractImpl implements TxTestContract, ContractLifecycleAware, EventProcessingAware {
@@ -16,7 +16,7 @@ public class TxTestContractImpl implements TxTestContract, ContractLifecycleAwar
 
 	@Override
 	public boolean testReadable() {
-		KVDataEntry v1 = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(),
+		TypedKVEntry v1 = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(),
 				dataAddress.toBase58(), KEY)[0];
 		String text1 = (String) v1.getValue();
 		System.out.printf("k1=%s, version=%s \r\n", text1, v1.getVersion());
@@ -26,7 +26,7 @@ public class TxTestContractImpl implements TxTestContract, ContractLifecycleAwar
 		System.out.printf("new value = %s\r\n", newValue);
 		eventContext.getLedger().dataAccount(dataAddress).setText(KEY, newValue, v1.getVersion());
 
-		KVDataEntry v2 = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(),
+		TypedKVEntry v2 = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(),
 				dataAddress.toBase58(), KEY)[0];
 		System.out.printf("---- read new value ----\r\nk1=%s, version=%s \r\n", v2.getValue(), v2.getVersion());
 

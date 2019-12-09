@@ -14,6 +14,7 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.impl.redis.RedisConnectionFactory;
 import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
+import com.jd.blockchain.utils.Bytes;
 
 public class MerkleDatasetPerformanceTester {
 
@@ -156,12 +157,12 @@ public class MerkleDatasetPerformanceTester {
 		for (int i = 0; i < round; i++) {
 			for (int j = 0; j < batchCount; j++) {
 				key = "data_" + startTs + "_" + randomId + "_" + (i * batchCount + j);
-				long v = mds.getVersion(key);
-				mds.setValue(key, data, v);
+				long v = mds.getVersion(Bytes.fromString(key));
+				mds.setValue(Bytes.fromString(key), data, v);
 			}
 			mds.commit();
 			rootHash = mds.getRootHash();
-			mds = new MerkleDataSet(rootHash, cryptoConfig, MKL_KEY_PREFIX, exStorage, verStorage, false);
+			mds = new MerkleDataSet(rootHash, cryptoConfig, Bytes.fromString(MKL_KEY_PREFIX), exStorage, verStorage, false);
 		}
 
 		long elapsedTs = System.currentTimeMillis() - startTs;

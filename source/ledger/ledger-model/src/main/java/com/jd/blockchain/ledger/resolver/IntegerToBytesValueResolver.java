@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger.resolver;
 
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.DataType;
 import com.jd.blockchain.utils.Bytes;
@@ -21,7 +21,7 @@ public class IntegerToBytesValueResolver extends AbstractBytesValueResolver {
         if (!isSupport(type)) {
             throw new IllegalStateException(String.format("Un-support encode Class[%s] Object !!!", type.getName()));
         }
-        return BytesData.fromInt32((int) value);
+        return TypedValue.fromInt32((int) value);
     }
 
     @Override

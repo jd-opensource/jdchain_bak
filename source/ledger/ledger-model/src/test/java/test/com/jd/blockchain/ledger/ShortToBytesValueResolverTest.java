@@ -21,7 +21,7 @@ public class ShortToBytesValueResolverTest {
 
         Bytes shortBytes = new Bytes(BytesUtils.toBytes(shortVal));
 
-        assertEquals(shortBytes, shortBytesValue.getValue());
+        assertEquals(shortBytes, shortBytesValue.getBytes());
 
         assertEquals(shortBytesValue.getType(), DataType.INT16);
 

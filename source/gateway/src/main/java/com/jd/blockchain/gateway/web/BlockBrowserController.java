@@ -5,9 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.jd.blockchain.gateway.service.GatewayQueryService;
-import com.jd.blockchain.sdk.LedgerBaseSettings;
-import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +20,9 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.PeerService;
 import com.jd.blockchain.gateway.service.DataRetrievalService;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.gateway.service.GatewayQueryService;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.KVDataEntry;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
@@ -34,11 +31,14 @@ import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.sdk.BlockchainExtendQueryService;
 import com.jd.blockchain.sdk.ContractSettings;
+import com.jd.blockchain.sdk.LedgerBaseSettings;
 import com.jd.blockchain.utils.BaseConstant;
 import com.jd.blockchain.utils.ConsoleUtils;
+import com.jd.blockchain.utils.decompiler.utils.DecompilerUtils;
 
 @RestController
 @RequestMapping(path = "/")
@@ -252,7 +252,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts/address/{address}")
 	@Override
-	public AccountHeader getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity getDataAccount(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@PathVariable(name = "address") String address) {
 
 		return peerService.getQueryService().getDataAccount(ledgerHash, address);
@@ -261,7 +261,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/{address}/entries")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address, @RequestParam("keys") String... keys) {
 		return peerService.getQueryService().getDataEntries(ledgerHash, address, keys);
 	}
@@ -269,7 +269,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/{address}/entries-version")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address, @RequestBody KVInfoVO kvInfoVO) {
 		return peerService.getQueryService().getDataEntries(ledgerHash, address, kvInfoVO);
 	}
@@ -277,7 +277,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	@RequestMapping(method = { RequestMethod.GET,
 			RequestMethod.POST }, path = "ledgers/{ledgerHash}/accounts/address/{address}/entries")
 	@Override
-	public KVDataEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
+	public TypedKVEntry[] getDataEntries(@PathVariable("ledgerHash") HashDigest ledgerHash,
 			@PathVariable("address") String address,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
@@ -594,7 +594,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/users")
 	@Override
-	public AccountHeader[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getUsers(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return revertAccountHeader(peerService.getQueryService().getUsers(ledgerHash, fromIndex, count));
@@ -602,7 +602,7 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/accounts")
 	@Override
-	public AccountHeader[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getDataAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return revertAccountHeader(peerService.getQueryService().getDataAccounts(ledgerHash, fromIndex, count));
@@ -610,18 +610,18 @@ public class BlockBrowserController implements BlockchainExtendQueryService {
 
 	@RequestMapping(method = RequestMethod.GET, path = "ledgers/{ledgerHash}/contracts")
 	@Override
-	public AccountHeader[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
+	public BlockchainIdentity[] getContractAccounts(@PathVariable(name = "ledgerHash") HashDigest ledgerHash,
 			@RequestParam(name = "fromIndex", required = false, defaultValue = "0") int fromIndex,
 			@RequestParam(name = "count", required = false, defaultValue = "-1") int count) {
 		return revertAccountHeader(peerService.getQueryService().getContractAccounts(ledgerHash, fromIndex, count));
 	}
 
 	/**
-	 * reverse the AccountHeader[] content; the latest record show first;
+	 * reverse the BlockchainIdentity[] content; the latest record show first;
 	 * @return
 	 */
-	private AccountHeader[] revertAccountHeader(AccountHeader[] accountHeaders){
-		AccountHeader[] accounts = new AccountHeader[accountHeaders.length];
+	private BlockchainIdentity[] revertAccountHeader(BlockchainIdentity[] accountHeaders){
+		BlockchainIdentity[] accounts = new BlockchainIdentity[accountHeaders.length];
 		if(accountHeaders!=null && accountHeaders.length>0){
 			for (int i = 0; i < accountHeaders.length; i++) {
 				accounts[accountHeaders.length-1-i] = accountHeaders[i];

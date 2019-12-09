@@ -3,31 +3,35 @@ package com.jd.blockchain.ledger.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
-import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.CryptoSetting;
 import com.jd.blockchain.ledger.LedgerException;
 import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.ledger.MerkleSnapshot;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.Transactional;
 
-public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<MerkleAccount> {
+public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<CompositeAccount> {
 
 	static {
 		DataContractRegistry.register(MerkleSnapshot.class);
-		DataContractRegistry.register(AccountHeader.class);
+		DataContractRegistry.register(BlockchainIdentity.class);
 	}
 
-	private final String keyPrefix;
+	private final Bytes keyPrefix;
 
+	/**
+	 * 账户根哈希的数据集；
+	 */
 	private MerkleDataSet merkleDataset;
 
 	/**
@@ -36,7 +40,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * 
 	 */
 	// TODO:未考虑大数据量时，由于缺少过期策略，会导致内存溢出的问题；
-	private Map<Bytes, InnerVersioningAccount> latestAccountsCache = new HashMap<>();
+	private Map<Bytes, InnerMerkleAccount> latestAccountsCache = new HashMap<>();
 
 	private ExPolicyKVStorage baseExStorage;
 
@@ -44,7 +48,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	private CryptoSetting cryptoSetting;
 
-	private boolean updated;
+	private volatile boolean updated;
 
 	private AccountAccessPolicy accessPolicy;
 
@@ -56,12 +60,12 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		merkleDataset.setReadonly();
 	}
 
-	public MerkleAccountSet(CryptoSetting cryptoSetting, String keyPrefix, ExPolicyKVStorage exStorage,
+	public MerkleAccountSet(CryptoSetting cryptoSetting, Bytes keyPrefix, ExPolicyKVStorage exStorage,
 			VersioningKVStorage verStorage, AccountAccessPolicy accessPolicy) {
 		this(null, cryptoSetting, keyPrefix, exStorage, verStorage, false, accessPolicy);
 	}
 
-	public MerkleAccountSet(HashDigest rootHash, CryptoSetting cryptoSetting, String keyPrefix,
+	public MerkleAccountSet(HashDigest rootHash, CryptoSetting cryptoSetting, Bytes keyPrefix,
 			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
 			AccountAccessPolicy accessPolicy) {
 		this.keyPrefix = keyPrefix;
@@ -70,6 +74,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		this.baseVerStorage = verStorage;
 		this.merkleDataset = new MerkleDataSet(rootHash, cryptoSetting, keyPrefix, this.baseExStorage,
 				this.baseVerStorage, readonly);
+
 		this.accessPolicy = accessPolicy;
 	}
 
@@ -83,29 +88,17 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		return merkleDataset.getProof(key);
 	}
 
-	public AccountHeader[] getHeaders(int fromIndex, int count) {
-		byte[][] results = merkleDataset.getLatestValues(fromIndex, count);
-		AccountHeader[] accounts = new AccountHeader[results.length];
+	@Override
+	public BlockchainIdentity[] getHeaders(int fromIndex, int count) {
+		DataEntry<Bytes, byte[]>[] results = merkleDataset.getLatestDataEntries(fromIndex, count);
 
+		BlockchainIdentity[] ids = new BlockchainIdentity[results.length];
 		for (int i = 0; i < results.length; i++) {
-			accounts[i] = deserialize(results[i]);
+			InnerMerkleAccount account = createAccount(results[i].getKey(), new HashDigest(results[i].getValue()),
+					results[i].getVersion(), true);
+			ids[i] = account.getID();
 		}
-		return accounts;
-	}
-
-	// private VersioningAccount deserialize(byte[] txBytes) {
-	//// return BinaryEncodingUtils.decode(txBytes, null, Account.class);
-	// AccountHeaderData accInfo = BinaryEncodingUtils.decode(txBytes);
-	//// return new BaseAccount(accInfo.getAddress(), accInfo.getPubKey(), null,
-	// cryptoSetting,
-	//// baseExStorage, baseVerStorage, true, accessPolicy);
-	// return new VersioningAccount(accInfo.getAddress(), accInfo.getPubKey(),
-	// accInfo.getRootHash(), cryptoSetting,
-	// keyPrefix, baseExStorage, baseVerStorage, true, accessPolicy, accInfo.);
-	// }
-
-	private AccountHeader deserialize(byte[] txBytes) {
-		return BinaryProtocol.decode(txBytes);
+		return ids;
 	}
 
 	/**
@@ -118,7 +111,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	}
 
 	@Override
-	public MerkleAccount getAccount(String address) {
+	public CompositeAccount getAccount(String address) {
 		return getAccount(Bytes.fromBase58(address));
 	}
 
@@ -128,7 +121,8 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @param address
 	 * @return
 	 */
-	public MerkleAccount getAccount(Bytes address) {
+	@Override
+	public CompositeAccount getAccount(Bytes address) {
 		return this.getAccount(address, -1);
 	}
 
@@ -142,25 +136,30 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @return
 	 */
 	public boolean contains(Bytes address) {
-		long latestVersion = getVersion(address);
+		InnerMerkleAccount acc = latestAccountsCache.get(address);
+		if (acc != null) {
+			// 无论是新注册未提交的，还是缓存已提交的账户实例，都认为是存在；
+			return true;
+		}
+		long latestVersion = merkleDataset.getVersion(address);
 		return latestVersion > -1;
 	}
 
 	/**
 	 * 返回指定账户的版本； <br>
 	 * 如果账户已经注册，则返回该账户的最新版本，值大于等于 0； <br>
-	 * 如果账户不存在，则返回 -1； <br>
-	 * 如果指定的账户已经注册（通过 {@link #register(String, PubKey)} 方法），但尚未提交（通过
-	 * {@link #commit()} 方法），此方法对该账户仍然返回 0；
+	 * 如果账户不存在，则返回 -1；<br>
+	 * 如果账户已经注册（通过 {@link #register(String, PubKey)} 方法），但尚未提交（通过 {@link #commit()}
+	 * 方法），则返回 -1； <br>
 	 * 
 	 * @param address
 	 * @return
 	 */
 	public long getVersion(Bytes address) {
-		InnerVersioningAccount acc = latestAccountsCache.get(address);
+		InnerMerkleAccount acc = latestAccountsCache.get(address);
 		if (acc != null) {
 			// 已注册尚未提交，也返回 -1;
-			return acc.version == -1 ? 0 : acc.version;
+			return acc.getVersion();
 		}
 
 		return merkleDataset.getVersion(address);
@@ -175,12 +174,12 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @param version 账户版本；如果指定为 -1，则返回最新版本；
 	 * @return
 	 */
-	public MerkleAccount getAccount(Bytes address, long version) {
+	public CompositeAccount getAccount(Bytes address, long version) {
 		version = version < 0 ? -1 : version;
-		InnerVersioningAccount acc = latestAccountsCache.get(address);
+		InnerMerkleAccount acc = latestAccountsCache.get(address);
 		if (acc != null && version == -1) {
 			return acc;
-		} else if (acc != null && acc.version == version) {
+		} else if (acc != null && acc.getVersion() == version) {
 			return acc;
 		}
 
@@ -194,7 +193,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 
 		// 如果是不存在的，或者刚刚新增未提交的账户，则前面一步查询到的 latestVersion 小于 0， 代码不会执行到此；
-		if (acc != null && acc.version != latestVersion) {
+		if (acc != null && acc.getVersion() != latestVersion) {
 			// 当执行到此处时，并且缓冲列表中缓存了最新的版本，
 			// 如果当前缓存的最新账户的版本和刚刚从存储中检索得到的最新版本不一致，可能存在外部的并发更新，这超出了系统设计的逻辑；
 
@@ -205,27 +204,25 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 
 		// Now, be sure that "acc == null", so get account from storage;
-
-		byte[] bytes = merkleDataset.getValue(address, version);
-		if (bytes == null) {
-			return null;
-		}
-
 		// Set readonly for the old version account;
 		boolean readonly = (version > -1 && version < latestVersion) || isReadonly();
-
-		// String prefix = address.concat(LedgerConsts.KEY_SEPERATOR);
-		// ExPolicyKVStorage ss = PrefixAppender.prefix(prefix, baseExStorage);
-		// VersioningKVStorage vs = PrefixAppender.prefix(prefix, baseVerStorage);
-		// BaseAccount accDS = deserialize(bytes, cryptoSetting, ss, vs, readonly);
-		String prefix = keyPrefix + address;
-		acc = deserialize(bytes, cryptoSetting, prefix, baseExStorage, baseVerStorage, readonly, latestVersion);
+		
+		long qVersion = version == -1 ? latestVersion : version;
+		// load account from storage;
+		acc = loadAccount(address, readonly, qVersion);
+		if (acc == null) {
+			return null;
+		}
 		if (!readonly) {
 			// cache the latest version witch enable reading and writing;
 			// readonly version of account not necessary to be cached;
 			latestAccountsCache.put(address, acc);
 		}
 		return acc;
+	}
+
+	public CompositeAccount register(Bytes address, PubKey pubKey) {
+		return register(new BlockchainIdentityData(address, pubKey));
 	}
 
 	/**
@@ -239,16 +236,18 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * @param pubKey  公钥；
 	 * @return 注册成功的账户对象；
 	 */
-	public MerkleAccount register(Bytes address, PubKey pubKey) {
+	public CompositeAccount register(BlockchainIdentity accountId) {
 		if (isReadonly()) {
 			throw new IllegalArgumentException("This AccountSet is readonly!");
 		}
 
+		Bytes address = accountId.getAddress();
+		PubKey pubKey = accountId.getPubKey();
 		verifyAddressEncoding(address, pubKey);
 
-		InnerVersioningAccount cachedAcc = latestAccountsCache.get(address);
+		InnerMerkleAccount cachedAcc = latestAccountsCache.get(address);
 		if (cachedAcc != null) {
-			if (cachedAcc.version < 0) {
+			if (cachedAcc.getVersion() < 0) {
 				// 同一个新账户已经注册，但尚未提交，所以重复注册不会引起任何变化；
 				return cachedAcc;
 			}
@@ -264,17 +263,8 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 			throw new LedgerException("Account Registering was rejected for the access policy!");
 		}
 
-		// String prefix = address.concat(LedgerConsts.KEY_SEPERATOR);
-		// ExPolicyKVStorage accExStorage = PrefixAppender.prefix(prefix,
-		// baseExStorage);
-		// VersioningKVStorage accVerStorage = PrefixAppender.prefix(prefix,
-		// baseVerStorage);
-		// BaseAccount accDS = createInstance(address, pubKey, cryptoSetting,
-		// accExStorage, accVerStorage);
-
-		String prefix = keyPrefix + address;
-		InnerVersioningAccount acc = createInstance(address, pubKey, cryptoSetting, prefix, baseExStorage, baseVerStorage,
-				-1);
+		Bytes prefix = keyPrefix.concat(address);
+		InnerMerkleAccount acc = createInstance(accountId, cryptoSetting, prefix);
 		latestAccountsCache.put(address, acc);
 		updated = true;
 
@@ -288,20 +278,50 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 	}
 
-	private InnerVersioningAccount createInstance(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting,
-			String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
-		return new InnerVersioningAccount(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage, version);
+	private InnerMerkleAccount createInstance(BlockchainIdentity header, CryptoSetting cryptoSetting, Bytes keyPrefix) {
+		return new InnerMerkleAccount(header, cryptoSetting, keyPrefix, baseExStorage, baseVerStorage);
 	}
 
-	private InnerVersioningAccount deserialize(byte[] bytes, CryptoSetting cryptoSetting, String keyPrefix,
-			ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly, long version) {
-		AccountHeader accInfo = BinaryProtocol.decode(bytes);
-		return new InnerVersioningAccount(accInfo.getAddress(), accInfo.getPubKey(), accInfo.getRootHash(), cryptoSetting,
-				keyPrefix, exStorage, verStorage, readonly, version);
+	/**
+	 * 加载指定版本的账户；
+	 * 
+	 * @param address  账户地址；
+	 * @param readonly 是否只读；
+	 * @param version  账户的版本；大于等于 0 ；
+	 * @return
+	 */
+	private InnerMerkleAccount loadAccount(Bytes address, boolean readonly, long version) {
+		byte[] rootHashBytes = merkleDataset.getValue(address, version);
+		if (rootHashBytes == null) {
+			return null;
+		}
+		HashDigest rootHash = new HashDigest(rootHashBytes);
+
+		return createAccount(address, rootHash, version, readonly);
 	}
 
-	private byte[] serialize(AccountHeader account) {
-		return BinaryProtocol.encode(account, AccountHeader.class);
+	private InnerMerkleAccount createAccount(Bytes address, HashDigest rootHash, long version, boolean readonly) {
+		// prefix;
+		Bytes prefix = keyPrefix.concat(address);
+
+		return new InnerMerkleAccount(address, version, rootHash, cryptoSetting, prefix, baseExStorage, baseVerStorage,
+				readonly);
+	}
+
+	// TODO:优化：区块链身份(地址+公钥)与其Merkle树根哈希分开独立存储；
+	// 不必作为一个整块，避免状态数据写入时频繁重写公钥，尤其某些算法的公钥可能很大；
+
+	/**
+	 * 保存账户的根哈希，返回账户的新版本；
+	 * 
+	 * @param account
+	 * @return
+	 */
+	private long saveAccount(InnerMerkleAccount account) {
+		// 提交更改，更新哈希；
+		account.commit();
+
+		return account.getVersion();
 	}
 
 	@Override
@@ -315,17 +335,10 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 			return;
 		}
 		try {
-			for (InnerVersioningAccount acc : latestAccountsCache.values()) {
+			for (InnerMerkleAccount acc : latestAccountsCache.values()) {
 				// updated or new created;
-				if (acc.isUpdated() || acc.version < 0) {
-					// 提交更改，更新哈希；
-					acc.commit();
-					byte[] value = serialize(acc);
-					long ver = merkleDataset.setValue(acc.getAddress(), value, acc.version);
-					if (ver < 0) {
-						// Update fail;
-						throw new LedgerException("Account updating fail! --[Address=" + acc.getAddress() + "]");
-					}
+				if (acc.isUpdated() || acc.getVersion() < 0) {
+					saveAccount(acc);
 				}
 			}
 			merkleDataset.commit();
@@ -343,7 +356,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		Bytes[] addresses = new Bytes[latestAccountsCache.size()];
 		latestAccountsCache.keySet().toArray(addresses);
 		for (Bytes address : addresses) {
-			InnerVersioningAccount acc = latestAccountsCache.remove(address);
+			InnerMerkleAccount acc = latestAccountsCache.remove(address);
 			// cancel;
 			if (acc.isUpdated()) {
 				acc.cancel();
@@ -352,107 +365,46 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		updated = false;
 	}
 
-	public static class AccountHeaderData implements AccountHeader {
+	/**
+	 * 内部实现的账户，监听和同步账户数据的变更；
+	 * 
+	 * @author huanghaiquan
+	 *
+	 */
+	private class InnerMerkleAccount extends MerkleAccount {
 
-		private Bytes address;
-		private PubKey pubKey;
-		private HashDigest rootHash;
+		private long version;
 
-		public AccountHeaderData(Bytes address, PubKey pubKey, HashDigest rootHash) {
-			this.address = address;
-			this.pubKey = pubKey;
-			this.rootHash = rootHash;
+		public InnerMerkleAccount(BlockchainIdentity accountID, CryptoSetting cryptoSetting, Bytes keyPrefix,
+				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage) {
+			super(accountID, cryptoSetting, keyPrefix, exStorage, verStorage);
+			this.version = -1;
 		}
 
-		@Override
-		public Bytes getAddress() {
-			return address;
-		}
-
-		@Override
-		public PubKey getPubKey() {
-			return pubKey;
-		}
-
-		@Override
-		public HashDigest getRootHash() {
-			return rootHash;
-		}
-
-	}
-
-	private class InnerVersioningAccount extends MerkleAccount {
-
-		// private final BaseAccount account;
-
-		private final long version;
-
-		// public VersioningAccount(BaseAccount account, long version) {
-		// this.account = account;
-		// this.version = version;
-		// }
-
-		public InnerVersioningAccount(Bytes address, PubKey pubKey, HashDigest rootHash, CryptoSetting cryptoSetting,
-				String keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly,
-				long version) {
-			super(address, pubKey, rootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
+		public InnerMerkleAccount(Bytes address, long version, HashDigest dataRootHash, CryptoSetting cryptoSetting,
+				Bytes keyPrefix, ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, boolean readonly) {
+			super(address, dataRootHash, cryptoSetting, keyPrefix, exStorage, verStorage, readonly);
 			this.version = version;
 		}
 
-		public InnerVersioningAccount(Bytes address, PubKey pubKey, CryptoSetting cryptoSetting, String keyPrefix,
-				ExPolicyKVStorage exStorage, VersioningKVStorage verStorage, long version) {
-			super(address, pubKey, cryptoSetting, keyPrefix, exStorage, verStorage);
-			this.version = version;
+		@Override
+		protected void onUpdated(String key, TypedValue value, long expectedVersion, long newVersion) {
+			updated = true;
 		}
 
-		// @Override
-		// public Bytes getAddress() {
-		// return account.getAddress();
-		// }
-		//
-		// @Override
-		// public PubKey getPubKey() {
-		// return account.getPubKey();
-		// }
-		//
-		// @Override
-		// public HashDigest getRootHash() {
-		// return account.getRootHash();
-		// }
-		//
-		// @Override
-		// public MerkleProof getProof(Bytes key) {
-		// return account.getProof(key);
-		// }
-		//
-		// @Override
-		// public boolean isReadonly() {
-		// return account.isReadonly();
-		// }
-
 		@Override
-		public long setBytes(Bytes key, BytesValue value, long version) {
-			long v = super.setBytes(key, value, version);
-			if (v > -1) {
-				updated = true;
+		protected void onCommited(HashDigest previousRootHash, HashDigest newRootHash) {
+			long newVersion = merkleDataset.setValue(this.getAddress(), newRootHash.toBytes(), version);
+			if (newVersion < 0) {
+				// Update fail;
+				throw new LedgerException("Account updating fail! --[Address=" + this.getAddress() + "]");
 			}
-			return v;
+			this.version = newVersion;
 		}
 
-		// @Override
-		// public long getKeyVersion(Bytes key) {
-		// return account.getKeyVersion(key);
-		// }
-		//
-		// @Override
-		// public byte[] getBytes(Bytes key) {
-		// return account.getBytes(key);
-		// }
-		//
-		// @Override
-		// public byte[] getBytes(Bytes key, long version) {
-		// return account.getBytes(key, version);
-		// }
+		public long getVersion() {
+			return version;
+		}
 
 	}
 

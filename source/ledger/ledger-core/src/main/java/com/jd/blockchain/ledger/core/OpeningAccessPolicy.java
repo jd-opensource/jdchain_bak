@@ -1,7 +1,7 @@
 package com.jd.blockchain.ledger.core;
 
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.utils.Bytes;
 
 /**
@@ -15,7 +15,7 @@ import com.jd.blockchain.utils.Bytes;
 public class OpeningAccessPolicy implements AccountAccessPolicy {
 
 	@Override
-	public boolean checkDataWriting(AccountHeader account) {
+	public boolean checkDataWriting(BlockchainIdentity account) {
 		return true;
 	}
 

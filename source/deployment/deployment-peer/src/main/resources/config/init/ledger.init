@@ -87,7 +87,7 @@ cons_parti.0.consensus.host=127.0.0.1
 #第0个参与方的共识服务的端口；
 cons_parti.0.consensus.port=8900
 #第0个参与方的共识服务是否开启安全连接；
-cons_parti.0.consensus.secure=true
+cons_parti.0.consensus.secure=false
 
 #第0个参与方的账本初始服务的主机；
 cons_parti.0.initializer.host=127.0.0.1

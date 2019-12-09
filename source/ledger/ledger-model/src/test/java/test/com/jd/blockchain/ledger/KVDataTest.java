@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.ledger.BytesData;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
 import com.jd.blockchain.transaction.DataAccountKVSetOpTemplate;
 import com.jd.blockchain.transaction.KVData;
@@ -38,7 +38,7 @@ public class KVDataTest {
 		byte[] value = "test-value".getBytes();
 		long expectedVersion = 9999L;
 
-		kvData = new KVData(key, BytesData.fromBytes(value), expectedVersion);
+		kvData = new KVData(key, TypedValue.fromBytes(value), expectedVersion);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class KVDataTest {
 		System.out.println("------Assert start ------");
 		assertEquals(resolvedKvData.getKey(), kvData.getKey());
 		assertEquals(resolvedKvData.getExpectedVersion(), kvData.getExpectedVersion());
-		assertArrayEquals(resolvedKvData.getValue().getValue().toBytes(), kvData.getValue().getValue().toBytes());
+		assertArrayEquals(resolvedKvData.getValue().getBytes().toBytes(), kvData.getValue().getBytes().toBytes());
 		System.out.println("------Assert OK ------");
 	}
 }

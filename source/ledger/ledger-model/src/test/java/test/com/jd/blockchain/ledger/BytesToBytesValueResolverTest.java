@@ -26,7 +26,7 @@ public class BytesToBytesValueResolverTest {
 
         assertEquals(bytesValue.getType(), DataType.BYTES);
 
-        assertEquals(bytesObj, bytesValue.getValue());
+        assertEquals(bytesObj, bytesValue.getBytes());
 
         Bytes resolveBytesObj = (Bytes)resolver.decode(bytesValue);
 

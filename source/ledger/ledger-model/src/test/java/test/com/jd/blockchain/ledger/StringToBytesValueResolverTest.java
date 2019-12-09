@@ -20,7 +20,7 @@ public class StringToBytesValueResolverTest {
 
         BytesValue textBytesValue = resolver.encode(textVal);
 
-        assertEquals(Bytes.fromString(textVal), textBytesValue.getValue());
+        assertEquals(Bytes.fromString(textVal), textBytesValue.getBytes());
 
         assertEquals(textBytesValue.getType(), DataType.TEXT);
 
@@ -43,7 +43,7 @@ public class StringToBytesValueResolverTest {
         Person person = new Person("zhangsan", 80);
         String personJson = JSON.toJSONString(person);
         BytesValue textBytesValue = resolver.encode(personJson);
-        assertEquals(Bytes.fromString(personJson), textBytesValue.getValue());
+        assertEquals(Bytes.fromString(personJson), textBytesValue.getBytes());
         assertEquals(textBytesValue.getType(), DataType.JSON);
     }
 

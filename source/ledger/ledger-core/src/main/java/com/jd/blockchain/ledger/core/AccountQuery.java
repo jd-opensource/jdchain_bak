@@ -1,12 +1,11 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.ledger.AccountHeader;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.MerkleProof;
 import com.jd.blockchain.utils.Bytes;
 
 public interface AccountQuery<T> extends MerkleProvable {
-
-	AccountHeader[] getHeaders(int fromIndex, int count);
-
+	
 	/**
 	 * 返回总数；
 	 * 
@@ -14,7 +13,15 @@ public interface AccountQuery<T> extends MerkleProvable {
 	 */
 	long getTotal();
 
+	BlockchainIdentity[] getHeaders(int fromIndex, int count);
+
 	boolean contains(Bytes address);
+	
+	/**
+	 * get proof of specified account;
+	 */
+	@Override
+	MerkleProof getProof(Bytes address);
 
 	/**
 	 * 返回账户实例；

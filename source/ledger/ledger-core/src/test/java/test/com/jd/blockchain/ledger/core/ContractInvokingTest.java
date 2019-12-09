@@ -16,14 +16,35 @@ import static org.mockito.Mockito.when;
 import java.io.InputStream;
 import java.util.Random;
 
-import com.jd.blockchain.utils.io.BytesUtils;
-import com.jd.blockchain.ledger.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.EndpointRequest;
+import com.jd.blockchain.ledger.LedgerBlock;
+import com.jd.blockchain.ledger.LedgerInitSetting;
+import com.jd.blockchain.ledger.LedgerPermission;
+import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.NodeRequest;
+import com.jd.blockchain.ledger.OperationResult;
+import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantRegisterOperation;
+import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionPermission;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionRequestBuilder;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TypedValue;
+import com.jd.blockchain.ledger.UserRegisterOperation;
 import com.jd.blockchain.ledger.core.DefaultOperationHandleRegisteration;
 import com.jd.blockchain.ledger.core.LedgerDataQuery;
 import com.jd.blockchain.ledger.core.LedgerDataset;
@@ -43,6 +64,8 @@ import com.jd.blockchain.storage.service.utils.MemoryKVStorage;
 import com.jd.blockchain.transaction.BooleanValueHolder;
 import com.jd.blockchain.transaction.TxBuilder;
 import com.jd.blockchain.utils.Bytes;
+import com.jd.blockchain.utils.DataEntry;
+import com.jd.blockchain.utils.io.BytesUtils;
 
 import test.com.jd.blockchain.ledger.TxTestContract;
 import test.com.jd.blockchain.ledger.TxTestContractImpl;
@@ -132,7 +155,7 @@ public class ContractInvokingTest {
 		assertEquals(1, opResults.length);
 		assertEquals(0, opResults[0].getIndex());
 
-		byte[] expectedRetnBytes = BinaryProtocol.encode(BytesData.fromInt64(issueAmount), BytesValue.class);
+		byte[] expectedRetnBytes = BinaryProtocol.encode(TypedValue.fromInt64(issueAmount), BytesValue.class);
 		byte[] reallyRetnBytes = BinaryProtocol.encode(opResults[0].getResult(), BytesValue.class);
 		assertArrayEquals(expectedRetnBytes, reallyRetnBytes);
 
@@ -218,9 +241,9 @@ public class ContractInvokingTest {
 		TransactionBatchResultHandle txResultHandle = txbatchProcessor.prepare();
 		txResultHandle.commit();
 
-		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getBytes(key,
+		BytesValue latestValue = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getValue(key,
 				-1);
-		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getValue().toUTF8String());
+		System.out.printf("latest value=[%s] %s \r\n", latestValue.getType(), latestValue.getBytes().toUTF8String());
 
 		boolean readable = readableHolder.get();
 		assertTrue(readable);
@@ -278,14 +301,14 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		KVDataEntry kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1",
+		DataEntry<String, TypedValue> kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1",
 				0);
-		KVDataEntry kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2",
+		DataEntry<String, TypedValue> kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2",
 				0);
 		assertEquals(0, kv1.getVersion());
 		assertEquals(0, kv2.getVersion());
-		assertEquals("V1-0", kv1.getValue());
-		assertEquals("V2-0", kv2.getValue());
+		assertEquals("V1-0", kv1.getValue().stringValue());
+		assertEquals("V2-0", kv2.getValue().stringValue());
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		buildBlock(ledgerRepo, ledgerManager, opReg, new TxDefinitor() {
@@ -299,12 +322,12 @@ public class ContractInvokingTest {
 			}
 		});
 		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
-		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K2", 1);
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 1);
+		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2", 1);
 		assertEquals(1, kv1.getVersion());
 		assertEquals(1, kv2.getVersion());
-		assertEquals("V1-1", kv1.getValue());
-		assertEquals("V2-1", kv2.getValue());
+		assertEquals("V1-1", kv1.getValue().stringValue());
+		assertEquals("V2-1", kv2.getValue().stringValue());
 
 		// 构建基于接口调用合约的交易请求，用于测试合约调用；
 		buildBlock(ledgerRepo, ledgerManager, opReg, new TxDefinitor() {
@@ -314,16 +337,17 @@ public class ContractInvokingTest {
 				contractProxy.testRollbackWhileVersionConfliction(kpDataAccount.getAddress().toBase58(), "K1", "V1-2",
 						1);
 				contractProxy.testRollbackWhileVersionConfliction(kpDataAccount.getAddress().toBase58(), "K2", "V2-2",
-						0);
+						0);//预期会回滚；
 			}
 		});
-		// 预期数据都能够正常写入；
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 1);
+		// 预期数据回滚，账本没有发生变更；
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 1);
 		assertEquals(1, kv1.getVersion());
-		assertEquals("V1-1", kv1.getValue());
-		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataEntry("K1", 2);
-		assertEquals(-1, kv1.getVersion());
-		assertEquals(null, kv1.getValue());
+		assertEquals("V1-1", kv1.getValue().stringValue());
+		kv1 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K1", 2);
+		assertNull(kv1);
+		kv2 = ledgerRepo.getDataAccountSet().getAccount(kpDataAccount.getAddress()).getDataset().getDataEntry("K2", 1);
+		assertEquals(1, kv2.getVersion());
 
 	}
 

@@ -26,7 +26,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	public static final String URI_SCHEME = "rocksdb";
 
 	public static final Pattern URI_PATTER = Pattern
-			.compile("^\\w+\\://(/)?\\w+(/.*)*$");
+			.compile("^\\w+\\://(/)?\\w+(\\:)?([/\\\\].*)*$");
 
 	private Map<String, RocksDBConnection> connections = new ConcurrentHashMap<>();
 
@@ -40,7 +40,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		if (!URI_PATTER.matcher(dbConnectionString).matches()) {
 			throw new IllegalArgumentException("Illegal format of rocksdb connection string!");
 		}
-		URI dbUri = URI.create(dbConnectionString);
+		URI dbUri = URI.create(dbConnectionString.replace("\\", "/"));
 		if (!support(dbUri.getScheme())) {
 			throw new IllegalArgumentException(
 					String.format("Not supported db connection string with scheme \"%s\"!", dbUri.getScheme()));
@@ -49,9 +49,6 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		String uriHead = dbPrefix();
 		int beginIndex = dbConnectionString.indexOf(uriHead);
 		String dbPath = dbConnectionString.substring(beginIndex + uriHead.length());
-		if (!dbPath.startsWith(File.separator)) {
-			dbPath = File.separator + dbPath;
-		}
 
 		RocksDBConnection conn = connections.get(dbPath);
 		if (conn != null) {

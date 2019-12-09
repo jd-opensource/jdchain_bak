@@ -23,7 +23,7 @@ import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.KVDataEntry;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.PreparedTransaction;
@@ -214,7 +214,7 @@ public class IntegrationTestDataAccount {
 			e.printStackTrace();
 		}
 
-		KVDataEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHashs[0], dataAddr.toBase58(), "A", "B",
+		TypedKVEntry[] kvDataEntries = blockchainService.getDataEntries(ledgerHashs[0], dataAddr.toBase58(), "A", "B",
 				"C", "D");
 		for (int i = 0; i < kvDataEntries.length; i++) {
 			Object result = kvDataEntries[i].getValue();
