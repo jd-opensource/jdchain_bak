@@ -47,7 +47,7 @@ public enum TransactionState {
 	/**
 	 * 参与方不存在；
 	 */
-	PARTICIPANT_DOES_NOT_EXIST((byte) 0x05),
+	PARTICIPANT_DOES_NOT_EXIST((byte) 0x06),
 
 	/**
 	 * 被安全策略拒绝；
