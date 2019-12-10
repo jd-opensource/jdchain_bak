@@ -36,8 +36,8 @@
 
 	<properties>
 		<bft-smart.version>0.3.0.RELEASE</bft-smart.version>
-		<data-explorer.version>1.2.0-SNAPSHOT</data-explorer.version>
-		<manager-explorer.version>1.2.0-SNAPSHOT</manager-explorer.version>
+		<data-explorer.version>1.1.2.RELEASE</data-explorer.version>
+		<manager-explorer.version>1.1.2.RELEASE</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
