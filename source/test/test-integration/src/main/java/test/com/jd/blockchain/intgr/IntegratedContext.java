@@ -6,7 +6,9 @@ import java.util.Map;
 
 import com.jd.blockchain.consensus.ConsensusSettings;
 import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.core.LedgerManager;
+import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 
@@ -44,7 +46,7 @@ public class IntegratedContext {
 
 		private LedgerManager ledgerManager;
 
-		private CompositeConnectionFactory storageDB;
+		private DbConnectionFactory storageDB;
 
 		private LedgerBindingConfig bindingConfig;
 
@@ -60,7 +62,7 @@ public class IntegratedContext {
 			return ledgerManager;
 		}
 
-		public CompositeConnectionFactory getStorageDB() {
+		public DbConnectionFactory getStorageDB() {
 			return storageDB;
 		}
 
@@ -84,7 +86,7 @@ public class IntegratedContext {
 			this.ledgerManager = ledgerManager;
 		}
 
-		public void setStorageDB(CompositeConnectionFactory storageDB) {
+		public void setStorageDB(DbConnectionFactory storageDB) {
 			this.storageDB = storageDB;
 		}
 

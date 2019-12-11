@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import com.jd.blockchain.storage.service.DbConnectionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -52,6 +53,7 @@ import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
+import test.com.jd.blockchain.intgr.LedgerInitConsensusConfig;
 import test.com.jd.blockchain.intgr.PresetAnswerPrompter;
 
 public class LedgerInitializeWebTest {
@@ -73,7 +75,7 @@ public class LedgerInitializeWebTest {
 		// 加载初始化配置；
 		LedgerInitProperties initSetting = loadInitSetting_1();
 		// 加载共识配置；
-		Properties props = loadConsensusSetting();
+		Properties props = loadConsensusSetting(LedgerInitConsensusConfig.bftsmartConfig.getConfigPath());
 		// ConsensusProperties csProps = new ConsensusProperties(props);
 		ConsensusProvider csProvider = getConsensusProvider();
 		ConsensusSettings csProps = csProvider.getSettingsFactory()
@@ -242,7 +244,7 @@ public class LedgerInitializeWebTest {
 
 		Prompter consolePrompter = new PresetAnswerPrompter("N"); // new ConsolePrompter();
 		LedgerInitProperties initSetting = loadInitSetting_2();
-		Properties props = loadConsensusSetting();
+		Properties props = loadConsensusSetting(LedgerInitConsensusConfig.bftsmartConfig.getConfigPath());
 		// ConsensusProperties csProps = new ConsensusProperties(props);
 		ConsensusProvider csProvider = getConsensusProvider();
 		ConsensusSettings csProps = csProvider.getSettingsFactory()
@@ -339,9 +341,9 @@ public class LedgerInitializeWebTest {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-
-	public static Properties loadConsensusSetting() {
-		ClassPathResource ledgerInitSettingResource = new ClassPathResource("bftsmart.config");
+	
+	public static Properties loadConsensusSetting(String configPath) {
+		ClassPathResource ledgerInitSettingResource = new ClassPathResource(configPath);
 		try (InputStream in = ledgerInitSettingResource.getInputStream()) {
 			return FileUtils.readProperties(in);
 		} catch (IOException e) {
@@ -365,7 +367,7 @@ public class LedgerInitializeWebTest {
 
 		private volatile LedgerManager ledgerManager;
 
-		private volatile CompositeConnectionFactory db;
+		private volatile DbConnectionFactory db;
 
 		private int id;
 
@@ -429,21 +431,14 @@ public class LedgerInitializeWebTest {
 			return invoker.start();
 		}
 
-		// public AsyncCallback<HashDigest> startInitCommand(PrivKey privKey, String
-		// base58Pwd, LedgerInitProperties ledgerSetting, ConsensusSettings csProps,
-		// DBConnectionConfig dbConnConfig,
-		// Prompter prompter, LedgerBindingConfig conf, CountDownLatch quitLatch) {
-		// return startInitCommand(privKey, base58Pwd, ledgerSetting, csProps,
-		// dbConnConfig, prompter, conf, quitLatch);
-		// }
 
 		public AsyncCallback<HashDigest> startInitCommand(PrivKey privKey, String base58Pwd,
-				LedgerInitProperties ledgerSetting, ConsensusSettings csProps, ConsensusProvider csProvider,
-				DBConnectionConfig dbConnConfig, Prompter prompter, LedgerBindingConfig conf,
-				CountDownLatch quitLatch) {
-			this.db = new CompositeConnectionFactory();
+														  LedgerInitProperties ledgerSetting, ConsensusSettings csProps, ConsensusProvider csProvider,
+														  DBConnectionConfig dbConnConfig, Prompter prompter, LedgerBindingConfig conf,
+														  CountDownLatch quitLatch, DbConnectionFactory db) {
 			this.dbConnConfig = dbConnConfig;
 			// this.mqConnConfig = mqConnConfig;
+			this.db = db;
 
 			ThreadInvoker<HashDigest> invoker = new ThreadInvoker<HashDigest>() {
 				@Override
@@ -459,6 +454,7 @@ public class LedgerInitializeWebTest {
 
 			return invoker.start();
 		}
+
 
 		public LedgerInitProposal preparePermision(PrivKey privKey, LedgerInitConfiguration initConfig) {
 			return controller.prepareLocalPermission(id, privKey, initConfig);
@@ -517,7 +513,7 @@ public class LedgerInitializeWebTest {
 			// return ctx.getBean(LedgerManager.class);
 		}
 
-		public CompositeConnectionFactory getStorageDB() {
+		public DbConnectionFactory getStorageDB() {
 			return db;
 		}
 	}
