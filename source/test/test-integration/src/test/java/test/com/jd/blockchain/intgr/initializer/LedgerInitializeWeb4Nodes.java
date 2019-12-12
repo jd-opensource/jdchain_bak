@@ -53,6 +53,7 @@ public class LedgerInitializeWeb4Nodes {
 			System.setProperty("peer.log", path);
 			System.setProperty("init.log", path);
 			System.setProperty("gateway.log", path);
+			System.setProperty("jdchain.log", path);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
