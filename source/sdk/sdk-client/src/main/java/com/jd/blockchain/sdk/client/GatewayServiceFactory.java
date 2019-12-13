@@ -71,7 +71,6 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		ByteArrayObjectUtil.init();
 	}
 
-
 	protected GatewayServiceFactory(ServiceEndpoint gatewayEndpoint, BlockchainKeypair userKey) {
 		httpConnectionManager = new ServiceConnectionManager();
 		this.userKey = userKey;
@@ -80,7 +79,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		TransactionService txProcSrv = createConsensusService(gatewayEndpoint);
 		this.blockchainService = new GatewayBlockchainServiceProxy(txProcSrv, queryService);
 	}
-	
+
 	@Override
 	public BlockchainService getBlockchainService() {
 		return blockchainService;
@@ -107,19 +106,49 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 	// factory.setMaxConnections(100);
 	// return factory;
 	// }
-	
+
+	/**
+	 * 连接网关节点；
+	 * 
+	 * @param gatewayAddress 网关节点的网络地址；
+	 * @return 网关服务工厂的实例；
+	 */
 	public static GatewayServiceFactory connect(NetworkAddress gatewayAddress) {
 		return connect(gatewayAddress.getHost(), gatewayAddress.getPort(), gatewayAddress.isSecure(), null);
 	}
 
+	/**
+	 * 网关服务工厂的实例；
+	 * 
+	 * @param gatewayAddress 网关节点的网络地址；
+	 * @param userKey        自动交易签名的用户密钥；可选参数，如果不为 null，则在提交交易时，自动以参数指定的密钥签署交易；
+	 * @return 网关服务工厂的实例；
+	 */
 	public static GatewayServiceFactory connect(NetworkAddress gatewayAddress, BlockchainKeypair userKey) {
 		return connect(gatewayAddress.getHost(), gatewayAddress.getPort(), gatewayAddress.isSecure(), userKey);
 	}
-	
+
+	/**
+	 * 连接网关节点；
+	 * 
+	 * @param gatewayHost 网关节点的地址；
+	 * @param gatewayPort 网关节点的端口；
+	 * @param secure      是否采用安全的通讯协议(HTTPS)；
+	 * @return 网关服务工厂的实例；
+	 */
 	public static GatewayServiceFactory connect(String gatewayHost, int gatewayPort, boolean secure) {
 		return connect(gatewayHost, gatewayPort, secure, null);
 	}
 
+	/**
+	 * 连接网关节点；
+	 * 
+	 * @param gatewayHost 网关节点的地址；
+	 * @param gatewayPort 网关节点的端口；
+	 * @param secure      是否采用安全的通讯协议(HTTPS)；
+	 * @param userKey     自动交易签名的用户密钥；可选参数，如果不为 null，则在提交交易时，自动以参数指定的密钥签署交易；
+	 * @return 网关服务工厂的实例；
+	 */
 	public static GatewayServiceFactory connect(String gatewayHost, int gatewayPort, boolean secure,
 			BlockchainKeypair userKey) {
 //		if (userKey == null) {
@@ -128,8 +157,8 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		ServiceEndpoint gatewayEndpoint = new ServiceEndpoint(gatewayHost, gatewayPort, secure);
 		GatewayServiceFactory factory = new GatewayServiceFactory(gatewayEndpoint, userKey);
 		factory.setMaxConnections(100);
-		//TODO: 未实现网关对用户的认证；
-		//TODO: 未实现加载不同账本的密码算法配置；
+		// TODO: 未实现网关对用户的认证；
+		// TODO: 未实现加载不同账本的密码算法配置；
 		return factory;
 	}
 
@@ -171,7 +200,7 @@ public class GatewayServiceFactory implements BlockchainServiceFactory, Closeabl
 		@Override
 		public TransactionResponse process(TransactionRequest txRequest) {
 			TxRequestMessage reqMsg = (TxRequestMessage) txRequest;
-			//TODO: 未实现按不同的账本的密码参数配置，采用不同的哈希算法和签名算法；
+			// TODO: 未实现按不同的账本的密码参数配置，采用不同的哈希算法和签名算法；
 			if (!reqMsg.containsEndpointSignature(userKey.getAddress())) {
 				// TODO: 优化上下文对此 TransactionContent 的多次序列化带来的额外性能开销；
 				DigitalSignature signature = SignatureUtils.sign(txRequest.getTransactionContent(), userKey);
