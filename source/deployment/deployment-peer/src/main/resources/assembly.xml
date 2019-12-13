@@ -12,6 +12,7 @@
         <fileSet>
             <directory>src/main/resources/scripts</directory>
             <outputDirectory>bin</outputDirectory>
+            <lineEnding>unix</lineEnding>
         </fileSet>
         <fileSet>
             <directory>src/main/resources/config</directory>
