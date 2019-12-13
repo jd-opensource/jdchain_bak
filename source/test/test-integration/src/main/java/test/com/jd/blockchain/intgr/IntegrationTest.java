@@ -7,7 +7,21 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider;
+import com.jd.blockchain.consensus.bftsmart.service.BftsmartNodeServer;
+import com.jd.blockchain.consensus.bftsmart.service.BftsmartServerSettings;
+import com.jd.blockchain.consensus.service.*;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.core.*;
+import com.jd.blockchain.peer.consensus.ConsensusMessageDispatcher;
+import com.jd.blockchain.peer.consensus.LedgerStateManager;
+import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
+import com.jd.blockchain.utils.concurrent.ThreadInvoker;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
 import com.jd.blockchain.consensus.ConsensusProvider;
@@ -21,24 +35,6 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainKeyGenerator;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.BytesValue;
-import com.jd.blockchain.ledger.DataAccountKVSetOperation;
-import com.jd.blockchain.ledger.TypedKVEntry;
-import com.jd.blockchain.ledger.LedgerBlock;
-import com.jd.blockchain.ledger.LedgerInfo;
-import com.jd.blockchain.ledger.LedgerInitProperties;
-import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.ledger.UserInfo;
-import com.jd.blockchain.ledger.core.DataAccountQuery;
-import com.jd.blockchain.ledger.core.LedgerManage;
-import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerQuery;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.storage.service.KVStorageService;
@@ -53,6 +49,9 @@ import com.jd.blockchain.utils.net.NetworkAddress;
 import test.com.jd.blockchain.intgr.IntegratedContext.Node;
 import test.com.jd.blockchain.intgr.perf.LedgerInitializeWebTest;
 import test.com.jd.blockchain.intgr.perf.Utils;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 
 public class IntegrationTest {
 	// 合约测试使用的初始化数据;
@@ -73,37 +72,52 @@ public class IntegrationTest {
 
 	private static String memDbConnString = LedgerInitConsensusConfig.memConnectionStrings[0];
 
-	// private static final MQConnectionConfig mqConnConfig = new
-	// MQConnectionConfig();
-	// static {
-	// mqConnConfig.setServer(MQ_SERVER);
-	// mqConnConfig.setTopic(MQ_TOPIC);
-	// }
+	private static AtomicBoolean isTestTurnOn = new AtomicBoolean(false);
+
+	public static final String PASSWORD = "abc";
+
+	public static final String PUB_KEYS = "3snPdw7i7Pb3B5AxpSXy6YVruvftugNQ7rB7k2KWukhBwKQhFBFagT";
+	public static final String PRIV_KEYS = "177gjtSgSdUF3LwRFGhzbpZZxmXXChsnwbuuLCG1V9KYfVuuxLwXGmZCp5FGUvsenhwBQLV";
+
 
 	public static void main_(String[] args) {
 		// init ledgers of all nodes ;
 		IntegratedContext context = initLedgers();
+
 		Node node0 = context.getNode(0);
 		Node node1 = context.getNode(1);
 		Node node2 = context.getNode(2);
 		Node node3 = context.getNode(3);
 
+		LedgerManager ledgerManagerMock0 = Mockito.spy(node0.getLedgerManager());
+		LedgerManager ledgerManagerMock1 = Mockito.spy(node1.getLedgerManager());
+		LedgerManager ledgerManagerMock2 = Mockito.spy(node2.getLedgerManager());
+		LedgerManager ledgerManagerMock3 = Mockito.spy(node3.getLedgerManager());
+
+		node0.setLedgerManager(ledgerManagerMock0);
+		node1.setLedgerManager(ledgerManagerMock1);
+		node2.setLedgerManager(ledgerManagerMock2);
+		node3.setLedgerManager(ledgerManagerMock3);
+
+		//todo
+//		mockNodeServer(context);
+
 		NetworkAddress peerSrvAddr0 = new NetworkAddress("127.0.0.1", 10200);
-		PeerTestRunner peer0 = new PeerTestRunner(peerSrvAddr0, node0.getBindingConfig(), node0.getStorageDB());
+		PeerTestRunner peer0 = new PeerTestRunner(peerSrvAddr0, node0.getBindingConfig(), node0.getStorageDB(), node0.getLedgerManager());
 
 		NetworkAddress peerSrvAddr1 = new NetworkAddress("127.0.0.1", 10210);
-		PeerTestRunner peer1 = new PeerTestRunner(peerSrvAddr1, node1.getBindingConfig(), node1.getStorageDB());
+		PeerTestRunner peer1 = new PeerTestRunner(peerSrvAddr1, node1.getBindingConfig(), node1.getStorageDB(), node1.getLedgerManager());
 
 		NetworkAddress peerSrvAddr2 = new NetworkAddress("127.0.0.1", 10220);
-		PeerTestRunner peer2 = new PeerTestRunner(peerSrvAddr2, node2.getBindingConfig(), node2.getStorageDB());
+		PeerTestRunner peer2 = new PeerTestRunner(peerSrvAddr2, node2.getBindingConfig(), node2.getStorageDB(), node2.getLedgerManager());
 
 		NetworkAddress peerSrvAddr3 = new NetworkAddress("127.0.0.1", 10230);
-		PeerTestRunner peer3 = new PeerTestRunner(peerSrvAddr3, node3.getBindingConfig(), node3.getStorageDB());
+		PeerTestRunner peer3 = new PeerTestRunner(peerSrvAddr3, node3.getBindingConfig(), node3.getStorageDB(), node3.getLedgerManager());
 
-		AsyncCallback<Object> peerStarting0 = peer0.start();
-		AsyncCallback<Object> peerStarting1 = peer1.start();
-		AsyncCallback<Object> peerStarting2 = peer2.start();
-		AsyncCallback<Object> peerStarting3 = peer3.start();
+		ThreadInvoker.AsyncCallback<Object> peerStarting0 = peer0.start();
+		ThreadInvoker.AsyncCallback<Object> peerStarting1 = peer1.start();
+		ThreadInvoker.AsyncCallback<Object> peerStarting2 = peer2.start();
+		ThreadInvoker.AsyncCallback<Object> peerStarting3 = peer3.start();
 
 		peerStarting0.waitReturn();
 		peerStarting1.waitReturn();
@@ -116,38 +130,96 @@ public class IntegrationTest {
 		gwkey0.setPubKeyValue(LedgerInitializeWebTest.PUB_KEYS[0]);
 		gwkey0.setPrivKeyValue(LedgerInitializeWebTest.PRIV_KEYS[0]);
 		gwkey0.setPrivKeyPassword(encodedBase58Pwd);
-		// GatewayTestRunner gateway0 = new GatewayTestRunner("127.0.0.1", 10300,
-		// gwkey0, peerSrvAddr0);
-		GatewayTestRunner gateway0 = new GatewayTestRunner("127.0.0.1", 10300, gwkey0, peerSrvAddr0);
 
-		// KeyPairConfig gwkey1 = new KeyPairConfig();
-		// gwkey1.setPubKeyValue(LedgerInitializeWebTest.PUB_KEYS[1]);
-		// gwkey1.setPrivKeyValue(LedgerInitializeWebTest.PRIV_KEYS[1]);
-		// gwkey1.setPrivKeyPassword(encodedBase58Pwd);
-		// GatewayTestRunner gateway1 = new GatewayTestRunner("127.0.0.1", 10310,
-		// gwkey1, peerSrvAddr1);
+		GatewayTestRunner gateway0 = new GatewayTestRunner("127.0.0.1", 10300, gwkey0, peerSrvAddr0, LedgerInitConsensusConfig.bftsmartProvider, null);
 
-		AsyncCallback<Object> gwStarting0 = gateway0.start();
-		// AsyncCallback<Object> gwStarting1 = gateway1.start();
+		ThreadInvoker.AsyncCallback<Object> gwStarting0 = gateway0.start();
 
 		gwStarting0.waitReturn();
-		// gwStarting1.waitReturn();
 
 		// 执行测试用例之前，校验每个节点的一致性；
-		// testConsistencyAmongNodes(context);
+//		testConsistencyAmongNodes(context);
+
+		testStorageErrorBlockRollbackSdk(gateway0, context);
+
+		testConsensusFirstTimeoutSdk(gateway0, context);
+
+		testConsensusSecondTimeoutSdk(gateway0, context);
+
+		//todo
+//		testBlockHashInconsistentSdk(gateway0, context);
+
+		testTransactionRollbackSdk(gateway0, context);
+
+		testInvalidUserSignerSdk(gateway0, context);
 
 		testSDK(gateway0, context);
 
+		System.out.println("------IntegrationTest Ok--------");
+
 		// 执行测试用例之后，校验每个节点的一致性；
-		// testConsistencyAmongNodes(context);
+//		 testConsistencyAmongNodes(context);
 	}
 
+	//todo
+//	private static void mockNodeServer(IntegratedContext context) {
+//
+//		Bytes nodeAddress0 = AddressEncoding.generateAddress(context.getNode(0).getPartiKeyPair().getPubKey());
+//		Bytes nodeAddress1 = AddressEncoding.generateAddress(context.getNode(1).getPartiKeyPair().getPubKey());
+//		Bytes nodeAddress2 = AddressEncoding.generateAddress(context.getNode(2).getPartiKeyPair().getPubKey());
+//		Bytes nodeAddress3 = AddressEncoding.generateAddress(context.getNode(3).getPartiKeyPair().getPubKey());
+//
+//		BftsmartConsensusProvider bftsmartProvider0 = new BftsmartConsensusProvider();
+//		BftsmartConsensusProvider mockedBftsmartProvider0 = Mockito.spy(bftsmartProvider0);
+//
+//		BftsmartConsensusProvider bftsmartProvider1 = new BftsmartConsensusProvider();
+//		BftsmartConsensusProvider mockedBftsmartProvider1 = Mockito.spy(bftsmartProvider1);
+//
+//		BftsmartConsensusProvider bftsmartProvider2 = new BftsmartConsensusProvider();
+//		BftsmartConsensusProvider mockedBftsmartProvider2 = Mockito.spy(bftsmartProvider2);
+//
+//		BftsmartConsensusProvider bftsmartProvider3 = new BftsmartConsensusProvider();
+//		BftsmartConsensusProvider mockedBftsmartProvider3 = Mockito.spy(bftsmartProvider3);
+//
+//		doAnswer(new Answer<BftsmartNodeServer>() {
+//			@Override
+//			public BftsmartNodeServer answer(InvocationOnMock invocation) throws Throwable {
+//				BftsmartServerSettings serverSettings =(BftsmartServerSettings) invocation.getArguments()[0];
+//
+//				MessageHandle messageHandle = new ConsensusMessageDispatcher();
+//				// mock spy messageHandle
+//				MessageHandle mockedMessageHandle = Mockito.spy(messageHandle);
+//
+//				StateMachineReplicate stateMachineReplicate = new LedgerStateManager();
+//
+//				if(nodeAddress0.equals(serverSettings.getReplicaSettings().getAddress())){
+//					doAnswer(new Answer() {
+//						@Override
+//						public Object answer(InvocationOnMock invocation) throws Throwable {
+//
+//							if (isTestTurnOn.get()) {
+//								Random random = new Random();
+//								byte[] msg = new byte[4];
+//								random.nextBytes(msg);
+//								invocation.getArguments()[0] = msg;
+//							}
+//							return invocation.callRealMethod();
+//						}
+//					}).when(mockedMessageHandle).processOrdered(any(), any(), any(), any());
+//				}
+//
+//				return new BftsmartNodeServer(serverSettings, mockedMessageHandle, stateMachineReplicate);
+//			}
+//		}).when(mockedBftsmartProvider0).getServerFactory().setupServer(any(), any(), any());
+//
+//		ConsensusProviders.registerProvider(mockedBftsmartProvider0);
+//	}
 	/**
 	 * 检查所有节点之间的账本是否一致；
 	 * 
 	 * @param context
 	 */
-	private void testConsistencyAmongNodes(IntegratedContext context) {
+	private static void testConsistencyAmongNodes(IntegratedContext context) {
 		int[] ids = context.getNodeIds();
 		Node[] nodes = new Node[ids.length];
 		LedgerQuery[] ledgers = new LedgerQuery[ids.length];
@@ -162,6 +234,180 @@ public class IntegrationTest {
 			LedgerQuery otherLedger = ledgers[i];
 			LedgerBlock otherLatestBlock = otherLedger.retrieveLatestBlock();
 		}
+	}
+
+	private static void testConsensusFirstTimeoutSdk(GatewayTestRunner gateway, IntegratedContext context) {
+
+		AtomicBoolean isTestTurnOn = new AtomicBoolean(true);
+
+		Node node0 = context.getNode(0);
+		Node node1 = context.getNode(1);
+
+		LedgerManager ledgerManagerMock0 = node0.getLedgerManager();
+		LedgerManager ledgerManagerMock1 = node1.getLedgerManager();
+
+		doAnswer(new Answer<LedgerRepository>() {
+			@Override
+			public LedgerRepository answer(InvocationOnMock invocation) throws Throwable {
+				if (isTestTurnOn.get()) {
+					Thread.sleep(5000);
+				}
+				return (LedgerRepository)invocation.callRealMethod();
+			}
+		}).when(ledgerManagerMock0).getLedger(any());
+
+		doAnswer(new Answer<LedgerRepository>() {
+			@Override
+			public LedgerRepository answer(InvocationOnMock invocation) throws Throwable {
+				if (isTestTurnOn.get()) {
+					Thread.sleep(5000);
+				}
+				return (LedgerRepository)invocation.callRealMethod();
+			}
+		}).when(ledgerManagerMock1).getLedger(any());
+
+		testSDK(gateway, context);
+
+		isTestTurnOn.set(false);
+	}
+
+	private static void testConsensusSecondTimeoutSdk(GatewayTestRunner gateway, IntegratedContext context) {
+		AtomicBoolean isTestTurnOn = new AtomicBoolean(true);
+
+		Node node0 = context.getNode(0);
+		Node node1 = context.getNode(1);
+
+		LedgerManager ledgerManagerMock0 = node0.getLedgerManager();
+		LedgerManager ledgerManagerMock1 = node1.getLedgerManager();
+
+		doAnswer(new Answer<LedgerRepository>() {
+			@Override
+			public LedgerRepository answer(InvocationOnMock invocation) throws Throwable {
+				if (isTestTurnOn.get()) {
+					Thread.sleep(10000);
+				}
+				return (LedgerRepository)invocation.callRealMethod();
+			}
+		}).when(ledgerManagerMock0).getLedger(any());
+
+		doAnswer(new Answer<LedgerRepository>() {
+			@Override
+			public LedgerRepository answer(InvocationOnMock invocation) throws Throwable {
+				if (isTestTurnOn.get()) {
+					Thread.sleep(10000);
+				}
+				return (LedgerRepository)invocation.callRealMethod();
+			}
+		}).when(ledgerManagerMock1).getLedger(any());
+
+		testSDK(gateway, context);
+
+		isTestTurnOn.set(false);
+	}
+
+	//todo
+//	private static void testBlockHashInconsistentSdk(GatewayTestRunner gateway, IntegratedContext context) {
+//		isTestTurnOn.set(true);
+//		testSDK(gateway, context);
+//		isTestTurnOn.set(false);
+//
+//	}
+
+	private static void testStorageErrorBlockRollbackSdk(GatewayTestRunner gateway, IntegratedContext context) {
+
+		((TestDbFactory)context.getNode(0).getStorageDB()).setErrorSetTurnOn(true);
+		((TestDbFactory)context.getNode(1).getStorageDB()).setErrorSetTurnOn(true);
+		((TestDbFactory)context.getNode(2).getStorageDB()).setErrorSetTurnOn(true);
+		((TestDbFactory)context.getNode(3).getStorageDB()).setErrorSetTurnOn(true);
+
+		testSDK(gateway, context);
+
+		((TestDbFactory)context.getNode(0).getStorageDB()).setErrorSetTurnOn(false);
+		((TestDbFactory)context.getNode(1).getStorageDB()).setErrorSetTurnOn(false);
+		((TestDbFactory)context.getNode(2).getStorageDB()).setErrorSetTurnOn(false);
+		((TestDbFactory)context.getNode(3).getStorageDB()).setErrorSetTurnOn(false);
+
+	}
+
+	private static void testTransactionRollbackSdk(GatewayTestRunner gateway, IntegratedContext context) {
+
+		// 连接网关；
+		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
+		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
+
+		HashDigest[] ledgerHashs = bcsrv.getLedgerHashs();
+
+		AsymmetricKeypair adminKey = context.getNode(0).getPartiKeyPair();
+
+		// 注册用户，并验证最终写入；
+		BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
+
+		// 定义交易；
+		TransactionTemplate txTpl = bcsrv.newTransaction(ledgerHashs[0]);
+		txTpl.dataAccounts().register(dataAccount.getIdentity());
+
+		String dataKey = "jd_code";
+		String dataVal = "www.jd.com";
+
+		// Construct error kv version
+		txTpl.dataAccount(dataAccount.getAddress()).setText(dataKey, dataVal, 1);
+
+		PreparedTransaction prepTx = txTpl.prepare();
+
+		prepTx.sign(adminKey);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = prepTx.commit();
+
+		// 验证结果;
+		Node node0 = context.getNode(0);
+		LedgerManage ledgerManager = new LedgerManager();
+
+		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
+
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHashs[0], storageService);
+
+
+	}
+
+	private static void testInvalidUserSignerSdk(GatewayTestRunner gateway, IntegratedContext context) {
+		// 连接网关；
+		GatewayServiceFactory gwsrvFact = GatewayServiceFactory.connect(gateway.getServiceAddress());
+		BlockchainService bcsrv = gwsrvFact.getBlockchainService();
+
+		HashDigest[] ledgerHashs = bcsrv.getLedgerHashs();
+
+        //Invalid signer
+		PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS, PASSWORD);
+		PubKey pubKey = KeyGenUtils.decodePubKey(PUB_KEYS);
+
+		AsymmetricKeypair asymmetricKeypair = new AsymmetricKeypair(pubKey, privKey);
+
+		// 注册用户，并验证最终写入；
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
+
+		// 定义交易；
+		TransactionTemplate txTpl = bcsrv.newTransaction(ledgerHashs[0]);
+		txTpl.users().register(user.getIdentity());
+
+		// 签名；
+		PreparedTransaction ptx = txTpl.prepare();
+
+		HashDigest transactionHash = ptx.getHash();
+
+		ptx.sign(asymmetricKeypair);
+
+		// 提交并等待共识返回；
+		TransactionResponse txResp = ptx.commit();
+
+		// 验证结果;
+		Node node0 = context.getNode(0);
+		LedgerManage ledgerManager = new LedgerManager();
+
+		KVStorageService storageService = node0.getStorageDB().connect(memDbConnString).getStorageService();
+
+		LedgerQuery ledgerOfNode0 = ledgerManager.register(ledgerHashs[0], storageService);
+
 	}
 
 	private static void testSDK(GatewayTestRunner gateway, IntegratedContext context) {
@@ -427,15 +673,15 @@ public class IntegrationTest {
 		return;
 	}
 
-	public static ConsensusProvider getConsensusProvider() {
-		return ConsensusProviders.getProvider("com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider");
+	public static ConsensusProvider getConsensusProvider(String providerName) {
+		return ConsensusProviders.getProvider(providerName);
 	}
 
 	private static IntegratedContext initLedgers() {
 		Prompter consolePrompter = new PresetAnswerPrompter("N"); // new ConsolePrompter();
 		LedgerInitProperties initSetting = loadInitSetting_integration();
-		Properties props = LedgerInitializeWebTest.loadConsensusSetting();
-		ConsensusProvider csProvider = getConsensusProvider();
+		Properties props = LedgerInitializeWebTest.loadConsensusSetting(LedgerInitConsensusConfig.bftsmartConfig.getConfigPath());
+		ConsensusProvider csProvider = getConsensusProvider(LedgerInitConsensusConfig.bftsmartConfig.getProvider());
 		ConsensusSettings csProps = csProvider.getSettingsFactory()
 				.getConsensusSettingsBuilder()
 				.createSettings(props, Utils.loadParticipantNodes());
@@ -465,29 +711,39 @@ public class IntegrationTest {
 
 		CountDownLatch quitLatch = new CountDownLatch(4);
 
+		TestDbFactory dbFactory0 =  new TestDbFactory(new CompositeConnectionFactory());
+		dbFactory0.setErrorSetTurnOn(false);
 		DBConnectionConfig testDb0 = new DBConnectionConfig();
 		testDb0.setConnectionUri("memory://local/0");
 		LedgerBindingConfig bindingConfig0 = new LedgerBindingConfig();
 		AsyncCallback<HashDigest> callback0 = nodeCtx0.startInitCommand(privkey0, encodedPassword, initSetting, csProps,
-				csProvider, testDb0, consolePrompter, bindingConfig0, quitLatch);
+				csProvider, testDb0, consolePrompter, bindingConfig0, quitLatch, dbFactory0);
 
+
+		TestDbFactory dbFactory1 =  new TestDbFactory(new CompositeConnectionFactory());
+		dbFactory1.setErrorSetTurnOn(false);
 		DBConnectionConfig testDb1 = new DBConnectionConfig();
 		testDb1.setConnectionUri("memory://local/1");
 		LedgerBindingConfig bindingConfig1 = new LedgerBindingConfig();
 		AsyncCallback<HashDigest> callback1 = nodeCtx1.startInitCommand(privkey1, encodedPassword, initSetting, csProps,
-				csProvider, testDb1, consolePrompter, bindingConfig1, quitLatch);
+				csProvider, testDb1, consolePrompter, bindingConfig1, quitLatch, dbFactory1);
 
+
+		TestDbFactory dbFactory2 =  new TestDbFactory(new CompositeConnectionFactory());
+		dbFactory2.setErrorSetTurnOn(false);
 		DBConnectionConfig testDb2 = new DBConnectionConfig();
 		testDb2.setConnectionUri("memory://local/2");
 		LedgerBindingConfig bindingConfig2 = new LedgerBindingConfig();
 		AsyncCallback<HashDigest> callback2 = nodeCtx2.startInitCommand(privkey2, encodedPassword, initSetting, csProps,
-				csProvider, testDb2, consolePrompter, bindingConfig2, quitLatch);
+				csProvider, testDb2, consolePrompter, bindingConfig2, quitLatch, dbFactory2);
 
+		TestDbFactory dbFactory3 =  new TestDbFactory(new CompositeConnectionFactory());
+		dbFactory3.setErrorSetTurnOn(false);
 		DBConnectionConfig testDb3 = new DBConnectionConfig();
 		testDb3.setConnectionUri("memory://local/3");
 		LedgerBindingConfig bindingConfig3 = new LedgerBindingConfig();
 		AsyncCallback<HashDigest> callback3 = nodeCtx3.startInitCommand(privkey3, encodedPassword, initSetting, csProps,
-				csProvider, testDb3, consolePrompter, bindingConfig3, quitLatch);
+				csProvider, testDb3, consolePrompter, bindingConfig3, quitLatch, dbFactory3);
 
 		HashDigest ledgerHash0 = callback0.waitReturn();
 		HashDigest ledgerHash1 = callback1.waitReturn();
@@ -500,6 +756,8 @@ public class IntegrationTest {
 		LedgerQuery ledger3 = nodeCtx3.registLedger(ledgerHash3);
 
 		IntegratedContext context = new IntegratedContext();
+
+		context.setLedgerHash(ledgerHash0);
 
 		Node node0 = new Node(0);
 		node0.setConsensusSettings(csProps);
@@ -542,7 +800,7 @@ public class IntegrationTest {
 	}
 
 	public static LedgerInitProperties loadInitSetting_integration() {
-		ClassPathResource ledgerInitSettingResource = new ClassPathResource("ledger_init_test_integration.init");
+		ClassPathResource ledgerInitSettingResource = new ClassPathResource("ledger_init_test_web2.init");
 		try (InputStream in = ledgerInitSettingResource.getInputStream()) {
 			LedgerInitProperties setting = LedgerInitProperties.resolve(in);
 			return setting;

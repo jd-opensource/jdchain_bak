@@ -59,4 +59,12 @@ public interface MessageHandle {
 	 */
 	AsyncFuture<byte[]> processUnordered(byte[] message);
 
+	/**
+	 * 获得当前最新区块的状态快照
+	 *
+	 * @param realmName
+	 * @return 最新区块的状态快照
+	 */
+	StateSnapshot getStateSnapshot(String realmName);
+
 }

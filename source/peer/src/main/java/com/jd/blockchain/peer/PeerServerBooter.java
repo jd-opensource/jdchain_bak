@@ -169,7 +169,9 @@ public class PeerServerBooter {
 			app.addInitializers((ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContext -> {
 				ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 				for (Object bean : externalBeans) {
-					beanFactory.registerSingleton(bean.toString(), bean);
+					if (bean != null) {
+						beanFactory.registerSingleton(bean.toString(), bean);
+					}
 				}
 			});
 		}
