@@ -5,7 +5,11 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import com.jd.blockchain.ledger.core.*;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -28,12 +32,6 @@ import com.jd.blockchain.ledger.LedgerInitProperties;
 import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.UserRegisterOperation;
-import com.jd.blockchain.ledger.core.LedgerInitDecision;
-import com.jd.blockchain.ledger.core.LedgerInitProposal;
-import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerQuery;
-import com.jd.blockchain.ledger.core.UserAccount;
-import com.jd.blockchain.ledger.core.UserAccountQuery;
 import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 //import com.jd.blockchain.storage.service.utils.MemoryBasedDb;
@@ -341,7 +339,7 @@ public class LedgerInitializeWebTest {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static Properties loadConsensusSetting(String configPath) {
 		ClassPathResource ledgerInitSettingResource = new ClassPathResource(configPath);
 		try (InputStream in = ledgerInitSettingResource.getInputStream()) {
@@ -403,7 +401,12 @@ public class LedgerInitializeWebTest {
 			// dbConnConfig.getPassword());
 			DbConnection conn = db.connect(dbConnConfig.getUri());
 			LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService());
+
 			return ledgerRepo;
+		}
+
+		public LedgerRepository ledgerRepository(HashDigest ledgerHash) {
+			return ledgerManager.getLedger(ledgerHash);
 		}
 
 		public SignatureDigest createPermissionRequestSignature(int requesterId, PrivKey privKey) {
@@ -446,7 +449,11 @@ public class LedgerInitializeWebTest {
 					LedgerInitCommand initCmd = new LedgerInitCommand();
 					HashDigest ledgerHash = initCmd.startInit(id, privKey, base58Pwd, ledgerSetting, dbConnConfig,
 							prompter, conf, db);
-					NodeWebContext.this.ledgerManager = initCmd.getLedgerManager();
+
+					LedgerManager lm = initCmd.getLedgerManager();
+
+					NodeWebContext.this.ledgerManager = lm;
+
 					quitLatch.countDown();
 					return ledgerHash;
 				}

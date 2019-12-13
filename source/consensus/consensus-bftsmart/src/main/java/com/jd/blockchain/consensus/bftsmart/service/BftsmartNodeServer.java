@@ -374,11 +374,8 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             preStateSnapshot = messageHandle.getStateSnapshot(realmName);
 
             if (preStateSnapshot == null) {
-                System.out.println("prev state snapshot is null");
+               throw new IllegalStateException("Pre block state snapshot is null!");
             }
-
-//            System.out.println("last hash = "+preStateSnapshot.getSnapshot());
-            System.out.println("last height = "+preStateSnapshot.getId());
 
             for (int i = 0; i < commands.length; i++) {
                 byte[] txContent = commands[i];
@@ -386,8 +383,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 asyncFutureLinkedList.add(asyncFuture);
             }
             newStateSnapshot = messageHandle.completeBatch(realmName, batchId);
-//            System.out.println("new hash = "+newStateSnapshot.getSnapshot());
-            System.out.println("new height = "+newStateSnapshot.getId());
 
             for (int i = 0; i < asyncFutureLinkedList.size(); i++) {
                 responseLinkedList.add(asyncFutureLinkedList.get(i).get());
@@ -398,7 +393,6 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
         } catch (Exception e) {
             LOGGER.error("Error occurred while pre compute app! --" + e.getMessage(), e);
-//            messageHandle.rollbackBatch(realmName, batchId, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK.CODE);
             for (int i = 0; i < commands.length; i++) {
                 responseLinkedList.add(createAppResponse(commands[i],TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK));
             }

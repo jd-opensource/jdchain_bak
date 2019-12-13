@@ -19,7 +19,8 @@ public class ConsensusProviders {
 				provider = providers.get(className);
 				if (provider == null) {
 					provider = loadProvider(ConsensusProvider.class, className);
-					providers.put(className, provider);
+//					providers.put(className, provider);
+					registerProvider(provider);
 				}
 			}
 		}

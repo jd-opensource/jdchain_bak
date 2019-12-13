@@ -14,6 +14,8 @@ import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 
 public class IntegratedContext {
 
+	private HashDigest ledgerHash;
+
 	private Map<Integer, Node> nodes = new HashMap<>();
 
 	public int[] getNodeIds() {
@@ -25,6 +27,14 @@ public class IntegratedContext {
 		}
 		Arrays.sort(ids);
 		return ids;
+	}
+
+	public HashDigest getLedgerHash() {
+		return ledgerHash;
+	}
+
+	public void setLedgerHash(HashDigest ledgerHash) {
+		this.ledgerHash = ledgerHash;
 	}
 
 	public Node getNode(int id) {

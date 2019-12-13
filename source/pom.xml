@@ -35,7 +35,7 @@
 	</modules>
 
 	<properties>
-		<bft-smart.version>0.3.0.RELEASE</bft-smart.version>
+		<bft-smart.version>0.5.0-SNAPSHOT</bft-smart.version>
 		<data-explorer.version>1.2.0-SNAPSHOT</data-explorer.version>
 		<manager-explorer.version>1.2.0-SNAPSHOT</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>

@@ -1,5 +1,6 @@
 package test.com.jd.blockchain.intgr;
 
+import com.jd.blockchain.ledger.core.LedgerManager;
 import com.jd.blockchain.peer.PeerServerBooter;
 import com.jd.blockchain.storage.service.DbConnectionFactory;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
@@ -28,18 +29,18 @@ public class PeerTestRunner {
 	}
 
 	public PeerTestRunner(NetworkAddress serviceAddress, LedgerBindingConfig ledgerBindingConfig) {
-		this(serviceAddress, ledgerBindingConfig, null);
+		this(serviceAddress, ledgerBindingConfig, null, null);
 	}
 
 	public PeerTestRunner(NetworkAddress serviceAddress, LedgerBindingConfig ledgerBindingConfig,
-			DbConnectionFactory dbConnectionFactory) {
+						  DbConnectionFactory dbConnectionFactory, LedgerManager ledgerManager) {
 		this.serviceAddress = serviceAddress;
 		this.ledgerBindingConfig = ledgerBindingConfig;
 		if (dbConnectionFactory == null) {
 			this.peerServer = new PeerServerBooter(ledgerBindingConfig, serviceAddress.getHost(), serviceAddress.getPort(),null);
 		}else {
 			this.peerServer = new PeerServerBooter(ledgerBindingConfig, serviceAddress.getHost(), serviceAddress.getPort(),null,
-					dbConnectionFactory);
+					dbConnectionFactory, ledgerManager);
 		}
 	}
 
