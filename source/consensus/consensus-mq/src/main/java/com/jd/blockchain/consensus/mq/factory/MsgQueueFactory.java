@@ -12,8 +12,7 @@ package com.jd.blockchain.consensus.mq.factory;
 import com.jd.blockchain.consensus.mq.consumer.MsgQueueConsumer;
 import com.jd.blockchain.consensus.mq.producer.MsgQueueProducer;
 
-import static com.jd.blockchain.consensus.mq.factory.MsgQueueConfig.NATS_PREFIX;
-import static com.jd.blockchain.consensus.mq.factory.MsgQueueConfig.RABBIT_PREFIX;
+import static com.jd.blockchain.consensus.mq.factory.MsgQueueConfig.*;
 
 /**
  *
@@ -28,7 +27,7 @@ public class MsgQueueFactory {
         try {
             if (server.startsWith(NATS_PREFIX)) {
                 return NatsFactory.newProducer(server, topic);
-            } else if (server.startsWith(RABBIT_PREFIX)) {
+            } else if (server.startsWith(RABBIT_PREFIX) || server.startsWith(AMQP_PREFIX)) {
                 return RabbitFactory.newProducer(server, topic);
             }
         } catch (Exception e) {
@@ -41,7 +40,7 @@ public class MsgQueueFactory {
         try {
             if (server.startsWith(NATS_PREFIX)) {
                 return NatsFactory.newConsumer(server, topic);
-            } else if (server.startsWith(RABBIT_PREFIX)) {
+            } else if (server.startsWith(RABBIT_PREFIX) || server.startsWith(AMQP_PREFIX)) {
                 return RabbitFactory.newConsumer(server, topic);
             }
             return null;

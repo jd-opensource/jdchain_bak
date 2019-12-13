@@ -20,4 +20,6 @@ public final class MsgQueueConfig {
     public static final String NATS_PREFIX = "nats";
 
     public static final String RABBIT_PREFIX = "rabbit";
+
+    public static final String AMQP_PREFIX = "amqp";
 }

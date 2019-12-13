@@ -14,8 +14,10 @@ import com.jd.blockchain.consensus.mq.producer.MsgQueueProducer;
 import com.jd.blockchain.consensus.mq.producer.RabbitProducer;
 import com.rabbitmq.client.ConnectionFactory;
 
+import static com.jd.blockchain.consensus.mq.factory.MsgQueueConfig.*;
+
+
 /**
- *
  * @author shaozhuguang
  * @create 2018/11/5
  * @since 1.0.0
@@ -33,19 +35,23 @@ public class RabbitFactory {
 
     public static ConnectionFactory initConnectionFactory(String server) {
         ConnectionFactory factory = new ConnectionFactory();
-        // 解析server，生成host+port，默认格式：rabbit://localhost:5672
         try {
-            String[] hostAndPort = server.split("//")[1].split(":");
-            if (hostAndPort == null || hostAndPort.length == 0) {
-                factory.setHost("localhost");
-            } else if (hostAndPort.length == 1) {
-                factory.setHost(hostAndPort[0]);
+            //amqp协议默认格式：amqp://user:pass@host:10000/vhost ,更多内容参考：https://www.rabbitmq.com/uri-spec.html
+            if (server.startsWith(AMQP_PREFIX)) {
+                factory.setUri(server);
             } else {
-                factory.setHost(hostAndPort[0]);
-                factory.setPort(Integer.parseInt(hostAndPort[1]));
+                // 解析server，生成host+port，默认格式：rabbit://localhost:5672
+                String[] hostAndPort = server.split("//")[1].split(":");
+                if (hostAndPort.length == 1) {
+                    factory.setHost(hostAndPort[0]);
+                } else {
+                    factory.setHost(hostAndPort[0]);
+                    factory.setPort(Integer.parseInt(hostAndPort[1]));
+                }
             }
         } catch (Exception e) {
-            factory.setHost("localhost");
+            e.printStackTrace();
+            throw new IllegalStateException("Connection RabbitMQ failed！");
         }
         return factory;
     }
