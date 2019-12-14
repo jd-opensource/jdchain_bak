@@ -76,6 +76,15 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 	}
 
 	@Override
+	public StateSnapshot getGenisStateSnapshot(String realmName) {
+		RealmProcessor realmProcessor = realmProcessorMap.get(realmName);
+		if (realmProcessor == null) {
+			throw new IllegalArgumentException("RealmName is not init!");
+		}
+		return realmProcessor.getGenisStateSnapshot();
+	}
+
+	@Override
 	public AsyncFuture<byte[]> processOrdered(int messageId, byte[] message, String realmName, String batchId) {
 		// TODO 要求messageId在同一个批次不重复，但目前暂不验证
 		RealmProcessor realmProcessor = realmProcessorMap.get(realmName);
@@ -207,6 +216,10 @@ public class ConsensusMessageDispatcher implements MessageHandle {
 
 		public StateSnapshot getStateSnapshot() {
 			return new BlockStateSnapshot(((TransactionBatchProcessor)getTxBatchProcess()).getPreLatestBlockHeight(), ((TransactionBatchProcessor)getTxBatchProcess()).getPrevLatestBlockHash());
+		}
+
+		public StateSnapshot getGenisStateSnapshot() {
+			return new BlockStateSnapshot(0, ((TransactionBatchProcessor)getTxBatchProcess()).getGenisBlockHash());
 		}
 
 		public AsyncFuture<byte[]> schedule(TransactionRequest txRequest) {
