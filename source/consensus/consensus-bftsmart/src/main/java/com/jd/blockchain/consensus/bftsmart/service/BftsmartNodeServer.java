@@ -10,6 +10,7 @@ import bftsmart.consensus.app.BatchAppResultImpl;
 import bftsmart.tom.*;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.service.*;
+import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.transaction.TxResponseMessage;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
@@ -363,6 +364,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         List<byte[]> responseLinkedList = new ArrayList<>();
         StateSnapshot newStateSnapshot = null;
         StateSnapshot preStateSnapshot = null;
+        StateSnapshot genisStateSnapshot = null;
         BatchAppResultImpl result = null;
         String batchId = null;
         int msgId = 0;
@@ -370,7 +372,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         try {
 
             batchId = messageHandle.beginBatch(realmName);
-
+            genisStateSnapshot = messageHandle.getGenisStateSnapshot(realmName);
             preStateSnapshot = messageHandle.getStateSnapshot(realmName);
 
             if (preStateSnapshot == null) {
@@ -388,7 +390,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 responseLinkedList.add(asyncFutureLinkedList.get(i).get());
             }
 
-            result = new BatchAppResultImpl(responseLinkedList, newStateSnapshot.getSnapshot(), batchId);
+            result = new BatchAppResultImpl(responseLinkedList, newStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 0);
 
         } catch (Exception e) {
@@ -397,7 +399,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 responseLinkedList.add(createAppResponse(commands[i],TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK));
             }
 
-            result = new BatchAppResultImpl(responseLinkedList,preStateSnapshot.getSnapshot(), batchId);
+            result = new BatchAppResultImpl(responseLinkedList,preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 1);
         }
 
@@ -415,20 +417,23 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return BinaryProtocol.encode(resp, TransactionResponse.class);
     }
 
-    //update batch messages to block full rollback state
-    public List<byte[]> updateAppResponses(List<byte[]> asyncResponseLinkedList) {
+    public List<byte[]> updateAppResponses(List<byte[]> asyncResponseLinkedList, byte[] commonHash, boolean isConsistent) {
         List<byte[]> updatedResponses = new ArrayList<>();
+        TxResponseMessage resp = null;
 
         for(int i = 0; i < asyncResponseLinkedList.size(); i++) {
             TransactionResponse txResponse = BinaryProtocol.decode(asyncResponseLinkedList.get(i));
-            TxResponseMessage resp = new TxResponseMessage(txResponse.getContentHash());
+            if (isConsistent) {
+                resp = new TxResponseMessage(txResponse.getContentHash());
+            }
+            else {
+                resp = new TxResponseMessage(new HashDigest(commonHash));
+            }
             resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
             updatedResponses.add(BinaryProtocol.encode(resp, TransactionResponse.class));
-        }
-
-        return updatedResponses;
     }
-
+    return updatedResponses;
+}
     /**
      *
      *  Decision has been made at the consensus stage， commit block
