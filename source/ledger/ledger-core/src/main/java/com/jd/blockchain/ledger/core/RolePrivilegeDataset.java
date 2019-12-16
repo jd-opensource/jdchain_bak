@@ -14,10 +14,10 @@ import com.jd.blockchain.ledger.RolePrivileges;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionPrivilege;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
-import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
+import com.jd.blockchain.utils.DataEntry;
 
 public class RolePrivilegeDataset implements Transactional, MerkleProvable, RolePrivilegeSettings {
 
@@ -30,7 +30,8 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 
 	public RolePrivilegeDataset(HashDigest merkleRootHash, CryptoSetting cryptoSetting, String prefix,
 			ExPolicyKVStorage exPolicyStorage, VersioningKVStorage verStorage, boolean readonly) {
-		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, prefix, exPolicyStorage, verStorage, readonly);
+		dataset = new MerkleDataSet(merkleRootHash, cryptoSetting, Bytes.fromString(prefix), exPolicyStorage,
+				verStorage, readonly);
 	}
 
 	@Override
@@ -255,7 +256,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 	public RolePrivileges getRolePrivilege(String roleName) {
 		// 只返回最新版本；
 		Bytes key = encodeKey(roleName);
-		VersioningKVEntry kv = dataset.getDataEntry(key);
+		DataEntry<Bytes, byte[]> kv = dataset.getDataEntry(key);
 		if (kv == null) {
 			return null;
 		}
@@ -265,7 +266,7 @@ public class RolePrivilegeDataset implements Transactional, MerkleProvable, Role
 
 	@Override
 	public RolePrivileges[] getRolePrivileges(int index, int count) {
-		VersioningKVEntry[] kvEntries = dataset.getLatestDataEntries(index, count);
+		DataEntry<Bytes, byte[]>[] kvEntries = dataset.getLatestDataEntries(index, count);
 		RolePrivileges[] pns = new RolePrivileges[kvEntries.length];
 		PrivilegeSet privilege;
 		for (int i = 0; i < pns.length; i++) {

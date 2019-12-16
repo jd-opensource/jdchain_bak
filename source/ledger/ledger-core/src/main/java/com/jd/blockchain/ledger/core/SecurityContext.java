@@ -1,12 +1,5 @@
 package com.jd.blockchain.ledger.core;
 
-import java.util.Set;
-
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.LedgerPermission;
-import com.jd.blockchain.ledger.LedgerSecurityException;
-import com.jd.blockchain.ledger.TransactionPermission;
-
 public class SecurityContext {
 
 	private static ThreadLocal<SecurityPolicy> policyHolder = new ThreadLocal<SecurityPolicy>();

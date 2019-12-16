@@ -5,12 +5,10 @@ import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
 import java.util.Arrays;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoBytes;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.utils.classic.RIPEMD160Utils;
-import com.jd.blockchain.utils.security.RipeMD160Utils;
 
 public class RIPEMD160HashFunction implements HashFunction {
 
@@ -19,7 +17,7 @@ public class RIPEMD160HashFunction implements HashFunction {
 	private static final int DIGEST_BYTES = 160 / 8;
 
 	private static final int DIGEST_LENGTH = ALGORYTHM_CODE_SIZE + DIGEST_BYTES;
-	
+
 	RIPEMD160HashFunction() {
 	}
 
@@ -30,12 +28,21 @@ public class RIPEMD160HashFunction implements HashFunction {
 
 	@Override
 	public HashDigest hash(byte[] data) {
-
 		if (data == null) {
 			throw new CryptoException("data is null!");
 		}
 
 		byte[] digestBytes = RIPEMD160Utils.hash(data);
+		return new HashDigest(RIPEMD160, digestBytes);
+	}
+
+	@Override
+	public HashDigest hash(byte[] data, int offset, int len) {
+		if (data == null) {
+			throw new CryptoException("data is null!");
+		}
+
+		byte[] digestBytes = RIPEMD160Utils.hash(data, offset, len);
 		return new HashDigest(RIPEMD160, digestBytes);
 	}
 
@@ -59,5 +66,5 @@ public class RIPEMD160HashFunction implements HashFunction {
 			throw new CryptoException("digestBytes is invalid!");
 		}
 	}
-	
+
 }

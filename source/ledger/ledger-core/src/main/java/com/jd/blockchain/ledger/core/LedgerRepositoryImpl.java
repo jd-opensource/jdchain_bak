@@ -374,6 +374,10 @@ class LedgerRepositoryImpl implements LedgerRepository {
 		return new LedgerDataset(adminDataset, userAccountSet, dataAccountSet, contractAccountSet, true);
 	}
 
+	public synchronized void resetNextBlockEditor() {
+		this.nextBlockEditor = null;
+	}
+
 	@Override
 	public synchronized LedgerEditor createNextBlock() {
 		if (closed) {

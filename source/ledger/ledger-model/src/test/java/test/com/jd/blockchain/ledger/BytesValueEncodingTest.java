@@ -28,9 +28,9 @@ public class BytesValueEncodingTest {
         BytesValue longBytesVal2 = BytesValueEncoding.encodeSingle(longVal, long.class);
         BytesValue longBytesVal3 = BytesValueEncoding.encodeSingle(longVal, Long.class);
 
-        assertEquals(longBytesVal1.getValue(), longBytesVal2.getValue());
+        assertEquals(longBytesVal1.getBytes(), longBytesVal2.getBytes());
         assertEquals(longBytesVal1.getType(), longBytesVal2.getType());
-        assertEquals(longBytesVal2.getValue(), longBytesVal3.getValue());
+        assertEquals(longBytesVal2.getBytes(), longBytesVal3.getBytes());
         assertEquals(longBytesVal2.getType(), longBytesVal3.getType());
 
         long resolveLongVal1 = (long)BytesValueEncoding.decode(longBytesVal1);

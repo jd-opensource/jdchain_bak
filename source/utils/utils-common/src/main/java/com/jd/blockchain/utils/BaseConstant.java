@@ -1,7 +1,5 @@
 package com.jd.blockchain.utils;
 
-import java.io.File;
-
 /**
  *
  * @author zhaogw

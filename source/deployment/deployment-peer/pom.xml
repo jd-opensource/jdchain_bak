@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>deployment</artifactId>
-		<version>1.1.1-PACK20191209</version>
+		<version>1.1.2.RELEASE</version>
 	</parent>
 	<artifactId>deployment-peer</artifactId>
 
@@ -99,6 +99,28 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<!-- 生成SHA-256校验文件 -->
+			<plugin>
+				<groupId>net.nicoulaj.maven.plugins</groupId>
+				<artifactId>checksum-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>artifacts</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<algorithms>
+						<algorithm>SHA-256</algorithm> <!--采用SHA-256算法，还支持其他算法-->
+					</algorithms>
+					<file>${project.basedir}/target/deployment-peer-${project.version}.zip</file><!--给zip文件进行加密-->
+					<xmlSummary>true</xmlSummary><!--生成XML格式的md5文件-->
+					<xmlSummaryFile>${project.basedir}/target/SHA-256.xml</xmlSummaryFile>
+				</configuration>
 			</plugin>
 
 		</plugins>

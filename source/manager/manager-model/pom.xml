@@ -5,7 +5,7 @@
     <parent>
         <artifactId>manager</artifactId>
         <groupId>com.jd.blockchain</groupId>
-        <version>1.1.1-PACK20191209</version>
+        <version>1.1.2.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -65,6 +65,7 @@
         <dependency>
             <groupId>org.rocksdb</groupId>
             <artifactId>rocksdbjni</artifactId>
+            <version>${rocksdb.version}</version>
         </dependency>
 
         <dependency>

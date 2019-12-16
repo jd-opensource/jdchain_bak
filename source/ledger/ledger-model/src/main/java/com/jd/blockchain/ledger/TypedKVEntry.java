@@ -1,6 +1,6 @@
 package com.jd.blockchain.ledger;
 
-public interface KVDataEntry {
+public interface TypedKVEntry {
 
 	/**
 	 * 键名；
@@ -32,5 +32,13 @@ public interface KVDataEntry {
 	 * @return
 	 */
 	Object getValue();
+	
+	default long longValue() {
+		if (getType() == DataType.INT64) {
+			Object value = getValue();
+			return value == null ? 0 : (long) value;
+		}
+		throw new IllegalStateException(String.format("Expected type [%s], but [%s]", DataType.INT64, getType()));
+	}
 	
 }

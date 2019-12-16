@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>storage</artifactId>
-		<version>1.1.1-PACK20191209</version>
+		<version>1.1.2.RELEASE</version>
 	</parent>
 	<artifactId>storage-rocksdb</artifactId>
 
@@ -25,6 +25,7 @@
 		<dependency>
 			<groupId>org.rocksdb</groupId>
 			<artifactId>rocksdbjni</artifactId>
+			<version>${rocksdb.version}</version>
 		</dependency>
 
 		<dependency>
@@ -38,7 +39,7 @@
 		<!-- <dependency>
 			<groupId>org.rocksdb</groupId>
 			<artifactId>rocksdbjni-osx</artifactId>
-			<version>5.15.10</version>
+			<version>${rocksdb.version}</version>
 		</dependency> -->
 	</dependencies>
 </project>

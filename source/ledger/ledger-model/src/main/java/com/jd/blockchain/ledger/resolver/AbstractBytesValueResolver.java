@@ -47,7 +47,7 @@ public abstract class AbstractBytesValueResolver implements BytesValueResolver {
         if (!isSupport(dataType)) {
             throw new IllegalStateException(String.format("Un-support encode DataType[%s] Object !!!", dataType.name()));
         }
-        return decode(value.getValue());
+        return decode(value.getBytes());
     }
 
     protected abstract Object decode(Bytes value);

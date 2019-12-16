@@ -1,81 +1,72 @@
 package com.jd.blockchain.ledger.core;
 
-import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BytesData;
 import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.ContractInfo;
-import com.jd.blockchain.ledger.MerkleProof;
+import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.utils.Bytes;
 
-public class ContractAccount implements ContractInfo {
+public class ContractAccount extends AccountDecorator implements ContractInfo {
 
-	private static final Bytes CONTRACT_INFO_PREFIX = Bytes.fromString("INFO" + LedgerConsts.KEY_SEPERATOR);
+	private static final String CONTRACT_INFO_PREFIX = "INFO" + LedgerConsts.KEY_SEPERATOR;
 
-	private static final Bytes CHAIN_CODE_KEY = Bytes.fromString("CHAIN-CODE");
+	private static final String CHAIN_CODE_KEY = "CHAIN-CODE";
 
-	private MerkleAccount accBase;
-
-	public ContractAccount(MerkleAccount accBase) {
-		this.accBase = accBase;
+	public ContractAccount(CompositeAccount mklAccount) {
+		super(mklAccount);
 	}
 
 	@Override
 	public Bytes getAddress() {
-		return accBase.getAddress();
+		return getID().getAddress();
 	}
 
 	@Override
 	public PubKey getPubKey() {
-		return accBase.getPubKey();
+		return getID().getPubKey();
 	}
 
-	@Override
-	public HashDigest getRootHash() {
-		return accBase.getRootHash();
-	}
-
-	public MerkleProof getChaincodeProof() {
-		return accBase.getProof(CHAIN_CODE_KEY);
-	}
-
-	public MerkleProof getPropertyProof(Bytes key) {
-		return accBase.getProof(encodePropertyKey(key));
-	}
+//	public MerkleProof getChaincodeProof() {
+//		return getHeaders().getProof(CHAIN_CODE_KEY);
+//	}
+//
+//	public MerkleProof getPropertyProof(Bytes key) {
+//		return getHeaders().getProof(encodePropertyKey(key));
+//	}
 
 	public long setChaincode(byte[] chaincode, long version) {
-		BytesValue bytesValue = BytesData.fromBytes(chaincode);
-		return accBase.setBytes(CHAIN_CODE_KEY, bytesValue, version);
+		TypedValue bytesValue = TypedValue.fromBytes(chaincode);
+		return getHeaders().setValue(CHAIN_CODE_KEY, bytesValue, version);
 	}
 
 	public byte[] getChainCode() {
-		return accBase.getBytes(CHAIN_CODE_KEY).getValue().toBytes();
+		return getHeaders().getValue(CHAIN_CODE_KEY).getBytes().toBytes();
 	}
 
 	public byte[] getChainCode(long version) {
-		return accBase.getBytes(CHAIN_CODE_KEY, version).getValue().toBytes();
+		return getHeaders().getValue(CHAIN_CODE_KEY, version).getBytes().toBytes();
 	}
 
 	public long getChaincodeVersion() {
-		return accBase.getVersion(CHAIN_CODE_KEY);
+		return getHeaders().getVersion(CHAIN_CODE_KEY);
 	}
 
-	public long setProperty(Bytes key, String value, long version) {
-		BytesValue bytesValue = BytesData.fromText(value);
-		return accBase.setBytes(encodePropertyKey(key), bytesValue, version);
+	public long setProperty(String key, String value, long version) {
+		TypedValue bytesValue = TypedValue.fromText(value);
+		return getHeaders().setValue(encodePropertyKey(key), bytesValue, version);
 	}
 
-	public String getProperty(Bytes key) {
-		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key));
-		return BytesData.toText(bytesValue);
+	public String getProperty(String key) {
+		BytesValue bytesValue = getHeaders().getValue(encodePropertyKey(key));
+		return TypedValue.wrap(bytesValue).stringValue();
 	}
 
-	public String getProperty(Bytes key, long version) {
-		BytesValue bytesValue = accBase.getBytes(encodePropertyKey(key), version);
-		return BytesData.toText(bytesValue);
+	public String getProperty(String key, long version) {
+		BytesValue bytesValue = getHeaders().getValue(encodePropertyKey(key), version);
+		return TypedValue.wrap(bytesValue).stringValue();
 	}
 
-	private Bytes encodePropertyKey(Bytes key) {
+	private String encodePropertyKey(String key) {
 		return CONTRACT_INFO_PREFIX.concat(key);
 	}
 

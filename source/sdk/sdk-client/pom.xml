@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>sdk</artifactId>
-		<version>1.1.1-PACK20191209</version>
+		<version>1.1.2.RELEASE</version>
 	</parent>
 	<artifactId>sdk-client</artifactId>
 

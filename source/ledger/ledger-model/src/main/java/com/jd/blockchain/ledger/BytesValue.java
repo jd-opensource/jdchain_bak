@@ -29,6 +29,6 @@ public interface BytesValue {
 	 * @return
 	 */
 	@DataField(order = 1, primitiveType = PrimitiveType.BYTES)
-	Bytes getValue();
+	Bytes getBytes();
 	
 }

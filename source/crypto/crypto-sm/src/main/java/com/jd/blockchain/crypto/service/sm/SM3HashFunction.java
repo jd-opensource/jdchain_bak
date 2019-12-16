@@ -16,7 +16,7 @@ public class SM3HashFunction implements HashFunction {
 	private static final int DIGEST_BYTES = 256 / 8;
 
 	private static final int DIGEST_LENGTH = CryptoBytes.ALGORYTHM_CODE_SIZE + DIGEST_BYTES;
-	
+
 	SM3HashFunction() {
 	}
 
@@ -27,12 +27,21 @@ public class SM3HashFunction implements HashFunction {
 
 	@Override
 	public HashDigest hash(byte[] data) {
-
 		if (data == null) {
 			throw new CryptoException("data is null!");
 		}
 
 		byte[] digestBytes = SM3Utils.hash(data);
+		return new HashDigest(SM3, digestBytes);
+	}
+
+	@Override
+	public HashDigest hash(byte[] data, int offset, int len) {
+		if (data == null) {
+			throw new CryptoException("data is null!");
+		}
+
+		byte[] digestBytes = SM3Utils.hash(data, offset, len);
 		return new HashDigest(SM3, digestBytes);
 	}
 

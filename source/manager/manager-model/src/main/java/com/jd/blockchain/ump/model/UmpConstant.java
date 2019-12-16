@@ -16,7 +16,7 @@ public class UmpConstant {
 
     public static final String PRIVATE_KEY_SUFFIX = ".priv";
 
-    public static final String PUBLIC_KEY_SUFFIX = ".priv";
+    public static final String PUBLIC_KEY_SUFFIX = ".pub";
 
     public static final String PWD_SUFFIX = ".pwd";
 
@@ -134,6 +134,6 @@ public class UmpConstant {
     public static final String ALL_LEDGER="all_ledger";
     public static final String DELIMETER_MINUS = "-";
     public static final String SCHEMA_PREFIX = "schema_";
-    public static final String SCHEMA_RETRIEVAL_URL = "retrieval.schemaUrl";
-    public static final String TASK_RETRIEVAL_URL = "retrieval.taskUrl";
+    public static final String SCHEMA_RETRIEVAL_URL = "schema.retrieval.url";
+    public static final String TASK_RETRIEVAL_URL = "task.retrieval.url";
 }

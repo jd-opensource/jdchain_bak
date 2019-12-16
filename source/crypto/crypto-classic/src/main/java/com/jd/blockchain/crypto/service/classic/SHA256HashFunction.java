@@ -5,12 +5,10 @@ import static com.jd.blockchain.crypto.CryptoBytes.ALGORYTHM_CODE_SIZE;
 import java.util.Arrays;
 
 import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.CryptoBytes;
 import com.jd.blockchain.crypto.CryptoException;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.utils.classic.SHA256Utils;
-import com.jd.blockchain.utils.security.ShaUtils;
 
 public class SHA256HashFunction implements HashFunction {
 
@@ -30,12 +28,21 @@ public class SHA256HashFunction implements HashFunction {
 
 	@Override
 	public HashDigest hash(byte[] data) {
-
 		if (data == null) {
 			throw new CryptoException("data is null!");
 		}
 
 		byte[] digestBytes = SHA256Utils.hash(data);
+		return new HashDigest(SHA256, digestBytes);
+	}
+	
+	@Override
+	public HashDigest hash(byte[] data, int offset, int len) {
+		if (data == null) {
+			throw new CryptoException("data is null!");
+		}
+
+		byte[] digestBytes = SHA256Utils.hash(data, offset, len);
 		return new HashDigest(SHA256, digestBytes);
 	}
 

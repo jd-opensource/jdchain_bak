@@ -7,10 +7,10 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
-import com.jd.blockchain.storage.service.VersioningKVEntry;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
+import com.jd.blockchain.utils.DataEntry;
 
 /**
  * {@link BufferedKVStorage} 缓冲写入的KV存储；<br>
@@ -77,9 +77,9 @@ public class BufferedKVStorage implements VersioningKVStorage, ExPolicyKVStorage
 		}
 		return ws.getLatestVersion();
 	}
-
+	
 	@Override
-	public VersioningKVEntry getEntry(Bytes key, long version) {
+	public DataEntry<Bytes, byte[]> getEntry(Bytes key, long version) {
 		VersioningWritingSet ws = versioningCache.get(key);
 		if (ws == null) {
 			return origVersioningStorage.getEntry(key, version);
@@ -484,7 +484,7 @@ public class BufferedKVStorage implements VersioningKVStorage, ExPolicyKVStorage
 			return startingVersion;
 		}
 
-		public VersioningKVEntry getEntry(long version) {
+		public DataEntry<Bytes, byte[]> getEntry(long version) {
 			byte[] value = get(version);
 			if (value == null) {
 				return null;
@@ -505,7 +505,7 @@ public class BufferedKVStorage implements VersioningKVStorage, ExPolicyKVStorage
 		}
 	}
 
-	private static class VersioningKVData implements VersioningKVEntry {
+	private static class VersioningKVData implements DataEntry<Bytes, byte[]> {
 
 		private Bytes key;
 

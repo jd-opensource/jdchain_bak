@@ -11,7 +11,7 @@
 
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
-	<version>1.1.1-PACK20191209</version>
+	<version>1.1.2.RELEASE</version>
 	<packaging>pom</packaging>
 	<description>jdchain</description>
 
@@ -35,9 +35,9 @@
 	</modules>
 
 	<properties>
-		<bft-smart.version>0.3.0.RELEASE</bft-smart.version>
-		<data-explorer.version>1.1.0.RELEASE</data-explorer.version>
-		<manager-explorer.version>1.1.0.RELEASE</manager-explorer.version>
+		<bft-smart.version>0.4.0.RELEASE</bft-smart.version>
+		<data-explorer.version>1.1.2.RELEASE</data-explorer.version>
+		<manager-explorer.version>1.1.2.RELEASE</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
 		<mongo.driver.version>3.3.0</mongo.driver.version>
 		<shiro.version>1.2.2</shiro.version>
@@ -67,7 +67,7 @@
 		<disruptor.version>3.3.6</disruptor.version>
 		<kryo.version>3.0.1</kryo.version>
 		<jedis.version>2.9.0</jedis.version>
-		<rocksdb.version>5.15.10</rocksdb.version>
+		<rocksdb.version>6.3.6</rocksdb.version>
 		<zookeeper.version>3.4.6</zookeeper.version>
 		<javaparser.version>3.5.12</javaparser.version>
 		<ehcache.version>3.5.3</ehcache.version>
@@ -515,7 +515,63 @@
 				<javadoc.opts>-Xdoclint:none</javadoc.opts>
 			</properties>
 		</profile>
+
+		<!-- mvn repository;-->
+		<profile>
+			<id>sonatype-oss-release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.1.2</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 </project>
