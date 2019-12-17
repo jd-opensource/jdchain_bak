@@ -4,33 +4,33 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
-		<artifactId>deployment</artifactId>
-		<version>1.1.2.RELEASE</version>
+		<artifactId>deploy-root</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>deployment-peer</artifactId>
+	<artifactId>deploy-peer</artifactId>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>peer</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>runtime-modular</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>runtime-modular-booter</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>manager-booter</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-composite</artifactId>
 			<version>${project.version}</version>
@@ -39,16 +39,16 @@
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-service</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-redis</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-rocksdb</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 
 		<!-- <dependency> <groupId>com.jd.blockchain</groupId> <artifactId>gateway</artifactId> 

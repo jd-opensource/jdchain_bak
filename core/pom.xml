@@ -6,6 +6,7 @@
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>jdchain-parent</artifactId>
 		<version>1.1.1.RELEASE</version>
+		<relativePath>../project/parent</relativePath>
 	</parent>
 
 	<groupId>com.jd.blockchain</groupId>
@@ -18,6 +19,7 @@
 	</properties>
 
 	<modules>
+		<module>../framework</module>
 		<module>consensus</module>
 		<module>contract</module>
 		<module>crypto</module>

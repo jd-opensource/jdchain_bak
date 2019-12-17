@@ -17,7 +17,7 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>ledger-rpc</artifactId>
+			<artifactId>sdk-rpc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

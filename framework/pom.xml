@@ -6,6 +6,7 @@
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>jdchain-parent</artifactId>
 		<version>1.1.1.RELEASE</version>
+		<relativePath>../project/parent</relativePath>
 	</parent>
 
 	<artifactId>jdchain-framework</artifactId>

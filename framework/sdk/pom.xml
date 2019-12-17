@@ -10,6 +10,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>sdk-rpc</module>
 		<module>sdk-base</module>
 		<module>sdk-client</module>
     </modules>

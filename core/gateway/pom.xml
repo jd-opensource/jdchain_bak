@@ -28,8 +28,8 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>ledger-rpc</artifactId>
-			<version>${project.version}</version>
+			<artifactId>sdk-rpc</artifactId>
+			<version>${framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>data-explorer</artifactId>
-			<version>1.1.1.RELEASE</version>
+			<version>1.1.2.RELEASE</version>
 		</dependency>
 
 		<dependency>
