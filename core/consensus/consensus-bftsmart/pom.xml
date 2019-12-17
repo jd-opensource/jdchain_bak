@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>bft-smart</artifactId>
-			<version>0.3.0.RELEASE</version>
+			<version>${bftsmart.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>

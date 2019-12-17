@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>data-explorer</artifactId>
-			<version>1.1.2.RELEASE</version>
+			<version>${explorer.version}</version>
 		</dependency>
 
 		<dependency>

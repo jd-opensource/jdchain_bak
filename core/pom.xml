@@ -15,11 +15,18 @@
 	<packaging>pom</packaging>
 
 	<properties>
+		<bftsmart.version>0.3.0.RELEASE</bftsmart.version>
+
 		<framework.version>1.2.0-SNAPSHOT</framework.version>
+		<explorer.version>1.1.2.RELEASE</explorer.version>
 	</properties>
 
 	<modules>
+		<module>../libs/bft-smart</module>
+
 		<module>../framework</module>
+		<module>../explorer</module>
+
 		<module>consensus</module>
 		<module>contract</module>
 		<module>crypto</module>
