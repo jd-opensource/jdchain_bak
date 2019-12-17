@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
-		<artifactId>jdchain-root</artifactId>
-		<version>1.1.2.RELEASE</version>
+		<artifactId>jdchain-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>gateway</artifactId>
 
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>consensus-framework</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>sdk-base</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 
 		<dependency>
@@ -46,30 +46,31 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>data-explorer</artifactId>
+			<version>1.1.1.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-web</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>crypto-framework</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>crypto-classic</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>crypto-sm</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 
 		<dependency>

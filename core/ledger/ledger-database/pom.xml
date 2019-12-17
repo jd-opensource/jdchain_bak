@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
-		<artifactId>ledger</artifactId>
-		<version>1.1.2.RELEASE</version>
+		<artifactId>ledger-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>ledger-core</artifactId>
+	<artifactId>ledger-database</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -33,12 +33,12 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-service</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>contract-framework</artifactId>
-			<version>${project.version}</version>
+			<version>${framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
