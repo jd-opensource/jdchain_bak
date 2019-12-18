@@ -10,10 +10,10 @@
 	<description>jdchain root project</description>
 
 	<modules>
+		<module>project</module>
 		<module>framework</module>
 		<module>core</module>
 		<module>deploy</module>
-		<module>project</module>
 		<module>test</module>
 		<module>sample</module>
 	</modules>

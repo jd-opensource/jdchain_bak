@@ -1,17 +1,32 @@
 package test.com.jd.blockchain.sdk.test;
 
-import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.*;
-import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.sdk.BlockchainService;
-import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
-import com.jd.blockchain.tools.keygen.KeyGenCommand;
-import com.jd.blockchain.utils.net.NetworkAddress;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.EndpointRequest;
+import com.jd.blockchain.ledger.NodeRequest;
+import com.jd.blockchain.ledger.ParticipantRegisterOperation;
+import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionContent;
+import com.jd.blockchain.ledger.TransactionContentBody;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionTemplate;
+import com.jd.blockchain.sdk.BlockchainService;
+import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
+import com.jd.blockchain.utils.net.NetworkAddress;
 
 /**
  * 注册参与方测试
