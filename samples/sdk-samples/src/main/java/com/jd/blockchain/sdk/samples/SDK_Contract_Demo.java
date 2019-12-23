@@ -6,12 +6,12 @@ import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 import com.jd.blockchain.contract.TransferContract;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.transaction.LongValueHolder;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.transaction.GenericValueHolder;
+import com.jd.blockchain.transaction.LongValueHolder;
 import com.jd.blockchain.utils.Bytes;
 
 public class SDK_Contract_Demo extends SDK_Base_Demo {

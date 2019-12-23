@@ -17,14 +17,12 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>ledger-model</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>crypto-framework</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 

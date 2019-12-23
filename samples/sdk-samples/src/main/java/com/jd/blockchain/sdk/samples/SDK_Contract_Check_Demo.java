@@ -1,13 +1,16 @@
 package com.jd.blockchain.sdk.samples;
 
-import com.jd.blockchain.contract.TransferContract;
-import com.jd.blockchain.ledger.*;
+import static com.jd.blockchain.sdk.samples.SDKDemo_Constant.readChainCodes;
+import static com.jd.blockchain.transaction.ContractReturnValue.decode;
+
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.chain.contracts.ContractTestInf;
-
-import static com.jd.blockchain.sdk.samples.SDKDemo_Constant.readChainCodes;
-import static com.jd.blockchain.transaction.ContractReturnValue.decode;
 
 public class SDK_Contract_Check_Demo extends SDK_Base_Demo {
 

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>test</artifactId>
-		<version>1.0.1.RELEASE</version>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>test-contract</artifactId>
 
@@ -13,22 +13,22 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>contract-jvm</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>ledger-core</artifactId>
-			<version>${project.version}</version>
+			<artifactId>ledger-database</artifactId>
+			<version>${core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-rocksdb</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>crypto-classic</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+			<version>${framework.version}</version>
+		</dependency> -->
 	</dependencies>
 </project>

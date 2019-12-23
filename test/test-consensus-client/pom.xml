@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>test</artifactId>
-		<version>1.1.2.RELEASE</version>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>test-consensus-client</artifactId>
 
@@ -29,25 +29,19 @@
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>consensus-bftsmart</artifactId>
-			<version>${project.version}</version>
+			<version>${core.version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-http</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+			<version>${framework.version}</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>com.jd.ump</groupId>
-			<artifactId>profiler</artifactId>
-			<version>4.0.5</version>
-		</dependency>
-		-->
+		
 	</dependencies>
 	<build>
 		<plugins>
