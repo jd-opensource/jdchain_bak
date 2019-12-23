@@ -81,31 +81,6 @@ JD Chain 主要部署组件包括以下几种：
 
 4. 命令操作
 
-- 编译安装 explorer 到本地 maven 仓库；
-```sh
-    $ git clone git@github.com:blockchain-jd-com/explorer.git explorer
-
-    $ cd explorer
-
-    $ git checkout master
-
-    $ mvn clean install
-    
-```
-- 编译安装 bftsmart 到本地 maven 仓库；
-    - 需要手动先安装一个第三方包，位于仓库根目录下 lib/core-0.1.4.jar 
-```sh
-    $ git clone git@github.com:blockchain-jd-com/bftsmart.git bftsmart
-
-    $ cd bftsmart
-
-    $ git checkout master
-    
-    $ mvn install:install-file -Dfile=lib/core-0.1.4.jar -DgroupId=com.yahoo.ycsb -DartifactId=core -Dversion=0.1.4 -Dpackaging=jar
-
-    $ mvn clean install
-    
-```
 - 编译 jdchain 工程；
     - 当编译完成后，共识节点的安装包位于 "仓库根目录"/source/deployment/deployment-peer/target/jdchain-peer-1.0.1.RELEASE.zip
     - 当编译完成后，网关节点的安装包位于 "仓库根目录"/source/deployment/deployment-gateway/target/jdchain-gateway-1.0.1.RELEASE.zip
@@ -113,10 +88,22 @@ JD Chain 主要部署组件包括以下几种：
 ```sh
     $ git clone git@github.com:blockchain-jd-com/jdchain.git jdchain
 
-    $ cd jdchain/source
+    $ cd jdchain
 
-    $ git checkout master
+    $ git checkout develop
 
-    $ mvn clean package
+    $ chmod +x build/*.sh
+	
+	# 执行完整的构建，包括执行”集成测试“和”打包“两部分；提供两个参数：指定 --skipTests 参数则跳过集成测试部分； 指定 --skipUpdate 参数则跳过更新子模块仓库源码的操作；
+	$ build/build.sh
+	
+	# 跳过集成测试
+	$ build/build.sh --skipTests
+	
+	# 跳过更新子模块仓库源码
+	$ build/build.sh --skipUpdate
+	
+	# 只执行集成测试；
+	$ build/test.sh
     
 ```
