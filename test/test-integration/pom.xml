@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>test</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>test-integration</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>peer</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-rocksdb</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-redis</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>gateway</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-initializer</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>sdk-client</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.nats</groupId>
+			<artifactId>jnats</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+		</dependency>
+
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

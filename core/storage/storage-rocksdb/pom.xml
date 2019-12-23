@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>storage-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>storage-rocksdb</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>utils-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.rocksdb</groupId>
+			<artifactId>rocksdbjni</artifactId>
+			<version>${rocksdb.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<!-- <dependency>
+			<groupId>org.rocksdb</groupId>
+			<artifactId>rocksdbjni-osx</artifactId>
+			<version>${rocksdb.version}</version>
+		</dependency> -->
+	</dependencies>
+</project>

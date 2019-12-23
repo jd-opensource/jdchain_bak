@@ -1,0 +1,412 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.6.RELEASE</version>
+	</parent>
+
+	<groupId>com.jd.blockchain</groupId>
+	<artifactId>jdchain-dependencies</artifactId>
+	<version>1.1.1.RELEASE</version>
+	<packaging>pom</packaging>
+	<description>jdchain-dependencies</description>
+
+
+	<properties>
+
+		<bft-smart.version>0.3.0.RELEASE</bft-smart.version>
+		<bouncycastle.version>1.61</bouncycastle.version>
+		<bft-smart.version>1.61</bft-smart.version>
+		<commons-io.version>2.4</commons-io.version>
+		<mongo.driver.version>3.3.0</mongo.driver.version>
+		<shiro.version>1.2.2</shiro.version>
+		<aspectj.version>1.8.8</aspectj.version>
+		<fastjson.version>1.2.60</fastjson.version>
+		<!-- <asm.version>5.2</asm.version> -->
+		<procyon.version>0.5.35</procyon.version>
+		<druid.version>1.0.18</druid.version>
+		<commons.fileupload.version>1.2.2</commons.fileupload.version>
+		<mybatis.spring.version>1.2.4</mybatis.spring.version>
+		<mybatis.version>3.3.0</mybatis.version>
+		<mysql.connector.version>5.1.37</mysql.connector.version>
+
+		<servlet.version>3.1.0</servlet.version>
+		<jstl.version>1.2</jstl.version>
+
+		<log4j.version>2.10.0</log4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
+
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.10.19</mockito.version>
+
+		<httpclient.version>4.5.1</httpclient.version>
+		<jetty.version>9.4.17.v20190418</jetty.version>
+		<shiro.version>1.2.3</shiro.version>
+
+		<disruptor.version>3.3.6</disruptor.version>
+		<kryo.version>3.0.1</kryo.version>
+		<jedis.version>2.9.0</jedis.version>
+		<rocksdb.version>6.3.6</rocksdb.version>
+		<zookeeper.version>3.4.6</zookeeper.version>
+		<javaparser.version>3.5.12</javaparser.version>
+		<ehcache.version>3.5.3</ehcache.version>
+		<cache-api.version>1.1.0</cache-api.version>
+		<commons-io.version>2.4</commons-io.version>
+		<disruptor.version>3.4.2</disruptor.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+
+			<!-- The test dependency -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
+			</dependency>
+
+			<!-- The thirdpart dependency -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${servlet.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${jstl.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.lmax</groupId>
+				<artifactId>disruptor</artifactId>
+				<version>${disruptor.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-core</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-expressions</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-reflection</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.mstrobel</groupId>
+				<artifactId>procyon-compilertools</artifactId>
+				<version>${procyon.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>${fastjson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.javaparser</groupId>
+				<artifactId>javaparser-core</artifactId>
+				<version>${javaparser.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjtools</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+
+			<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId> 
+				<version>${asm.version}</version> </dependency> -->
+
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-io</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-http</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-util</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-xml</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-security</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>${jedis.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.rocksdb</groupId>
+				<artifactId>rocksdbjni</artifactId>
+				<version>${rocksdb.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-netty</artifactId>
+				<version>1.9.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-protobuf</artifactId>
+				<version>1.9.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-stub</artifactId>
+				<version>1.9.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>1.61</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.nats</groupId>
+				<artifactId>jnats</artifactId>
+				<version>2.2.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>net.i2p.crypto</groupId>
+						<artifactId>eddsa</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.1</version>
+			</dependency>
+
+			<!-- jar包扫描 -->
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.10</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.google.guava</groupId>
+						<artifactId>guava</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>19.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>copy-dependencies</id>
+							<phase>package</phase>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录； 
+									也可以使用“自定义文件夹/自定义文件夹 例如：a/b”，也可以使用绝对路径如：“D:\test” -->
+								<outputDirectory>${project.build.directory}/libs</outputDirectory>
+								<excludeTransitive>false</excludeTransitive>
+								<stripVersion>false</stripVersion>
+								<includeScope>runtime</includeScope>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib</classpathPrefix>
+								<useUniqueVersions>false</useUniqueVersions>
+								<!-- <mainClass></mainClass> -->
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4.1</version>
+					<executions>
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<useCache>false</useCache>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<phase>package</phase>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+							<configuration>
+								<additionalparam>${javadoc.opts}</additionalparam>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<!--&lt;!&ndash; 生成sources源码包的插件 &ndash;&gt; -->
+				<!--<plugin> -->
+				<!--<artifactId>maven-source-plugin</artifactId> -->
+				<!--<version>2.4</version> -->
+				<!--<configuration> -->
+				<!--<attach>true</attach> -->
+				<!--</configuration> -->
+				<!--<executions> -->
+				<!--<execution> -->
+				<!--<phase>package</phase> -->
+				<!--<goals> -->
+				<!--<goal>jar-no-fork</goal> -->
+				<!--</goals> -->
+				<!--</execution> -->
+				<!--</executions> -->
+				<!--</plugin> -->
+			</plugins>
+		</pluginManagement>
+
+	</build>
+
+</project>

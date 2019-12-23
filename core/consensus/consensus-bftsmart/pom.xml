@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>consensus-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>consensus-bftsmart</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>bft-smart</artifactId>
+			<version>${bftsmart.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>base</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>consensus-framework</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>utils-common</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>ledger-model</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-keygen</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <!-- <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>ledger-core</artifactId>
+            <version>${project.version}</version>
+        </dependency> -->
+	</dependencies>
+
+
+</project>

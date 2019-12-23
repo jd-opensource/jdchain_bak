@@ -1,0 +1,119 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>ledger-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>ledger-database</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>ledger-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>binary-proto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-framework</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-service</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>contract-framework</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>consensus-framework</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>contract-jvm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<!-- dependencies for test -->
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-sm</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!--<build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+		<artifactId>maven-surefire-plugin</artifactId> <version>2.5</version> <configuration> 
+		<excludes> <exclude>**/TransactionBatchProcessorTest.java</exclude> </excludes> 
+		</configuration> </plugin> </plugins> </build> -->
+
+	<!--<build> -->
+	<!--<plugins> -->
+	<!--<plugin> -->
+	<!--<groupId>org.apache.maven.plugins</groupId> -->
+	<!--<artifactId>maven-compiler-plugin</artifactId> -->
+	<!--<version>3.1</version> -->
+	<!--<configuration> -->
+	<!--<source>1.8</source> -->
+	<!--<target>1.8</target> -->
+	<!--<encoding>UTF-8</encoding> -->
+	<!--<compilerArgs> -->
+	<!--&lt;!&ndash;<arg>-verbose</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-Xlint:unchecked</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-Xlint:deprecation</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>-bootclasspath</arg>&ndash;&gt; -->
+	<!--&lt;!&ndash;<arg>${env.JAVA_HOME}/jre/lib/rt.jar</arg>&ndash;&gt; -->
+	<!--<arg>-extdirs</arg> -->
+	<!--<arg>${project.basedir}/../contract/contract-libs;$JAVA_HOME/jre/lib/ext</arg> -->
+	<!--</compilerArgs> -->
+	<!--</configuration> -->
+	<!--</plugin> -->
+	<!--</plugins> -->
+	<!--</build> -->
+</project>

@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>test</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>test-ledger</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-initializer</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>ledger-database</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-redis</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-rocksdb</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+			<version>${framework.version}</version>
+		</dependency>
+		
+	</dependencies>
+</project>

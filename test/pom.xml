@@ -1,0 +1,117 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>jdchain-core</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+		<relativePath>../core</relativePath>
+	</parent>
+
+
+	<groupId>com.jd.blockchain</groupId>
+	<artifactId>test</artifactId>
+	<version>1.2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<core.version>1.2.0-SNAPSHOT</core.version>
+	</properties>
+
+	<modules>
+		<module>../core</module>
+		<module>test-consensus-client</module>
+		<module>test-consensus-node</module>
+		<module>test-ledger</module>
+		<module>test-contract</module>
+		<module>test-integration</module>
+	</modules>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>consensus-bftsmart</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>consensus-mq</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>contract-jvm</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>contract-maven-plugin</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>crypto-adv</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>crypto-pki</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>gateway</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>peer</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>ledger-database</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>runtime-context</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>runtime-modular</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>runtime-modular-booter</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>storage-redis</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jd.blockchain</groupId>
+				<artifactId>storage-rocksdb</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+			
+			
+		</dependencies>
+
+	</dependencyManagement>
+
+</project>
