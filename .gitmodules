@@ -4,3 +4,6 @@
 [submodule "libs/bft-smart"]
 	path = libs/bft-smart
 	url = git@github.com:blockchain-jd-com/bftsmart.git
+[submodule "project"]
+	path = project
+	url = git@github.com:blockchain-jd-com/jdchain-project.git
