@@ -14,14 +14,22 @@ fi
 if [ $SUBMODULES_UPDATED == 1 ]
 then
     echo "代码库已经最新，略过更新操作。。。"
-else
-    
-    echo "---------------- 更新代码库 ----------------"
-    cd $BASE_DIR
-    git submodule update --init --recursive
-
-    #标记代码已经更新；
-    SUBMODULES_UPDATED=1
-
-    echo "---------------- 完成代码库更新 ----------------"
+    ${RTN}
 fi
+    
+echo "---------------- 更新代码库 ----------------"
+cd $BASE_DIR
+git submodule update --init --recursive
+
+#检查执行结果是否正常
+ERR=$?
+if [ $ERR != 0 ]
+then
+    echo "更新代码库时发生了错误！！返回错误码：$ERR"
+    ${RTN} $ERR
+fi
+
+#标记代码已经更新；
+SUBMODULES_UPDATED=1
+
+echo "---------------- 完成代码库更新 ----------------"
