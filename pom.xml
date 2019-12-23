@@ -15,7 +15,7 @@
 		<module>core</module>
 		<module>deploy</module>
 		<module>test</module>
-		<module>sample</module>
+		<module>samples</module>
 	</modules>
 
 
