@@ -5,6 +5,13 @@ then
     source `dirname $0`/env.sh "$*"
 fi
 
+#检查是否要跳过子模块更新环节；
+if [ $SKIP_SUBMODULES_UPDATE == 1 ]
+then
+    echo "跳过子模块代码更新操作。。。"
+    ${RTN}
+fi
+
 #初始化变量 SUBMODULES_UPDATED
 if [ ! $SUBMODULES_UPDATED ]
 then
@@ -13,7 +20,7 @@ fi
 
 if [ $SUBMODULES_UPDATED == 1 ]
 then
-    echo "代码库已经最新，略过更新操作。。。"
+    echo "代码库已经最新，跳过更新操作。。。"
     ${RTN}
 fi
     

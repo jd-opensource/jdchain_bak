@@ -11,7 +11,7 @@ echo "主目录：$BASE_DIR"
 #判断是否忽略测试；
 if [ $SKIP_TESTS == 1 ]
 then 
-    echo "略过测试。。。"
+    echo "跳过测试。。。"
 else
     #执行测试；
     source $TEST_SHELL

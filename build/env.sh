@@ -46,14 +46,22 @@ TEST_DIR=$BASE_DIR/test
 #初始化参数：是否略过测试步骤；
 SKIP_TESTS=0
 
+#初始化参数：是否略过子项目的更新；
+SKIP_SUBMODULES_UPDATE=0
 #检查输入参数
 for i in $*; do 
     case $i in 
     "--skipTests")
-        #忽略测试；
-        echo "收到参数 --skipTests 指示略过测试环节。。。"
+        #跳过测试；
+        echo "收到参数 --skipTests 指示跳过测试环节。。。"
 
         SKIP_TESTS=1
+        ;;
+    "--skipUpdate")
+        #跳过更新子模块；
+        echo "收到参数 --skipUpdate 指示跳过子模块源码更新环节。。。"
+
+        SKIP_SUBMODULES_UPDATE=1
         ;;
     esac
 done
