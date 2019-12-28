@@ -5,6 +5,8 @@
 
 target/
 
+build/local.sh
+
 *.bak
 bin/
 *.iml
