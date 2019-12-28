@@ -42,12 +42,13 @@ then
     VALUES=($(cat $LOCAL_CONFIG | awk -F '=' 'length($2)>0 { print $2}'))
     
     #匹配子模块 URL 配置名称的正则表达式
-    REG="submodule[\.].*[\.]url"
+    # REG="submodule[\.].*[\.]url"
 
     #判断本地配置是否为空；
-    if [ ${#KEYS[@]} > 0 ]
+    echo "共有 ${#KEYS[@]} 项本地配置。。。"
+    if [ ${#KEYS[@]} -gt 0 ]
     then
-        for ((i=0; i<${#KEYS[@]}; i ++));
+        for ((i=0; i<${#KEYS[@]}; i++));
         do
             #执行本地化配置；
             echo "[$i]: git config ${KEYS[i]} ${VALUES[i]}"
@@ -61,9 +62,10 @@ then
                 ${RTN} $ERR
             fi
         done
-
+        
         LOCALIZED=1
     fi
+    
     echo "---------------- 完成子模块的本地化配置 ----------------"
     
 fi
