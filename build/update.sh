@@ -31,6 +31,8 @@ git submodule init
 echo "检查是否执行子模块的本地化配置。。。"
 #判断本地化配置脚本是否存在；
 LOCAL_CONFIG="$BASE_DIR/.git/local.config"
+
+LOCALIZED=0
 if [ -f $LOCAL_CONFIG ]
 then
     #执行子模块的本地化配置，将子模块的远程仓库地址指向本地；
@@ -39,22 +41,35 @@ then
     KEYS=($(cat $LOCAL_CONFIG | awk -F '=' 'length($1)>0 { print $1}'))
     VALUES=($(cat $LOCAL_CONFIG | awk -F '=' 'length($2)>0 { print $2}'))
     
-    for ((i=0; i<${#KEYS[@]}; i ++));
-    do
-        echo "[$i]: git config ${KEYS[i]} ${VALUES[i]}"
-        git config ${KEYS[i]} ${VALUES[i]}
+    #匹配子模块 URL 配置名称的正则表达式
+    REG="submodule[\.].*[\.]url"
 
-        #检查执行结果是否正常
-        ERR=$?
-        if [ $ERR != 0 ]
-        then
-            echo "执行子模块的本地化配置的过程中发生了错误[$ERR]！！终止构建！！"
-            ${RTN} $ERR
-        fi
-    done
+    #判断本地配置是否为空；
+    if [ ${#KEYS[@]} > 0 ]
+    then
+        for ((i=0; i<${#KEYS[@]}; i ++));
+        do
+            #执行本地化配置；
+            echo "[$i]: git config ${KEYS[i]} ${VALUES[i]}"
+            git config ${KEYS[i]} ${VALUES[i]}
 
+            #检查执行结果是否正常
+            ERR=$?
+            if [ $ERR != 0 ]
+            then
+                echo "执行子模块的本地化配置的过程中发生了错误[$ERR]！！终止构建！！"
+                ${RTN} $ERR
+            fi
+        done
+
+        LOCALIZED=1
+    fi
     echo "---------------- 完成子模块的本地化配置 ----------------"
-else
+    
+fi
+
+if [ LOCALIZED == 0 ]
+then
     echo "---------------- 执行子模块的公共配置 ----------------"
     git submodule sync
 fi
@@ -62,6 +77,7 @@ fi
     
 echo "---------------- 更新子模块代码库 ----------------"
 cd $BASE_DIR
+echo "git submodule update --recursive --progress --jobs 6"
 git submodule update --recursive --progress --jobs 6
 
 #检查执行结果是否正常
