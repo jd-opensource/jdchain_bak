@@ -48,6 +48,7 @@ SKIP_TESTS=0
 
 #初始化参数：是否略过子项目的更新；
 SKIP_SUBMODULES_UPDATE=0
+
 #检查输入参数
 for i in $*; do 
     case $i in 
