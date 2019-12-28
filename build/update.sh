@@ -62,7 +62,7 @@ fi
     
 echo "---------------- 更新子模块代码库 ----------------"
 cd $BASE_DIR
-git submodule update --init --recursive
+git submodule update --recursive
 
 #检查执行结果是否正常
 ERR=$?
