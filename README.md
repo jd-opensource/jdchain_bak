@@ -86,24 +86,24 @@ JD Chain 主要部署组件包括以下几种：
     - 当编译完成后，网关节点的安装包位于 "仓库根目录"/source/deployment/deployment-gateway/target/jdchain-gateway-1.0.1.RELEASE.zip
 
 ```sh
-    $ git clone git@github.com:blockchain-jd-com/jdchain.git jdchain
+$ git clone git@github.com:blockchain-jd-com/jdchain.git jdchain
 
-    $ cd jdchain
+$ cd jdchain
 
-    $ git checkout develop
+$ git checkout develop
 
-    $ chmod +x build/*.sh
-	
-	# 执行完整的构建，包括执行”集成测试“和”打包“两部分；提供两个参数：指定 --skipTests 参数则跳过集成测试部分； 指定 --skipUpdate 参数则跳过更新子模块仓库源码的操作；
-	$ build/build.sh
-	
-	# 跳过集成测试
-	$ build/build.sh --skipTests
-	
-	# 跳过更新子模块仓库源码
-	$ build/build.sh --skipUpdate
-	
-	# 只执行集成测试；
-	$ build/test.sh
+$ chmod +x build/*.sh
+
+# 执行完整的构建，包括执行”集成测试“和”打包“两部分；提供两个参数：
+# --skipTests ：跳过集成测试部分； 
+# --update ：从远程仓库更新子模块。注意，采用此参数会导致子模块本地仓库丢失尚未 commit 的代码。
+#           不附带此参数的情况下不会更新子模块仓库。
+$ build/build.sh --update
+
+# 跳过集成测试
+$ build/build.sh --skipTests
+
+# 只执行集成测试；
+$ build/test.sh
     
 ```

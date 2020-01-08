@@ -23,7 +23,7 @@ BASE_DIR=$(cd `dirname $0`/..; pwd)
 ENV_SHELL=$BASE_DIR/build/env.sh
 
 #执行代码库更新的脚本；
-UPDATE_SHELL=$BASE_DIR/build/update.sh
+UPDATE_SHELL=$BASE_DIR/build/submodules.sh
 
 #执行测试的脚本；
 TEST_SHELL=$BASE_DIR/build/test.sh
@@ -47,7 +47,7 @@ TEST_DIR=$BASE_DIR/test
 SKIP_TESTS=0
 
 #初始化参数：是否略过子项目的更新；
-SKIP_SUBMODULES_UPDATE=0
+SKIP_SUBMODULES_UPDATE=1
 
 #检查输入参数
 for i in $*; do 
@@ -58,11 +58,11 @@ for i in $*; do
 
         SKIP_TESTS=1
         ;;
-    "--skipUpdate")
+    "--update")
         #跳过更新子模块；
-        echo "收到参数 --skipUpdate 指示跳过子模块源码更新环节。。。"
+        echo "收到参数 --update 指示跳过子模块源码更新环节。。。"
 
-        SKIP_SUBMODULES_UPDATE=1
+        SKIP_SUBMODULES_UPDATE=0
         ;;
     esac
 done
