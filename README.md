@@ -52,38 +52,48 @@ JD Chain 主要部署组件包括以下几种：
 ![](docs/images/deployment.jpg)
 
 
-## 三、编译源代码
+## 三、构建源代码
 
- 1. 安装 Maven 环境
+1. 安装 Maven 环境
 
     JD Chain 当前版本以 Java 语言开发，需要安装配置 JVM 和 Maven，JDK 版本不低于1.8 。(没有特殊要求，请按标准方法安装，此处不赘述)
  
- 2. 安装 Git 工具
+2. 安装 Git 工具
     
     为了能够执行 git clone 命令获取代码仓库。 (没有特殊要求，请按标准方法安装，此处不赘述)
  
- 3. 工程代码
+3. 项目库说明
 
-    JD Chain 源代码包括 3 个代码仓库
+JD Chain 源代码包括 3 个代码仓库
 
-    - jdchain
-        - 这是当前仓库，也是核心仓库，包含了共识节点、网关节点、SDK等一切部署组件。依赖于 explorer 和 bftsmart 这两个仓库先进行编译安装；
+- jdchain 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain.git
+  - 说明：主项目库，包含说明文档、示例代码，用于集成构建和打包；   
+  
+ #### `主项目库包含以下 6 个子模块仓库，通过执行脚本 <主项目库根目录>/build/build.sh 便可以一键完成子模块的下载和整体的编译、测试和打包操作.`
 
-        `当前最新的工程结构已经把 explorer 和 bftsmart 这两个仓库作为子模块加入到当前仓库，通过执行脚本 <仓库根目录>/build/build.sh 便可以一键完成全部的构建操作.`
-        
-    - explorer
-        - 这是区块链浏览器的前端Web页面的工程，需要编译成静态资源包，由网关节点集成到一起部署。
-        - 地址：git@github.com:blockchain-jd-com/explorer.git
+- project 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain-project.git
+  - 说明：公共的父项目，定义公共的依赖；
+- framework 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain-framework.git
+  - 说明：框架源码库，定义公共数据类型、框架、模块组件接口、SDK、SPI、工具；
+- core 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain-core.git
+  - 说明：模块组件实现的源码库；
+- explorer 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain-project.git
+  - 说明：相关产品的前端模块的源码库；
+- libs/bft-smart 项目库：
+  - URL：git@github.com:blockchain-jd-com/bftsmart.git
+  - 说明：BFT-SMaRT 共识算法的源码库；
+- test 项目库：
+  - URL：git@github.com:blockchain-jd-com/jdchain-test.git
+  - 说明：集成测试用例的源码库；
 
-    - bftsmart
-        - 这是bftsmart共识协议的工程，需要先编译安装到本地 maven 仓库；
 
+4. 构建操作
 
-4. 命令操作
-
-- 编译 jdchain 工程；
-    - 当编译完成后，共识节点的安装包位于 "仓库根目录"/source/deployment/deployment-peer/target/jdchain-peer-1.0.1.RELEASE.zip
-    - 当编译完成后，网关节点的安装包位于 "仓库根目录"/source/deployment/deployment-gateway/target/jdchain-gateway-1.0.1.RELEASE.zip
 
 ```sh
 $ git clone git@github.com:blockchain-jd-com/jdchain.git jdchain
@@ -100,10 +110,19 @@ $ chmod +x build/*.sh
 #           不附带此参数的情况下不会更新子模块仓库。
 $ build/build.sh --update
 
-# 跳过集成测试
+# 跳过集成测试，直接编译和打包；
 $ build/build.sh --skipTests
 
 # 只执行集成测试；
 $ build/test.sh
     
 ```
+
+5.  jdchain 的安装包
+
+当编译完成后，安装包位于主项目库的 deploy 目录中：
+
+- 共识节点的安装包：
+  -  <主项目库根目录>/deploy/deploy-peer/target/jdchain-peer-**.zip
+- 网关节点的安装包:
+  -  <主项目库根目录>/deploy/deploy-gateway/target/jdchain-gateway-**.zip
