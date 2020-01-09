@@ -72,15 +72,17 @@ then
 
     # 更新远程仓库地址；
     git config remote.origin.url git@github.com:blockchain-jd-com/jdchain.git
-
+    
     echo "---------------- 完成执行仓库的公共配置 ----------------"
     echo ""
 fi
 
 
-#输出主库的远程仓库 origin 的地址；
-#REMOTE_ORIGIN_URL=$(git config --get remote.origin.url)
-echo "远程仓库的地址更新为："$(git config --get remote.origin.url)
+#同步主库的远程仓库 origin 的推送地址；
+REMOTE_ORIGIN_URL=$(git config --get remote.origin.url)
+git config remote.origin.pushurl $REMOTE_ORIGIN_URL
+
+echo "远程仓库的地址更新为："$REMOTE_ORIGIN_URL
 echo ""
 
 #同步更新子模块的远程仓库 origin 的地址;
@@ -96,6 +98,7 @@ do
     cd $BASE_DIR/$m
 
     git config remote.origin.url $SUBMODULE_URL
+    git config remote.origin.pushurl $SUBMODULE_URL
 
     cd $BASE_DIR
 done
