@@ -5,14 +5,16 @@ then
     source `dirname $0`/env.sh "$*"
 fi
 
+echo ""
 
-
-echo "切换到仓库根目录。。。"
+echo "切换到主库根目录。。。"
 cd $BASE_DIR
 pwd
 
 #先执行初始化; 注：此命令只在 .git/config 文件中没有相应子模块的配置时才生效，重复执行并不会更改已有的配置；
 git submodule init
+
+echo ""
 
 #根据本地仓库的 .git 目录下是否存在 local.sh 脚本判断是否在更新子模块的代码库之前执行本地化配置；
 echo "检查是否执行子模块的本地化配置。。。"
@@ -54,7 +56,7 @@ then
     fi
     
     echo "---------------- 完成执行仓库的本地化配置 ----------------"
-    
+    echo ""
 fi
 
 
@@ -69,14 +71,17 @@ then
     git submodule sync
 
     # 更新远程仓库地址；
-    echo "更新远程仓库地址。。。"
     git config remote.origin.url git@github.com:blockchain-jd-com/jdchain.git
 
-
     echo "---------------- 完成执行仓库的公共配置 ----------------"
-    
+    echo ""
 fi
 
+
+#输出主库的远程仓库 origin 的地址；
+#REMOTE_ORIGIN_URL=$(git config --get remote.origin.url)
+echo "远程仓库的地址更新为："$(git config --get remote.origin.url)
+echo ""
 
 #同步更新子模块的远程仓库 origin 的地址;
 echo "---------------- 更新子模块的远程仓库地址 ----------------"
@@ -133,4 +138,4 @@ SUBMODULES_UPDATED=1
 
 echo "---------------- 完成子模块代码库更新 ----------------"
 
-
+echo ""
