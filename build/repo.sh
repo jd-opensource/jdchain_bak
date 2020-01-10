@@ -106,7 +106,7 @@ done
 #检查是否要跳过子模块更新环节；
 if [ $SKIP_SUBMODULES_UPDATE == 1 ]
 then
-    echo "跳过子模块代码更新操作。。。"
+    echo "跳过子模块代码更新操作。。。[$RTN]"
     ${RTN}
 fi
 

@@ -1,4 +1,5 @@
-
+#定义子脚本的错误返回命令
+RTN="return"
 
 #调用当前脚本目录下 env.sh 脚本，设置环境变量，处理当前传入参数；
 if [ ! $ENV_SHELL ]
@@ -13,7 +14,7 @@ source $UPDATE_SHELL
 ERR=$?
 if [ $ERR != 0 ]
 then
-    echo "更新代码库时发生了错误[$ERR]！！终止测试！！"
+    echo "更新代码库时发生了错误[$ERR]！！终止测试！！  [$RTN]"
     ${RTN} $ERR
 fi
 
@@ -30,7 +31,7 @@ mvn clean package
 ERR=$?
 if [ $ERR != 0 ]
 then
-    echo "集成测试过程中发生了错误[$ERR]！！终止测试！！"
+    echo "集成测试过程中发生了错误[$ERR]！！终止测试！！  [$RTN]"
     ${RTN} $ERR
 fi
 
