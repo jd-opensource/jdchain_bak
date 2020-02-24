@@ -16,3 +16,6 @@
 [submodule "test"]
 	path = test
 	url = git@github.com:blockchain-jd-com/jdchain-test.git
+[submodule "database"]
+	path = database
+	url = git@git.jd.com:jd-blockchain/database.git
