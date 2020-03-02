@@ -43,7 +43,9 @@ public class BftsmartMessageService implements MessageService {
             throw new RuntimeException(e);
 
         } finally {
-            asyncPeerProxyPool.returnObject(asynchServiceProxy);
+            if (asynchServiceProxy != null) {
+                asyncPeerProxyPool.returnObject(asynchServiceProxy);
+            }
         }
 
         return asyncFuture;

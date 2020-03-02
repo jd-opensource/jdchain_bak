@@ -1,11 +1,9 @@
 package com.jd.blockchain.ledger.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.utils.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +115,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			TransactionRequestExtension reqExt = new TransactionRequestExtensionImpl(request);
 
 			// 初始化交易的用户安全策略；
+//			Set<Bytes> endPointAddresses = reqExt.getEndpointAddresses();
+//			int index = 0;
+//			for (Bytes address : endPointAddresses) {
+//				System.out.printf("EndPoint Sign Address %s[%s] -> %s \r\n", request.getHash(), index++, address.toBase58());
+////				LOGGER.debug("EndPoint Sign Address {}[{}] -> {}", request.getHash(), index++, address.toBase58());
+//			}
 			SecurityPolicy securityPolicy = securityManager.createSecurityPolicy(reqExt.getEndpointAddresses(),
 					reqExt.getNodeAddresses());
 			SecurityContext.setContextUsersPolicy(securityPolicy);

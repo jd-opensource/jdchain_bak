@@ -370,9 +370,11 @@ public class LedgerQueryService implements BlockchainQueryService {
 		DataAccountQuery dataAccountSet = ledger.getDataAccountSet(block);
 		DataAccount dataAccount = dataAccountSet.getAccount(Bytes.fromBase58(address));
 
-//		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
+		int pages[] = QueryUtil.calFromIndexAndCount(fromIndex, count, (int) dataAccount.getDataset().getDataCount());
 //		return dataAccount.getDataset().getDataEntry(key, version).getDataEntries(pages[0], pages[1]);
-		
+		fromIndex = pages[0];
+		count = pages[1];
+
 		DataIterator<String, TypedValue> iterator = dataAccount.getDataset().iterator();
 		iterator.skip(fromIndex);
 		DataEntry<String, TypedValue>[] dataEntries = iterator.next(count);

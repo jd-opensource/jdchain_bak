@@ -82,7 +82,7 @@ public class SDK_GateWay_User_Test_ {
 
         CLIENT_CERT = new BlockchainKeypair(SDK_GateWay_KeyPair_Para.pubKey0, SDK_GateWay_KeyPair_Para.privkey0);
         GATEWAY_IPADDR = "127.0.0.1";
-        GATEWAY_PORT = 8081;
+        GATEWAY_PORT = 10300;
         SECURE = false;
         GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
                 CLIENT_CERT);
