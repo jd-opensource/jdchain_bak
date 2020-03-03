@@ -2,6 +2,7 @@
 
 HOME=$(cd `dirname $0`;cd ../; pwd)
 PEER=$(ls $HOME/system | grep deployment-peer-)
+JVM_SET="-server -Xmx2g -Xms1g"
 PROC_INFO=$HOME/system/$PEER" -home="$HOME" -c "$HOME/config/ledger-binding.conf" -p 7080"
 #echo $PROC_INFO
 #get PID
@@ -15,5 +16,5 @@ fi
 if [ ! -n "$PEER" ]; then
   echo "Peer Is Null !!!"
 else
-  nohup java -jar -server -Xmx2g -Xms1g -Djdchain.log=$HOME $PROC_INFO $* >$HOME/bin/peer.out 2>&1 &
+  nohup java -jar $JVM_SET -Djdchain.log=$HOME $PROC_INFO $* >$HOME/bin/peer.out 2>&1 &
 fi
