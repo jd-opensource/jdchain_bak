@@ -15,5 +15,5 @@ fi
 if [ ! -n "$PEER" ]; then
   echo "Peer Is Null !!!"
 else
-  nohup java -jar -server -Xmx1g -Xms1g -Djdchain.log=$HOME $PROC_INFO $* >$HOME/bin/peer.out 2>&1 &
+  nohup java -jar -server -Xmx2g -Xms1g -Djdchain.log=$HOME $PROC_INFO $* >$HOME/bin/peer.out 2>&1 &
 fi
