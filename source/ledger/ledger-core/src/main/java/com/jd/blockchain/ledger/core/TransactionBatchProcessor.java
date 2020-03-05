@@ -159,13 +159,12 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					e.getMessage()), e);
 			throw e;
 		}catch (LedgerException e) {
-			// 发生账本级别的处理异常，向上重新抛出异常进行处理，整个区块可能被丢弃；
+			// 发生账本级别的非回滚处理异常，只记录错误，不回滚；
 			resp = discard(request, e.getState());
 			LOGGER.error(String.format(
 					"Ignore transaction caused by LedgerException! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
-			throw e;
 		} catch (Exception e) {
 			// 抛弃发生处理异常的交易请求；
 			resp = discard(request, TransactionState.SYSTEM_ERROR);
@@ -297,7 +296,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 		} catch (BlockRollbackException e) {
 			// rollback all the block；
 			// TODO: handle the BlockRollbackException in detail；
-			result = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
+//			result = TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK;
 			txCtx.rollback();
 			LOGGER.error(
 					String.format("Transaction was rolled back! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",

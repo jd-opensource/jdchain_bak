@@ -30,6 +30,11 @@ public enum TransactionState {
 	DATA_ACCOUNT_DOES_NOT_EXIST((byte) 0x02),
 
 	/**
+	 * 数据账户存在；
+	 */
+	DATA_ACCOUNT_EXIST((byte) 0x12),
+
+	/**
 	 * 用户不存在；
 	 */
 	USER_DOES_NOT_EXIST((byte) 0x03),
@@ -108,7 +113,12 @@ public enum TransactionState {
 	/**
 	 * 共识错误；
 	 */
-	CONSENSUS_ERROR((byte) 0x82);
+	CONSENSUS_ERROR((byte) 0x82),
+
+	/**
+	 * 共识错误；
+	 */
+	EMPTY_BLOCK_ERROR((byte) 0x83);
 
 	@EnumField(type = PrimitiveType.INT8)
 	public final byte CODE;

@@ -11,6 +11,11 @@ public class LedgerException extends RuntimeException {
 		super(message);
 	}
 
+	public LedgerException(String message, TransactionState transactionState) {
+		super(message);
+		setState(transactionState);
+	}
+
 	public LedgerException(String message, Throwable cause) {
 		super(message, cause);
 	}
