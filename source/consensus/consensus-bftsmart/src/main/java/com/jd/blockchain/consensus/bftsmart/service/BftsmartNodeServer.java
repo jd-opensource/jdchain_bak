@@ -394,7 +394,15 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             result = new BatchAppResultImpl(responseLinkedList, newStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 0);
 
-        } catch (Exception e) {
+        } catch (BlockRollbackException e) {
+            LOGGER.error("Error occurred while pre compute app! --" + e.getMessage(), e);
+            for (int i = 0; i < commands.length; i++) {
+                responseLinkedList.add(createAppResponse(commands[i],e.getState()));
+            }
+
+            result = new BatchAppResultImpl(responseLinkedList,preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
+            result.setErrorCode((byte) 1);
+        }catch (Exception e) {
             LOGGER.error("Error occurred while pre compute app! --" + e.getMessage(), e);
             for (int i = 0; i < commands.length; i++) {
                 responseLinkedList.add(createAppResponse(commands[i],TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK));
