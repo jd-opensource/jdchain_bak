@@ -116,7 +116,7 @@ public enum TransactionState {
 	CONSENSUS_ERROR((byte) 0x82),
 
 	/**
-	 * 共识错误；
+	 * 空区块错误；
 	 */
 	EMPTY_BLOCK_ERROR((byte) 0x83);
 
