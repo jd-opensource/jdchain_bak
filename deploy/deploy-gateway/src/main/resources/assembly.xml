@@ -31,7 +31,7 @@
             <useProjectArtifact>true</useProjectArtifact>
             <outputDirectory>lib</outputDirectory>
             <includes>
-            	<include>com.jd.blockchain:deployment-gateway</include>
+            	<include>com.jd.blockchain:deploy-gateway</include>
             </includes>
         </dependencySet>
     </dependencySets>

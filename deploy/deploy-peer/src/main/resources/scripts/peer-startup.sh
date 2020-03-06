@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOME=$(cd `dirname $0`;cd ../; pwd)
-PEER=$(ls $HOME/system | grep deployment-peer-)
+PEER=$(ls $HOME/system | grep deploy-peer-)
 PROC_INFO=$HOME/system/$PEER" -home="$HOME" -c "$HOME/config/ledger-binding.conf" -p 7080"
 #echo $PROC_INFO
 #get PID

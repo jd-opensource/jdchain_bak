@@ -39,7 +39,7 @@
             	<include>com.jd.blockchain:runtime-modular</include>
             	<include>com.jd.blockchain:runtime-modular-booter</include>
             	<include>com.jd.blockchain:peer</include>
-            	<include>com.jd.blockchain:deployment-peer</include>
+            	<include>com.jd.blockchain:deploy-peer</include>
             </includes>
         </dependencySet>
         <dependencySet>

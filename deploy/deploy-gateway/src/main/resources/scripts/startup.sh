@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOME=$(cd `dirname $0`;cd ../; pwd)
-GATEWAY=$(ls $HOME/lib | grep deployment-gateway-)
+GATEWAY=$(ls $HOME/lib | grep deploy-gateway-)
 PROC_INFO=$HOME/lib/$GATEWAY" -c "$HOME/config/gateway.conf
 #echo $PROC_INFO
 #get PID
