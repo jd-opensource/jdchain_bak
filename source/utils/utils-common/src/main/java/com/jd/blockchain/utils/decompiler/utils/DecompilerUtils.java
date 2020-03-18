@@ -15,8 +15,11 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 public class DecompilerUtils {
 
@@ -101,28 +104,58 @@ public class DecompilerUtils {
     }
 
     public static String decompileMainClassFromJarFile(final String jarFilePath) {
+
         // 首先获取Main-Class
-        List<String> manifests = readManifest2Array(jarFilePath, null);
-        if (manifests == null || manifests.size() == 0) {
-            throw new IllegalStateException("MANIFEST.MF not Exist or is Empty !!!");
-        } else {
-            String mainClass = null;
-            for (String s : manifests) {
-                String inner = s.trim().replaceAll(" ", "");
-                if (inner.startsWith(MAIN_CLASS)) {
-                    mainClass = inner.split(":")[1];
-                    break;
+        String mainClass = readMainClassFromJarFile(jarFilePath);
+        if (mainClass == null) {
+            throw new IllegalStateException("MANIFEST.MF has not Main-Class !!!");
+        }
+
+        // 然后读取MainClass中的内容并进行反编译
+        String classPath = mainClass.replaceAll("\\.", "/");
+        return decompileJarFile(jarFilePath, classPath, true, null);
+    }
+
+    public static String readMainClassFromJarFile(final String jarFilePath) {
+        try {
+            JarFile jarFile = new JarFile(jarFilePath);
+            Manifest mf = jarFile.getManifest();
+            Attributes mainAttributes = mf.getMainAttributes();
+            for (Map.Entry<Object, Object> entry : mainAttributes.entrySet()) {
+                String key = entry.getKey().toString();
+                if (key.equalsIgnoreCase(MAIN_CLASS)) {
+                    return entry.getValue().toString();
                 }
             }
-            if (mainClass == null || mainClass.length() == 0) {
-                throw new IllegalStateException("MANIFEST.MF has not Main-Class !!!");
-            }
-
-            // 然后读取MainClass中的内容并进行反编译
-            String classPath = mainClass.replaceAll("\\.", "/");
-            return decompileJarFile(jarFilePath, classPath, true, null);
+        } catch (Exception e) {
+            throw new IllegalStateException(String.format("Find Main-Class Exception %s", e.getMessage()));
         }
+        return null;
     }
+
+//    public static String decompileMainClassFromJarFile(final String jarFilePath) {
+//        // 首先获取Main-Class
+//        List<String> manifests = readManifest2Array(jarFilePath, null);
+//        if (manifests == null || manifests.size() == 0) {
+//            throw new IllegalStateException("MANIFEST.MF not Exist or is Empty !!!");
+//        } else {
+//            String mainClass = null;
+//            for (String s : manifests) {
+//                String inner = s.trim().replaceAll(" ", "");
+//                if (inner.startsWith(MAIN_CLASS)) {
+//                    mainClass = inner.split(":")[1];
+//                    break;
+//                }
+//            }
+//            if (mainClass == null || mainClass.length() == 0) {
+//                throw new IllegalStateException("MANIFEST.MF has not Main-Class !!!");
+//            }
+//
+//            // 然后读取MainClass中的内容并进行反编译
+//            String classPath = mainClass.replaceAll("\\.", "/");
+//            return decompileJarFile(jarFilePath, classPath, true, null);
+//        }
+//    }
 
     public static String decompileJarFile(final String jarFilePath, final String source, final boolean isClass, final String charSet) {
 
