@@ -1,0 +1,96 @@
+/**
+ * Copyright: Copyright 2016-2020 JD.COM All Right Reserved
+ * FileName: com.jd.blockchain.sdk.samples.SDKDemo_RegisterUser
+ * Author: shaozhuguang
+ * Department: 区块链研发部
+ * Date: 2018/10/18 下午2:00
+ * Description: 注册用户
+ */
+package com.jd.blockchain.sdk.samples;
+
+import com.jd.blockchain.binaryproto.BinaryProtocol;
+import com.jd.blockchain.binaryproto.DataContractRegistry;
+import com.jd.blockchain.crypto.AsymmetricKeypair;
+import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.crypto.PrivKey;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.sdk.BlockchainService;
+import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.utils.ConsoleUtils;
+
+/**
+ * 注册用户
+ * 
+ * @author shaozhuguang
+ * @create 2018/10/18
+ * @since 1.0.0
+ */
+
+public class SDKDemo_Tx_Persistance {
+	public static void main(String[] args) {
+
+		String GATEWAY_IPADDR = "127.0.0.1";
+		int GATEWAY_PORT = 8081;
+		if (args != null && args.length == 2) {
+			GATEWAY_IPADDR = args[0];
+			GATEWAY_PORT = Integer.parseInt(args[1]);
+		}
+
+		// 注册相关class
+		DataContractRegistry.register(TransactionContent.class);
+		DataContractRegistry.register(TransactionContentBody.class);
+		DataContractRegistry.register(TransactionRequest.class);
+		DataContractRegistry.register(NodeRequest.class);
+		DataContractRegistry.register(EndpointRequest.class);
+		DataContractRegistry.register(TransactionResponse.class);
+
+		PrivKey privKey = SDKDemo_Params.privkey1;
+		PubKey pubKey = SDKDemo_Params.pubKey1;
+
+		BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
+
+		boolean SECURE = false;
+		GatewayServiceFactory gatewayServiceFactory = GatewayServiceFactory.connect(GATEWAY_IPADDR, GATEWAY_PORT, SECURE,
+				CLIENT_CERT);
+		BlockchainService blockchainService = gatewayServiceFactory.getBlockchainService();
+
+		HashDigest[] ledgerHashs = blockchainService.getLedgerHashs();
+		// 在本地定义注册账号的 TX；
+		TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHashs[0]);
+
+		// existed signer
+		AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
+
+		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
+
+		// 注册
+		txTemp.users().register(user.getIdentity());
+
+		// 定义角色权限；
+		txTemp.security().roles().configure("MANAGER")
+				.enable(LedgerPermission.REGISTER_USER, LedgerPermission.REGISTER_DATA_ACCOUNT)
+				.enable(TransactionPermission.CONTRACT_OPERATION);
+		txTemp.security().authorziations().forUser(user.getIdentity()).authorize("MANAGER");
+
+		// TX 准备就绪；
+		PreparedTransaction prepTx = txTemp.prepare();
+		
+		// 序列化交易内容；
+		byte[] txContentBytes = BinaryProtocol.encode(prepTx.getTransactionContent(), TransactionContent.class);
+		
+		// 反序列化交易内容；
+		TransactionContent txContent = BinaryProtocol.decodeAs(txContentBytes, TransactionContent.class);
+		
+		// 根据交易内容重新准备交易；
+		PreparedTransaction decodedPrepTx = blockchainService.prepareTransaction(txContent);
+		
+		// 使用私钥进行签名；
+		decodedPrepTx.sign(keyPair);
+
+		// 提交交易；
+		TransactionResponse transactionResponse = decodedPrepTx.commit();
+
+		ConsoleUtils.info("register user complete, result is [%s]", transactionResponse.isSuccess());
+	}
+}

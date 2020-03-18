@@ -1,6 +1,8 @@
 package com.jd.blockchain.sdk;
 
 import com.jd.blockchain.crypto.HashDigest;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionTemplate;
 
 public interface BlockchainTransactionService {
@@ -11,6 +13,14 @@ public interface BlockchainTransactionService {
 	 * @return
 	 */
 	TransactionTemplate newTransaction(HashDigest ledgerHash);
+
+	/**
+	 * 根据交易内容准备交易实例；
+	 * 
+	 * @param content
+	 * @return
+	 */
+	PreparedTransaction prepareTransaction(TransactionContent content);
 
 //	/**
 //	 * 以指定的科目和流水号发起新交易；
