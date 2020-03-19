@@ -11,6 +11,8 @@ import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerTransaction;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.ledger.UserInfo;
@@ -19,7 +21,9 @@ import com.jd.blockchain.sdk.BlockchainEventListener;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.converters.ClientResolveUtil;
 import com.jd.blockchain.transaction.BlockchainQueryService;
+import com.jd.blockchain.transaction.PreparedTx;
 import com.jd.blockchain.transaction.TransactionService;
+import com.jd.blockchain.transaction.TxRequestBuilder;
 import com.jd.blockchain.transaction.TxTemplate;
 
 public abstract class BlockchainServiceProxy implements BlockchainService {
@@ -32,6 +36,12 @@ public abstract class BlockchainServiceProxy implements BlockchainService {
 	@Override
 	public TransactionTemplate newTransaction(HashDigest ledgerHash) {
 		return new TxTemplate(ledgerHash, getTransactionService(ledgerHash));
+	}
+	
+	@Override
+	public PreparedTransaction prepareTransaction(TransactionContent content) {
+		TxRequestBuilder txReqBuilder = new TxRequestBuilder(content);
+		return new PreparedTx(txReqBuilder, getTransactionService(content.getLedgerHash()));
 	}
 
 	@Override

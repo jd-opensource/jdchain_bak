@@ -11,7 +11,6 @@ import com.jd.blockchain.utils.io.BytesSlice;
 import com.jd.blockchain.utils.io.BytesUtils;
 
 public class BinaryProtocol {
-	
 
 	public static void encode(Object data, Class<?> contractType, OutputStream out) {
 		DataContractEncoder encoder = DataContractContext.resolve(contractType);
@@ -33,8 +32,6 @@ public class BinaryProtocol {
 		byte[] bytes = BytesUtils.copyToBytes(in);
 		return decode(bytes);
 	}
-	
-	
 
 	public static <T> T decode(byte[] dataSegment) {
 		BytesSlice bytes = new BytesSlice(dataSegment, 0, dataSegment.length);
@@ -49,19 +46,32 @@ public class BinaryProtocol {
 		return encoder.decode(bytes.getInputStream());
 	}
 
-	
-	
-	public static <T> T decodeAs(byte[] dataSegment, Class<T> contractType) {
+	public static <T> T decode(byte[] dataSegment, Class<T> contractType) {
+		return decode(dataSegment, contractType, true);
+	}
+
+	public static <T> T decode(byte[] dataSegment, Class<T> contractType, boolean autoRegister) {
 		DataContractEncoder encoder = DataContractContext.ENCODER_LOOKUP.lookup(contractType);
 		if (encoder == null) {
-			throw new DataContractException("Contract type is not registered! --" + contractType.toString());
+			if (autoRegister) {
+				encoder = DataContractContext.resolve(contractType);
+			} else {
+				throw new DataContractException("Contract type is not registered! --" + contractType.toString());
+			}
 		}
 		BytesSlice bytes = new BytesSlice(dataSegment, 0, dataSegment.length);
 		return encoder.decode(bytes.getInputStream());
 	}
-	
-	
-	
-	
+
+
+	@Deprecated
+	public static <T> T decodeAs(byte[] dataSegment, Class<T> contractType) {
+		return decode(dataSegment, contractType, true);
+	}
+
+	@Deprecated
+	public static <T> T decodeAs(byte[] dataSegment, Class<T> contractType, boolean autoRegister) {
+		return decode(dataSegment, contractType, autoRegister);
+	}
 
 }

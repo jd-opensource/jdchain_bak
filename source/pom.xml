@@ -11,7 +11,7 @@
 
 	<groupId>com.jd.blockchain</groupId>
 	<artifactId>jdchain-root</artifactId>
-	<version>1.1.3.RELEASE</version>
+	<version>1.1.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>jdchain</description>
 

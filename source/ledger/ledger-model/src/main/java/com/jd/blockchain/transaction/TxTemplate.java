@@ -32,7 +32,7 @@ public class TxTemplate implements TransactionTemplate {
 	public PreparedTransaction prepare() {
 		stateManager.prepare();
 		TransactionRequestBuilder txReqBuilder = txBuilder.prepareRequest();
-		return new PreparedTx(stateManager, txReqBuilder, txService, txBuilder.getReturnValuehandlers());
+		return new StatefulPreparedTx(stateManager, txReqBuilder, txService, txBuilder.getReturnValuehandlers());
 	}
 
 	@Override
