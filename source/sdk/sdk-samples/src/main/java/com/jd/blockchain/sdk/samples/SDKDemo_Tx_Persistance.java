@@ -32,7 +32,7 @@ public class SDKDemo_Tx_Persistance {
 	public static void main(String[] args) {
 
 		String GATEWAY_IPADDR = "127.0.0.1";
-		int GATEWAY_PORT = 8081;
+		int GATEWAY_PORT = 11000;
 		if (args != null && args.length == 2) {
 			GATEWAY_IPADDR = args[0];
 			GATEWAY_PORT = Integer.parseInt(args[1]);
@@ -46,8 +46,8 @@ public class SDKDemo_Tx_Persistance {
 		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 
-		PrivKey privKey1 = SDKDemo_Params.privkey1;
-		PubKey pubKey1 = SDKDemo_Params.pubKey1;
+		PrivKey privKey1 = SDKDemo_Params.privkey0;
+		PubKey pubKey1 = SDKDemo_Params.pubKey0;
 		PrivKey privKey2 = SDKDemo_Params.privkey1;
 		PubKey pubKey2 = SDKDemo_Params.pubKey1;
 
