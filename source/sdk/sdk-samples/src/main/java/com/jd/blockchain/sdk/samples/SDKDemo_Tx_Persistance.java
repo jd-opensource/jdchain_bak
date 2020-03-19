@@ -17,6 +17,7 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
+import com.jd.blockchain.transaction.SignatureUtils;
 import com.jd.blockchain.utils.ConsoleUtils;
 
 /**
@@ -45,8 +46,10 @@ public class SDKDemo_Tx_Persistance {
 		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 
-		PrivKey privKey = SDKDemo_Params.privkey1;
-		PubKey pubKey = SDKDemo_Params.pubKey1;
+		PrivKey privKey1 = SDKDemo_Params.privkey1;
+		PubKey pubKey1 = SDKDemo_Params.pubKey1;
+		PrivKey privKey2 = SDKDemo_Params.privkey1;
+		PubKey pubKey2 = SDKDemo_Params.pubKey1;
 
 		BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
 
@@ -60,7 +63,8 @@ public class SDKDemo_Tx_Persistance {
 		TransactionTemplate txTemp = blockchainService.newTransaction(ledgerHashs[0]);
 
 		// existed signer
-		AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
+		AsymmetricKeypair keyPair1 = new BlockchainKeypair(pubKey1, privKey1);
+		AsymmetricKeypair keyPair2 = new BlockchainKeypair(pubKey2, privKey2);
 
 		BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
 
@@ -82,14 +86,26 @@ public class SDKDemo_Tx_Persistance {
 		// 反序列化交易内容；
 		TransactionContent txContent = BinaryProtocol.decodeAs(txContentBytes, TransactionContent.class);
 		
+		// 对交易内容签名；
+		DigitalSignature signature1 = SignatureUtils.sign(txContent, keyPair1);
+		
 		// 根据交易内容重新准备交易；
 		PreparedTransaction decodedPrepTx = blockchainService.prepareTransaction(txContent);
 		
-		// 使用私钥进行签名；
-		decodedPrepTx.sign(keyPair);
+		// 使用私钥进行签名，或附加签名；
+		decodedPrepTx.addSignature(signature1);
+		decodedPrepTx.sign(keyPair2);
 
 		// 提交交易；
 		TransactionResponse transactionResponse = decodedPrepTx.commit();
+		// 解析返回结果；如果是合约调用的操作，需要自行解析返回结果；
+		if (transactionResponse.isSuccess()) {
+			// 操作结果对应于交易中的操作顺序；无返回结果的操作对应结果为 null;
+			OperationResult opResult = transactionResponse.getOperationResults()[0];//
+			Class<?> dataClazz = null;//返回值的类型；
+			BytesValueEncoding.decode(opResult.getResult(), dataClazz);
+		}
+		
 
 		ConsoleUtils.info("register user complete, result is [%s]", transactionResponse.isSuccess());
 	}
