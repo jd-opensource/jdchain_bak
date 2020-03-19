@@ -103,7 +103,7 @@ public class SDKDemo_Tx_Persistance {
 			// 操作结果对应于交易中的操作顺序；无返回结果的操作对应结果为 null;
 			OperationResult opResult = transactionResponse.getOperationResults()[0];//
 			Class<?> dataClazz = null;//返回值的类型；
-			BytesValueEncoding.decode(opResult.getResult(), dataClazz);
+			Object value = BytesValueEncoding.decode(opResult.getResult(), dataClazz);
 		}
 		
 
