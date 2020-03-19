@@ -13,7 +13,9 @@
 	<artifactId>jdchain-root</artifactId>
 	<version>1.1.4.RELEASE</version>
 	<packaging>pom</packaging>
+	<name>JDChain</name>
 	<description>jdchain</description>
+	<url>https://github.com/blockchain-jd-com/jdchain.git</url>
 
 	<modules>
 		<module>utils</module>
@@ -32,6 +34,7 @@
 		<module>tools</module>
 		<module>test</module>
 		<module>deployment</module>
+		<module>deployAsEnd</module>
 	</modules>
 
 	<properties>
@@ -437,40 +440,6 @@
 						<useCache>false</useCache>
 					</configuration>
 				</plugin>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.4</version>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<phase>package</phase>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-							<configuration>
-								<additionalparam>${javadoc.opts}</additionalparam>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				<!--&lt;!&ndash; 生成sources源码包的插件 &ndash;&gt; -->
-				<!--<plugin> -->
-				<!--<artifactId>maven-source-plugin</artifactId> -->
-				<!--<version>2.4</version> -->
-				<!--<configuration> -->
-				<!--<attach>true</attach> -->
-				<!--</configuration> -->
-				<!--<executions> -->
-				<!--<execution> -->
-				<!--<phase>package</phase> -->
-				<!--<goals> -->
-				<!--<goal>jar-no-fork</goal> -->
-				<!--</goals> -->
-				<!--</execution> -->
-				<!--</executions> -->
-				<!--</plugin> -->
 			</plugins>
 		</pluginManagement>
 
@@ -518,13 +487,25 @@
 
 		<!-- mvn repository;-->
 		<profile>
-			<id>sonatype-oss-release</id>
+			<id>oss-release</id>
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.8</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>oss-rr</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>false</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>2.1.2</version>
+						<version>2.2.1</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -553,7 +534,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.1</version>
+						<version>1.5</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -571,7 +552,7 @@
 
 	<distributionManagement>
 		<repository>
-			<id>sonatype-nexus-staging</id>
+			<id>oss-rr</id>
 			<name>Nexus Release Repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
