@@ -84,7 +84,7 @@ public class SDKDemo_Tx_Persistance {
 		byte[] txContentBytes = BinaryProtocol.encode(prepTx.getTransactionContent(), TransactionContent.class);
 		
 		// 反序列化交易内容；
-		TransactionContent txContent = BinaryProtocol.decodeAs(txContentBytes, TransactionContent.class);
+		TransactionContent txContent = BinaryProtocol.decode(txContentBytes, TransactionContent.class);
 		
 		// 对交易内容签名；
 		DigitalSignature signature1 = SignatureUtils.sign(txContent, keyPair1);
