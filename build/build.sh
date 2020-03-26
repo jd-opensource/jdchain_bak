@@ -29,7 +29,10 @@ fi
 #如果执行了测试，并且测试已经通过，那么在打包的过程中可以跳过执行单元测试；
 if [ $SKIP_TESTS == 0 ]
 then
-    SKIP_TESTS=1
+    # 可选值：1，2； 
+    # 值为1时附加编译参数 -DskipTests=true; 
+    # 值为2时附加编译参数 -Dmaven.test.skip=true
+    SKIP_TESTS=2
 fi
 
 #执行打包构建；

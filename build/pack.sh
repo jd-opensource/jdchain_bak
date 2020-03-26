@@ -36,6 +36,11 @@ then
     echo "编译参数：-DskipTests=true"
     CMD="$CMD -DskipTests=true"
 fi
+if [ $SKIP_TESTS == 2 ]
+then
+    echo "编译参数：-Dmaven.test.skip=true"
+    CMD="$CMD -Dmaven.test.skip=true"
+fi
 
 echo "执行命令：$CMD"
 ${CMD}
