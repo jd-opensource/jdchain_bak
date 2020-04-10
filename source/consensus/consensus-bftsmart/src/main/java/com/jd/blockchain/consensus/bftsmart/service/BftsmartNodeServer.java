@@ -33,7 +33,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private static Logger LOGGER = LoggerFactory.getLogger(BftsmartNodeServer.class);
 
-//    private static final String DEFAULT_BINDING_HOST = "0.0.0.0";
+    private static final String DEFAULT_BINDING_HOST = "0.0.0.0";
 
     private List<StateHandle> stateHandles = new CopyOnWriteArrayList<>();
 
@@ -59,7 +59,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private TOMConfiguration tomConfig;
 
-//    private TOMConfiguration outerTomConfig;
+    private TOMConfiguration outerTomConfig;
 
     private HostsConfig hostsConfig;
     private Properties systemConfig;
@@ -129,12 +129,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     protected void initConfig(int id, Properties systemsConfig, HostsConfig hostConfig) {
-//        byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
-//        Properties sysConfClone = (Properties)systemsConfig.clone();
-//        int port = hostConfig.getPort(id);
-//        hostConfig.add(id, DEFAULT_BINDING_HOST, port);
+        byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
+        Properties sysConfClone = (Properties)systemsConfig.clone();
+        int port = hostConfig.getPort(id);
+        hostConfig.add(id, DEFAULT_BINDING_HOST, port);
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
-//        this.outerTomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
+        this.outerTomConfig = new TOMConfiguration(id, sysConfClone, BinarySerializeUtils.deserialize(serialHostConf));
     }
 
     @Override
@@ -153,7 +153,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     public TOMConfiguration getTomConfig() {
-        return tomConfig;
+        return outerTomConfig;
     }
 
     public int getId() {
@@ -165,7 +165,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             throw new IllegalArgumentException("ReplicaID is negative!");
         }
         this.tomConfig.setProcessId(id);
-//        this.outerTomConfig.setProcessId(id);
+        this.outerTomConfig.setProcessId(id);
     }
 
     public BftsmartConsensusSettings getConsensusSetting() {
