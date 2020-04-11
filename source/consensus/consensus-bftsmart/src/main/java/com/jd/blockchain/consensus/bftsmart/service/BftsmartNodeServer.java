@@ -28,6 +28,7 @@ import com.jd.blockchain.utils.io.BytesUtils;
 import bftsmart.reconfiguration.util.HostsConfig;
 import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.tom.server.defaultservices.DefaultRecoverable;
+import org.springframework.util.NumberUtils;
 
 public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer {
 
@@ -135,6 +136,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 //        hostConfig.add(id, DEFAULT_BINDING_HOST, port);
 
         //if ledger-init.sh set up the -DhostIp=xxx, then get it;
+        String preHostPort = System.getProperty("hostPort");
+        if(preHostPort != null && preHostPort.length()>0){
+            port = NumberUtils.parseNumber(preHostPort, Integer.class);
+            System.out.println("###ledger-init.sh###,set up the -DhostPort="+port);
+        }
+
         String preHostIp = System.getProperty("hostIp");
         if(preHostIp != null && preHostIp.length()>0){
             hostConfig.add(id, preHostIp, port);
