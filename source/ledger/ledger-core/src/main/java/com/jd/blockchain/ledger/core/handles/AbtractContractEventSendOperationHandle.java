@@ -21,6 +21,8 @@ import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension;
 
+import java.util.stream.Collectors;
+
 @Service
 public abstract class AbtractContractEventSendOperationHandle implements OperationHandle {
 
@@ -68,6 +70,8 @@ public abstract class AbtractContractEventSendOperationHandle implements Operati
 				request.getTransactionContent().getLedgerHash(), contractOP.getEvent());
 		localContractEventContext.setArgs(contractOP.getArgs()).setTransactionRequest(request)
 				.setLedgerContext(ledgerContext);
+		localContractEventContext.setTxSigners(
+				request.getEndpoints().stream().map( s -> s.getIdentity()).collect(Collectors.toSet()));
 
 		// 装载合约；
 		ContractCode contractCode = loadContractCode(contract);

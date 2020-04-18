@@ -69,6 +69,7 @@ public class UserAuthorizeOperationHandle extends AbstractLedgerOperationHandle<
 						if (policy != null) {
 							ur.setPolicy(policy);
 						}
+						urSettings.updateUserRoles(ur);
 					}
 				}
 			}
