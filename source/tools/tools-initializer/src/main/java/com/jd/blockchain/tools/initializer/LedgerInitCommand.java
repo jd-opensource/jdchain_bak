@@ -204,6 +204,14 @@ public class LedgerInitCommand {
 
 		// start the web controller of Ledger Initializer;
 		NetworkAddress serverAddress = ledgerInitProperties.getConsensusParticipant(currId).getInitializerAddress();
+
+		//for dockers binding the 0.0.0.0;
+		String preHostIp = System.getProperty("hostIp");
+		if(preHostIp != null && preHostIp.length()>0){
+			serverAddress.setHost(preHostIp);
+			System.out.println("###ledger-init.sh###,set up the -DhostIp="+preHostIp);
+		}
+
 		String argServerAddress = String.format("--server.address=%s", serverAddress.getHost());
 		String argServerPort = String.format("--server.port=%s", serverAddress.getPort());
 		String[] innerArgs = { argServerAddress, argServerPort };

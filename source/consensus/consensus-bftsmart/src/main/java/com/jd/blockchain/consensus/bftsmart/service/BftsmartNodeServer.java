@@ -139,13 +139,13 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         String preHostPort = System.getProperty("hostPort");
         if(preHostPort != null && preHostPort.length()>0){
             port = NumberUtils.parseNumber(preHostPort, Integer.class);
-            System.out.println("###ledger-init.sh###,set up the -DhostPort="+port);
+            System.out.println("###peer-startup.sh###,set up the -DhostPort="+port);
         }
 
         String preHostIp = System.getProperty("hostIp");
         if(preHostIp != null && preHostIp.length()>0){
             hostConfig.add(id, preHostIp, port);
-            System.out.println("###ledger-init.sh###,set up the -DhostIp="+preHostIp);
+            System.out.println("###peer-startup.sh###,set up the -DhostIp="+preHostIp);
         }
 
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
