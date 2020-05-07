@@ -272,7 +272,7 @@ public class LedgerInitializeWebController implements LedgerInitProcess, LedgerI
 		do {
 			allPermitted = startRequestPermissions(currentId, privKey);
 			if (!allPermitted) {
-				if (retry < 101) {
+				if (retry < 181) {
 					try {
 						Thread.sleep(10000);
 					} catch (InterruptedException e) {
