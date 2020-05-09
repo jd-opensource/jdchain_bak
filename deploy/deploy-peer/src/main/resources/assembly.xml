@@ -35,6 +35,7 @@
             	<include>com.jd.blockchain:storage-service</include>
             	<include>com.jd.blockchain:storage-rocksdb</include>
             	<include>com.jd.blockchain:storage-redis</include>
+            	<include>com.jd.blockchain:storage-kvdb</include>
             	<include>com.jd.blockchain:storage-composite</include>
             	<include>com.jd.blockchain:runtime-modular</include>
             	<include>com.jd.blockchain:runtime-modular-booter</include>
@@ -63,6 +64,7 @@
             	<exclude>com.jd.blockchain:storage-service</exclude>
             	<exclude>com.jd.blockchain:storage-rocksdb</exclude>
             	<exclude>com.jd.blockchain:storage-redis</exclude>
+            	<exclude>com.jd.blockchain:storage-kvdb</exclude>
             	<exclude>com.jd.blockchain:storage-composite</exclude>
             	<exclude>com.jd.blockchain:runtime-modular</exclude>
             	<exclude>com.jd.blockchain:runtime-modular-booter</exclude>
