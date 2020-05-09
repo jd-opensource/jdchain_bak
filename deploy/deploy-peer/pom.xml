@@ -62,6 +62,12 @@
 			<version>${core.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>storage-service</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
 		<!-- <dependency> <groupId>com.jd.blockchain</groupId> <artifactId>gateway</artifactId> 
 			<version>${project.version}</version> </dependency> -->
 
