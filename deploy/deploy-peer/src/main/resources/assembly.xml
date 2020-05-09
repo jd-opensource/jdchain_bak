@@ -32,7 +32,7 @@
             <outputDirectory>system</outputDirectory>
             <includes>
             	<include>com.jd.blockchain:ledger-core</include>
-            	<include>com.jd.blockchain:storage-service</include>
+<!--            	<include>com.jd.blockchain:storage-service</include>-->
             	<include>com.jd.blockchain:storage-rocksdb</include>
             	<include>com.jd.blockchain:storage-redis</include>
             	<include>com.jd.blockchain:storage-kvdb</include>
@@ -61,7 +61,7 @@
             <outputDirectory>libs</outputDirectory>
             <excludes>
             	<exclude>com.jd.blockchain:ledger-core</exclude>
-            	<exclude>com.jd.blockchain:storage-service</exclude>
+<!--            	<exclude>com.jd.blockchain:storage-service</exclude>-->
             	<exclude>com.jd.blockchain:storage-rocksdb</exclude>
             	<exclude>com.jd.blockchain:storage-redis</exclude>
             	<exclude>com.jd.blockchain:storage-kvdb</exclude>
