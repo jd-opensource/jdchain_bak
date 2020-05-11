@@ -18,4 +18,4 @@
 	url = git@github.com:blockchain-jd-com/jdchain-test.git
 [submodule "kvdb"] 
 	path = kvdb
-	url = git@github.com:blockchain-jd-com/jdchain-kvdb.git 
+	url = git@github.com:blockchain-jd-com/kvdb.git 
