@@ -15,11 +15,11 @@ if [ -f "$PID_LOG" ]; then
     if [[ $PID_LINE == *GW_BOOT_PID* ]]; then
         LOG_PID=$(echo $PID_LINE | cut -d "=" -f 2 | cut -d "[" -f 2 | cut -d "]" -f 1)
         echo "Last Gateway Boot PID = $LOG_PID ..."
-        PID=`ps -ef | grep deployment-gateway | grep $LOG_PID | grep -v grep | awk '{print $2}'`
+        PID=`ps -ef | grep deploy-gateway- | grep $LOG_PID | grep -v grep | awk '{print $2}'`
     fi
 #启动文件不存在则直接通过PS进行过滤
 else
-    PID=`ps -ef | grep $BOOT_HOME/lib/deployment-gateway | grep -v grep | awk '{print $2}'`
+    PID=`ps -ef | grep $BOOT_HOME/lib/deploy-gateway- | grep -v grep | awk '{print $2}'`
 fi
 
 #通过Kill命令将进程杀死

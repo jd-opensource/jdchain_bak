@@ -15,11 +15,11 @@ if [ -f "$PID_LOG" ]; then
     if [[ $PID_LINE == *PEER_BOOT_PID* ]]; then
         LOG_PID=$(echo $PID_LINE | cut -d "=" -f 2 | cut -d "[" -f 2 | cut -d "]" -f 1)
         echo "Last Peer Boot PID = $LOG_PID ..."
-        PID=`ps -ef | grep deployment-peer | grep $LOG_PID | grep -v grep | awk '{print $2}'`
+        PID=`ps -ef | grep deploy-peer- | grep $LOG_PID | grep -v grep | awk '{print $2}'`
     fi
 #启动文件不存在则直接通过PS进行过滤
 else
-    PID=`ps -ef | grep $BOOT_HOME/system/deployment-peer | grep -v grep | awk '{print $2}'`
+    PID=`ps -ef | grep $BOOT_HOME/system/deploy-peer- | grep -v grep | awk '{print $2}'`
 fi
 
 #通过Kill命令将进程杀死
