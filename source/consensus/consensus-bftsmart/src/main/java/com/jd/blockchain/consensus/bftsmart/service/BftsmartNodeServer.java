@@ -13,6 +13,8 @@ import com.jd.blockchain.consensus.service.*;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.transaction.TxResponseMessage;
+import com.jd.blockchain.utils.ConsoleUtils;
+import com.jd.blockchain.utils.StringUtils;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +62,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private TOMConfiguration tomConfig;
 
-//    private TOMConfiguration outerTomConfig;
+    private TOMConfiguration outerTomConfig;
 
     private HostsConfig hostsConfig;
     private Properties systemConfig;
@@ -130,26 +132,26 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     protected void initConfig(int id, Properties systemsConfig, HostsConfig hostConfig) {
-//        byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
-//        Properties sysConfClone = (Properties)systemsConfig.clone();
+        byte[] serialHostConf = BinarySerializeUtils.serialize(hostConfig);
+        Properties sysConfClone = (Properties)systemsConfig.clone();
         int port = hostConfig.getPort(id);
 //        hostConfig.add(id, DEFAULT_BINDING_HOST, port);
 
         //if ledger-init.sh set up the -DhostIp=xxx, then get it;
         String preHostPort = System.getProperty("hostPort");
-        if(preHostPort != null && preHostPort.length()>0){
+        if(!StringUtils.isEmpty(preHostPort)){
             port = NumberUtils.parseNumber(preHostPort, Integer.class);
-            System.out.println("###peer-startup.sh###,set up the -DhostPort="+port);
+            ConsoleUtils.info("###peer-startup.sh###,set up the -DhostPort="+port);
         }
 
         String preHostIp = System.getProperty("hostIp");
-        if(preHostIp != null && preHostIp.length()>0){
+        if(!StringUtils.isEmpty(preHostIp)){
             hostConfig.add(id, preHostIp, port);
-            System.out.println("###peer-startup.sh###,set up the -DhostIp="+preHostIp);
+            ConsoleUtils.info("###peer-startup.sh###,set up the -DhostIp="+preHostIp);
         }
 
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
-//        this.outerTomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
+        this.outerTomConfig = new TOMConfiguration(id, sysConfClone, BinarySerializeUtils.deserialize(serialHostConf));
     }
 
     @Override
@@ -168,7 +170,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     public TOMConfiguration getTomConfig() {
-        return tomConfig;
+        return outerTomConfig;
     }
 
     public int getId() {
@@ -180,7 +182,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             throw new IllegalArgumentException("ReplicaID is negative!");
         }
         this.tomConfig.setProcessId(id);
-//        this.outerTomConfig.setProcessId(id);
+        this.outerTomConfig.setProcessId(id);
     }
 
     public BftsmartConsensusSettings getConsensusSetting() {
