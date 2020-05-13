@@ -82,7 +82,7 @@ JD Chain 源代码包括 3 个代码仓库
   - URL：git@github.com:blockchain-jd-com/jdchain-core.git
   - 说明：模块组件实现的源码库；
 - explorer 项目库：
-  - URL：git@github.com:blockchain-jd-com/jdchain-project.git
+  - URL：git@github.com:blockchain-jd-com/explorer.git
   - 说明：相关产品的前端模块的源码库；
 - libs/bft-smart 项目库：
   - URL：git@github.com:blockchain-jd-com/bftsmart.git
