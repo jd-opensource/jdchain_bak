@@ -1,12 +1,14 @@
 package com.jd.blockchain.consensus.bftsmart.service;
 
 import java.io.ByteArrayOutputStream;
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import bftsmart.consensus.app.BatchAppResultImpl;
+import bftsmart.reconfiguration.views.View;
 import bftsmart.tom.*;
 import com.jd.blockchain.binaryproto.BinaryProtocol;
 import com.jd.blockchain.consensus.service.*;
@@ -55,8 +57,9 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private BftsmartConsensusManageService manageService;
 
-
     private volatile BftsmartTopology topology;
+
+    private volatile BftsmartTopology outerTopology;
 
     private volatile BftsmartConsensusSettings setting;
 
@@ -190,6 +193,9 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     public BftsmartTopology getTopology() {
+        if (outerTopology != null) {
+            return outerTopology;
+        }
         return topology;
     }
 
@@ -512,6 +518,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 LOGGER.debug("Start replica...[ID=" + getId() + "]");
                 this.replica = new ServiceReplica(tomConfig, this, this);
                 this.topology = new BftsmartTopology(replica.getReplicaContext().getCurrentView());
+                initOutTopology();
                 status = Status.RUNNING;
 //                createProxyClient();
                 LOGGER.debug(
@@ -549,6 +556,24 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                 status = Status.STOPPED;
             }
         }
+    }
+
+    private void initOutTopology() {
+        View currView = this.topology.getView();
+        int id = currView.getId();
+        int f = currView.getF();
+        int[] processes = currView.getProcesses();
+        InetSocketAddress[] addresses = new InetSocketAddress[processes.length];
+        for (int i = 0; i < processes.length; i++) {
+            int pid = processes[i];
+            if (id == pid) {
+                addresses[i] = new InetSocketAddress(this.outerTomConfig.getHost(id), this.outerTomConfig.getPort(id));
+            } else {
+                addresses[i] = currView.getAddress(pid);
+            }
+        }
+        View returnView = new View(id, processes, f, addresses);
+        this.outerTopology = new BftsmartTopology(returnView);
     }
 
     enum Status {
