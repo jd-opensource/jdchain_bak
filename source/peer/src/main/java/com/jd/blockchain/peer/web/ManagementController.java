@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.utils.net.NetworkAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,7 +169,24 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
                 }
                 try {
                     clientIncomingSettings = peer.getManageService().authClientIncoming(authId);
-                    break;
+
+                    //add for test the gateway connect to peer0; 20200514;
+					ConsensusSettings consensusSettings = clientIncomingSettings.getConsensusSettings();
+					if (consensusSettings instanceof BftsmartConsensusSettings) {
+						BftsmartConsensusSettings settings = (BftsmartConsensusSettings) consensusSettings;
+						NodeSettings[] nodeSettings = settings.getNodes();
+						if (nodeSettings != null) {
+							for (NodeSettings ns : nodeSettings) {
+								if (ns instanceof BftsmartNodeSettings) {
+									BftsmartNodeSettings bftNs = (BftsmartNodeSettings) ns;
+									NetworkAddress address = bftNs.getNetworkAddress();
+									System.out.printf("PartiNode id = %s, host = %s, port = %s \r\n", bftNs.getId(), address.getHost(), address.getPort());
+								}
+							}
+						}
+					}
+
+					break;
                 } catch (Exception e) {
                     throw new AuthenticationServiceException(e.getMessage(), e);
                 }
