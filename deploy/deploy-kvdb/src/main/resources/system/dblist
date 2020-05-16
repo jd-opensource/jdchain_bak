@@ -1,0 +1,2 @@
+#通过配置enable为true可以在kvdb-server启动时创建或加载指定数据库
+#db.test1.enable=true

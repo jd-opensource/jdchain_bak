@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jd.blockchain</groupId>
+		<artifactId>jdchain-samples</artifactId>
+		<version>1.2.0.RELEASE</version>
+	</parent>
+	<artifactId>sdk-samples</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>sdk-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>ledger-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>contract-samples</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!--<plugin> -->
+			<!--<groupId>org.springframework.boot</groupId> -->
+			<!--<artifactId>spring-boot-maven-plugin</artifactId> -->
+			<!--<configuration> -->
+			<!--<mainClass>com.jd.blockchain.sdk.samples.SDKDemo_RegisterTest</mainClass> -->
+			<!--</configuration> -->
+			<!--</plugin> -->
+		</plugins>
+	</build>
+</project>
