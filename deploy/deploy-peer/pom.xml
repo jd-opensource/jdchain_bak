@@ -30,16 +30,6 @@
 			<artifactId>manager-booter</artifactId>
 			<version>${core.version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>storage-composite</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>storage-service</artifactId>
-			<version>${project.version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-redis</artifactId>
@@ -67,15 +57,6 @@
 			<artifactId>tools-keygen-booter</artifactId>
 			<version>${core.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>storage-service</artifactId>
-			<version>${core.version}</version>
-		</dependency>
-
-		<!-- <dependency> <groupId>com.jd.blockchain</groupId> <artifactId>gateway</artifactId> 
-			<version>${project.version}</version> </dependency> -->
 
 	</dependencies>
 
