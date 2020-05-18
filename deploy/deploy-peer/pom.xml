@@ -64,6 +64,12 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-keygen-booter</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-service</artifactId>
 			<version>${core.version}</version>
 		</dependency>
