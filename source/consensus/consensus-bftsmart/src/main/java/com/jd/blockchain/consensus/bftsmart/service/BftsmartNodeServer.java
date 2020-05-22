@@ -560,7 +560,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private void initOutTopology() {
         View currView = this.topology.getView();
-        int id = currView.getId();
+        int id = tomConfig.getProcessId();
         int f = currView.getF();
         int[] processes = currView.getProcesses();
         InetSocketAddress[] addresses = new InetSocketAddress[processes.length];
@@ -572,7 +572,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             } else {
                 addresses[i] = currView.getAddress(pid);
             }
-            System.out.printf("my process id = %s, address = %s \r\n", id, addresses[i]);
+            System.out.printf("my process id = %s, address = %s \r\n", pid, addresses[i]);
         }
         View returnView = new View(id, processes, f, addresses);
         this.outerTopology = new BftsmartTopology(returnView);
