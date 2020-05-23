@@ -560,19 +560,20 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     private void initOutTopology() {
         View currView = this.topology.getView();
-        int id = tomConfig.getProcessId();
+        int id = currView.getId();
+        int curProcessId = tomConfig.getProcessId();
         int f = currView.getF();
         int[] processes = currView.getProcesses();
         InetSocketAddress[] addresses = new InetSocketAddress[processes.length];
         for (int i = 0; i < processes.length; i++) {
             int pid = processes[i];
-            if (id == pid) {
-                System.out.printf("my process id = %s, host = %s, port = %s \r\n", id, this.outerTomConfig.getHost(id), this.outerTomConfig.getPort(id));
+            if (curProcessId == pid) {
+                System.out.printf("outerTomConfig in current node, my viewId = %s , my process id = %s, host = %s, port = %s \r\n", id, pid, this.outerTomConfig.getHost(id), this.outerTomConfig.getPort(id));
                 addresses[i] = new InetSocketAddress(this.outerTomConfig.getHost(id), this.outerTomConfig.getPort(id));
             } else {
-                addresses[i] = currView.getAddress(pid);
+                addresses[i] = currView.getAddress(id);
             }
-            System.out.printf("my process id = %s, address = %s \r\n", pid, addresses[i]);
+            System.out.printf("list tomConfig, viewId = %s,  process id = %s, address = %s \r\n", id, pid, addresses[i]);
         }
         View returnView = new View(id, processes, f, addresses);
         this.outerTopology = new BftsmartTopology(returnView);
