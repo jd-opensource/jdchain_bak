@@ -11,12 +11,21 @@ public class ContractExecuteException extends LedgerException {
 
     private static final long serialVersionUID = 8685914012112243776L;
 
-    public ContractExecuteException(String message) {
-        super(message);
-    }
-
     public ContractExecuteException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    public ContractExecuteException() {
+        this(TransactionState.CONTRACT_EXECUTE_ERROR, null);
+    }
+
+    public ContractExecuteException(String message) {
+        this(TransactionState.CONTRACT_EXECUTE_ERROR, message);
+    }
+
+    private ContractExecuteException(TransactionState state, String message) {
+        super(message);
+        assert TransactionState.SUCCESS != state;
+        setState(state);
+    }
 }

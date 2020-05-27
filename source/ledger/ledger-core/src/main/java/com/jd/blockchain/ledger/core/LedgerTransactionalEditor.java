@@ -289,7 +289,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		}
 		if (previousTxSnapshot == null) {
 			// 当前区块没有加入过交易，不允许产生空区块；
-			throw new IllegalStateException(
+			throw new BlockRollbackException(TransactionState.EMPTY_BLOCK_ERROR,
 					"There is no transaction in the current block, and no empty blocks is allowed!");
 		}
 

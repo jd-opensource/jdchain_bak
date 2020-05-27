@@ -7,13 +7,7 @@ import com.jd.blockchain.binaryproto.DataContractRegistry;
 import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainIdentity;
-import com.jd.blockchain.ledger.BlockchainIdentityData;
-import com.jd.blockchain.ledger.CryptoSetting;
-import com.jd.blockchain.ledger.LedgerException;
-import com.jd.blockchain.ledger.MerkleProof;
-import com.jd.blockchain.ledger.MerkleSnapshot;
-import com.jd.blockchain.ledger.TypedValue;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
@@ -256,7 +250,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 		long version = merkleDataset.getVersion(address);
 		if (version >= 0) {
-			throw new LedgerException("The registering account already exist!");
+			throw new LedgerException("The registering account already exist!", TransactionState.DATA_ACCOUNT_EXIST);
 		}
 
 		if (!accessPolicy.checkRegistering(address, pubKey)) {
