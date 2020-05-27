@@ -50,6 +50,11 @@ public enum TransactionState {
 	PARTICIPANT_DOES_NOT_EXIST((byte) 0x06),
 
 	/**
+	 * 合约执行错误；
+	 */
+	CONTRACT_EXECUTE_ERROR((byte) 0x07),
+
+	/**
 	 * 被安全策略拒绝；
 	 */
 	REJECTED_BY_SECURITY_POLICY((byte) 0x10),

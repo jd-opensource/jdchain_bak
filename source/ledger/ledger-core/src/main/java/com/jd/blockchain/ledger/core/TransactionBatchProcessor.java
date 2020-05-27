@@ -157,19 +157,11 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 			throw e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// 抛弃发生处理异常的交易请求；
 			resp = discard(request, TransactionState.SYSTEM_ERROR);
 			LOGGER.error(String.format(
 					"Ignore transaction caused by the system exception! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
-					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
-					e.getMessage()), e);
-
-		} catch (Error e) {
-			// 抛弃发生系统错误的交易请求；
-			resp = discard(request, TransactionState.SYSTEM_ERROR);
-			LOGGER.error(String.format(
-					"Ignore transaction caused by the transaction op error! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 
@@ -315,6 +307,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 				result = TransactionState.USER_DOES_NOT_EXIST;
 			} else if (e instanceof ContractDoesNotExistException) {
 				result = TransactionState.CONTRACT_DOES_NOT_EXIST;
+			} else if (e instanceof ContractExecuteException) {
+				result = TransactionState.CONTRACT_EXECUTE_ERROR;
 			} else if (e instanceof ParticipantDoesNotExistException) {
 				result = TransactionState.PARTICIPANT_DOES_NOT_EXIST;
 			} else if (e instanceof DataVersionConflictException) {
@@ -333,7 +327,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					"Due to ledger security exception, the data changes resulting from transaction execution will be rolled back and the results of the transaction will be committed! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			result = TransactionState.SYSTEM_ERROR;
 			txCtx.discardAndCommit(TransactionState.SYSTEM_ERROR, operationResults);
 			LOGGER.error(String.format(
