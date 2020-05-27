@@ -165,7 +165,16 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
 					e.getMessage()), e);
 
-		} finally {
+		} catch (Error e) {
+			// 抛弃发生系统错误的交易请求；
+			resp = discard(request, TransactionState.SYSTEM_ERROR);
+			LOGGER.error(String.format(
+					"Ignore transaction caused by the transaction op error! --[BlockHeight=%s][RequestHash=%s][TxHash=%s] --%s",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash(),
+					e.getMessage()), e);
+
+		}
+		finally {
 			// 清空交易的用户安全策略；
 			SecurityContext.removeContextUsersPolicy();
 		}
