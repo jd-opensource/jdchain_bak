@@ -1,11 +1,11 @@
 package com.jd.blockchain.runtime;
 
-import java.io.InputStream;
-import java.util.concurrent.Callable;
-
-import com.jd.blockchain.ledger.ContractExecuteException;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import com.jd.blockchain.utils.concurrent.CompletableAsyncFuture;
+
+import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.Callable;
 
 public abstract class AbstractModule implements Module {
 	
@@ -93,8 +93,17 @@ public abstract class AbstractModule implements Module {
 		}
 		try {
 			return callable.call();
+		} catch (UndeclaredThrowableException e) {
+			if(e.getCause() == null){
+				throw e;
+			}
+			if(e.getCause() instanceof RuntimeException){
+				throw (RuntimeException)e.getCause();
+			}
+
+			throw new IllegalStateException(e.getCause().getMessage(), e.getCause());
 		} catch (Exception e) {
-			throw new ContractExecuteException(e.getMessage(), e);
+			throw new IllegalStateException(e.getMessage(), e);
 		} finally {
 			if (origClassLoader != Thread.currentThread().getContextClassLoader()) {
 				Thread.currentThread().setContextClassLoader(origClassLoader);

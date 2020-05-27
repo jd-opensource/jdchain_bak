@@ -30,11 +30,6 @@ public enum TransactionState {
 	DATA_ACCOUNT_DOES_NOT_EXIST((byte) 0x02),
 
 	/**
-	 * 数据账户存在；
-	 */
-	DATA_ACCOUNT_EXIST((byte) 0x12),
-
-	/**
 	 * 用户不存在；
 	 */
 	USER_DOES_NOT_EXIST((byte) 0x03),
@@ -63,6 +58,11 @@ public enum TransactionState {
 	 * 被安全策略拒绝；
 	 */
 	REJECTED_BY_SECURITY_POLICY((byte) 0x10),
+
+	/**
+	 * 账户注册冲突；
+	 */
+	ACCOUNT_REGISTER_CONFLICT((byte) 0x12),
 
 	/**
 	 * 由于在错误的账本上执行交易而被丢弃；

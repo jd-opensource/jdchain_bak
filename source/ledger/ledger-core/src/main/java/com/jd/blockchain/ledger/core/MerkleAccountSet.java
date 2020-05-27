@@ -250,7 +250,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		}
 		long version = merkleDataset.getVersion(address);
 		if (version >= 0) {
-			throw new LedgerException("The registering account already exist!", TransactionState.DATA_ACCOUNT_EXIST);
+			throw new LedgerException("The registering account already exist!", TransactionState.ACCOUNT_REGISTER_CONFLICT);
 		}
 
 		if (!accessPolicy.checkRegistering(address, pubKey)) {
