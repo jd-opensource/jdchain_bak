@@ -3,6 +3,7 @@ package com.jd.blockchain.runtime;
 import java.io.InputStream;
 import java.util.concurrent.Callable;
 
+import com.jd.blockchain.ledger.ContractExecuteException;
 import com.jd.blockchain.utils.concurrent.AsyncFuture;
 import com.jd.blockchain.utils.concurrent.CompletableAsyncFuture;
 
@@ -93,7 +94,7 @@ public abstract class AbstractModule implements Module {
 		try {
 			return callable.call();
 		} catch (Exception e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new ContractExecuteException(e.getMessage(), e);
 		} finally {
 			if (origClassLoader != Thread.currentThread().getContextClassLoader()) {
 				Thread.currentThread().setContextClassLoader(origClassLoader);

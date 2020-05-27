@@ -76,15 +76,13 @@ public abstract class AbstractContractCode implements ContractCode {
 			BytesValueList bytesValues = eventContext.getArgs();
 			Object[] args = BytesValueEncoding.decode(bytesValues, handleMethod.getParameterTypes());
 
-			try {
-				retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
-			} catch (Throwable e) {
-				throw new ContractExecuteException(String.format("Contract[%s:%s] has no handle method to handle event[%s]!", address.toString(),
-						contractDefinition.getType().getName(), eventContext.getEvent()));
-			}
+			retn = ReflectionUtils.invokeMethod(handleMethod, contractInstance, args);
 
 		} catch (Exception e) {
 			error = e;
+		} catch (Error e) {
+			throw new ContractExecuteException(String.format("Contract[%s:%s] has no handle method to handle event[%s]!", address.toString(),
+					contractDefinition.getType().getName(), eventContext.getEvent()));
 		}
 
 		if (evtProcAwire != null) {

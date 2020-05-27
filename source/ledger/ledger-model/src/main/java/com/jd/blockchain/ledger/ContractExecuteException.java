@@ -13,6 +13,7 @@ public class ContractExecuteException extends LedgerException {
 
     public ContractExecuteException(String message, Throwable cause) {
         super(message, cause);
+        setState(TransactionState.CONTRACT_EXECUTE_ERROR);
     }
 
     public ContractExecuteException() {
