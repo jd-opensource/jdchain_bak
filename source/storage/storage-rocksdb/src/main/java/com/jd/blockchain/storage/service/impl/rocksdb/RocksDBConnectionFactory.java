@@ -85,12 +85,11 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	}
 
 	private Options initOptions() {
-		final Filter bloomFilter = new BloomFilter(32);
-		Cache cache = new LRUCache(2 * SizeUnit.GB);
+		final Filter bloomFilter = new BloomFilter(10);
+		Cache cache = new LRUCache(256 * SizeUnit.MB);
 
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
 				.setFilterPolicy(bloomFilter)
-				.setBlockSize(4 * SizeUnit.KB)
 				.setBlockSizeDeviation(10)
 				.setBlockCache(cache)
 				.setNoBlockCache(false)
@@ -107,6 +106,11 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		compressionLevels.add(CompressionType.SNAPPY_COMPRESSION); // 6-7
 
 		Options options = new Options()
+				// 最多占用256 * 7 + 256 = 2G内存
+				.setWriteBufferSize(256 * SizeUnit.MB)
+				.setMaxWriteBufferNumber(7)
+				.setMinWriteBufferNumberToMerge(2)
+				.setMaxOpenFiles(-1)
 				.setAllowConcurrentMemtableWrite(true)
 				.setEnableWriteThreadAdaptiveYield(true)
 				.setCreateIfMissing(true)
@@ -118,8 +122,6 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 				.setMinWriteBufferNumberToMerge(4)
 				.setCompressionPerLevel(compressionLevels)
 				.setNumLevels(7)
-				.setCompressionType(CompressionType.SNAPPY_COMPRESSION)
-				.setCompactionStyle(CompactionStyle.UNIVERSAL)
 				.setMemTableConfig(new SkipListMemTableConfig())
 				;
 		return options;
