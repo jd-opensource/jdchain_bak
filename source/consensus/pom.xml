@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>jdchain-root</artifactId>
-		<version>1.1.5‐SNAPSHOT</version>
+		<version>1.1.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>consensus</artifactId>
 	<packaging>pom</packaging>
