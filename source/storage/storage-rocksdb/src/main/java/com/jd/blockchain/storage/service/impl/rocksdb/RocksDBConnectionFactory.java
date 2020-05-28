@@ -86,11 +86,13 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 
 	private Options initOptions() {
 		final Filter bloomFilter = new BloomFilter(32);
+		Cache cache = new LRUCache(2 * SizeUnit.GB);
+
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
-				.setFilter(bloomFilter)
+				.setFilterPolicy(bloomFilter)
 				.setBlockSize(4 * SizeUnit.KB)
 				.setBlockSizeDeviation(10)
-				.setBlockCacheSize(64 * SizeUnit.GB)
+				.setBlockCache(cache)
 				.setNoBlockCache(false)
 				.setCacheIndexAndFilterBlocks(true)
 				.setBlockRestartInterval(16)
