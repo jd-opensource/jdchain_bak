@@ -446,7 +446,7 @@ public interface HttpBlockchainQueryService extends BlockchainExtendQueryService
 	 *            交易内容的hash，即交易的 {@link Transaction#getContentHash()} 属性的值；
 	 * @return
 	 */
-	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/txs/{contentHash}")
+	@HttpAction(method=HttpMethod.GET, path="ledgers/{ledgerHash}/txs/hash/{contentHash}")
 	@Override
 	LedgerTransaction getTransactionByContentHash(@PathParam(name="ledgerHash", converter=HashDigestToStringConverter.class) HashDigest ledgerHash,
                                                   @PathParam(name="contentHash", converter=HashDigestToStringConverter.class) HashDigest contentHash);
