@@ -73,7 +73,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	public boolean support(String scheme) {
 		return URI_SCHEME.equalsIgnoreCase(scheme);
 	}
-	
+
 	@PreDestroy
 	@Override
 	public void close() {
@@ -85,25 +85,30 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	}
 
 	private Options initOptions() {
-		Cache cache = new LRUCache(512 * SizeUnit.MB);
+		Cache cache = new LRUCache(512 * SizeUnit.MB, 64, false);
 
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
 				.setBlockCache(cache)
-				.setCacheIndexAndFilterBlocks(true)
+				.setMetadataBlockSize(4096)
+				.setCacheIndexAndFilterBlocks(true) // 设置索引和布隆过滤器使用Block Cache内存
+				.setCacheIndexAndFilterBlocksWithHighPriority(true)
+				.setIndexType(IndexType.kTwoLevelIndexSearch) // 设置两级索引，控制索引占用内存
+				.setPinTopLevelIndexAndFilter(false)
+				.setBlockSize(4096)
+				.setFilterPolicy(null) // 不设置布隆过滤器
 				;
 
 		Options options = new Options()
-				// 最多占用256 * 7 + 512 = 2.25G内存
+				// 最多占用256 * 6 + 512 = 2G内存
 				.setWriteBufferSize(256 * SizeUnit.MB)
-				.setMaxWriteBufferNumber(7)
+				.setMaxWriteBufferNumber(6)
 				.setMinWriteBufferNumberToMerge(2)
-				.setMaxOpenFiles(-1)
-				.setAllowConcurrentMemtableWrite(true)
+				.setMaxOpenFiles(100) // 控制最大打开文件数量，防止内存持续增加
+				.setAllowConcurrentMemtableWrite(true) //允许并行Memtable写入
 				.setCreateIfMissing(true)
 				.setTableFormatConfig(tableOptions)
 				.setMaxBackgroundCompactions(5)
 				.setMaxBackgroundFlushes(4)
-				.setMemTableConfig(new SkipListMemTableConfig())
 				;
 		return options;
 	}
