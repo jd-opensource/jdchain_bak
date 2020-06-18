@@ -83,16 +83,16 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 
 			PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(defaultKeyPair, peerAddress, peerProviders);
 			if (peerServiceFactory != null) {
-				LOGGER.error("Connect peer {} success !!!", peerAddress);
+				LOGGER.info("Connect peer {} success !!!", peerAddress);
 				// 连接成功
 				if (masterPeerServiceFactory == null) {
 					masterPeerServiceFactory = peerServiceFactory;
-					LOGGER.error("Master remote update to {}", peerAddress);
+					LOGGER.info("Master remote update to {}", peerAddress);
 				}
 				if (mostLedgerPeerServiceFactory == null) {
 					// 默认设置为第一个连接成功的，后续更新需要等待定时任务处理
 					mostLedgerPeerServiceFactory = new PeerServiceFactory(peerAddress, peerServiceFactory);
-					LOGGER.error("Most ledgers remote update to {}", peerAddress);
+					LOGGER.info("Most ledgers remote update to {}", peerAddress);
 				}
 				peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
 				updateLedgerCache();
