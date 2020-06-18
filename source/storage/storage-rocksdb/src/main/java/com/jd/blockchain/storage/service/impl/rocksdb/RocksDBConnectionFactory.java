@@ -1,11 +1,10 @@
 package com.jd.blockchain.storage.service.impl.rocksdb;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -19,8 +18,13 @@ import org.rocksdb.util.SizeUnit;
 
 public class RocksDBConnectionFactory implements DbConnectionFactory {
 
+	private static final String DB_CONFIG_ARG = "-rb";
+
+	private static Properties dbConfigProperties = null;
+
 	static {
 		RocksDB.loadLibrary();
+		init();
 	}
 
 	public static final String URI_SCHEME = "rocksdb";
@@ -85,32 +89,88 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	}
 
 	private Options initOptions() {
-		Cache cache = new LRUCache(512 * SizeUnit.MB, 64, false);
+		return initOptionsByProperties(dbConfigProperties);
+	}
 
+	private Options initOptionsByProperties(Properties dbProperties) {
+		long cacheCapacity = getLong(dbProperties, "cache.capacity", 512 * SizeUnit.MB);
+		int cacheNumShardBits = getInt(dbProperties, "cache.numShardBits", 64);
+
+		long tableBlockSize = getLong(dbProperties, "table.blockSize", 4 * SizeUnit.KB);
+		long tableMetadataBlockSize = getLong(dbProperties, "table.metadata.blockSize", 8 * SizeUnit.KB);
+		int tableBloomBitsPerKey = getInt(dbProperties, "table.bloom.bitsPerKey", 16);
+
+		long optionWriteBufferSize = getLong(dbProperties, "option.writeBufferSize", 256 * SizeUnit.MB);
+		int optionMaxWriteBufferNumber = getInt(dbProperties, "option.maxWriteBufferNumber", 7);
+		int optionMinWriteBufferNumberToMerge = getInt(dbProperties, "option.minWriteBufferNumberToMerge", 2);
+		int optionMaxOpenFiles = getInt(dbProperties, "option.maxOpenFiles", -1);
+		int optionMaxBackgroundCompactions = getInt(dbProperties, "option.maxBackgroundCompactions", 5);
+		int optionMaxBackgroundFlushes = getInt(dbProperties, "option.maxBackgroundFlushes", 4);
+
+		Cache cache = new LRUCache(cacheCapacity, cacheNumShardBits, false);
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
 				.setBlockCache(cache)
-				.setMetadataBlockSize(4096)
+				.setBlockSize(tableBlockSize)
+				.setMetadataBlockSize(tableMetadataBlockSize)
 				.setCacheIndexAndFilterBlocks(true) // 设置索引和布隆过滤器使用Block Cache内存
 				.setCacheIndexAndFilterBlocksWithHighPriority(true)
 				.setIndexType(IndexType.kTwoLevelIndexSearch) // 设置两级索引，控制索引占用内存
-				.setPinTopLevelIndexAndFilter(false)
-				.setBlockSize(4096)
-				.setFilterPolicy(null) // 不设置布隆过滤器
+				.setPinL0FilterAndIndexBlocksInCache(true) // 设置两级索引
+				.setFilterPolicy(new BloomFilter(tableBloomBitsPerKey, false)) // 设置布隆过滤器
 				;
-
 		Options options = new Options()
-				// 最多占用256 * 6 + 512 = 2G内存
-				.setWriteBufferSize(256 * SizeUnit.MB)
-				.setMaxWriteBufferNumber(6)
-				.setMinWriteBufferNumberToMerge(2)
-				.setMaxOpenFiles(100) // 控制最大打开文件数量，防止内存持续增加
+				// 最多占用256 * 7 + 512 = 2G+内存
+				.setWriteBufferSize(optionWriteBufferSize)
+				.setMaxWriteBufferNumber(optionMaxWriteBufferNumber)
+				.setMinWriteBufferNumberToMerge(optionMinWriteBufferNumberToMerge)
+				.setMaxOpenFiles(optionMaxOpenFiles) // 控制最大打开文件数量，防止内存持续增加
 				.setAllowConcurrentMemtableWrite(true) //允许并行Memtable写入
 				.setCreateIfMissing(true)
 				.setTableFormatConfig(tableOptions)
-				.setMaxBackgroundCompactions(5)
-				.setMaxBackgroundFlushes(4)
+				.setMaxBackgroundCompactions(optionMaxBackgroundCompactions)
+				.setMaxBackgroundFlushes(optionMaxBackgroundFlushes)
 				;
 		return options;
 	}
 
+	/**
+	 * 初始化参数配置
+	 *
+	 */
+	private static void init() {
+		String dbConfigPath = System.getProperty(DB_CONFIG_ARG);
+		if (dbConfigPath != null && dbConfigPath.length() > 0) {
+			File dbConfigFile = new File(dbConfigPath);
+			try {
+				dbConfigProperties = new Properties();
+				dbConfigProperties.load(new FileInputStream(dbConfigFile));
+			} catch (Exception e) {
+				throw new IllegalStateException(String.format("Load rocksdb.config %s error !!!", dbConfigPath), e);
+			}
+		}
+	}
+
+	private long getLong(Properties properties, String key, long defaultVal) {
+		if (properties == null || properties.isEmpty()) {
+			return defaultVal;
+		}
+		String prop = properties.getProperty(key);
+		if (prop == null || prop.length() == 0) {
+			return defaultVal;
+		} else {
+			return Long.parseLong(prop);
+		}
+	}
+
+	private int getInt(Properties properties, String key, int defaultVal) {
+		if (properties == null || properties.isEmpty()) {
+			return defaultVal;
+		}
+		String prop = properties.getProperty(key);
+		if (prop == null || prop.length() == 0) {
+			return defaultVal;
+		} else {
+			return Integer.parseInt(prop);
+		}
+	}
 }
