@@ -91,7 +91,7 @@ public class IntegrationTest4MQ {
 		Map<String,Object> otherMap = new HashMap<String,Object>();
 		otherMap.put("DATA_RETRIEVAL_URL",DATA_RETRIEVAL_URL);
 		GatewayTestRunner gateway = new GatewayTestRunner("127.0.0.1", 11000, gwkey0,
-				peerNodes[0].getServiceAddress(), providers, otherMap);
+				providers, otherMap, peerNodes[0].getServiceAddress());
 
 		AsyncCallback<Object> gwStarting = gateway.start();
 

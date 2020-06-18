@@ -53,7 +53,7 @@ public class IntegrationTest4Contract {
         gwkey0.setPrivKeyValue(IntegrationBase.PRIV_KEYS[0]);
         gwkey0.setPrivKeyPassword(encodedBase58Pwd);
         GatewayTestRunner gateway = new GatewayTestRunner("127.0.0.1", 11000, gwkey0,
-                peerNodes[0].getServiceAddress(), providers,null);
+                providers,null, peerNodes[0].getServiceAddress());
 
         ThreadInvoker.AsyncCallback<Object> gwStarting = gateway.start();
 

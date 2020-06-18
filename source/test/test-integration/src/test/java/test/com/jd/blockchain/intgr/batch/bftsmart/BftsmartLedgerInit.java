@@ -240,7 +240,7 @@ public class BftsmartLedgerInit {
         gwkey0.setPrivKeyValue(BftsmartConfig.PRIV_KEY[0]);
         gwkey0.setPrivKeyPassword(encodedBase58Pwd);
         GatewayTestRunner gateway = new GatewayTestRunner("127.0.0.1", 11000, gwkey0,
-                peerNode.getServiceAddress(), LedgerInitConsensusConfig.bftsmartProvider,null);
+                 LedgerInitConsensusConfig.bftsmartProvider,null, peerNode.getServiceAddress());
 
         ThreadInvoker.AsyncCallback<Object> gwStarting = gateway.start();
 
