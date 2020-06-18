@@ -131,7 +131,7 @@ public class IntegrationTest {
 		gwkey0.setPrivKeyValue(LedgerInitializeWebTest.PRIV_KEYS[0]);
 		gwkey0.setPrivKeyPassword(encodedBase58Pwd);
 
-		GatewayTestRunner gateway0 = new GatewayTestRunner("127.0.0.1", 10300, gwkey0, peerSrvAddr0, LedgerInitConsensusConfig.bftsmartProvider, null);
+		GatewayTestRunner gateway0 = new GatewayTestRunner("127.0.0.1", 10300, gwkey0, LedgerInitConsensusConfig.bftsmartProvider, null, peerSrvAddr0);
 
 		ThreadInvoker.AsyncCallback<Object> gwStarting0 = gateway0.start();
 
@@ -216,7 +216,7 @@ public class IntegrationTest {
 //	}
 	/**
 	 * 检查所有节点之间的账本是否一致；
-	 * 
+	 *
 	 * @param context
 	 */
 	private static void testConsistencyAmongNodes(IntegratedContext context) {
@@ -859,7 +859,7 @@ public class IntegrationTest {
 //				("888##abc##" + contractDataKey.getAddress() + "##" + previousBlock.getHash().toBase58() + "##"
 //						+ userKey.getAddress() + "##" + contractDeployKey.getAddress() + "##" + txContentHash.toBase58()
 //						+ "##SOME-VALUE").getBytes());
-		
+
 		// 签名；
 		PreparedTransaction ptx = txTpl.prepare();
 		ptx.sign(adminKey);
@@ -925,7 +925,7 @@ public class IntegrationTest {
 
 	/**
 	 * 根据合约构建字节数组;
-	 * 
+	 *
 	 * @return
 	 */
 	private byte[] getChainCodeBytes() {
