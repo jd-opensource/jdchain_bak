@@ -4,6 +4,8 @@ import java.io.File;
 
 import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,7 +32,7 @@ import org.springframework.util.NumberUtils;
 
 /**
  * 账本初始化器；
- * 
+ *
  * @author huanghaiquan
  *
  */
@@ -38,6 +40,7 @@ import org.springframework.util.NumberUtils;
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 public class LedgerInitCommand {
+	private Logger logger = LoggerFactory.getLogger(LedgerInitCommand.class);
 
 	private static final String LEDGER_BINDING_FILE_NAME = "ledger-binding.conf";
 
@@ -60,7 +63,7 @@ public class LedgerInitCommand {
 
 	/**
 	 * 入口；
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -214,12 +217,12 @@ public class LedgerInitCommand {
 		if(!StringUtils.isEmpty(preHostPort)){
 			int port = NumberUtils.parseNumber(preHostPort, Integer.class);
 			serverAddress.setPort(port);
-			ConsoleUtils.info("###ledger-init.sh###,set up the -DhostPort="+port);
+			logger.info("###ledger-init.sh###,set up the -DhostPort="+port);
 		}
 		String preHostIp = System.getProperty("hostIp");
 		if(!StringUtils.isEmpty(preHostIp)){
 			serverAddress.setHost(preHostIp);
-			ConsoleUtils.info("###ledger-init.sh###,set up the -DhostIp="+preHostIp);
+			logger.info("###ledger-init.sh###,set up the -DhostIp="+preHostIp);
 		}
 
 		String argServerAddress = String.format("--server.address=%s", serverAddress.getHost());
