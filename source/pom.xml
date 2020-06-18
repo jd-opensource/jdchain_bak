@@ -38,7 +38,7 @@
 	</modules>
 
 	<properties>
-		<bft-smart.version>0.4.2.RELEASE</bft-smart.version>
+		<bft-smart.version>0.4.3.RELEASE</bft-smart.version>
 		<data-explorer.version>1.1.3.RELEASE</data-explorer.version>
 		<manager-explorer.version>1.1.3.RELEASE</manager-explorer.version>
 		<commons-io.version>2.4</commons-io.version>
@@ -229,7 +229,7 @@
 				<version>${aspectj.version}</version>
 			</dependency>
 
-			<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId> 
+			<!-- <dependency> <groupId>asm</groupId> <artifactId>asm</artifactId>
 				<version>${asm.version}</version> </dependency> -->
 
 			<dependency>
@@ -391,7 +391,7 @@
 								<goal>copy-dependencies</goal>
 							</goals>
 							<configuration>
-								<!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录； 
+								<!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录；
 									也可以使用“自定义文件夹/自定义文件夹 例如：a/b”，也可以使用绝对路径如：“D:\test” -->
 								<outputDirectory>${project.build.directory}/libs</outputDirectory>
 								<excludeTransitive>false</excludeTransitive>
