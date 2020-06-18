@@ -2,14 +2,14 @@ package com.jd.blockchain.gateway;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
+import com.jd.blockchain.utils.IllegalDataException;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class GatewayConfigProperties {
+
 	// HTTP协议相关配置项的键的前缀；
 	public static final String HTTP_PREFIX = "http.";
 	// 网关的HTTP服务地址；
@@ -21,12 +21,14 @@ public class GatewayConfigProperties {
 
 	// 共识相关配置项的键的前缀；
 	public static final String PEER_PREFIX = "peer.";
+	// 共识节点的数量
+	public static final String PEER_SIZE = PEER_PREFIX + "size";
 	// 共识节点的服务地址；
-	public static final String PEER_HOST = PEER_PREFIX + "host";
+	public static final String PEER_HOST_FORMAT = PEER_PREFIX + "%s.host";
 	// 共识节点的服务端口；
-	public static final String PEER_PORT = PEER_PREFIX + "port";
+	public static final String PEER_PORT_FORMAT = PEER_PREFIX + "%s.port";
 	// 共识节点的服务是否启用安全证书；
-	public static final String PEER_SECURE = PEER_PREFIX + "secure";
+	public static final String PEER_SECURE_FORMAT = PEER_PREFIX + "%s.secure";
 	// 支持共识的Provider列表，以英文逗号分隔
 	public static final String PEER_PROVIDERS = PEER_PREFIX + "providers";
 
@@ -52,7 +54,7 @@ public class GatewayConfigProperties {
 
 	private ProviderConfig providerConfig = new ProviderConfig();
 
-	private NetworkAddress masterPeerAddress;
+	private Set<NetworkAddress> masterPeerAddresses = new HashSet<>();
 
 	private String dataRetrievalUrl;
 	private String schemaRetrievalUrl;
@@ -63,8 +65,8 @@ public class GatewayConfigProperties {
 		return http;
 	}
 
-	public NetworkAddress masterPeerAddress() {
-		return masterPeerAddress;
+	public Set<NetworkAddress> masterPeerAddresses() {
+		return masterPeerAddresses;
 	}
 
 	public String dataRetrievalUrl() {
@@ -87,11 +89,11 @@ public class GatewayConfigProperties {
 		return providerConfig;
 	}
 
-	public void setMasterPeerAddress(NetworkAddress peerAddress) {
+	public void addMasterPeerAddress(NetworkAddress peerAddress) {
 		if (peerAddress == null) {
 			throw new IllegalArgumentException("peerAddress is null!");
 		}
-		this.masterPeerAddress = peerAddress;
+		this.masterPeerAddresses.add(peerAddress);
 	}
 
 	public KeysConfig keys() {
@@ -122,11 +124,16 @@ public class GatewayConfigProperties {
 		configProps.http.port = getInt(props, HTTP_PORT, true);
 		configProps.http.contextPath = getProperty(props, HTTP_CONTEXT_PATH, false);
 
-		String peerHost = getProperty(props, PEER_HOST, true);
-		int peerPort = getInt(props, PEER_PORT, true);
-		boolean peerSecure = getBoolean(props, PEER_SECURE, false);
-		configProps.masterPeerAddress = new NetworkAddress(peerHost, peerPort, peerSecure);
-
+		int peerSize = getInt(props, PEER_SIZE, true);
+		if (peerSize <= 0) {
+			throw new IllegalDataException("Peer size is illegal !!!");
+		}
+		for (int i = 0; i < peerSize; i++) {
+			String peerHost = getProperty(props, String.format(PEER_HOST_FORMAT, i), true);
+			int peerPort = getInt(props, String.format(PEER_PORT_FORMAT, i), true);
+			boolean peerSecure = getBoolean(props, String.format(PEER_SECURE_FORMAT, i), false);
+			configProps.addMasterPeerAddress(new NetworkAddress(peerHost, peerPort, peerSecure));
+		}
 		String dataRetrievalUrl = getProperty(props, DATA_RETRIEVAL_URL, true);
 		configProps.dataRetrievalUrl = dataRetrievalUrl;
 
@@ -211,7 +218,7 @@ public class GatewayConfigProperties {
 
 		private HttpConfig() {
 		}
-		
+
 		private HttpConfig(String host, int port, String contextPath) {
 			this.host = host;
 			this.port = port;
@@ -221,7 +228,7 @@ public class GatewayConfigProperties {
 		public String getHost() {
 			return host;
 		}
-		
+
 		public void setHost(String host) {
 			this.host = host;
 		}
@@ -229,7 +236,7 @@ public class GatewayConfigProperties {
 		public int getPort() {
 			return port;
 		}
-		
+
 		public void setPort(int port) {
 			this.port = port;
 		}
@@ -237,7 +244,7 @@ public class GatewayConfigProperties {
 		public String getContextPath() {
 			return contextPath;
 		}
-		
+
 		public void setContextPath(String contextPath) {
 			this.contextPath = contextPath;
 		}
@@ -265,7 +272,7 @@ public class GatewayConfigProperties {
 		public String getPrivKeyPath() {
 			return privKeyPath;
 		}
-		
+
 		public String getPrivKeyValue() {
 			return privKeyValue;
 		}
@@ -293,7 +300,7 @@ public class GatewayConfigProperties {
 		public void setPrivKeyPassword(String privKeyPassword) {
 			this.privKeyPassword = privKeyPassword;
 		}
-		
+
 	}
 
 }

@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import com.jd.blockchain.gateway.web.GatewayLedgerLoadTimer;
+import com.jd.blockchain.utils.net.NetworkAddress;
 import org.apache.commons.io.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -82,8 +85,6 @@ public class GatewayServerBooter {
 			ConsoleUtils.info("Starting web server......");
 			GatewayServerBooter booter = new GatewayServerBooter(configProps,springConfigLocation);
 			booter.start();
-
-			ConsoleUtils.info("Peer[%s] is connected success!", configProps.masterPeerAddress().toString());
 		} catch (Exception e) {
 			ConsoleUtils.error("Error!! %s", e.getMessage());
 			if (debug) {
@@ -131,8 +132,20 @@ public class GatewayServerBooter {
 		blockBrowserController.setDataRetrievalUrl(config.dataRetrievalUrl());
 		blockBrowserController.setSchemaRetrievalUrl(config.getSchemaRetrievalUrl());
 		PeerConnector peerConnector = appCtx.getBean(PeerConnector.class);
-		peerConnector.connect(config.masterPeerAddress(), defaultKeyPair, config.providerConfig().getProviders());
-		ConsoleUtils.info("Peer[%s] is connected success!", config.masterPeerAddress().toString());
+
+		Set<NetworkAddress> peerAddresses = config.masterPeerAddresses();
+		StringBuilder peerAddressBuf = new StringBuilder();
+		for (NetworkAddress peerAddress : peerAddresses) {
+			peerConnector.connect(peerAddress, defaultKeyPair, config.providerConfig().getProviders());
+			if (peerAddressBuf.length() > 0) {
+				peerAddressBuf.append(",");
+			}
+			peerAddressBuf.append(peerAddress.toString());
+		}
+		// 不管连接是否成功，都需要释放许可
+		GatewayLedgerLoadTimer loadTimer = appCtx.getBean(GatewayLedgerLoadTimer.class);
+		loadTimer.release();
+		ConsoleUtils.info("Peer[%s] is connected success!", peerAddressBuf.toString());
 	}
 
 	public synchronized void close() {
