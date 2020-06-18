@@ -13,17 +13,17 @@ import org.springframework.util.CollectionUtils;
 import java.util.Map;
 
 public class GatewayTestRunner {
-	
+
 	private NetworkAddress serviceAddress;
-	
+
 	private GatewayServerBooter gatewayServer;
 
-	public GatewayTestRunner(String host, int port, KeyPairConfig gatewayDefaultKey, NetworkAddress masterPeerAddres) {
-		this(host, port, gatewayDefaultKey, masterPeerAddres, null,null);
+	public GatewayTestRunner(String host, int port, KeyPairConfig gatewayDefaultKey, NetworkAddress... masterPeerAddresses) {
+		this(host, port, gatewayDefaultKey, null,null, masterPeerAddresses);
 	}
 
-	public GatewayTestRunner(String host, int port, KeyPairConfig gatewayDefaultKey, NetworkAddress masterPeerAddres, String[] providers,
-							 Map<String,Object> otherMap) {
+	public GatewayTestRunner(String host, int port, KeyPairConfig gatewayDefaultKey, String[] providers,
+							 Map<String,Object> otherMap, NetworkAddress... masterPeerAddresses) {
 		this.serviceAddress = new NetworkAddress(host, port);
 		GatewayConfigProperties config = new GatewayConfigProperties();
 
@@ -36,7 +36,9 @@ public class GatewayTestRunner {
 			}
 		}
 
-		config.setMasterPeerAddress(masterPeerAddres);
+		for (NetworkAddress address : masterPeerAddresses) {
+			config.addMasterPeerAddress(address);
+		}
 
 		config.keys().getDefault().setPubKeyValue(gatewayDefaultKey.getPubKeyValue());
 		config.keys().getDefault().setPrivKeyValue(gatewayDefaultKey.getPrivKeyValue());
@@ -62,7 +64,7 @@ public class GatewayTestRunner {
 				return null;
 			}
 		};
-		
+
 		return invoker.start();
 	}
 
