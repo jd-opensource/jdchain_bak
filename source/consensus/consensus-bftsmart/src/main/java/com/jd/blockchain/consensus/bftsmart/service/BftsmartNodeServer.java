@@ -145,13 +145,13 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         String preHostPort = System.getProperty("hostPort");
         if(!StringUtils.isEmpty(preHostPort)){
             port = NumberUtils.parseNumber(preHostPort, Integer.class);
-            ConsoleUtils.info("###peer-startup.sh###,set up the -DhostPort="+port);
+            LOGGER.info("###peer-startup.sh###,set up the -DhostPort="+port);
         }
 
         String preHostIp = System.getProperty("hostIp");
         if(!StringUtils.isEmpty(preHostIp)){
             hostConfig.add(id, preHostIp, port);
-            ConsoleUtils.info("###peer-startup.sh###,set up the -DhostIp="+preHostIp);
+            LOGGER.info("###peer-startup.sh###,set up the -DhostIp="+preHostIp);
         }
 
         this.tomConfig = new TOMConfiguration(id, systemsConfig, hostConfig);
@@ -577,12 +577,12 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         for (int i = 0; i < processes.length; i++) {
             int pid = processes[i];
             if (curProcessId == pid) {
-                System.out.printf("outerTomConfig in current node, my viewId = %s , my process id = %s, host = %s, port = %s \r\n", id, pid, this.outerTomConfig.getHost(pid), this.outerTomConfig.getPort(pid));
+                LOGGER.debug("outerTomConfig in current node, my viewId = {} , my process id = {}, host = {}, port = {} \r\n", id, pid, this.outerTomConfig.getHost(pid), this.outerTomConfig.getPort(pid));
                 addresses[i] = new InetSocketAddress(this.outerTomConfig.getHost(pid), this.outerTomConfig.getPort(pid));
             } else {
                 addresses[i] = currView.getAddress(pid);
             }
-            System.out.printf("list tomConfig, viewId = %s,  process id = %s, address = %s \r\n", id, pid, addresses[i]);
+            LOGGER.debug("list tomConfig, viewId = {},  process id = {}, address = {} \r\n", id, pid, addresses[i]);
         }
         View returnView = new View(id, processes, f, addresses);
         this.outerTopology = new BftsmartTopology(returnView);
