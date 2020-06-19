@@ -10,11 +10,8 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DataAccountSet implements Transactional, DataAccountQuery {
-	private Logger logger = LoggerFactory.getLogger(DataAccountSet.class);
 	private MerkleAccountSet accountSet;
 
 	public DataAccountSet(CryptoSetting cryptoSetting, String prefix, ExPolicyKVStorage exStorage,
