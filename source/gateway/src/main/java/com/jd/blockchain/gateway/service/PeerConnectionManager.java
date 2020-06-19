@@ -97,6 +97,8 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 				peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
 				updateLedgerCache();
 			}
+		} catch (Exception e) {
+			LOGGER.error("Connect peer {} fail !!!", peerAddress);
 		} finally {
 			// 连接成功的话，更新账本
 			ledgerHashLock.unlock();
