@@ -41,6 +41,7 @@ public class RolesConfigureOperationHandle extends AbstractLedgerOperationHandle
 
 					rp.disable(rpcfg.getDisableLedgerPermissions());
 					rp.disable(rpcfg.getDisableTransactionPermissions());
+					rpSettings.updateRolePrivilege(rp);
 				}
 			}
 		}

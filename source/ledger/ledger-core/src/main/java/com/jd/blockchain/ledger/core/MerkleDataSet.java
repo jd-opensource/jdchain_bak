@@ -17,17 +17,19 @@ import com.jd.blockchain.utils.DataIterator;
 import com.jd.blockchain.utils.Dataset;
 import com.jd.blockchain.utils.Transactional;
 import com.jd.blockchain.utils.io.BytesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 对新的数据项按顺序递增进行编号的 Merkle 数据集； <br>
- * 
+ *
  * 注：此实现不是线程安全的；
- * 
+ *
  * @author huanghaiquan
  *
  */
 public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Bytes, byte[]> {
-
+	private Logger logger = LoggerFactory.getLogger(MerkleDataSet.class);
 	/**
 	 * 4 MB MaxSize of value;
 	 */
@@ -58,7 +60,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jd.blockchain.ledger.core.MerkleProvable#getRootHash()
 	 */
 	@Override
@@ -68,7 +70,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 创建一个新的 MerkleDataSet；
-	 * 
+	 *
 	 * @param setting           密码设置；
 	 * @param exPolicyStorage   默克尔树的存储；
 	 * @param versioningStorage 数据的存储；
@@ -80,7 +82,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 创建一个新的 MerkleDataSet；
-	 * 
+	 *
 	 * @param setting           密码设置；
 	 * @param exPolicyStorage   默克尔树的存储；
 	 * @param versioningStorage 数据的存储；
@@ -111,7 +113,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 从指定的 Merkle 根构建的 MerkleDataSet；
-	 * 
+	 *
 	 * @param dataStorage
 	 * @param defaultMerkleHashAlgorithm
 	 * @param verifyMerkleHashOnLoad
@@ -125,7 +127,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 从指定的 Merkle 根构建的 MerkleDataSet；
-	 * 
+	 *
 	 * @param dataStorage
 	 * @param defaultMerkleHashAlgorithm
 	 * @param verifyMerkleHashOnLoad
@@ -169,7 +171,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 返回理论上允许的最大数据索引；
-	 * 
+	 *
 	 * @return
 	 */
 	public long getMaxIndex() {
@@ -229,7 +231,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * get the data at the specific index;
-	 * 
+	 *
 	 * @param fromIndex
 	 * @return
 	 */
@@ -241,7 +243,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * get the key at the specific index;
-	 * 
+	 *
 	 * @param fromIndex
 	 * @return
 	 */
@@ -254,14 +256,14 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 //	/**
 //	 * Create or update the value associated the specified key if the version
 //	 * checking is passed.<br>
-//	 * 
+//	 *
 //	 * The value of the key will be updated only if it's latest version equals the
 //	 * specified version argument. <br>
 //	 * If the key doesn't exist, it will be created when the version arg was -1.
 //	 * <p>
 //	 * If updating is performed, the version of the key increase by 1. <br>
 //	 * If creating is performed, the version of the key initialize by 0. <br>
-//	 * 
+//	 *
 //	 * @param key     The key of data;
 //	 * @param value   The value of data;
 //	 * @param version The expected latest version of the key.
@@ -279,14 +281,14 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 	/**
 	 * Create or update the value associated the specified key if the version
 	 * checking is passed.<br>
-	 * 
+	 *
 	 * The value of the key will be updated only if it's latest version equals the
 	 * specified version argument. <br>
 	 * If the key doesn't exist, it will be created when the version arg was -1.
 	 * <p>
 	 * If updating is performed, the version of the key increase by 1. <br>
 	 * If creating is performed, the version of the key initialize by 0. <br>
-	 * 
+	 *
 	 * @param key     The key of data;
 	 * @param value   The value of data;
 	 * @param version The expected latest version of the key.
@@ -342,7 +344,9 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 		}
 
 		// update merkle tree;
+		logger.debug("before merkleTree.setData(...),key={}",key);
 		merkleTree.setData(sn, key, newVersion, value);
+		logger.debug("after merkleTree.setData(...),key={}",key);
 		// TODO: 未在当前实例的层面，实现对输入键-值的缓冲，而直接写入了存储，而 MerkleTree 在未调用 commit
 		// 之前是缓冲的，这使得在存储层面的数据会不一致，而未来需要优化；
 
@@ -359,7 +363,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * 返回指定 key 对应的序号，如果不存在，则返回 -1；
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -378,7 +382,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 	/**
 	 * 返回默克尔树中记录的指定键的版本，在由默克尔树表示的数据集的快照中，这是指定键的最新版本，<br>
 	 * 但该版本有可能小于实际存储的最新版本（由于后续追加的新修改被之后生成的快照维护）；
-	 * 
+	 *
 	 * @param key
 	 * @return 返回指定的键的版本；如果不存在，则返回 -1；
 	 */
@@ -396,10 +400,10 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 //	/**
 //	 * Return the specified version's value;<br>
-//	 * 
+//	 *
 //	 * If the key with the specified version doesn't exist, then return null;<br>
 //	 * If the version is specified to -1, then return the latest version's value;
-//	 * 
+//	 *
 //	 * @param key
 //	 * @param version
 //	 */
@@ -410,10 +414,10 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * Return the specified version's value;<br>
-	 * 
+	 *
 	 * If the key with the specified version doesn't exist, then return null;<br>
 	 * If the version is specified to -1, then return the latest version's value;
-	 * 
+	 *
 	 * @param key
 	 * @param version
 	 */
@@ -432,7 +436,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 //	/**
 //	 * Return the latest version's value;
-//	 * 
+//	 *
 //	 * @param key
 //	 * @return return null if not exist;
 //	 */
@@ -443,7 +447,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * Return the latest version's value;
-	 * 
+	 *
 	 * @param key
 	 * @return return null if not exist;
 	 */
@@ -460,7 +464,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 //	/**
 //	 * Return the latest version entry associated the specified key; If the key
 //	 * doesn't exist, then return -1;
-//	 * 
+//	 *
 //	 * @param key
 //	 * @return
 //	 */
@@ -472,7 +476,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 	/**
 	 * Return the latest version entry associated the specified key; If the key
 	 * doesn't exist, then return -1;
-	 * 
+	 *
 	 * @param key
 	 * @return
 	 */
@@ -487,7 +491,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 //	}
 
 	/**
-	 * 
+	 *
 	 * @param key
 	 * @return Null if the key doesn't exist!
 	 */
@@ -565,7 +569,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jd.blockchain.ledger.core.MerkleProvable#getProof(java.lang.String)
 	 */
 	@Override
@@ -579,7 +583,7 @@ public class MerkleDataSet implements Transactional, MerkleProvable, Dataset<Byt
 
 	/**
 	 * A wrapper for {@link DataEntry} and {@link MerkleProof};
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */

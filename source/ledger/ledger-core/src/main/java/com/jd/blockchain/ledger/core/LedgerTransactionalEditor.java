@@ -23,9 +23,11 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.storage.service.utils.BufferedKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.codec.Base58Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LedgerTransactionalEditor implements LedgerEditor {
-
+	private Logger logger = LoggerFactory.getLogger(LedgerTransactionalEditor.class);
 	private static final boolean PARALLEL_DB_WRITE;
 
 	static {
@@ -103,7 +105,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 创建账本新区块的编辑器；
-	 * 
+	 *
 	 * @param ledgerHash       账本哈希；
 	 * @param ledgerSetting    账本设置；
 	 * @param previousBlock    前置区块；
@@ -138,7 +140,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 创建创世区块的编辑器；
-	 * 
+	 *
 	 * @param initSetting
 	 * @param ledgerKeyPrefix
 	 * @param ledgerExStorage
@@ -195,7 +197,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 检查当前账本是否是指定交易请求的账本；
-	 * 
+	 *
 	 * @param txRequest
 	 * @return
 	 */
@@ -301,7 +303,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 		currentBlock.setTransactionSetHash(previousTxSnapshot.getTransactionSetHash());
 
 		// TODO: 根据所有交易的时间戳的平均值来生成区块的时间戳；
-//		long timestamp = 
+//		long timestamp =
 //		currentBlock.setTimestamp(timestamp);
 
 		// compute block hash;
@@ -394,7 +396,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 用于暂存交易上下文数据的快照对象；
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */
@@ -404,7 +406,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 创世区块的快照对象；
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */
@@ -419,7 +421,7 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 交易执行完毕后的快照对象；
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */
@@ -464,12 +466,12 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 
 	/**
 	 * 交易的上下文；
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */
 	private static class LedgerTransactionContextImpl implements LedgerTransactionContext {
-
+		private Logger logger = LoggerFactory.getLogger(LedgerTransactionContextImpl.class);
 		private LedgerTransactionalEditor blockEditor;
 
 		private TransactionRequest txRequest;
@@ -522,21 +524,27 @@ public class LedgerTransactionalEditor implements LedgerEditor {
 			checkTxState();
 
 			// capture snapshot
+			logger.debug("before dataset.commit(),[contentHash={}]",this.getTransactionRequest().getTransactionContent().getHash());
 			this.dataset.commit();
+			logger.debug("after dataset.commit(),[contentHash={}]",this.getTransactionRequest().getTransactionContent().getHash());
 			TransactionStagedSnapshot txDataSnapshot = takeDataSnapshot();
 
 			LedgerTransactionData tx;
 			try {
 				tx = new LedgerTransactionData(blockEditor.getBlockHeight(), txRequest, txResult, txDataSnapshot,
 						operationResultArray(operationResults));
+				logger.debug("before txSet.add(),[contentHash={}]",tx.getTransactionContent().getHash());
 				this.txset.add(tx);
+				logger.debug("after txSet.add(),[contentHash={}]",tx.getTransactionContent().getHash());
 				this.txset.commit();
+				logger.debug("after txset.commit(),[contentHash={}]",this.getTransactionRequest().getTransactionContent().getHash());
 			} catch (Exception e) {
 				throw new TransactionRollbackException(e.getMessage(), e);
 			}
 
 			try {
 				this.storage.flush();
+				logger.debug("after storage.flush(),[contentHash={}]",this.getTransactionRequest().getTransactionContent().getHash());
 			} catch (Exception e) {
 				throw new BlockRollbackException(e.getMessage(), e);
 			}

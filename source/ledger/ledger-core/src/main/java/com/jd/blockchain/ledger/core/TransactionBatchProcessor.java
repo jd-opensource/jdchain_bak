@@ -84,14 +84,14 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 	public TransactionBatchProcessor(LedgerRepository ledgerRepo, OperationHandleRegisteration handlesRegisteration) {
 		this.ledger = ledgerRepo;
 		this.handlesRegisteration = handlesRegisteration;
-		
+
 		LedgerBlock ledgerBlock = ledgerRepo.getLatestBlock();
 		LedgerDataQuery ledgerDataQuery = ledgerRepo.getLedgerData(ledgerBlock);
 		LedgerAdminDataQuery previousAdminDataset = ledgerDataQuery.getAdminDataset();
 		this.securityManager = new LedgerSecurityManagerImpl(previousAdminDataset.getAdminInfo().getRolePrivileges(),
 				previousAdminDataset.getAdminInfo().getAuthorizations(), previousAdminDataset.getParticipantDataset(),
 				ledgerDataQuery.getUserAccountSet());
-		
+
 		this.newBlockEditor = ledgerRepo.createNextBlock();
 
 	}
@@ -115,7 +115,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.jd.blockchain.ledger.core.impl.TransactionBatchProcess#schedule(com.jd.
 	 * blockchain.ledger.TransactionRequest)
@@ -151,6 +151,8 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 			LedgerTransactionContext txCtx = newBlockEditor.newTransaction(request);
 
 			// 处理交易；
+			LOGGER.debug("before handleTx...after checkRequest()... --[BlockHeight={}][RequestHash={}][TxHash={}]",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 			resp = handleTx(reqExt, txCtx);
 
 			LOGGER.debug("Complete handling transaction.  --[BlockHeight={}][RequestHash={}][TxHash={}]",
@@ -262,9 +264,9 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/**
 	 * 处理交易；<br>
-	 * 
+	 *
 	 * 此方法会处理所有的异常，以不同结果的 {@link TransactionResponse} 返回；
-	 * 
+	 *
 	 * @param request
 	 * @param txCtx
 	 * @return
@@ -299,7 +301,11 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 			// 提交交易（事务）；
 			result = TransactionState.SUCCESS;
+			LOGGER.debug("before commit().  --[BlockHeight={}][RequestHash={}][TxHash={}]",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 			txCtx.commit(result, operationResults);
+			LOGGER.debug("after commit().  --[BlockHeight={}][RequestHash={}][TxHash={}]",
+					newBlockEditor.getBlockHeight(), request.getHash(), request.getTransactionContent().getHash());
 		} catch (TransactionRollbackException e) {
 			result = TransactionState.IGNORED_BY_TX_FULL_ROLLBACK;
 			txCtx.rollback();
@@ -372,7 +378,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/**
 	 * 直接丢弃交易；
-	 * 
+	 *
 	 * @param request
 	 * @param txState
 	 * @return 丢弃交易的回复；只包含原始请求中的交易内容哈希和交易被丢弃的原因，而不包含区块信息；
@@ -390,7 +396,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jd.blockchain.ledger.core.impl.TransactionBatchProcess#prepare()
 	 */
 	@Override
@@ -405,7 +411,7 @@ public class TransactionBatchProcessor implements TransactionBatchProcess {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.jd.blockchain.ledger.core.impl.TransactionBatchProcess#cancel(com.jd.
 	 * blockchain.ledger.ExecutionState)

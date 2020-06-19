@@ -12,16 +12,18 @@ import com.jd.blockchain.ledger.core.OperationHandleContext;
 import com.jd.blockchain.ledger.core.SecurityContext;
 import com.jd.blockchain.ledger.core.SecurityPolicy;
 import com.jd.blockchain.ledger.core.TransactionRequestExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 执行直接账本操作的处理类；
- * 
+ *
  * @author huanghaiquan
  *
  * @param <T>
  */
 public abstract class AbstractLedgerOperationHandle<T extends Operation> implements OperationHandle {
-
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	static {
 		DataContractRegistry.register(BytesValue.class);
 	}
@@ -52,8 +54,11 @@ public abstract class AbstractLedgerOperationHandle<T extends Operation> impleme
 		// 操作账本；
 		@SuppressWarnings("unchecked")
 		T concretedOp = (T) op;
+		logger.debug("before doProcess()... --[RequestHash={}][TxHash={}]",
+				requestContext.getHash(), requestContext.getTransactionContent().getHash());
 		doProcess(concretedOp, newBlockDataset, requestContext, ledger, handleContext);
-
+		logger.debug("after doProcess()... --[RequestHash={}][TxHash={}]",
+				requestContext.getHash(), requestContext.getTransactionContent().getHash());
 		// 账本操作没有返回值；
 		return null;
 	}

@@ -13,9 +13,11 @@ import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.DataEntry;
 import com.jd.blockchain.utils.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQuery<CompositeAccount> {
-
+	private Logger logger = LoggerFactory.getLogger(MerkleAccountSet.class);
 	static {
 		DataContractRegistry.register(MerkleSnapshot.class);
 		DataContractRegistry.register(BlockchainIdentity.class);
@@ -31,7 +33,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	/**
 	 * The cache of latest version accounts, including accounts getting by querying
 	 * and by new regiestering ;
-	 * 
+	 *
 	 */
 	// TODO:未考虑大数据量时，由于缺少过期策略，会导致内存溢出的问题；
 	private Map<Bytes, InnerMerkleAccount> latestAccountsCache = new HashMap<>();
@@ -97,7 +99,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 返回账户的总数量；
-	 * 
+	 *
 	 * @return
 	 */
 	public long getTotal() {
@@ -111,7 +113,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 返回最新版本的 Account;
-	 * 
+	 *
 	 * @param address
 	 * @return
 	 */
@@ -122,10 +124,10 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 账户是否存在；<br>
-	 * 
+	 *
 	 * 如果指定的账户已经注册（通过 {@link #register(String, PubKey)} 方法），但尚未提交（通过
 	 * {@link #commit()} 方法），此方法对该账户仍然返回 false；
-	 * 
+	 *
 	 * @param address
 	 * @return
 	 */
@@ -145,7 +147,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 	 * 如果账户不存在，则返回 -1；<br>
 	 * 如果账户已经注册（通过 {@link #register(String, PubKey)} 方法），但尚未提交（通过 {@link #commit()}
 	 * 方法），则返回 -1； <br>
-	 * 
+	 *
 	 * @param address
 	 * @return
 	 */
@@ -161,9 +163,9 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 返回指定版本的 Account；
-	 * 
+	 *
 	 * 只有最新版本的账户才能可写的，其它都是只读；
-	 * 
+	 *
 	 * @param address 账户地址；
 	 * @param version 账户版本；如果指定为 -1，则返回最新版本；
 	 * @return
@@ -200,7 +202,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 		// Now, be sure that "acc == null", so get account from storage;
 		// Set readonly for the old version account;
 		boolean readonly = (version > -1 && version < latestVersion) || isReadonly();
-		
+
 		long qVersion = version == -1 ? latestVersion : version;
 		// load account from storage;
 		acc = loadAccount(address, readonly, qVersion);
@@ -221,11 +223,11 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 注册一个新账户； <br>
-	 * 
+	 *
 	 * 如果账户已经存在，则会引发 {@link LedgerException} 异常； <br>
-	 * 
+	 *
 	 * 如果指定的地址和公钥不匹配，则会引发 {@link LedgerException} 异常；
-	 * 
+	 *
 	 * @param address 区块链地址；
 	 * @param pubKey  公钥；
 	 * @return 注册成功的账户对象；
@@ -248,7 +250,11 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 			// 相同的账户已经存在；
 			throw new LedgerException("The registering account already exist!");
 		}
+
+		logger.debug("before merkleDataset.getVersion...[address={}]",address);
 		long version = merkleDataset.getVersion(address);
+		logger.debug("after merkleDataset.getVersion...[address={}]",address);
+
 		if (version >= 0) {
 			throw new LedgerException("The registering account already exist!", TransactionState.ACCOUNT_REGISTER_CONFLICT);
 		}
@@ -278,7 +284,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 加载指定版本的账户；
-	 * 
+	 *
 	 * @param address  账户地址；
 	 * @param readonly 是否只读；
 	 * @param version  账户的版本；大于等于 0 ；
@@ -307,7 +313,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 保存账户的根哈希，返回账户的新版本；
-	 * 
+	 *
 	 * @param account
 	 * @return
 	 */
@@ -361,7 +367,7 @@ public class MerkleAccountSet implements Transactional, MerkleProvable, AccountQ
 
 	/**
 	 * 内部实现的账户，监听和同步账户数据的变更；
-	 * 
+	 *
 	 * @author huanghaiquan
 	 *
 	 */

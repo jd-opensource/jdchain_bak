@@ -12,9 +12,11 @@ import com.jd.blockchain.storage.service.ExPolicyKVStorage;
 import com.jd.blockchain.storage.service.VersioningKVStorage;
 import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransactionSet implements Transactional, TransactionQuery {
-
+	private Logger logger = LoggerFactory.getLogger(TransactionSet.class);
 	static {
 		DataContractRegistry.register(LedgerTransaction.class);
 	}
@@ -67,7 +69,7 @@ public class TransactionSet implements Transactional, TransactionQuery {
 
 	/**
 	 * Create a new TransactionSet which can be added transaction;
-	 * 
+	 *
 	 * @param setting
 	 * @param merkleTreeStorage
 	 * @param dataStorage
@@ -80,7 +82,7 @@ public class TransactionSet implements Transactional, TransactionQuery {
 
 	/**
 	 * Create TransactionSet which is readonly to the history transactions;
-	 * 
+	 *
 	 * @param setting
 	 * @param merkleTreeStorage
 	 * @param dataStorage
