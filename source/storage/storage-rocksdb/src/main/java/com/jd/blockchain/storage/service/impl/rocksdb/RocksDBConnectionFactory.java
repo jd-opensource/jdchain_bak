@@ -97,7 +97,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		int cacheNumShardBits = getInt(dbProperties, "cache.numShardBits", 64);
 
 		long tableBlockSize = getLong(dbProperties, "table.blockSize", 4 * SizeUnit.KB);
-		long tableMetadataBlockSize = getLong(dbProperties, "table.metadata.blockSize", 8 * SizeUnit.KB);
+		long tableMetadataBlockSize = getLong(dbProperties, "table.metadata.blockSize", 4 * SizeUnit.KB);
 		int tableBloomBitsPerKey = getInt(dbProperties, "table.bloom.bitsPerKey", 16);
 
 		long optionWriteBufferSize = getLong(dbProperties, "option.writeBufferSize", 256 * SizeUnit.MB);
@@ -107,6 +107,22 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		int optionMaxBackgroundCompactions = getInt(dbProperties, "option.maxBackgroundCompactions", 5);
 		int optionMaxBackgroundFlushes = getInt(dbProperties, "option.maxBackgroundFlushes", 4);
 
+		System.out.printf("cacheCapacity = %s \r\n", cacheCapacity);
+		System.out.printf("cacheNumShardBits = %s \r\n", cacheNumShardBits);
+		System.out.printf("tableBlockSize = %s \r\n", tableBlockSize);
+		System.out.printf("tableMetadataBlockSize = %s \r\n", tableMetadataBlockSize);
+		System.out.printf("tableBloomBitsPerKey = %s \r\n", tableBloomBitsPerKey);
+		System.out.printf("optionWriteBufferSize = %s \r\n", optionWriteBufferSize);
+		System.out.printf("optionMaxWriteBufferNumber = %s \r\n", optionMaxWriteBufferNumber);
+
+		System.out.printf("optionMinWriteBufferNumberToMerge = %s \r\n", optionMinWriteBufferNumberToMerge);
+		System.out.printf("optionMaxOpenFiles = %s \r\n", optionMaxOpenFiles);
+		System.out.printf("optionMaxBackgroundCompactions = %s \r\n", optionMaxBackgroundCompactions);
+		System.out.printf("optionMaxBackgroundFlushes = %s \r\n", optionMaxBackgroundFlushes);
+
+
+
+
 		Cache cache = new LRUCache(cacheCapacity, cacheNumShardBits, false);
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
 				.setBlockCache(cache)
@@ -115,7 +131,6 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 				.setCacheIndexAndFilterBlocks(true) // 设置索引和布隆过滤器使用Block Cache内存
 				.setCacheIndexAndFilterBlocksWithHighPriority(true)
 				.setIndexType(IndexType.kTwoLevelIndexSearch) // 设置两级索引，控制索引占用内存
-				.setPinL0FilterAndIndexBlocksInCache(true) // 设置两级索引
 				.setFilterPolicy(new BloomFilter(tableBloomBitsPerKey, false)) // 设置布隆过滤器
 				;
 		Options options = new Options()
