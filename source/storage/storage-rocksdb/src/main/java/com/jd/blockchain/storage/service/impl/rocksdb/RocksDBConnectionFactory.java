@@ -98,7 +98,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 
 		long tableBlockSize = getLong(dbProperties, "table.blockSize", 4 * SizeUnit.KB);
 		long tableMetadataBlockSize = getLong(dbProperties, "table.metadata.blockSize", 4 * SizeUnit.KB);
-		int tableBloomBitsPerKey = getInt(dbProperties, "table.bloom.bitsPerKey", 16);
+		int tableBloomBitsPerKey = getInt(dbProperties, "table.bloom.bitsPerKey", -1);
 
 		long optionWriteBufferSize = getLong(dbProperties, "option.writeBufferSize", 256 * SizeUnit.MB);
 		int optionMaxWriteBufferNumber = getInt(dbProperties, "option.maxWriteBufferNumber", 7);
