@@ -120,32 +120,27 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		System.out.printf("optionMaxBackgroundCompactions = %s \r\n", optionMaxBackgroundCompactions);
 		System.out.printf("optionMaxBackgroundFlushes = %s \r\n", optionMaxBackgroundFlushes);
 
+        Cache cache = new LRUCache(512 * SizeUnit.MB);
 
+        final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
+                .setBlockCache(cache)
+                .setCacheIndexAndFilterBlocks(true)
+                ;
 
-
-		Cache cache = new LRUCache(cacheCapacity, cacheNumShardBits, false);
-		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
-				.setBlockCache(cache)
-				.setBlockSize(tableBlockSize)
-				.setMetadataBlockSize(tableMetadataBlockSize)
-				.setCacheIndexAndFilterBlocks(true) // 设置索引和布隆过滤器使用Block Cache内存
-				.setCacheIndexAndFilterBlocksWithHighPriority(true)
-				.setIndexType(IndexType.kTwoLevelIndexSearch) // 设置两级索引，控制索引占用内存
-				.setFilterPolicy(new BloomFilter(tableBloomBitsPerKey, false)) // 设置布隆过滤器
-				;
-		Options options = new Options()
-				// 最多占用256 * 7 + 512 = 2G+内存
-				.setWriteBufferSize(optionWriteBufferSize)
-				.setMaxWriteBufferNumber(optionMaxWriteBufferNumber)
-				.setMinWriteBufferNumberToMerge(optionMinWriteBufferNumberToMerge)
-				.setMaxOpenFiles(optionMaxOpenFiles) // 控制最大打开文件数量，防止内存持续增加
-				.setAllowConcurrentMemtableWrite(true) //允许并行Memtable写入
-				.setCreateIfMissing(true)
-				.setTableFormatConfig(tableOptions)
-				.setMaxBackgroundCompactions(optionMaxBackgroundCompactions)
-				.setMaxBackgroundFlushes(optionMaxBackgroundFlushes)
-				;
-		return options;
+        Options options = new Options()
+                // 最多占用256 * 7 + 512 = 2.25G内存
+                .setWriteBufferSize(256 * SizeUnit.MB)
+                .setMaxWriteBufferNumber(7)
+                .setMinWriteBufferNumberToMerge(2)
+                .setMaxOpenFiles(-1)
+                .setAllowConcurrentMemtableWrite(true)
+                .setCreateIfMissing(true)
+                .setTableFormatConfig(tableOptions)
+                .setMaxBackgroundCompactions(5)
+                .setMaxBackgroundFlushes(4)
+                .setMemTableConfig(new SkipListMemTableConfig())
+                ;
+        return options;
 	}
 
 	/**
