@@ -108,6 +108,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		int optionMaxBackgroundFlushes = getInt(dbProperties, "option.maxBackgroundFlushes", 4);
 
 		Cache cache = new LRUCache(cacheCapacity, cacheNumShardBits, false);
+        BloomFilter bloomFilter = tableBloomBitsPerKey <= 0 ? null : new BloomFilter(tableBloomBitsPerKey);
 
 		final BlockBasedTableConfig tableOptions = new BlockBasedTableConfig()
 				.setBlockCache(cache)
@@ -117,7 +118,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 				.setIndexType(IndexType.kTwoLevelIndexSearch) // 设置两级索引，控制索引占用内存
 				.setPinTopLevelIndexAndFilter(false)
 				.setBlockSize(tableBlockSize)
-				.setFilterPolicy(null) // 不设置布隆过滤器
+				.setFilterPolicy(bloomFilter) // 设置布隆过滤器
 				;
 
 		Options options = new Options()
