@@ -8,7 +8,7 @@
         <!--这个输出控制台的配置-->
         <console name="Console" target="SYSTEM_OUT">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
-            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <!--输出日志的格式-->
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </console>
