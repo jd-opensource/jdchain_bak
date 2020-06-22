@@ -1,5 +1,19 @@
 package com.jd.blockchain.storage.service.impl.rocksdb;
 
+import com.jd.blockchain.storage.service.DbConnection;
+import com.jd.blockchain.storage.service.DbConnectionFactory;
+import org.rocksdb.BlockBasedTableConfig;
+import org.rocksdb.BloomFilter;
+import org.rocksdb.Cache;
+import org.rocksdb.IndexType;
+import org.rocksdb.LRUCache;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.util.SizeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
@@ -8,15 +22,8 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import javax.annotation.PreDestroy;
-
-import org.rocksdb.*;
-
-import com.jd.blockchain.storage.service.DbConnection;
-import com.jd.blockchain.storage.service.DbConnectionFactory;
-import org.rocksdb.util.SizeUnit;
-
 public class RocksDBConnectionFactory implements DbConnectionFactory {
+	private Logger logger = LoggerFactory.getLogger(RocksDBConnectionFactory.class);
 
 	private static final String DB_CONFIG_ARG = "-rb";
 
@@ -106,6 +113,14 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		int optionMaxOpenFiles = getInt(dbProperties, "option.maxOpenFiles", -1);
 		int optionMaxBackgroundCompactions = getInt(dbProperties, "option.maxBackgroundCompactions", 5);
 		int optionMaxBackgroundFlushes = getInt(dbProperties, "option.maxBackgroundFlushes", 4);
+
+		logger.info("initOptionsByProperties,[cacheCapacity={}],[cacheNumShardBits={}],[tableBlockSize={}]," +
+						"[tableMetadataBlockSize={}],[tableBloomBitsPerKey={}],[optionWriteBufferSize={}]," +
+						"[optionMaxWriteBufferNumber={}],[optionMinWriteBufferNumberToMerge={}]," +
+						"[optionMaxOpenFiles={}],[optionMaxBackgroundCompactions={}],[optionMaxBackgroundFlushes={}]",
+				cacheCapacity,cacheNumShardBits,tableBlockSize,tableMetadataBlockSize,
+				tableBloomBitsPerKey, optionWriteBufferSize,optionMaxWriteBufferNumber,optionMinWriteBufferNumberToMerge,
+				optionMaxOpenFiles,optionMaxBackgroundCompactions,optionMaxBackgroundFlushes);
 
 		Cache cache = new LRUCache(cacheCapacity, cacheNumShardBits, false);
         BloomFilter bloomFilter = tableBloomBitsPerKey <= 0 ? null : new BloomFilter(tableBloomBitsPerKey);
