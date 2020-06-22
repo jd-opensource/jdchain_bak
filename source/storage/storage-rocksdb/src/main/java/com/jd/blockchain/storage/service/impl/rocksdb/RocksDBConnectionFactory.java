@@ -23,7 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public class RocksDBConnectionFactory implements DbConnectionFactory {
-	private Logger logger = LoggerFactory.getLogger(RocksDBConnectionFactory.class);
+
+	private static Logger logger = LoggerFactory.getLogger(RocksDBConnectionFactory.class);
 
 	private static final String DB_CONFIG_ARG = "rb";
 
@@ -158,12 +159,13 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 	private static void init() {
 		String dbConfigPath = System.getProperty(DB_CONFIG_ARG);
 		if (dbConfigPath != null && dbConfigPath.length() > 0) {
+			logger.debug("rocksdb.config -> {}", dbConfigPath);
 			File dbConfigFile = new File(dbConfigPath);
 			try {
 				dbConfigProperties = new Properties();
 				dbConfigProperties.load(new FileInputStream(dbConfigFile));
 			} catch (Exception e) {
-				throw new IllegalStateException(String.format("Load rocksdb.config %s error !!!", dbConfigPath), e);
+				logger.warn(String.format("Load rocksdb.config[%s] error !!!", dbConfigPath), e);
 			}
 		}
 	}
