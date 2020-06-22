@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class RocksDBConnectionFactory implements DbConnectionFactory {
 	private Logger logger = LoggerFactory.getLogger(RocksDBConnectionFactory.class);
 
-	private static final String DB_CONFIG_ARG = "-rb";
+	private static final String DB_CONFIG_ARG = "rb";
 
 	private static Properties dbConfigProperties = null;
 
