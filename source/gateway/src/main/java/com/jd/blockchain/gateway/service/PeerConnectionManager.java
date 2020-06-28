@@ -111,6 +111,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 		ledgerHashLock.lock();
 		try {
 			if (isConnected()) {
+			    LOGGER.info("------ Start to load ledgers ------");
 				// 已连接成功，判断账本信息
 				PeerServiceFactory serviceFactory = mostLedgerPeerServiceFactory;
 				if (serviceFactory == null) {
@@ -136,8 +137,11 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 								gateWayKeyPair, peerAddress, peerProviders);
 						peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
 						localLedgerCache.addAll(Arrays.asList(peerLedgerHashs));
+                        mostLedgerPeerServiceFactory = new PeerServiceFactory(peerAddress, peerServiceFactory);
+                        LOGGER.info("Most ledgers remote update to {}", mostLedgerPeerServiceFactory.peerAddress);
 					}
 				}
+                LOGGER.info("------ Load ledgers complete ------");
 			}
 		} finally {
 			ledgerHashLock.unlock();
