@@ -25,9 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, Closeable {
@@ -38,7 +36,9 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 
 	private static final Map<NetworkAddress, PeerManageService> peerManageServices = new ConcurrentHashMap<>();
 
-	private static final Map<HashDigest, LedgerAccessContextImpl> accessContextMap = new ConcurrentHashMap<>();
+	private static final Map<NetworkAddress, Set<HashDigest>> peerLedgers = new ConcurrentHashMap<>();
+
+	private final Map<HashDigest, LedgerAccessContextImpl> accessContextMap = new ConcurrentHashMap<>();
 
 	private ServiceConnectionManager httpConnectionManager;
 
@@ -89,7 +89,7 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 	 * 
 	 * @return 区块链服务工厂实例；
 	 */
-	public static PeerBlockchainServiceFactory connect(AsymmetricKeypair gatewayKey, NetworkAddress peerAddr, List<String> peerProviders) {
+	public synchronized static PeerBlockchainServiceFactory connect(AsymmetricKeypair gatewayKey, NetworkAddress peerAddr, List<String> peerProviders) {
 
 		if (peerProviders == null || peerProviders.isEmpty()) {
 			throw new AuthenticationException("No peer Provider was set!");
@@ -128,17 +128,18 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 		LedgerIncomingSetting[] ledgerSettings = incomingSetting.getLedgers();
 		// 判断当前节点对应账本是否一致
 		List<LedgerIncomingSetting> needInitSettings = new ArrayList<>();
+		Set<HashDigest> currentPeerLedgers = peerLedgers.computeIfAbsent(peerAddr, k -> new HashSet<>());
 		for (LedgerIncomingSetting setting : ledgerSettings) {
 			HashDigest currLedgerHash = setting.getLedgerHash();
-			if (!accessContextMap.containsKey(currLedgerHash)) {
+			if (!currentPeerLedgers.contains(currLedgerHash)) {
 				needInitSettings.add(setting);
 			}
 		}
-
 		if (!needInitSettings.isEmpty()) {
 			LedgerAccessContextImpl[] accessAbleLedgers = new LedgerAccessContextImpl[needInitSettings.size()];
 			BlockchainQueryService queryService = peerManageService.getQueryService();
 
+			Map<HashDigest, LedgerAccessContextImpl> tempAccessCtxs = new HashMap<>();
 			for (int i = 0; i < needInitSettings.size(); i++) {
 				LedgerIncomingSetting ledgerSetting = needInitSettings.get(i);
 				String providerName = ledgerSetting.getProviderName();
@@ -162,13 +163,18 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 
 				accessAbleLedgers[i] = accCtx;
 
-				accessContextMap.put(accCtx.ledgerHash, accCtx);
+				tempAccessCtxs.put(accCtx.ledgerHash, accCtx);
+				// 添加对应Hash到该Peer节点
+				currentPeerLedgers.add(accCtx.ledgerHash);
 			}
 			if (factory == null) {
+				// 第一次连接成功
 				factory = new PeerBlockchainServiceFactory(httpConnectionManager,
 						accessAbleLedgers);
+				factory.accessContextMap.putAll(tempAccessCtxs);
 				peerBlockchainServiceFactories.put(peerAddr, factory);
 			} else {
+				factory.accessContextMap.putAll(tempAccessCtxs);
 				factory.addLedgerAccessContexts(accessAbleLedgers);
 			}
 //			PeerBlockchainServiceFactory factory = new PeerBlockchainServiceFactory(httpConnectionManager,
