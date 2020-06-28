@@ -293,6 +293,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 
 				// 查询其他所有节点对应的区块高度的情况
 				NetworkAddress defaultPeerAddress = null, latestPeerAddress = null;
+				Map<NetworkAddress, PeerBlockchainServiceFactory> tmpEntries = new ConcurrentHashMap<>();
 				for (Map.Entry<NetworkAddress, PeerBlockchainServiceFactory> entry : peerBlockchainServiceFactories.entrySet()) {
 					PeerBlockchainServiceFactory sf = entry.getValue();
 					if (sf != serviceFactory) {
@@ -311,7 +312,9 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 							try {
 								PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
 										gateWayKeyPair, peerAddress, peerProviders);
-								peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
+								if (peerServiceFactory != null) {
+                                    tmpEntries.put(peerAddress, peerServiceFactory);
+                                }
 							} catch (Exception ee) {
 								LOGGER.error(String.format("Peer[%s] reconnect fail !!!",
 										entry.getKey()), e);
@@ -321,6 +324,9 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 						defaultPeerAddress = entry.getKey();
 					}
 				}
+				if (!tmpEntries.isEmpty()) {
+                    peerBlockchainServiceFactories.putAll(tmpEntries);
+                }
 				LOGGER.info("Ledger[{}]'s master remote update to {}", ledgerHash.toBase58(),
 						latestPeerAddress == null ? defaultPeerAddress : latestPeerAddress);
 			}
