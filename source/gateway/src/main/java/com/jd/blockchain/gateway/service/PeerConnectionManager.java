@@ -46,8 +46,6 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 
 	private volatile PeerServiceFactory mostLedgerPeerServiceFactory;
 
-	private volatile PeerBlockchainServiceFactory masterPeerServiceFactory;
-
 	private volatile AsymmetricKeypair gateWayKeyPair;
 
 	private volatile List<String> peerProviders;
@@ -85,10 +83,6 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 			if (peerServiceFactory != null) {
 				LOGGER.info("Connect peer {} success !!!", peerAddress);
 				// 连接成功
-				if (masterPeerServiceFactory == null) {
-					masterPeerServiceFactory = peerServiceFactory;
-					LOGGER.info("Master remote update to {}", peerAddress);
-				}
 				if (mostLedgerPeerServiceFactory == null) {
 					// 默认设置为第一个连接成功的，后续更新需要等待定时任务处理
 					mostLedgerPeerServiceFactory = new PeerServiceFactory(peerAddress, peerServiceFactory);
@@ -136,6 +130,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 						}
 					}
 					if (haveNewLedger) {
+						LOGGER.info("New ledger have been found, I will reconnect {} now !!!", peerAddress);
 						// 有新账本的情况下重连，并更新本地账本
 						PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
 								gateWayKeyPair, peerAddress, peerProviders);
@@ -144,7 +139,6 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					}
 				}
 			}
-			// 未连接成功的情况下不处理，等待定时连接线程来处理
 		} finally {
 			ledgerHashLock.unlock();
 		}
@@ -183,11 +177,11 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 	@Override
 	public TransactionService getTransactionService() {
 		// 交易始终使用第一个连接成功的即可
-		PeerBlockchainServiceFactory serviceFactory = this.masterPeerServiceFactory;
-		if (serviceFactory == null) {
+		PeerServiceFactory peerServiceFactory = mostLedgerPeerServiceFactory;
+		if (peerServiceFactory == null) {
 			throw new IllegalStateException("Peer connection was closed!");
 		}
-
+		PeerBlockchainServiceFactory serviceFactory = peerServiceFactory.serviceFactory;
 		return serviceFactory.getTransactionService();
 	}
 
@@ -312,6 +306,16 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 						} catch (Exception e) {
 							LOGGER.error(String.format("Peer[%s] get ledger[%s]'s latest block height fail !!!",
 									entry.getKey(), ledgerHash.toBase58()), e);
+							// 此错误是由于对端的节点没有重连导致，需要进行重连操作
+							NetworkAddress peerAddress = entry.getKey();
+							try {
+								PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
+										gateWayKeyPair, peerAddress, peerProviders);
+								peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
+							} catch (Exception ee) {
+								LOGGER.error(String.format("Peer[%s] reconnect fail !!!",
+										entry.getKey()), e);
+							}
 						}
 					} else {
 						defaultPeerAddress = entry.getKey();

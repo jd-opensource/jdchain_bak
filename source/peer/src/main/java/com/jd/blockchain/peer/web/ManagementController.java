@@ -175,30 +175,9 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
                 }
                 try {
                     clientIncomingSettings = peer.getManageService().authClientIncoming(authId);
-
-                    //add for test the gateway connect to peer0; 20200514;
-					if (clientIncomingSettings instanceof BftsmartClientIncomingSettings) {
-						BftsmartClientIncomingSettings bftsmartClientIncomingSettings = (BftsmartClientIncomingSettings) clientIncomingSettings;
-						byte[] topologyBytes = bftsmartClientIncomingSettings.getTopology();
-						byte[] tomConfigBytes = bftsmartClientIncomingSettings.getTomConfig();
-						BftsmartTopology topology = BinarySerializeUtils.deserialize(topologyBytes);
-						TOMConfiguration tomConfig = BinarySerializeUtils.deserialize(tomConfigBytes);
-						View view = topology.getView();
-						if (view != null) {
-							// 打印view
-							int[] processes = view.getProcesses();
-							for (int process : processes) {
-								InetSocketAddress address = view.getAddress(process);
-								System.out.printf("topology id = %s, address = %s \r\n",
-										process, address);
-
-								System.out.printf("tomConfig id = %s, host = %s, port = %s \r\n",
-										process, tomConfig.getHost(process), tomConfig.getPort(process));
-							}
-						}
-					}
 					break;
                 } catch (Exception e) {
+                	LOGGER.error("Get authClientIncoming error", e);
                     throw new AuthenticationServiceException(e.getMessage(), e);
                 }
             }
