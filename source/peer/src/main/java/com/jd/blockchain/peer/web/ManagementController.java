@@ -159,13 +159,9 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		List<LedgerIncomingSetting> ledgerIncomingList = new ArrayList<LedgerIncomingSetting>();
 
 		for (HashDigest ledgerHash : ledgerPeers.keySet()) {
-
 			NodeServer peer = ledgerPeers.get(ledgerHash);
-
 			String peerProviderName = peer.getProviderName();
-
 			ConsensusProvider provider = ConsensusProviders.getProvider(peer.getProviderName());
-
             ClientIncomingSettings clientIncomingSettings = null;
             for (ClientIdentification authId : identificationArray) {
                 if (authId.getProviderName() == null ||
@@ -188,7 +184,6 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 			byte[] clientIncomingBytes = provider.getSettingsFactory().getIncomingSettingsEncoder()
 					.encode(clientIncomingSettings);
 			String base64ClientIncomingSettings = ByteArray.toBase64(clientIncomingBytes);
-
 			LedgerIncomingSetting ledgerIncomingSetting = new LedgerIncomingSetting();
 			ledgerIncomingSetting.setLedgerHash(ledgerHash);
 			ledgerIncomingSetting.setCryptoSetting(ledgerCryptoSettings.get(ledgerHash));

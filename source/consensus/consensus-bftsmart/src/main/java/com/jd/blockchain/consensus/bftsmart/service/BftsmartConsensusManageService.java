@@ -40,23 +40,21 @@ public class BftsmartConsensusManageService implements ConsensusManageService {
 	@Override
 	public BftsmartClientIncomingSettings authClientIncoming(ClientIdentification authId) {
 		if (verify(authId)) {
-			byte[] topology = BinarySerializeUtils.serialize(nodeServer.getTopology());
-			byte[] tomConfig = BinarySerializeUtils.serialize(nodeServer.getTomConfig());
+            BftsmartTopology topology = nodeServer.getTopology();
+            if (topology == null) {
+                throw new IllegalStateException("Topology still not created !!!");
+            }
 
-			LOGGER.info("topology:{}, tomConfig:{}", topology == null ? 0 : topology.length,
-					tomConfig == null ? 0: tomConfig.length);
+            byte[] topologyBytes = BinarySerializeUtils.serialize(topology);
+            LOGGER.info("Topology = {}", topologyBytes == null ? 0 : topologyBytes.length);
 
 			BftsmartClientIncomingConfig clientIncomingSettings = new BftsmartClientIncomingConfig();
-
 			clientIncomingSettings
-					.setTopology(BinarySerializeUtils.serialize(nodeServer.getTopology()));
-
+					.setTopology(BinarySerializeUtils.serialize(topology));
 			clientIncomingSettings
 					.setTomConfig(BinarySerializeUtils.serialize(nodeServer.getTomConfig()));
-
 			clientIncomingSettings
 					.setConsensusSettings(nodeServer.getConsensusSetting());
-
 			clientIncomingSettings.setPubKey(authId.getPubKey());
 			// compute gateway id
 			authLock.lock();

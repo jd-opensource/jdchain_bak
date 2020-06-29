@@ -145,7 +145,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
                                 LOGGER.error("Peer connect fail {}", peerAddress);
                             }
                         } catch (Exception e) {
-                            LOGGER.error("Peer connect fail {}", peerAddress);
+                            LOGGER.error(String.format("Peer connect fail %s", peerAddress), e);
                         }
 					}
 				}

@@ -91,22 +91,17 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 	 * @return 区块链服务工厂实例；
 	 */
 	public synchronized static PeerBlockchainServiceFactory connect(AsymmetricKeypair gatewayKey, NetworkAddress peerAddr, List<String> peerProviders) {
-
 		if (peerProviders == null || peerProviders.isEmpty()) {
 			throw new AuthenticationException("No peer Provider was set!");
 		}
 		ClientIdentificationsProvider authIdProvider = authIdProvider(gatewayKey, peerProviders);
-
 		GatewayIncomingSetting incomingSetting = auth(peerAddr, authIdProvider);
-
 		if (incomingSetting == null) {
 			throw new AuthenticationException("No peer was succeed authenticating from!");
 		}
 
 		PeerBlockchainServiceFactory factory = null;
-
 		ServiceConnectionManager httpConnectionManager;
-
 		PeerManageService peerManageService;
 
 		if (peerBlockchainServiceFactories.containsKey(peerAddr)) {
@@ -164,16 +159,13 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 
 				TransactionService autoSigningTxProcService = enableGatewayAutoSigning(gatewayKey,
 						ledgerSetting.getCryptoSetting(), consensusClient);
-
 				LedgerAccessContextImpl accCtx = new LedgerAccessContextImpl();
 				accCtx.ledgerHash = ledgerSetting.getLedgerHash();
 				accCtx.cryptoSetting = ledgerSetting.getCryptoSetting();
 				accCtx.queryService = queryService;
 				accCtx.txProcService = autoSigningTxProcService;
 				accCtx.consensusClient = consensusClient;
-
 				accessAbleLedgers[i] = accCtx;
-
 				tempAccessCtxs.put(accCtx.ledgerHash, accCtx);
 				// 添加对应Hash到该Peer节点
 				currentPeerLedgers.add(accCtx.ledgerHash);
@@ -189,7 +181,6 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 						LOGGER.info("First connect, peer[{}] init new ledger[{}] OK !!!", peerAddr, hash.toBase58());
 					}
 				}
-
 			} else {
 				factory.accessContextMap.putAll(tempAccessCtxs);
 				factory.addLedgerAccessContexts(accessAbleLedgers);

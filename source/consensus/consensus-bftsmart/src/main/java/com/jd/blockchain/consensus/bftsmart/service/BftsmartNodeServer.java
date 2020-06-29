@@ -194,6 +194,9 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
     }
 
     public BftsmartTopology getTopology() {
+        if (!isRunning()) {
+            return null;
+        }
         if (outerTopology != null) {
             return outerTopology;
         }
