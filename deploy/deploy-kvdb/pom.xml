@@ -17,37 +17,37 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-protocol</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-engine</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-server</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-cli</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-benchmark</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>kvdb-client</artifactId>
-            <version>${version}</version>
+            <version>${kvdb.version}</version>
         </dependency>
     </dependencies>
 
