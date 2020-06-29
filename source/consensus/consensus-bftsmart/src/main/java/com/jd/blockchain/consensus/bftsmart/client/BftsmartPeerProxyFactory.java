@@ -30,19 +30,7 @@ public class BftsmartPeerProxyFactory extends BasePooledObjectFactory<AsynchServ
 
     @Override
     public AsynchServiceProxy create() throws Exception {
-
         BftsmartTopology topology = BinarySerializeUtils.deserialize(bftsmartClientSettings.getTopology());
-
-        View view = topology.getView();
-        if (view != null) {
-            // 打印view
-            int[] processes = view.getProcesses();
-            for (int process : processes) {
-                InetSocketAddress address = view.getAddress(process);
-                System.out.printf("read topology id = %s, address = %s \r\n",
-                        process, address);
-            }
-        }
 
         MemoryBasedViewStorage viewStorage = new MemoryBasedViewStorage(topology.getView());
         TOMConfiguration tomConfiguration = BinarySerializeUtils.deserialize(bftsmartClientSettings.getTomConfig());
