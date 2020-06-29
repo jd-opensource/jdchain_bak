@@ -8,6 +8,7 @@ import com.jd.blockchain.sdk.LedgerAccessContext;
 import com.jd.blockchain.sdk.proxy.BlockchainServiceProxy;
 import com.jd.blockchain.transaction.BlockchainQueryService;
 import com.jd.blockchain.transaction.TransactionService;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -20,6 +21,8 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class PeerServiceProxy extends BlockchainServiceProxy implements TransactionService {
+
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PeerServiceProxy.class);
 
 	private final Lock accessLock = new ReentrantLock();
 
@@ -90,6 +93,9 @@ public class PeerServiceProxy extends BlockchainServiceProxy implements Transact
 			Collection<LedgerAccessContext> ctxs = ledgerAccessContexts.values();
 			for (LedgerAccessContext ctx : ctxs) {
 				HashDigest[] hashs = ctx.getQueryService().getLedgerHashs();
+				for (HashDigest h : hashs) {
+					LOGGER.info("Get ledger[{}] by [{}]'s AccessContext !!!", h.toBase58(), ctx.getLedgerHash().toBase58());
+				}
 				ledgerHashs.addAll(Arrays.asList(hashs));
 			}
 		}

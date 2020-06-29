@@ -319,18 +319,34 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 						} catch (Exception e) {
 							LOGGER.error(String.format("Peer[%s] get ledger[%s]'s latest block height fail !!!",
 									entry.getKey(), ledgerHash.toBase58()), e);
-							// 此错误是由于对端的节点没有重连导致，需要进行重连操作
-							NetworkAddress peerAddress = entry.getKey();
-							try {
-								PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
-										gateWayKeyPair, peerAddress, peerProviders);
-								if (peerServiceFactory != null) {
-                                    tmpEntries.put(peerAddress, peerServiceFactory);
+							// 需要判断是否具有当前账本，有的话，进行重连，没有的话就算了
+                            BlockchainService blockchainService = sf.getBlockchainService();
+                            if (blockchainService instanceof PeerServiceProxy) {
+                                boolean isNeedReconnect = false;
+                                ledgerHashs = ((PeerServiceProxy) blockchainService).getLedgerHashsDirect();
+                                if (ledgerHashs != null) {
+                                    for (HashDigest h : ledgerHashs) {
+                                        if (h.equals(ledgerHash)) {
+                                            // 确实存在对应的账本，则重连
+                                            isNeedReconnect = true;
+                                        }
+                                    }
                                 }
-							} catch (Exception ee) {
-								LOGGER.error(String.format("Peer[%s] reconnect fail !!!",
-										entry.getKey()), e);
-							}
+                                if (isNeedReconnect) {
+                                    // 此错误是由于对端的节点没有重连导致，需要进行重连操作
+                                    NetworkAddress peerAddress = entry.getKey();
+                                    try {
+                                        PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
+                                                gateWayKeyPair, peerAddress, peerProviders);
+                                        if (peerServiceFactory != null) {
+                                            tmpEntries.put(peerAddress, peerServiceFactory);
+                                        }
+                                    } catch (Exception ee) {
+                                        LOGGER.error(String.format("Peer[%s] reconnect fail !!!",
+                                                entry.getKey()), e);
+                                    }
+                                }
+                            }
 						}
 					} else {
 						defaultPeerAddress = entry.getKey();
@@ -378,7 +394,10 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					ledgerHashs = ((PeerServiceProxy) blockchainService).getLedgerHashsDirect();
 					if (ledgerHashs != null) {
 						ledgerSize = ledgerHashs.length;
-					}
+						for (HashDigest h : ledgerHashs) {
+                            LOGGER.info("Peer[{}] get ledger direct [{}]", mostLedgerPeerServiceFactory.peerAddress, h.toBase58());
+                        }
+                    }
 				}
 			} catch (Exception e) {
 				// 连接失败的情况下清除该连接
@@ -397,6 +416,9 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					try {
 						if (loopBlockchainService instanceof PeerServiceProxy) {
 							ledgerHashs = ((PeerServiceProxy) loopBlockchainService).getLedgerHashsDirect();
+                            for (HashDigest h : ledgerHashs) {
+                                LOGGER.info("Peer[{}] get ledger direct [{}]", entry.getKey(), h.toBase58());
+                            }
 							if (ledgerHashs.length > ledgerSize) {
 								tempMostLedgerPeerServiceFactory = new PeerServiceFactory(entry.getKey(),entry.getValue());
 							}

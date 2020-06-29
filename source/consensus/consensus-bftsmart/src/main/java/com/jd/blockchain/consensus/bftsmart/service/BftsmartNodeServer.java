@@ -466,9 +466,9 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             }
             resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
             updatedResponses.add(BinaryProtocol.encode(resp, TransactionResponse.class));
+        }
+        return updatedResponses;
     }
-    return updatedResponses;
-}
     /**
      *
      *  Decision has been made at the consensus stage， commit block
