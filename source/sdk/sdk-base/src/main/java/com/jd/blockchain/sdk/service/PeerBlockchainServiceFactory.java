@@ -132,6 +132,7 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 		for (LedgerIncomingSetting setting : ledgerSettings) {
 			HashDigest currLedgerHash = setting.getLedgerHash();
 			if (!currentPeerLedgers.contains(currLedgerHash)) {
+				LOGGER.info("Peer[{}] find new ledger [{}]", peerAddr, currLedgerHash.toBase58());
 				needInitSettings.add(setting);
 			}
 		}
@@ -173,10 +174,22 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 						accessAbleLedgers);
 				factory.accessContextMap.putAll(tempAccessCtxs);
 				peerBlockchainServiceFactories.put(peerAddr, factory);
+				if (!tempAccessCtxs.isEmpty()) {
+					for (HashDigest hash : tempAccessCtxs.keySet()) {
+						LOGGER.info("First connect, peer[{}] init new ledger[{}] OK !!!", peerAddr, hash.toBase58());
+					}
+				}
+
 			} else {
 				factory.accessContextMap.putAll(tempAccessCtxs);
 				factory.addLedgerAccessContexts(accessAbleLedgers);
+				if (!tempAccessCtxs.isEmpty()) {
+					for (HashDigest hash : tempAccessCtxs.keySet()) {
+						LOGGER.info("Reconnect, peer[{}] init new ledger[{}] OK !!!", peerAddr, hash.toBase58());
+					}
+				}
 			}
+
 //			PeerBlockchainServiceFactory factory = new PeerBlockchainServiceFactory(httpConnectionManager,
 //					accessAbleLedgers);
 		}

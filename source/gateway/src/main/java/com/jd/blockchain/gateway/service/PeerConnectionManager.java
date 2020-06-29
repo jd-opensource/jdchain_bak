@@ -135,10 +135,14 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 						// 有新账本的情况下重连，并更新本地账本
 						PeerBlockchainServiceFactory peerServiceFactory = PeerBlockchainServiceFactory.connect(
 								gateWayKeyPair, peerAddress, peerProviders);
-						peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
-						localLedgerCache.addAll(Arrays.asList(peerLedgerHashs));
-                        mostLedgerPeerServiceFactory = new PeerServiceFactory(peerAddress, peerServiceFactory);
-                        LOGGER.info("Most ledgers remote update to {}", mostLedgerPeerServiceFactory.peerAddress);
+						if (peerServiceFactory != null) {
+							peerBlockchainServiceFactories.put(peerAddress, peerServiceFactory);
+							localLedgerCache.addAll(Arrays.asList(peerLedgerHashs));
+							mostLedgerPeerServiceFactory = new PeerServiceFactory(peerAddress, peerServiceFactory);
+							LOGGER.info("Most ledgers remote update to {}", mostLedgerPeerServiceFactory.peerAddress);
+						} else {
+							LOGGER.error("Peer connect fail {}", peerAddress);
+						}
 					}
 				}
                 LOGGER.info("------ Load ledgers complete ------");
