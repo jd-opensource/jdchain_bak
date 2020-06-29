@@ -3,15 +3,21 @@ package com.jd.blockchain.consensus.bftsmart.service;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import bftsmart.reconfiguration.util.TOMConfiguration;
 import com.jd.blockchain.consensus.ClientIdentification;
 import com.jd.blockchain.consensus.ConsensusManageService;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingConfig;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
+import com.jd.blockchain.consensus.bftsmart.BftsmartTopology;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BftsmartConsensusManageService implements ConsensusManageService {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(BftsmartConsensusManageService.class);
 
 	public static final int GATEWAY_SIZE = 100;
 
@@ -34,6 +40,12 @@ public class BftsmartConsensusManageService implements ConsensusManageService {
 	@Override
 	public BftsmartClientIncomingSettings authClientIncoming(ClientIdentification authId) {
 		if (verify(authId)) {
+			byte[] topology = BinarySerializeUtils.serialize(nodeServer.getTopology());
+			byte[] tomConfig = BinarySerializeUtils.serialize(nodeServer.getTomConfig());
+
+			LOGGER.info("topology:{}, tomConfig:{}", topology == null ? 0 : topology.length,
+					tomConfig == null ? 0: tomConfig.length);
+
 			BftsmartClientIncomingConfig clientIncomingSettings = new BftsmartClientIncomingConfig();
 
 			clientIncomingSettings

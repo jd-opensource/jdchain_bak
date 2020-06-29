@@ -42,6 +42,12 @@
 
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
+			<artifactId>consensus-bftsmart</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
 			<artifactId>utils-serialize</artifactId>
 			<version>${project.version}</version>
 			<exclusions>
