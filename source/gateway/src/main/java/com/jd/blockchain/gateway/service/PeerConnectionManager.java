@@ -111,7 +111,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 		ledgerHashLock.lock();
 		try {
 			if (isConnected()) {
-			    LOGGER.info("------ Start to load ledgers ------");
+			    LOGGER.info("----------- Start to load ledgers -----------");
 				// 已连接成功，判断账本信息
 				PeerServiceFactory serviceFactory = mostLedgerPeerServiceFactory;
 				if (serviceFactory == null) {
@@ -121,7 +121,11 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 				BlockchainQueryService queryService = serviceFactory.serviceFactory.getBlockchainService();
 				NetworkAddress peerAddress = serviceFactory.peerAddress;
 
-				HashDigest[] peerLedgerHashs = queryService.getLedgerHashs();
+                HashDigest[] peerLedgerHashs = null;
+                if (queryService instanceof PeerServiceProxy) {
+                    peerLedgerHashs = ((PeerServiceProxy) queryService).getLedgerHashsDirect();
+                    LOGGER.info("Most peer {} load ledger's size = {}", peerAddress, peerLedgerHashs.length);
+                }
 				if (peerLedgerHashs != null && peerLedgerHashs.length > 0) {
 					boolean haveNewLedger = false;
 					for (HashDigest hash : peerLedgerHashs) {
@@ -149,7 +153,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
                         }
 					}
 				}
-                LOGGER.info("------ Load ledgers complete ------");
+                LOGGER.info("----------- Load ledgers complete -----------");
 			}
 		} finally {
 			ledgerHashLock.unlock();
@@ -317,8 +321,6 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 							}
 							blockHeight = Math.max(latestBlockHeight, blockHeight);
 						} catch (Exception e) {
-							LOGGER.error(String.format("Peer[%s] get ledger[%s]'s latest block height fail !!!",
-									entry.getKey(), ledgerHash.toBase58()), e);
 							// 需要判断是否具有当前账本，有的话，进行重连，没有的话就算了
                             BlockchainService blockchainService = sf.getBlockchainService();
                             if (blockchainService instanceof PeerServiceProxy) {
@@ -333,6 +335,9 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
                                     }
                                 }
                                 if (isNeedReconnect) {
+                                    // 需要重连的话打印错误信息
+                                    LOGGER.error(String.format("Peer[%s] get ledger[%s]'s latest block height fail !!!",
+                                            entry.getKey(), ledgerHash.toBase58()), e);
                                     // 此错误是由于对端的节点没有重连导致，需要进行重连操作
                                     NetworkAddress peerAddress = entry.getKey();
                                     try {
@@ -395,7 +400,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					if (ledgerHashs != null) {
 						ledgerSize = ledgerHashs.length;
 						for (HashDigest h : ledgerHashs) {
-                            LOGGER.info("Peer[{}] get ledger direct [{}]", mostLedgerPeerServiceFactory.peerAddress, h.toBase58());
+                            LOGGER.info("Most peer[{}] get ledger direct [{}]", mostLedgerPeerServiceFactory.peerAddress, h.toBase58());
                         }
                     }
 				}
@@ -415,13 +420,16 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					// 处理账本数量
 					try {
 						if (loopBlockchainService instanceof PeerServiceProxy) {
-							ledgerHashs = ((PeerServiceProxy) loopBlockchainService).getLedgerHashsDirect();
-                            for (HashDigest h : ledgerHashs) {
-                                LOGGER.info("Peer[{}] get ledger direct [{}]", entry.getKey(), h.toBase58());
+							HashDigest[] tempLedgerHashs = ((PeerServiceProxy) loopBlockchainService).getLedgerHashsDirect();
+							if (tempLedgerHashs != null) {
+                                for (HashDigest h : tempLedgerHashs) {
+                                    LOGGER.info("Temp peer[{}] get ledger direct [{}]", entry.getKey(), h.toBase58());
+                                }
+                                if (tempLedgerHashs.length > ledgerSize) {
+                                    tempMostLedgerPeerServiceFactory = new PeerServiceFactory(entry.getKey(),entry.getValue());
+                                    ledgerHashs = tempLedgerHashs;
+                                }
                             }
-							if (ledgerHashs.length > ledgerSize) {
-								tempMostLedgerPeerServiceFactory = new PeerServiceFactory(entry.getKey(),entry.getValue());
-							}
 						}
 					} catch (Exception e) {
 						LOGGER.error(String.format("%s get ledger hash fail !!!", entry.getKey()), e);
