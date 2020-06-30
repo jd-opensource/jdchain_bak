@@ -249,7 +249,7 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 
 		// 注册快照状态
 		consensusStateManager.setupState(ledgerHash.toBase58(), new BlockStateSnapshot(
-				ledgerRepository.retrieveLatestBlockHeight(), ledgerHash), null);
+				ledgerRepository.retrieveLatestBlockHeight() - 1, ledgerHash), null);
 		NodeServer server = provider.getServerFactory().setupServer(serverSettings, consensusMessageHandler,
 				consensusStateManager);
 		ledgerPeers.put(ledgerHash, server);

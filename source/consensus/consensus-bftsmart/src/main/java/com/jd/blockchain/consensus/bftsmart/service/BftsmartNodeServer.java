@@ -564,7 +564,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
             try {
                 LOGGER.debug("Start replica...[ID=" + getId() + "]");
-                this.replica = new ServiceReplica(tomConfig, this, this, (int)(this.stateHolder.lastCid - 1));
+                this.replica = new ServiceReplica(tomConfig, this, this, (int)(this.stateHolder.lastCid));
                 this.topology = new BftsmartTopology(replica.getReplicaContext().getCurrentView());
                 initOutTopology();
                 status = Status.RUNNING;
