@@ -2,18 +2,25 @@ package com.jd.blockchain.peer.consensus;
 
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jd.blockchain.consensus.service.StateMachineReplicate;
 import com.jd.blockchain.consensus.service.StateSnapshot;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LedgerStateManager implements StateMachineReplicate{
+public class LedgerStateManager implements StateMachineReplicate {
+
+	private final Map<String, StateSnapshot> stateSnapshots = new ConcurrentHashMap<>();
 
 	@Override
 	public long getLatestStateID(String realmName) {
-		// TODO Auto-generated method stub
-		return 0;
+		StateSnapshot snapshot = stateSnapshots.get(realmName);
+		if (snapshot == null) {
+			return -1L;
+		}
+		return snapshot.getId();
 	}
 
 	@Override
@@ -36,8 +43,6 @@ public class LedgerStateManager implements StateMachineReplicate{
 
 	@Override
 	public void setupState(String realmName, StateSnapshot snapshot, InputStream state) {
-		// TODO Auto-generated method stub
-		
+		stateSnapshots.put(realmName, snapshot);
 	}
-
 }

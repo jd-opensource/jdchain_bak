@@ -10,6 +10,7 @@ import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.reconfiguration.views.View;
 import com.jd.blockchain.consensus.bftsmart.BftsmartClientIncomingSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartTopology;
+import com.jd.blockchain.consensus.service.*;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.utils.net.NetworkAddress;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
@@ -34,10 +35,6 @@ import com.jd.blockchain.consensus.action.ActionResponse;
 import com.jd.blockchain.consensus.bftsmart.BftsmartConsensusSettings;
 import com.jd.blockchain.consensus.bftsmart.BftsmartNodeSettings;
 import com.jd.blockchain.consensus.mq.server.MsgQueueMessageDispatcher;
-import com.jd.blockchain.consensus.service.MessageHandle;
-import com.jd.blockchain.consensus.service.NodeServer;
-import com.jd.blockchain.consensus.service.ServerSettings;
-import com.jd.blockchain.consensus.service.StateMachineReplicate;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.core.LedgerAdminDataQuery;
@@ -250,6 +247,9 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 		}
 		ServerSettings serverSettings = provider.getServerFactory().buildServerSettings(ledgerHash.toBase58(), csSettings, currentNode.getAddress());
 
+		// 注册快照状态
+		consensusStateManager.setupState(ledgerHash.toBase58(), new BlockStateSnapshot(
+				ledgerRepository.retrieveLatestBlockHeight(), ledgerHash), null);
 		NodeServer server = provider.getServerFactory().setupServer(serverSettings, consensusMessageHandler,
 				consensusStateManager);
 		ledgerPeers.put(ledgerHash, server);
@@ -279,6 +279,32 @@ public class ManagementController implements LedgerBindingConfigAware, PeerManag
 	public void closeAllRealms() {
 		for (NodeServer peer : ledgerPeers.values()) {
 			peer.stop();
+		}
+	}
+
+	private final class BlockStateSnapshot implements StateSnapshot {
+
+		private long id;
+
+		private byte[] snapshotBytes;
+
+		public BlockStateSnapshot(long id, byte[] snapshotBytes) {
+			this.id = id;
+			this.snapshotBytes = snapshotBytes;
+		}
+
+		public BlockStateSnapshot(long id, HashDigest hash) {
+			this(id, hash.toBytes());
+		}
+
+		@Override
+		public long getId() {
+			return id;
+		}
+
+		@Override
+		public byte[] getSnapshot() {
+			return snapshotBytes;
 		}
 	}
 }

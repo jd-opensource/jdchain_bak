@@ -111,7 +111,7 @@ public class RocksDBConnectionFactory implements DbConnectionFactory {
 		long optionWriteBufferSize = getLong(dbProperties, "option.writeBufferSize", 256 * SizeUnit.MB);
 		int optionMaxWriteBufferNumber = getInt(dbProperties, "option.maxWriteBufferNumber", 7);
 		int optionMinWriteBufferNumberToMerge = getInt(dbProperties, "option.minWriteBufferNumberToMerge", 2);
-		int optionMaxOpenFiles = getInt(dbProperties, "option.maxOpenFiles", -1);
+		int optionMaxOpenFiles = getInt(dbProperties, "option.maxOpenFiles", 256);
 		int optionMaxBackgroundCompactions = getInt(dbProperties, "option.maxBackgroundCompactions", 5);
 		int optionMaxBackgroundFlushes = getInt(dbProperties, "option.maxBackgroundFlushes", 4);
 
