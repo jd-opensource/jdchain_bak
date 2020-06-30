@@ -1,7 +1,6 @@
 package com.jd.blockchain.sdk.service;
 
 import com.jd.blockchain.consensus.*;
-import com.jd.blockchain.consensus.bftsmart.client.BftsmartClientSettings;
 import com.jd.blockchain.consensus.client.ClientFactory;
 import com.jd.blockchain.consensus.client.ClientSettings;
 import com.jd.blockchain.consensus.client.ConsensusClient;
@@ -148,15 +147,6 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 				ClientSettings clientSettings = clientFactory.buildClientSettings(clientIncomingSettings);
 				ConsensusClient consensusClient = clientFactory.setupClient(clientSettings);
 
-				if (clientSettings instanceof BftsmartClientSettings) {
-					BftsmartClientSettings bftsmartClientSettings = (BftsmartClientSettings) clientSettings;
-					byte[] topology = bftsmartClientSettings.getTopology();
-					byte[] tomConfig = bftsmartClientSettings.getTomConfig();
-					LOGGER.info("Peer[{}] ledger = [{}] topology : {}, tomConfig : {}", peerAddr,
-							ledgerSetting.getLedgerHash().toBase58(), topology == null ? 0 : topology.length ,
-							tomConfig == null ? 0 : tomConfig.length);
-				}
-
 				TransactionService autoSigningTxProcService = enableGatewayAutoSigning(gatewayKey,
 						ledgerSetting.getCryptoSetting(), consensusClient);
 				LedgerAccessContextImpl accCtx = new LedgerAccessContextImpl();
@@ -190,9 +180,6 @@ public class PeerBlockchainServiceFactory implements BlockchainServiceFactory, C
 					}
 				}
 			}
-
-//			PeerBlockchainServiceFactory factory = new PeerBlockchainServiceFactory(httpConnectionManager,
-//					accessAbleLedgers);
 		}
 
 

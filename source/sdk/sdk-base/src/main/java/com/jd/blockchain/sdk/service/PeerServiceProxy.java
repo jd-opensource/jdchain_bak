@@ -93,9 +93,6 @@ public class PeerServiceProxy extends BlockchainServiceProxy implements Transact
 			Collection<LedgerAccessContext> ctxs = ledgerAccessContexts.values();
 			for (LedgerAccessContext ctx : ctxs) {
 				HashDigest[] hashs = ctx.getQueryService().getLedgerHashs();
-				for (HashDigest h : hashs) {
-					LOGGER.info("Get ledger[{}] by [{}]'s AccessContext !!!", h.toBase58(), ctx.getLedgerHash().toBase58());
-				}
 				ledgerHashs.addAll(Arrays.asList(hashs));
 			}
 		}

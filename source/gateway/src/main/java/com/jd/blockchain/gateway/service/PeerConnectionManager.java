@@ -400,7 +400,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 					if (ledgerHashs != null) {
 						ledgerSize = ledgerHashs.length;
 						for (HashDigest h : ledgerHashs) {
-                            LOGGER.info("Most peer[{}] get ledger direct [{}]", mostLedgerPeerServiceFactory.peerAddress, h.toBase58());
+                            LOGGER.debug("Most peer[{}] get ledger direct [{}]", mostLedgerPeerServiceFactory.peerAddress, h.toBase58());
                         }
                     }
 				}
@@ -423,7 +423,7 @@ public class PeerConnectionManager implements PeerService, PeerConnector {
 							HashDigest[] tempLedgerHashs = ((PeerServiceProxy) loopBlockchainService).getLedgerHashsDirect();
 							if (tempLedgerHashs != null) {
                                 for (HashDigest h : tempLedgerHashs) {
-                                    LOGGER.info("Temp peer[{}] get ledger direct [{}]", entry.getKey(), h.toBase58());
+                                    LOGGER.debug("Temp peer[{}] get ledger direct [{}]", entry.getKey(), h.toBase58());
                                 }
                                 if (tempLedgerHashs.length > ledgerSize) {
                                     tempMostLedgerPeerServiceFactory = new PeerServiceFactory(entry.getKey(),entry.getValue());
