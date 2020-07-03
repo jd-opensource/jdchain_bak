@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,10 +15,8 @@ import com.jd.blockchain.consensus.service.*;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.transaction.TxResponseMessage;
-import com.jd.blockchain.utils.ConsoleUtils;
 import com.jd.blockchain.utils.StringUtils;
 import com.jd.blockchain.utils.serialize.binary.BinarySerializeUtils;
-import io.netty.util.concurrent.BlockingOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.jd.blockchain.consensus.ConsensusManageService;
@@ -238,13 +234,15 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
      *  每个传入的commands都是一个确定的batch，不会出现跨batch或多batch的情况
      *
      */
-    private byte[][] appExecuteDiffBatch(byte[][] commands, MessageContext[] msgCtxs) {
+    private byte[][] stateTransferMsgExecute(byte[][] commands, MessageContext[] msgCtxs) {
         cmdHandleLock.lock();
         try {
             int currHandleCid = msgCtxs[0].getConsensusId(); // 同一批次，获取其中之一即可
             long lastCid = stateHolder.lastCid, currentCid = stateHolder.currentCid;
             if (currHandleCid <= lastCid) {
                 // 表示该CID已经执行过，不再处理
+                // 状态传输消息返回null即可
+                LOGGER.warn("State transfer message is repeated, ledger's lastCID = {}, protocol's cid = {}", lastCid, currHandleCid);
                 return null;
             } else if (currHandleCid == lastCid + 1) {
                 // 有可能处理正在执行中的状态，需要判断是否新的开始执行
@@ -253,12 +251,17 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                     String batchingID = stateHolder.batchingID;
                     messageHandle.rollbackBatch(realmName, batchingID, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK.CODE);
                 }
+                // 执行即可
+                block(commands);
+                // 重置上轮ID
+                stateHolder.setLastCid(currHandleCid);
+                stateHolder.reset();
+            } else {
+                // 因为跨checkpoint导致进行消息重放时丢失了部分数据
+                // 此时打印日志，等待数据copy，不能再往后执行，否则会污染整个账本的数据
+                LOGGER.error("State transfer message execute error, ledger's lastCID = {}, protocol's cid = {}", lastCid, currHandleCid);
+                return null;
             }
-            // 执行即可
-            block(commands);
-            // 重置上轮ID
-            stateHolder.setLastCid(currHandleCid);
-            stateHolder.reset();
         } finally {
             cmdHandleLock.unlock();
         }
@@ -275,7 +278,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         // Not from consensus outcomes， from state transfer
         if (!fromConsensus) {
             // 表示从状态传输接入
-            return appExecuteDiffBatch(commands, msgCtxs);
+            return stateTransferMsgExecute(commands, msgCtxs);
         }
         return null;
     }
@@ -393,8 +396,9 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         try {
             long lastCid = stateHolder.lastCid, currentCid = stateHolder.currentCid;
             if (cid <= lastCid) {
-                // 表示该CID已经执行过，不再处理
-                return null;
+                // 表示该CID已经执行过，返回错误，需要协议层处理
+                LOGGER.warn("Prepare compute phase message is repeated, ledger's lastCID = {}, protocol's cid = {}", lastCid, cid);
+                return unExecuteMsgResult(cid, commands);
             } else if (cid == lastCid + 1) {
                 // 需要判断之前二阶段是否执行过
                 if (cid == currentCid) {
@@ -402,6 +406,10 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
                     String batchingID = stateHolder.batchingID;
                     messageHandle.rollbackBatch(realmName, batchingID, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK.CODE);
                 }
+            } else {
+                // 协议层没有控制住，导致比当前cid要大的值进入，此时打印日志，不可执行，防止对现有数据造成污染
+                LOGGER.error("Prepare compute phase execute error, ledger's lastCID = {}, protocol's cid = {}", lastCid, cid);
+                return unExecuteMsgResult(cid, commands);
             }
             stateHolder.currentCid = cid;
             batchId = messageHandle.beginBatch(realmName);
@@ -420,28 +428,27 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             }
             newStateSnapshot = messageHandle.completeBatch(realmName, batchId);
 
-            for (int i = 0; i < asyncFutureLinkedList.size(); i++) {
-                responseLinkedList.add(asyncFutureLinkedList.get(i).get());
+            for (AsyncFuture<byte[]> asyncFuture : asyncFutureLinkedList) {
+                responseLinkedList.add(asyncFuture.get());
             }
 
             result = new BatchAppResultImpl(responseLinkedList, newStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 0);
-
         } catch (BlockRollbackException e) {
             LOGGER.error("Error occurred while pre compute app! --" + e.getMessage(), e);
-            for (int i = 0; i < commands.length; i++) {
-                responseLinkedList.add(createAppResponse(commands[i],e.getState()));
+            for (byte[] command : commands) {
+                responseLinkedList.add(createAppResponse(command, e.getState()));
             }
 
-            result = new BatchAppResultImpl(responseLinkedList,preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
+            result = new BatchAppResultImpl(responseLinkedList, preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 1);
         }catch (Exception e) {
             LOGGER.error("Error occurred while pre compute app! --" + e.getMessage(), e);
-            for (int i = 0; i < commands.length; i++) {
-                responseLinkedList.add(createAppResponse(commands[i],TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK));
+            for (byte[] command : commands) {
+                responseLinkedList.add(createAppResponse(command, TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK));
             }
 
-            result = new BatchAppResultImpl(responseLinkedList,preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
+            result = new BatchAppResultImpl(responseLinkedList, preStateSnapshot.getSnapshot(), batchId, genisStateSnapshot.getSnapshot());
             result.setErrorCode((byte) 1);
         } finally {
             cmdHandleLock.unlock();
@@ -450,14 +457,33 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
         return result;
     }
 
+    /**
+     * 未执行共识消息的情况下统一的返回结果
+     *           该入口只会在正常执行二阶段，但该二阶段的消息已经执行过或因为lastCID不合理导致无法执行的情况
+     *
+     * @param cid
+     *           共识ID
+     *
+     * @param commands
+     *           消息列表
+     * @return
+     */
+    private BatchAppResultImpl unExecuteMsgResult(int cid, byte[][] commands) {
+        List<byte[]> responseLinkedList = new ArrayList<>(commands.length);
+        for (byte[] command : commands) {
+            responseLinkedList.add(createAppResponse(command, TransactionState.SYSTEM_ERROR));
+        }
+        byte[] cidBytes = BytesUtils.toBytes(cid);
+        BatchAppResultImpl result = new BatchAppResultImpl(responseLinkedList, cidBytes, "", cidBytes);
+        result.setErrorCode((byte) 1);
+        return result;
+    }
+
     // Block full rollback responses, generated in pre compute phase, due to tx exception
     private byte[] createAppResponse(byte[] command, TransactionState transactionState) {
         TransactionRequest txRequest = BinaryProtocol.decode(command);
-
         TxResponseMessage resp = new TxResponseMessage(txRequest.getTransactionContent().getHash());
-
         resp.setExecutionState(transactionState);
-
         return BinaryProtocol.encode(resp, TransactionResponse.class);
     }
 
@@ -470,8 +496,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             TransactionResponse txResponse = BinaryProtocol.decode(asyncResponseLinkedList.get(i));
             if (isConsistent) {
                 resp = new TxResponseMessage(txResponse.getContentHash());
-            }
-            else {
+            } else {
                 resp = new TxResponseMessage(new HashDigest(commonHash));
             }
             resp.setExecutionState(TransactionState.IGNORED_BY_BLOCK_FULL_ROLLBACK);
@@ -491,6 +516,10 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             long lastCid = stateHolder.lastCid;
             if (cid <= lastCid) {
                 // 表示该CID已经执行过，不再处理
+                LOGGER.warn("Prepare compute commit phase is repeat, ledger's lastCid = {}, protocol's cid = {}", lastCid, cid);
+                return;
+            } else if (cid > lastCid + 1) {
+                LOGGER.error("Prepare compute commit phase is error, ledger's lastCid = {}, protocol's cid = {}", lastCid, cid);
                 return;
             }
             stateHolder.setLastCid(cid);
@@ -516,6 +545,10 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
             long lastCid = stateHolder.lastCid;
             if (cid <= lastCid) {
                 // 表示该CID已经执行过，不再处理
+                LOGGER.warn("Prepare compute rollback phase is repeat, ledger's lastCid = {}, protocol's cid = {}", lastCid, cid);
+                return;
+            } else if (cid > lastCid + 1) {
+                LOGGER.error("Prepare compute rollback phase is error, ledger's lastCid = {}, protocol's cid = {}", lastCid, cid);
                 return;
             }
             stateHolder.setLastCid(cid);
@@ -639,7 +672,7 @@ public class BftsmartNodeServer extends DefaultRecoverable implements NodeServer
 
     }
 
-    private static class InnerStateHolder {
+    public static class InnerStateHolder {
 
         private long lastCid;
 
