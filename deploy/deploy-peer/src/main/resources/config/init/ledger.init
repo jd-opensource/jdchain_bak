@@ -82,20 +82,12 @@ cons_parti.0.pubkey=
 #第0个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
 #cons_parti.0.roles-policy=UNION
 
-#第0个参与方的共识服务的主机地址；
-cons_parti.0.consensus.host=127.0.0.1
-#第0个参与方的共识服务的端口；
-cons_parti.0.consensus.port=8900
-#第0个参与方的共识服务是否开启安全连接；
-cons_parti.0.consensus.secure=false
-
 #第0个参与方的账本初始服务的主机；
 cons_parti.0.initializer.host=127.0.0.1
 #第0个参与方的账本初始服务的端口；
 cons_parti.0.initializer.port=8800
 #第0个参与方的账本初始服务是否开启安全连接；
 cons_parti.0.initializer.secure=false
-
 
 #---------------------
 #第1个参与方的名称；
@@ -109,13 +101,6 @@ cons_parti.1.pubkey=
 #cons_parti.1.roles=MANAGER
 #第1个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
 #cons_parti.1.roles-policy=UNION
-
-#第1个参与方的共识服务的主机地址；
-cons_parti.1.consensus.host=127.0.0.1
-#第1个参与方的共识服务的端口；
-cons_parti.1.consensus.port=8910
-#第1个参与方的共识服务是否开启安全连接；
-cons_parti.1.consensus.secure=false
 
 #第1个参与方的账本初始服务的主机；
 cons_parti.1.initializer.host=127.0.0.1
@@ -137,13 +122,6 @@ cons_parti.2.pubkey=
 #第2个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
 #cons_parti.2.roles-policy=UNION
 
-#第2个参与方的共识服务的主机地址；
-cons_parti.2.consensus.host=127.0.0.1
-#第2个参与方的共识服务的端口；
-cons_parti.2.consensus.port=8920
-#第2个参与方的共识服务是否开启安全连接；
-cons_parti.2.consensus.secure=false
-
 #第2个参与方的账本初始服务的主机；
 cons_parti.2.initializer.host=127.0.0.1
 #第2个参与方的账本初始服务的端口；
@@ -163,13 +141,6 @@ cons_parti.3.pubkey=
 #cons_parti.3.roles=GUEST
 #第3个参与方的角色权限策略，可选值有：UNION（并集），INTERSECT（交集）；可选项；
 #cons_parti.3.roles-policy=INTERSECT
-
-#第3个参与方的共识服务的主机地址；
-cons_parti.3.consensus.host=127.0.0.1
-#第3个参与方的共识服务的端口；
-cons_parti.3.consensus.port=8930
-#第3个参与方的共识服务是否开启安全连接；
-cons_parti.3.consensus.secure=false
 
 #第3个参与方的账本初始服务的主机；
 cons_parti.3.initializer.host=127.0.0.1
