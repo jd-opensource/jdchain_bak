@@ -1,5 +1,8 @@
 package com.jd.blockchain.boot.peer;
 
+import com.jd.blockchain.runtime.boot.HomeBooter;
+import com.jd.blockchain.runtime.boot.HomeContext;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,12 +14,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.jd.blockchain.runtime.boot.HomeBooter;
-import com.jd.blockchain.runtime.boot.HomeContext;
-
 /**
  * Peer 启动器；
- * 
+ *
  * @author huanghaiquan
  *
  */
