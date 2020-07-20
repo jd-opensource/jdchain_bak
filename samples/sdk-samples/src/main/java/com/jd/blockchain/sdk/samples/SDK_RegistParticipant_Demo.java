@@ -5,7 +5,6 @@ import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.*;
-import com.jd.blockchain.utils.net.NetworkAddress;
 
 public class SDK_RegistParticipant_Demo extends SDK_Base_Demo {
 
@@ -27,14 +26,11 @@ public class SDK_RegistParticipant_Demo extends SDK_Base_Demo {
 
 		BlockchainKeypair user = new BlockchainKeypair(pubKey, privKey);
 
-		// 新参与方的共识网络地址
-		NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
-
 		// 定义交易模板
 		TransactionTemplate txTpl = blockchainService.newTransaction(ledgerHash);
 
 		// 注册参与方
-		txTpl.participants().register("Peer4", user.getIdentity(), networkAddress);
+		txTpl.participants().register("Peer4", user.getIdentity());
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTpl.prepare();
