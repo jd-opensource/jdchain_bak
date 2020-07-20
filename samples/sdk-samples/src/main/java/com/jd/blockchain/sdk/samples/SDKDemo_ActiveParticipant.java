@@ -39,8 +39,8 @@ public class SDKDemo_ActiveParticipant {
         BasicNameValuePair base58LedgerHash = new BasicNameValuePair("ledgerHash",  "j5n3SmYT3rS5aDgwQbDUxBYUMEP9GvVfMiQK3Tcr3vxz3M");
 
         // 激活的新参与方的共识网络地址
-        BasicNameValuePair host = new BasicNameValuePair("host",  "127.0.0.1");
-        BasicNameValuePair port = new BasicNameValuePair("port", "20000");
+        BasicNameValuePair host = new BasicNameValuePair("consensusHost",  "127.0.0.1");
+        BasicNameValuePair port = new BasicNameValuePair("consensusPort", "20000");
 
         para.add(base58LedgerHash);
         para.add(host);
