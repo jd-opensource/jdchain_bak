@@ -67,11 +67,8 @@ public class SDKDemo_RegistParticipant {
 
         BlockchainKeypair user = new BlockchainKeypair(pubKey, privKey);
 
-        // 新参与方的共识网络地址
-        NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
-
         // 注册参与方
-        txTemp.participants().register("Peer4", user.getIdentity(), networkAddress);
+        txTemp.participants().register("Peer4", user.getIdentity());
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();
