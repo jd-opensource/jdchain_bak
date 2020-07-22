@@ -2,6 +2,7 @@ package test.com.jd.blockchain.sdk.test;
 
 import static org.junit.Assert.assertTrue;
 
+import com.jd.blockchain.ledger.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,17 +13,6 @@ import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.KeyGenUtils;
 import com.jd.blockchain.crypto.PrivKey;
 import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.NodeRequest;
-import com.jd.blockchain.ledger.ParticipantRegisterOperation;
-import com.jd.blockchain.ledger.ParticipantStateUpdateOperation;
-import com.jd.blockchain.ledger.PreparedTransaction;
-import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
-import com.jd.blockchain.ledger.TransactionRequest;
-import com.jd.blockchain.ledger.TransactionResponse;
-import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
@@ -76,6 +66,7 @@ public class SDK_GateWay_Participant_Regist_Test_ {
         DataContractRegistry.register(TransactionResponse.class);
         DataContractRegistry.register(ParticipantRegisterOperation.class);
         DataContractRegistry.register(ParticipantStateUpdateOperation.class);
+        DataContractRegistry.register(ConsensusSettingsUpdateOperation.class);
     }
 
     @Test
@@ -95,10 +86,8 @@ public class SDK_GateWay_Participant_Regist_Test_ {
 
         BlockchainKeypair user = new BlockchainKeypair(pubKey, privKey);
 
-        NetworkAddress networkAddress = new NetworkAddress("127.0.0.1", 20000);
-
         // 注册参与方
-        txTemp.participants().register("Peer4", user.getIdentity(), networkAddress);
+        txTemp.participants().register("Peer4", user.getIdentity());
 
         // TX 准备就绪；
         PreparedTransaction prepTx = txTemp.prepare();

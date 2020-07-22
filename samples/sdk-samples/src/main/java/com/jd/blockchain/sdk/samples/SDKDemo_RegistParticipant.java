@@ -51,6 +51,7 @@ public class SDKDemo_RegistParticipant {
         DataContractRegistry.register(TransactionResponse.class);
         DataContractRegistry.register(ParticipantRegisterOperation.class);
         DataContractRegistry.register(ParticipantStateUpdateOperation.class);
+        DataContractRegistry.register(ConsensusSettingsUpdateOperation.class);
 
         HashDigest[] ledgerHashs = service.getLedgerHashs();
         // 在本地定义注册账号的 TX；
