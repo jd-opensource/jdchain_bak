@@ -42,9 +42,15 @@ public class SDKDemo_ActiveParticipant {
         BasicNameValuePair host = new BasicNameValuePair("consensusHost",  "127.0.0.1");
         BasicNameValuePair port = new BasicNameValuePair("consensusPort", "20000");
 
+        // 指定已经启动的其他共识节点的HTTP管理端口
+        BasicNameValuePair manageHost = new BasicNameValuePair("remoteManageHost",  "127.0.0.1");
+        BasicNameValuePair managePort = new BasicNameValuePair("remoteManagePort", "12000");
+
         para.add(base58LedgerHash);
         para.add(host);
         para.add(port);
+        para.add(manageHost);
+        para.add(managePort);
 
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(para,"UTF-8"));
