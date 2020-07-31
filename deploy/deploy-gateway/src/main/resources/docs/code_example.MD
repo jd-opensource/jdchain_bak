@@ -3,36 +3,42 @@
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>${ledger.version}</version>
+    <version>1.3.0.RELEASE</version>
 </dependency>
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>contract-starter</artifactId>
-    <version>${ledger.version}</version>
+    <version>1.3.0.RELEASE</version>
 </dependency>
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>crypto-classic</artifactId>
-    <version>${ledger.version}</version>
+    <version>1.3.0.RELEASE</version>
 </dependency>
 
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>crypto-sm</artifactId>
-    <version>${ledger.version}</version>
+    <version>1.3.0.RELEASE</version>
 </dependency>
 ```
 # 2. 数据快速上链
 ## 2.1. 服务连接
 
 ```java
+    //使用已注册用户信息进行连接;
+    String GW_PUB_KEY = "3snxxx";
+    String GW_PRIV_KEY = "177xxx";
+    String GW_PASSWORD = "xxx";
+    PrivKey gwPrivkey0 = KeyGenUtils.decodePrivKey(GW_PRIV_KEY, GW_PASSWORD);
+    PubKey gwPubKey0 = KeyGenUtils.decodePubKey(GW_PUB_KEY);
+    BlockchainKeypair adminKey = new BlockchainKeypair(gwPubKey0, gwPrivkey0);
     //创建服务代理
-    public BlockchainKeypair CLIENT_CERT = BlockchainKeyGenerator.getInstance().generate();
     final String GATEWAY_IP = "127.0.0.1";
     final int GATEWAY_PORT = 80;
     final boolean SECURE = false;
     GatewayServiceFactory serviceFactory = GatewayServiceFactory.connect(GATEWAY_IP, GATEWAY_PORT, SECURE,
-    		CLIENT_CERT);
+    		adminKey);
     // 创建服务代理；
     BlockchainService service = serviceFactory.getBlockchainService();
     HashDigest[] ledgerHashs = service.getLedgerHashs();
@@ -52,7 +58,7 @@
     // TX 准备就绪；
     PreparedTransaction prepTx = txTemp.prepare();
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
     // 提交交易；
     prepTx.commit();
 ```
@@ -69,7 +75,7 @@
     // TX 准备就绪；
     PreparedTransaction prepTx = txTemp.prepare();
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
 
     // 提交交易；
     prepTx.commit();
@@ -93,7 +99,7 @@
 
     String txHash = Base64Utils.encodeToUrlSafeString(prepTx.getHash().toBytes());
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
 
     // 提交交易；
     prepTx.commit();
@@ -214,7 +220,7 @@
     PreparedTransaction prepTx = txTemp.prepare();
 
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
 
     // 提交交易；
     TransactionResponse transactionResponse = prepTx.commit();
@@ -250,7 +256,7 @@
 
     PreparedTransaction ptx = txTemp.prepare();
 
-    ptx.sign(CLIENT_CERT);
+    ptx.sign(adminKey);
 
     TransactionResponse transactionResponse = ptx.commit();
 
@@ -278,14 +284,14 @@
     // TX 准备就绪；
     PreparedTransaction prepTx = txTemp.prepare();
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
 
     // 提交交易；
     prepTx.commit();
 ```
 ## 2.9. 事件发布
 ```java
-	BlockchainService service = serviceFactory.getBlockchainService();
+    BlockchainService service = serviceFactory.getBlockchainService();
     TransactionTemplate txTemp = service.newTransaction(ledgerHash);
 
     // 发布事件到指定的账户中；
@@ -298,7 +304,7 @@
     PreparedTransaction prepTx = txTemp.prepare();
 
     // 使用私钥进行签名；
-    prepTx.sign(CLIENT_CERT);
+    prepTx.sign(adminKey);
 
     // 提交交易；
     prepTx.commit();
@@ -309,7 +315,8 @@
 - 系统事件
 > 目前仅支持新区块产生事件
 ```java
-	EventListenerHandle<SystemEventPoint> handler = blockchainService.monitorSystemEvent(ledgerHash, SystemEvent.NEW_BLOCK_CREATED, 0, new SystemEventListener<SystemEventPoint>() {
+	EventListenerHandle<SystemEventPoint> handler = blockchainService.monitorSystemEvent(ledgerHash, 
+            SystemEvent.NEW_BLOCK_CREATED, 0, new SystemEventListener<SystemEventPoint>() {
     	@Override
     	public void onEvents(Event[] eventMessages, EventContext<SystemEventPoint> eventContext) {
         	for (Event eventMessage : eventMessages) {
@@ -329,7 +336,8 @@
 
 - 用户自定义事件
 ```java
-	EventListenerHandle<UserEventPoint> handler = 		blockchainService.monitorUserEvent(ledgerHash, eventAccount.getAddress().toBase58(), 	eventName, 0, new UserEventListener<UserEventPoint>() {
+	EventListenerHandle<UserEventPoint> handler = blockchainService.monitorUserEvent(ledgerHash, 
+            eventAccount.getAddress().toBase58(), eventName, 0, new UserEventListener<UserEventPoint>() {
     	@Override
     	public void onEvent(Event eventMessage, EventContext<UserEventPoint> eventContext) {
         	BytesValue content = eventMessage.getContent();
