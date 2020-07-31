@@ -309,6 +309,26 @@
 - 系统事件
 > 目前仅支持新区块产生事件
 ```java
+	EventListenerHandle<SystemEventPoint> handler = blockchainService.monitorSystemEvent(ledgerHash, SystemEvent.NEW_BLOCK_CREATED, 0, new SystemEventListener<SystemEventPoint>() {
+    	@Override
+    	public void onEvents(Event[] eventMessages, EventContext<SystemEventPoint> eventContext) {
+        	for (Event eventMessage : eventMessages) {
+            	BytesValue content = eventMessage.getContent();
+            	// content中存放的是当前链上最新高度
+            	System.out.println(BytesUtils.toLong(content.getBytes().toBytes()));
+        	}
+
+        	// 关闭监听的两种方式：1
+        	eventContext.getHandle().cancel();
+    	}
+	});
+
+	// 关闭监听的两种方式：2
+	handler.cancel();
+```
+
+- 用户自定义事件
+```java
 	EventListenerHandle<UserEventPoint> handler = 		blockchainService.monitorUserEvent(ledgerHash, eventAccount.getAddress().toBase58(), 	eventName, 0, new UserEventListener<UserEventPoint>() {
     	@Override
     	public void onEvent(Event eventMessage, EventContext<UserEventPoint> eventContext) {
@@ -326,26 +346,6 @@
             	default:
                 	break;
        		}
-
-        	// 关闭监听的两种方式：1
-        	eventContext.getHandle().cancel();
-    	}
-	});
-
-	// 关闭监听的两种方式：2
-	handler.cancel();
-```
-
-- 用户自定义事件
-```java
-	EventListenerHandle<SystemEventPoint> handler = blockchainService.monitorSystemEvent(ledgerHash, SystemEvent.NEW_BLOCK_CREATED, 0, new SystemEventListener<SystemEventPoint>() {
-    	@Override
-    	public void onEvents(Event[] eventMessages, EventContext<SystemEventPoint> eventContext) {
-        	for (Event eventMessage : eventMessages) {
-            	BytesValue content = eventMessage.getContent();
-            	// content中存放的是当前链上最新高度
-            	System.out.println(BytesUtils.toLong(content.getBytes().toBytes()));
-        	}
 
         	// 关闭监听的两种方式：1
         	eventContext.getHandle().cancel();
