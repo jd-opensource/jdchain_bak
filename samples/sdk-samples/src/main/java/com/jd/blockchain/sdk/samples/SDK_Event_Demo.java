@@ -35,14 +35,8 @@ public class SDK_Event_Demo extends SDK_Base_Demo {
         // sequence传递当前事件名链上最新序号，不存在时传-1
         Event event = blockchainService.getLatestEvent(ledgerHash, eventAccount.getAddress().toBase58(), "name");
         long sequence = null != event ? event.getSequence() : -1;
-        txTpl.eventAccount(eventAccount.getAddress()).publish("name", "bytes".getBytes(), sequence);
         txTpl.eventAccount(eventAccount.getAddress()).publish("name", "string", sequence + 1);
         txTpl.eventAccount(eventAccount.getAddress()).publish("name", 0, sequence + 2);
-        txTpl.eventAccount(eventAccount.getAddress()).publish("name", 1l, sequence + 3);
-        txTpl.eventAccount(eventAccount.getAddress()).publishXML("name", "<xml/>", sequence + 4);
-        txTpl.eventAccount(eventAccount.getAddress()).publishJSON("name", "{}", sequence + 5);
-        txTpl.eventAccount(eventAccount.getAddress()).publishImage("name", "img".getBytes(), sequence + 6);
-        txTpl.eventAccount(eventAccount.getAddress()).publishTimestamp("name", System.currentTimeMillis(), sequence + 7);
         commit(txTpl);
     }
 
@@ -59,12 +53,9 @@ public class SDK_Event_Demo extends SDK_Base_Demo {
                 BytesValue content = eventMessage.getContent();
                 switch (content.getType()) {
                     case TEXT:
-                    case XML:
-                    case JSON:
                         System.out.println(content.getBytes().toUTF8String());
                         break;
                     case INT64:
-                    case TIMESTAMP:
                         System.out.println(BytesUtils.toLong(content.getBytes().toBytes()));
                         break;
                     default:

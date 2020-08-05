@@ -297,8 +297,7 @@
     // 发布事件到指定的账户中；
     String eventAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";
     txTemp.eventAccount(eventAccount).publish("event_name", "string", -1)
-		.publish("event_name", 0, 0)
-		.publish("event_name", "bytes".getBytes(), 1);
+		.publish("event_name", 0, 0);
 
     // TX 准备就绪；
     PreparedTransaction prepTx = txTemp.prepare();
@@ -343,12 +342,9 @@
         	BytesValue content = eventMessage.getContent();
         	switch (content.getType()) {
            	 	case TEXT:
-           	 	case XML:
-            	case JSON:
                 	System.out.println(content.getBytes().toUTF8String());
                 	break;
             	case INT64:
-            	case TIMESTAMP:
                 	System.out.println(BytesUtils.toLong(content.getBytes().toBytes()));
                 	break;
             	default:
