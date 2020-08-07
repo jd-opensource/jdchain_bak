@@ -2490,3 +2490,130 @@ http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/us
 |content.bytes.value|事件内容字节|
 |content.type|事件内容类型|
 |content.value|事件内容|
+
+## 10.权限对外提供的API接口使用
+### 10.1根据角色获取权限信息
+```http
+GET /ledgers/{ledgerHash}/authorization/role/{roleName}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型
+|---|---|---|---|---|
+|get|ledger|是|账本哈希|字符串
+|--|roleName|是|角色名|字符串
+
+
+#### 请求实例
+```http
+http://localhost:11000/ledgers/j5pSJLyVpS8QG2wL95fiDWHHnweh2YdqNhgmnb64SBMjUh/authorization/role/DEFAULT
+```
+
+#### 返回实例
+
+```json
+{
+    "data": {
+        "roleName": "DEFAULT",
+        "transactionPrivilege": {
+            "privilege": [
+                "DIRECT_OPERATION",
+                "CONTRACT_OPERATION"
+            ],
+            "permissionCount": 2
+        },
+        "ledgerPrivilege": {
+            "privilege": [
+                "CONFIGURE_ROLES",
+                "AUTHORIZE_USER_ROLES",
+                "SET_CONSENSUS",
+                "SET_CRYPTO",
+                "REGISTER_PARTICIPANT",
+                "REGISTER_USER",
+                "REGISTER_DATA_ACCOUNT",
+                "REGISTER_CONTRACT",
+                "UPGRADE_CONTRACT",
+                "SET_USER_ATTRIBUTES",
+                "WRITE_DATA_ACCOUNT",
+                "APPROVE_TX",
+                "CONSENSUS_TX",
+                "REGISTER_EVENT_ACCOUNT",
+                "WRITE_EVENT_ACCOUNT"
+            ],
+            "permissionCount": 15
+        },
+        "version": 0
+    },
+    "success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|roleName|角色名称|
+|transactionPrivilege|交易权限|
+|transactionPrivilege -> privilege|交易权限->权限类别|
+|transactionPrivilege -> permissionCount|交易权限->权限总数|
+|ledgerPrivilege|账本权限|
+|ledgerPrivilege -> privilege|账本权限->权限类别|
+|ledgerPrivilege -> permissionCount|账本权限->权限总数|
+
+### 10.2根据用户获取权限信息
+
+```http
+GET /ledgers/{ledgerHash}/authorization/user/{userAddress}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型
+|---|---|---|---|---|
+|get|ledger|是|账本哈希|字符串
+|--|userAddress|是|用户地址|字符串
+
+
+#### 请求实例
+```http
+http://localhost:11000/ledgers/j5pSJLyVpS8QG2wL95fiDWHHnweh2YdqNhgmnb64SBMjUh/authorization/user/LdeNwH71wxtbf1UM8ExRG8qbPnu17MdnRSVva
+```
+
+#### 返回实例
+
+```json
+{
+    "data": {
+        "userAddress": {
+            "value": "LdeNwH71wxtbf1UM8ExRG8qbPnu17MdnRSVva"
+        },
+        "transactionPrivilegesBitset": {
+            "privilege": [
+                "DIRECT_OPERATION"
+            ],
+            "permissionCount": 1
+        },
+        "userRole": [
+            "MANAGER1",
+            "MANAGER0"
+        ],
+        "ledgerPrivilegesBitset": {
+            "privilege": [
+                "CONFIGURE_ROLES",
+                "REGISTER_USER"
+            ],
+            "permissionCount": 2
+        }
+    },
+    "success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|userRole|用户角色|
+|transactionPrivilegesBitset|交易权限集|
+|ledgerPrivilegesBitset|账本权限集|
