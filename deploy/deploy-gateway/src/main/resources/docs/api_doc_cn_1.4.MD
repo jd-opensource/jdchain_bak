@@ -2132,3 +2132,488 @@ http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/contracts
 |address.value|合约地址|
 |pubKey.value|合约公钥|
 |rootHash|合约根Hash|
+
+## 9 用户自定义事件
+
+### 9.1 获取事件账户列表
+
+```http
+GET /ledgers/{ledger}/events/user/accounts?fromIndex={start_index}&count={count}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|query|start_index|否|查询的起始序号，默认为0|数字|
+|query|count|否|查询返回事件账户的数量，默认最大返回值为100，小于0或大于100均返回最大可返回结果集|数字|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts?fromIndex=0&count=-1
+```
+
+#### 返回实例
+
+```json
+{
+    "data":[
+        {
+            "address":{
+                "value":"LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1"
+            },
+            "pubKey":{
+                "value":"7VeRBi3xDfT1E11vFs9q5Q9gFo23RR7SoobPzivqxw9Uubzq"
+            }
+        }
+    ],
+    "success":true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|address.value|账户地址|
+|pubKey.value|账户公钥|
+
+### 9.2 获取事件账户
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|address|账户地址|是|事件账户地址|字符串|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1
+```
+
+#### 返回实例
+
+```json
+{
+    "data":[
+        {
+            "address":{
+                "value":"LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1"
+            },
+            "pubKey":{
+                "value":"7VeRBi3xDfT1E11vFs9q5Q9gFo23RR7SoobPzivqxw9Uubzq"
+            }
+        }
+    ],
+    "success":true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|address.value|账户地址|
+|pubKey.value|账户公钥|
+
+### 9.3 获取事件账户总数
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/count
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/count
+```
+
+#### 返回实例
+
+```json
+{
+	"data": 1,
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|data|事件账户数量|
+
+### 9.4 获取事件名数量
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}/names/count
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|path|address|是|事件账户地址|字符串|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1/names/count
+```
+
+#### 返回实例
+
+```json
+{
+	"data": 2,
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|data|事件名数量|
+
+### 9.5 获取事件名列表
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}/names?fromIndex={start_index}&count={count}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|path|address|是|事件账户地址|字符串|
+|query|start_index|否|查询的起始序号，默认为0|数字|
+|query|count|否|查询返回事件账户的数量，默认最大返回值为100，小于0或大于100均返回最大可返回结果集|数字|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1/names?fromIndex=0&count=100
+```
+
+#### 返回实例
+
+```json
+{
+	"data": ["test1", "test2"],
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|data|事件名数量数组|
+
+### 9.6 获取最新事件
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}/names/{event_name}/latest
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|path|address|是|事件账户地址|字符串|
+|path|event_name|是|事件名|字符串|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1/names/test1/latest
+```
+
+#### 返回实例
+
+```json
+{
+	"data": {
+		"sequence": 0,
+		"transactionSource": {
+			"value": "j5rENX3rsdEgi5toeNUUv7ycUUivjNxAUb9Fme6oLCU851"
+		},
+		"blockHeight": 10,
+		"contractSource": "",
+		"eventAccount": {
+			"value": "LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1"
+		},
+		"name": "test1",
+		"content": {
+			"nil": false,
+			"bytes": {
+				"value": "Ctt6Eur"
+			},
+			"type": "TEXT",
+			"value": "imuge"
+		}
+	},
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|sequence|事件序列|
+|transactionSource.value|交易哈希|
+|blockHeight|时间产生区块高度|
+|contractSource|合约地址|
+|eventAccount.value|事件账户地址|
+|name|事件名|
+|content.nil|事件内容是否为空|
+|content.bytes.value|事件内容字节|
+|content.type|事件内容类型|
+|content.value|事件内容|
+
+### 9.7 获取事件数量
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}/names/{event_name}/count
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|path|address|是|事件账户地址|字符串|
+|path|event_name|是|事件名|字符串|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1/names/test1/count
+```
+
+#### 返回实例
+
+```json
+{
+	"data": 1,
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|data|事件数量|
+
+### 9.8 获取事件列表
+
+```http
+GET /ledgers/{ledger}/events/user/accounts/{address}/names/{event_name}?fromSequence={from_sequence}&count={count}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型|
+|---|---|---|---|---|
+|path|ledger|是|账本哈希|字符串|
+|path|address|是|事件账户地址|字符串|
+|path|event_name|是|事件名|字符串|
+|query|from_sequence|否|查询的起始序号，默认为0|数字|
+|query|count|否|查询返回事件的数量，默认最大返回值为100，小于0或大于100均返回最大可返回结果集|数字|
+
+
+#### 请求实例
+```http
+http://localhost/ledgers/657TQAw6ssVoeKniWGwbovk7njvCTvikPambM9eBv6ezs/events/user/accounts/LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1/names/test1?fromSequenct=0&count=100
+```
+
+#### 返回实例
+
+```json
+{
+	"data": [{
+		"sequence": 0,
+		"transactionSource": {
+			"value": "j5rENX3rsdEgi5toeNUUv7ycUUivjNxAUb9Fme6oLCU851"
+		},
+		"blockHeight": 10,
+		"contractSource": "",
+		"eventAccount": {
+			"value": "LdeP1yuk8Medq3Sph5ur9y1yE6nJ71XRVPPx1"
+		},
+		"name": "test1",
+		"content": {
+			"nil": false,
+			"bytes": {
+				"value": "Ctt6Eur"
+			},
+			"type": "TEXT",
+			"value": "imuge"
+		}
+	}],
+	"success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|data|事件列表|
+|sequence|事件序列|
+|transactionSource.value|交易哈希|
+|blockHeight|时间产生区块高度|
+|contractSource|合约地址|
+|eventAccount.value|事件账户地址|
+|name|事件名|
+|content.nil|事件内容是否为空|
+|content.bytes.value|事件内容字节|
+|content.type|事件内容类型|
+|content.value|事件内容|
+
+## 10.权限对外提供的API接口使用
+### 10.1根据角色获取权限信息
+```http
+GET /ledgers/{ledgerHash}/authorization/role/{roleName}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型
+|---|---|---|---|---|
+|get|ledger|是|账本哈希|字符串
+|--|roleName|是|角色名|字符串
+
+
+#### 请求实例
+```http
+http://localhost:11000/ledgers/j5pSJLyVpS8QG2wL95fiDWHHnweh2YdqNhgmnb64SBMjUh/authorization/role/DEFAULT
+```
+
+#### 返回实例
+
+```json
+{
+    "data": {
+        "roleName": "DEFAULT",
+        "transactionPrivilege": {
+            "privilege": [
+                "DIRECT_OPERATION",
+                "CONTRACT_OPERATION"
+            ],
+            "permissionCount": 2
+        },
+        "ledgerPrivilege": {
+            "privilege": [
+                "CONFIGURE_ROLES",
+                "AUTHORIZE_USER_ROLES",
+                "SET_CONSENSUS",
+                "SET_CRYPTO",
+                "REGISTER_PARTICIPANT",
+                "REGISTER_USER",
+                "REGISTER_DATA_ACCOUNT",
+                "REGISTER_CONTRACT",
+                "UPGRADE_CONTRACT",
+                "SET_USER_ATTRIBUTES",
+                "WRITE_DATA_ACCOUNT",
+                "APPROVE_TX",
+                "CONSENSUS_TX",
+                "REGISTER_EVENT_ACCOUNT",
+                "WRITE_EVENT_ACCOUNT"
+            ],
+            "permissionCount": 15
+        },
+        "version": 0
+    },
+    "success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|roleName|角色名称|
+|transactionPrivilege|交易权限|
+|transactionPrivilege -> privilege|交易权限->权限类别|
+|transactionPrivilege -> permissionCount|交易权限->权限总数|
+|ledgerPrivilege|账本权限|
+|ledgerPrivilege -> privilege|账本权限->权限类别|
+|ledgerPrivilege -> permissionCount|账本权限->权限总数|
+
+### 10.2根据用户获取权限信息
+
+```http
+GET /ledgers/{ledgerHash}/authorization/user/{userAddress}
+```
+
+#### 参数
+
+|请求类型|名称|是否必需|说明|数据类型
+|---|---|---|---|---|
+|get|ledger|是|账本哈希|字符串
+|--|userAddress|是|用户地址|字符串
+
+
+#### 请求实例
+```http
+http://localhost:11000/ledgers/j5pSJLyVpS8QG2wL95fiDWHHnweh2YdqNhgmnb64SBMjUh/authorization/user/LdeNwH71wxtbf1UM8ExRG8qbPnu17MdnRSVva
+```
+
+#### 返回实例
+
+```json
+{
+    "data": {
+        "userAddress": {
+            "value": "LdeNwH71wxtbf1UM8ExRG8qbPnu17MdnRSVva"
+        },
+        "transactionPrivilegesBitset": {
+            "privilege": [
+                "DIRECT_OPERATION"
+            ],
+            "permissionCount": 1
+        },
+        "userRole": [
+            "MANAGER1",
+            "MANAGER0"
+        ],
+        "ledgerPrivilegesBitset": {
+            "privilege": [
+                "CONFIGURE_ROLES",
+                "REGISTER_USER"
+            ],
+            "permissionCount": 2
+        }
+    },
+    "success": true
+}
+```
+
+说明
+
+|名称|说明|
+|---|---|
+|userRole|用户角色|
+|transactionPrivilegesBitset|交易权限集|
+|ledgerPrivilegesBitset|账本权限集|

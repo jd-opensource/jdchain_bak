@@ -1,56 +1,41 @@
-package test.com.jd.blockchain.sdk.test;
-
-import static org.junit.Assert.assertTrue;
-
-import com.jd.blockchain.ledger.*;
-import org.junit.Before;
-import org.junit.Test;
+package com.jd.blockchain.sdk.samples;
 
 import com.jd.blockchain.binaryproto.DataContractRegistry;
-import com.jd.blockchain.crypto.AddressEncoding;
-import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.crypto.KeyGenUtils;
-import com.jd.blockchain.crypto.PrivKey;
-import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.ledger.*;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-import com.jd.blockchain.sdk.samples.SDKDemo_Constant;
 import com.jd.blockchain.utils.net.NetworkAddress;
 
 /**
- * 注册参与方测试
- * @author zhangshuang
- * @create 2019/7/4
- * @since 1.0.0
+ * @Author: zhangshuang
+ * @Date: 2020/5/27 5:18 PM
+ * Version 1.0
  */
+public class SDKDemo_RegistParticipant {
 
-public class SDK_GateWay_Participant_Regist_Test_ {
+    public static void main(String[] args) {
+        PrivKey privKey;
+        PubKey pubKey;
 
-    private PrivKey privKey;
-    private PubKey pubKey;
+        BlockchainKeypair CLIENT_CERT = null;
 
-    private BlockchainKeypair CLIENT_CERT = null;
+        String GATEWAY_IPADDR = null;
 
-    private String GATEWAY_IPADDR = null;
+        int GATEWAY_PORT;
 
-    private int GATEWAY_PORT;
+        boolean SECURE;
 
-    private boolean SECURE;
+        BlockchainService service;
 
-    private BlockchainService service;
+        //根据密码工具产生的公私钥
+        String PUB = "3snPdw7i7PkdgqiGX7GbZuFSi1cwZn7vtjw4vifb1YoXgr9k6Kfmis";
+        String PRIV = "177gjtZu8w1phqHFVNiFhA35cfimXmP6VuqrBFhfbXBWK8s4TRwro2tnpffwP1Emwr6SMN6";
 
-    //根据密码工具产生的公私钥
-    static String PUB = "3snPdw7i7PkdgqiGX7GbZuFSi1cwZn7vtjw4vifb1YoXgr9k6Kfmis";
-    String PRIV = "177gjtZu8w1phqHFVNiFhA35cfimXmP6VuqrBFhfbXBWK8s4TRwro2tnpffwP1Emwr6SMN6";
+        privKey = SDKDemo_Params.privkey1;
+        pubKey = SDKDemo_Params.pubKey1;
 
-    @Before
-    public void init() {
-
-        privKey = SDK_GateWay_KeyPair_Para.privkey1;
-        pubKey = SDK_GateWay_KeyPair_Para.pubKey1;
-
-        CLIENT_CERT = new BlockchainKeypair(SDK_GateWay_KeyPair_Para.pubKey0, SDK_GateWay_KeyPair_Para.privkey0);
+        CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);
         GATEWAY_IPADDR = "127.0.0.1";
         GATEWAY_PORT = 11000;
         SECURE = false;
@@ -67,10 +52,7 @@ public class SDK_GateWay_Participant_Regist_Test_ {
         DataContractRegistry.register(ParticipantRegisterOperation.class);
         DataContractRegistry.register(ParticipantStateUpdateOperation.class);
         DataContractRegistry.register(ConsensusSettingsUpdateOperation.class);
-    }
 
-    @Test
-    public void registerParticipant_Test() {
         HashDigest[] ledgerHashs = service.getLedgerHashs();
         // 在本地定义注册账号的 TX；
         TransactionTemplate txTemp = service.newTransaction(ledgerHashs[0]);
@@ -78,11 +60,11 @@ public class SDK_GateWay_Participant_Regist_Test_ {
         //existed signer
         AsymmetricKeypair keyPair = new BlockchainKeypair(pubKey, privKey);
 
-        PrivKey privKey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
+        privKey = KeyGenUtils.decodePrivKeyWithRawPassword(PRIV, SDKDemo_Constant.PASSWORD);
 
-        PubKey pubKey = KeyGenUtils.decodePubKey(PUB);
+        pubKey = KeyGenUtils.decodePubKey(PUB);
 
-        System.out.println("Address = "+AddressEncoding.generateAddress(pubKey));
+        System.out.println("Address = " + AddressEncoding.generateAddress(pubKey));
 
         BlockchainKeypair user = new BlockchainKeypair(pubKey, privKey);
 
@@ -97,7 +79,7 @@ public class SDK_GateWay_Participant_Regist_Test_ {
 
         // 提交交易；
         TransactionResponse transactionResponse = prepTx.commit();
-        assertTrue(transactionResponse.isSuccess());
-
     }
+
+
 }
