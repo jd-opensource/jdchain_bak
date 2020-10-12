@@ -13,7 +13,6 @@
 		<module>project</module>
 		<module>framework</module>
 		<module>core</module>
-		<module>kvdb</module>
 		<module>deploy</module>
 		<module>test</module>
 		<module>samples</module>
