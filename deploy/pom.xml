@@ -14,7 +14,6 @@
 
 	<properties>
 		<core.version>1.4.0-SNAPSHOT</core.version>
-		<kvdb.version>1.0.1.RELEASE</kvdb.version>
 	</properties>
 
 	<modules>
