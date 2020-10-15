@@ -1,5 +1,9 @@
 package com.jd.blockchain.sdk.samples;
 
+import com.jd.blockchain.crypto.AddressEncoding;
+import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.crypto.PubKey;
+import com.jd.blockchain.utils.Bytes;
 import com.jd.blockchain.utils.http.converters.JsonResponseConverter;
 import com.jd.blockchain.utils.web.model.WebResponse;
 import org.apache.http.HttpResponse;
@@ -17,15 +21,20 @@ import java.util.List;
  * @Date: 2020/5/27 5:18 PM
  * Version 1.0
  */
-public class SDKDemo_ActiveParticipant {
+public class SDKDemo_DeactiveParticipant {
 
-    // 接受激活参与方操作的共识节点Http服务地址， 根据具体环境配置进行修改
+    // 接受去激活参与方操作的共识节点Http服务地址， 根据具体环境配置进行修改
     private static String httpIp = "127.0.0.1";
     private static String httpPort = "7080";
 
     public static void main(String[] args) {
 
-        String url = "http://" + httpIp + ":" + httpPort + "/management/delegate/activeparticipant";
+        String url = "http://" + httpIp + ":" + httpPort + "/management/delegate/deactiveparticipant";
+
+        // 即将进行去激活的共识节点公钥信息
+        String PUB = "3snPdw7i7Pf2u9KTNUhxrYxgEymH24zP3NNNauRVwX5yDD6rzu2uBY";
+        PubKey deactivePubKey = KeyGenUtils.decodePubKey(PUB);
+        Bytes address = AddressEncoding.generateAddress(deactivePubKey);
 
         System.out.println("url = " + url);
 
@@ -36,17 +45,13 @@ public class SDKDemo_ActiveParticipant {
         // 账本值根据具体情况进行修改
         BasicNameValuePair base58LedgerHash = new BasicNameValuePair("ledgerHash",  "j5tuvAR3Q6ATsMNYTwt7SxVeCqd73itQbpmePxzSg6Zsxc");
 
-        // 激活的新参与方的共识网络地址
-        BasicNameValuePair host = new BasicNameValuePair("consensusHost",  "127.0.0.1");
-        BasicNameValuePair port = new BasicNameValuePair("consensusPort", "16000");
-
+        BasicNameValuePair deactiveAddress = new BasicNameValuePair("participantAddress", address.toBase58());
         // 指定已经启动的其他共识节点的HTTP管理端口
         BasicNameValuePair manageHost = new BasicNameValuePair("remoteManageHost",  "127.0.0.1");
         BasicNameValuePair managePort = new BasicNameValuePair("remoteManagePort", "7083");
 
         para.add(base58LedgerHash);
-        para.add(host);
-        para.add(port);
+        para.add(deactiveAddress);
         para.add(manageHost);
         para.add(managePort);
 
