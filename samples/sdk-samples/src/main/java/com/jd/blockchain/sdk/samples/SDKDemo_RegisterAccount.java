@@ -20,10 +20,7 @@ public class SDKDemo_RegisterAccount {
         }
 
         DataContractRegistry.register(TransactionContent.class);
-        DataContractRegistry.register(TransactionContentBody.class);
         DataContractRegistry.register(TransactionRequest.class);
-        DataContractRegistry.register(NodeRequest.class);
-        DataContractRegistry.register(EndpointRequest.class);
         DataContractRegistry.register(TransactionResponse.class);
 
         BlockchainKeypair CLIENT_CERT = new BlockchainKeypair(SDKDemo_Params.pubKey0, SDKDemo_Params.privkey0);

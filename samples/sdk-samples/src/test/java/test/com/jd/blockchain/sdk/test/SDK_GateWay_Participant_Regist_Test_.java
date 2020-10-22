@@ -59,10 +59,7 @@ public class SDK_GateWay_Participant_Regist_Test_ {
         service = serviceFactory.getBlockchainService();
 
         DataContractRegistry.register(TransactionContent.class);
-        DataContractRegistry.register(TransactionContentBody.class);
         DataContractRegistry.register(TransactionRequest.class);
-        DataContractRegistry.register(NodeRequest.class);
-        DataContractRegistry.register(EndpointRequest.class);
         DataContractRegistry.register(TransactionResponse.class);
         DataContractRegistry.register(ParticipantRegisterOperation.class);
         DataContractRegistry.register(ParticipantStateUpdateOperation.class);

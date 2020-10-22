@@ -286,7 +286,7 @@ public class SDK_Contract_Test {
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
-		String txHash = ByteArray.toBase64(prepTx.getHash().toBytes());
+		String txHash = ByteArray.toBase64(prepTx.getTransactionHash().toBytes());
 
 		// 使用私钥进行签名；
 		AsymmetricKeypair keyPair = getSponsorKey();

@@ -20,6 +20,18 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>crypto-sm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
 			<artifactId>contract-samples</artifactId>
 			<version>${project.version}</version>
 		</dependency>
