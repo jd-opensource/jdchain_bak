@@ -20,6 +20,7 @@
 		<module>../core</module>
 		<module>deploy-gateway</module>
 		<module>deploy-peer</module>
+		<module>docker-demo</module>
 	</modules>
 
 </project>
