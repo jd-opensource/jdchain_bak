@@ -33,12 +33,8 @@ public class PeerBooter {
 
 	public static void main(String[] args) {
 		try {
-
 			HomeContext homeContext = HomeBooter.createHomeContext(args);
-
 			startPeer(homeContext);
-
-			writePID(homeContext.getHomeDir());
 		} catch (Exception e) {
 			System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
 		}
@@ -55,25 +51,5 @@ public class PeerBooter {
 		Object[] systemStartingArgs = { home.getRuntimeDir(), home.isProductMode(), home.getLibsClassLoader(),
 				SYSTEM_MAIN_CLASS, home.getSystemClassLoader(), home.getStartingArgs() };
 		modularFactoryMethod.invoke(null, systemStartingArgs);
-	}
-
-	private static final void writePID(String homeDir) throws IOException {
-		String pidFilePath = homeDir + File.separator + "bin" + File.separator + "PID.log";
-		File pidFile = new File(pidFilePath);
-		if (!pidFile.exists()) {
-			pidFile.createNewFile();
-		}
-		String name = ManagementFactory.getRuntimeMXBean().getName();
-		String pid = name.split("@")[0];
-		List<String> bootInfos = new ArrayList<>();
-		bootInfos.add("JDChain peer node starts to boot ......\r\n");
-		bootInfos.add(String.format("PEER_BOOT_TIME = [%s] \r\n", new Date().toString()));
-		bootInfos.add(String.format("PEER_BOOT_PID = [%s] \r\n", pid));
-		try (FileOutputStream outputStream = new FileOutputStream(pidFile)) {
-			for (String bootInfo : bootInfos) {
-				outputStream.write(bootInfo.getBytes(StandardCharsets.UTF_8));
-			}
-			outputStream.flush();
-		}
 	}
 }
