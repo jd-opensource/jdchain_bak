@@ -5,6 +5,7 @@ RUN yum install wget -y \
  && wget -O /etc/yum.repos.d/epel-7.repo  http://mirrors.aliyun.com/repo/epel-7.repo \ 
  && yum install java net-tools  nc crontabs expect unzip -y \
  && yum install langpacks-zh_CN.noarch -y \
+ && yum install dos2unix -y \
  && echo "LANG=zh_CN.utf8" >> /etc/locale.conf \
  && source /etc/locale.conf \
  && yum clean all
@@ -21,6 +22,7 @@ ENV SERVER_NAME_PEER=deploy-peer
 ENV SERVER_NAME_GW=deploy-gateway
 
 COPY script/* /export/jdchain/
+RUN dos2unix /export/jdchain/*.sh
 RUN chmod +x /export/jdchain/*.sh
 
 # ports

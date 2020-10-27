@@ -162,12 +162,7 @@ public abstract class SDK_Base_Demo {
             System.out.println("contract's address=" + contractAddress);
 
             // 生成发布合约操作
-            if(contractParams.isHasVersion()){
-//                txTpl.contracts().deploy(contractParams.contractIdentity, contractCode, contractParams.version);
-            } else {
-                txTpl.contracts().deploy(contractParams.contractIdentity, contractCode);
-            }
-
+            txTpl.contracts().deploy(contractParams.contractIdentity, contractCode);
 
             // 生成预发布交易；
             commit(txTpl,contractParams.getSignAdminKey());
