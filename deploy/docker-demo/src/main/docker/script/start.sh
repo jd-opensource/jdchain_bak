@@ -24,5 +24,7 @@ sh ./peer2/bin/peer-startup.sh
 sh ./peer3/bin/peer-startup.sh
 sleep 30
 sh ./gw/bin/startup.sh
+sleep 10
+java -jar docker-sdk-1.3.0.RELEASE.jar > sdk.log
 
 tail -f /dev/null

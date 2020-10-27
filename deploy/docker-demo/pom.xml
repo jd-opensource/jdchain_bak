@@ -47,6 +47,15 @@
                                         <include>jdchain-gateway-${project.version}.RELEASE.zip</include>
                                     </includes>
                                 </resource>
+
+                                <!-- sdk -->
+                                <resource>
+                                    <directory>${project.basedir}/../docker-sdk/target/</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>docker-sdk-${project.version}.RELEASE.jar</include>
+                                    </includes>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
