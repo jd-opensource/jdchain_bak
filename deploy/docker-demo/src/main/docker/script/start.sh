@@ -2,10 +2,15 @@
 
 cd $RELEASE_DIR
 
-# invoke it once again;
-#gw_pid_file="./gw/bin/PID.log"
-#if [ ! -f gw_pid_file ] ; then
-#  echo "get the PID.log, only to start the peer and gateway."
+# check the files;
+peer_file="./jdchain-peer-$RELEASE_VERSION.RELEASE.zip"
+gw_file="./jdchain-gateway-$RELEASE_VERSION.RELEASE.zip"
+sdk_file="./docker-sdk-$RELEASE_VERSION.RELEASE.jar"
+if [[ ! -f $peer_file ]] || [[ ! -f $gw_file ]] || [[ ! -f $sdk_file ]] ; then
+echo "not find $peer_file or $gw_file or $sdk_file in the $RELEASE_DIR, please check the image of jdchain-demo:$RELEASE_VERSION."
+exit 1
+fi
+
   unzip -o conf.zip
 
   for i in `seq 0 3`
@@ -16,7 +21,6 @@ cd $RELEASE_DIR
 
   unzip -n -d ./gw jdchain-gateway-$RELEASE_VERSION.RELEASE.zip
   chmod +x ./gw/bin/*
-#fi
 
 sh ./peer0/bin/peer-startup.sh
 sh ./peer1/bin/peer-startup.sh
