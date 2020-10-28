@@ -1,7 +1,7 @@
 # jdchain-demo镜像使用说明
 本镜像主要为快速构建JDChain测试环境使用，内嵌固定的公私钥，不可用于生产正式环境。
 JDChain在docker中的安装路径：/export/jdchain，网关对外端口为：8080。可通过docker-compose-all文件来修改端口。
-demo环境构建完成后执行sdk加载部分测试数据，区块高度：22，交易总数：23，用户总数：6，数据账户总数：3，合约总数：2。
+demo环境构建完成后执行sdk加载部分测试数据，区块高度：7，交易总数：8，用户总数：5，数据账户总数：2，合约总数：1。
 
 ## 如何生成镜像
 1. 需要预先在deploy-peer和deploy-gateway中生成zip安装包，copy的源路径是target；  
