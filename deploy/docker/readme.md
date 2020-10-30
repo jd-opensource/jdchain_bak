@@ -4,11 +4,12 @@ JDChain在docker中的安装路径：/export/jdchain，网关对外端口为：8
 demo环境构建完成后执行sdk加载部分测试数据，区块高度：7，交易总数：8，用户总数：5，数据账户总数：2，合约总数：1。  
 
 ## 如何生成镜像
-1. 需要预先在deploy-peer和deploy-gateway中生成zip安装包，copy的源路径是target；  
-2. 需要预先在docker-sdk中执行：mvn clean package，生成sdk可执行jar；
-2. 本项目中执行：mvn clean package；会从dpploy-peer/dploy-gw/docker-sdk的target中提取zip包和可执行jar，  
-在docker环境中生成jdchain-peer镜像；
-3. 生成镜像文件。执行resource中：zip.sh，可生成镜像的tar.gz压缩包；
+1. 如果构建的docker镜像为当前开发版本，将docker模块中的<version>和<docker-tag>跟主版本对齐，然后在deploy模块执行：mvn clean package即可。
+如果镜像版本与所在开发版本不一致（举例说明：构建1.3.0的镜像版本，但当前开发版本是1.4.0），需要预先在deploy-peer和deploy-gateway的
+target文件夹下放置相应版本zip安装包(jdchain-peer-xxx.zip,jdchain-gateway-xxx.zip)，然后在docker模块执行：mvn clean package。
+2. 在maven构建过程中，两个zip安装包和docker-sdk-xxx.jar，会放至docker-demo模块src/main/docker/zip文件夹下。
+3. maven构建完成后，控制台执行：docker images，可看到构建的jdchain-peer镜像。
+4. 生成镜像文件。执行docker-demo模块中src/main/resources/zip.sh，可生成镜像的tar.gz压缩包；
 
 ## 镜像快速使用
 1.在已经安装docker工具的环境中，装入jdchain-demo镜像：

@@ -3,14 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>jdchain-root</artifactId>
+        <artifactId>docker</artifactId>
         <groupId>com.jd.blockchain</groupId>
-        <version>1.2.1.RELEASE</version>
-        <relativePath>../../pom.xml</relativePath>
+        <version>1.3.0.RELEASE</version>
     </parent>
-    <version>1.3.0</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>docker-demo</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>docker-sdk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>jdchain-demo</finalName>
@@ -30,6 +36,26 @@
                 </configuration>
             </plugin>
 
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-dependency-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-dependencies</id>-->
+<!--                        <phase>package</phase>-->
+<!--                    <goals>-->
+<!--                        <goal>copy-dependencies</goal>-->
+<!--                    </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>-->
+<!--                            <excludeTransitive>false</excludeTransitive>-->
+<!--                            <stripVersion>false</stripVersion>-->
+<!--                            <includeScope>runtime</includeScope>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.2</version>
@@ -47,18 +73,18 @@
                             <overwrite>false</overwrite>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../deploy-peer/target/</directory>
+                                    <directory>${project.basedir}/../../deploy-peer/target/</directory>
                                     <filtering>false</filtering>
                                     <includes>
-                                        <include>jdchain-peer-${project.version}.RELEASE.zip</include>
+                                        <include>jdchain-peer-${project.version}.zip</include>
                                     </includes>
                                 </resource>
 
                                 <resource>
-                                    <directory>${project.basedir}/../deploy-gateway/target/</directory>
+                                    <directory>${project.basedir}/../../deploy-gateway/target/</directory>
                                     <filtering>false</filtering>
                                     <includes>
-                                        <include>jdchain-gateway-${project.version}.RELEASE.zip</include>
+                                        <include>jdchain-gateway-${project.version}.zip</include>
                                     </includes>
                                 </resource>
 
@@ -67,7 +93,7 @@
                                     <directory>${project.basedir}/../docker-sdk/target/</directory>
                                     <filtering>false</filtering>
                                     <includes>
-                                        <include>docker-sdk-${project.version}.RELEASE.jar</include>
+                                        <include>docker-sdk-${project.version}.jar</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -97,7 +123,7 @@
                 <configuration>
 
                     <imageName>jdchain-demo</imageName>
-                    <imageTags>${project.version}</imageTags>
+                    <imageTags>${docker.tag}</imageTags>
                     <!-- 指定 Dockerfile 路径-->
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                 </configuration>
