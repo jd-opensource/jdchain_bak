@@ -7,8 +7,15 @@ JAVA_BIN=java
 APP_JAR_PREFIX=deploy-peer-
 
 #Peer节点Web端口
-#请运维根据实际环境进行调整
+#请运维根据实际环境进行调整或通过-p参数传入
 WEB_PORT=7080
+#端口配置参数
+IS_CONFIG=false
+for i in "$@"; do
+    if [ $i = "-p" ];then
+        IS_CONFIG=true
+    fi
+done
 
 #检查Java环境变量
 if [ ! -n "$JAVA_HOME" ]; then
@@ -40,6 +47,9 @@ JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m"
 
 #APP具体相关命令
 APP_CMD=$APP_SYSTEM_PATH/$APP_JAR" -home="$APP_HOME" -c "$LEDGER_BINDING_CONFIG" -p "$WEB_PORT
+if [ $IS_CONFIG = true ];then
+    APP_CMD=$APP_SYSTEM_PATH/$APP_JAR" -home="$APP_HOME" -c "$LEDGER_BINDING_CONFIG
+fi
 
 #APP_JAR的具体路径
 APP_JAR_PATH=$APP_SYSTEM_PATH/$APP_JAR
