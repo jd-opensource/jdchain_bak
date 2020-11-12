@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import com.jd.blockchain.crypto.base.DefaultCryptoEncoding;
+import com.jd.blockchain.crypto.base.HashDigestBytes;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,7 +299,8 @@ public class SDK_Contract_Test {
 	}
 
 	private static HashDigest getLedgerHash() {
-		return new HashDigest(Base58Utils.decode(ledgerAddress));
+		byte[] addressBytes = Base58Utils.decode(ledgerAddress);
+		return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(addressBytes), addressBytes);
 	}
 
 	/**

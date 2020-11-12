@@ -10,6 +10,8 @@ package test.com.jd.blockchain.sdk.test;
 
 import static org.junit.Assert.assertEquals;
 
+import com.jd.blockchain.crypto.base.DefaultCryptoEncoding;
+import com.jd.blockchain.crypto.base.HashDigestBytes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -113,7 +115,7 @@ public class SDK_GateWay_BatchInsertData_Test_ {
 
     private HashDigest getLedgerHash() {
         byte[] hashBytes = Base58Utils.decode(ledgerHash);
-        return new HashDigest(hashBytes);
+        return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(hashBytes), hashBytes);
     }
 
 
