@@ -58,6 +58,24 @@
 			<version>${core.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-regparti-booter</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-activeparti-booter</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>tools-deactiveparti-booter</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
