@@ -84,6 +84,28 @@ git config remote.origin.pushurl $REMOTE_ORIGIN_URL
 echo "远程仓库的地址更新为："$REMOTE_ORIGIN_URL
 echo ""
 
+#同步更新子模块的远程仓库 origin 的地址;
+echo "---------------- 更新子模块的远程仓库地址 ----------------"
+# 子模块名称列表；
+
+SUBMODULES=$(git submodule | awk '{print $2}')
+for m in $SUBMODULES;
+do
+    SUBMODULE_URL=$(git config --get submodule.$m.url)
+    echo "模块[$m].URL="$SUBMODULE_URL
+
+    cd $BASE_DIR/$m
+
+    git config remote.origin.url $SUBMODULE_URL
+    git config remote.origin.pushurl $SUBMODULE_URL
+
+    cd $BASE_DIR
+done
+
+#首次执行同步更新子模块的远程仓库 origin 的地址会将主项目地址更改，以下操作确保主项目远程仓库地址正确
+git config remote.origin.url $REMOTE_ORIGIN_URL
+git config remote.origin.pushurl $REMOTE_ORIGIN_URL
+
 #检查是否要跳过子模块更新环节；
 if [ $SKIP_SUBMODULES_UPDATE == 1 ]
 then
