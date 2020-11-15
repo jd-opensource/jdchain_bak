@@ -13,7 +13,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<core.version>1.4.0-SNAPSHOT</core.version>
+		<core.version>1.4.0.RELEASE</core.version>
 	</properties>
 
 	<modules>
