@@ -23,16 +23,12 @@ import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.EndpointRequest;
 import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.ParticipantNode;
-import com.jd.blockchain.ledger.Transaction;
 import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
@@ -72,10 +68,7 @@ public class SDK_GateWay_Query_Test_ {
 		service = serviceFactory.getBlockchainService();
 
 		DataContractRegistry.register(TransactionContent.class);
-		DataContractRegistry.register(TransactionContentBody.class);
 		DataContractRegistry.register(TransactionRequest.class);
-		DataContractRegistry.register(NodeRequest.class);
-		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 	}
 
@@ -119,16 +112,16 @@ public class SDK_GateWay_Query_Test_ {
 
 		LedgerTransaction[] txList = service.getTransactions(ledgerHash, ledgerNumber, 0, 100);
 		for (LedgerTransaction ledgerTransaction : txList) {
-			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getHash());
+			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getTransactionHash());
 		}
 
 		txList = service.getTransactions(ledgerHash, hashDigest, 0, 100);
 		for (LedgerTransaction ledgerTransaction : txList) {
-			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getHash());
+			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getTransactionHash());
 		}
 
-		Transaction tx = service.getTransactionByContentHash(ledgerHash, hashDigest);
-		DigitalSignature[] signatures = tx.getEndpointSignatures();
+		LedgerTransaction tx = service.getTransactionByContentHash(ledgerHash, hashDigest);
+		DigitalSignature[] signatures = tx.getRequest().getEndpointSignatures();
 		for (DigitalSignature signature : signatures) {
 			System.out.println(signature.getDigest().getAlgorithm());
 		}

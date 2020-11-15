@@ -7,7 +7,6 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerTransaction;
-import com.jd.blockchain.ledger.Transaction;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.utils.net.NetworkAddress;
@@ -61,8 +60,8 @@ public class SDKDemo_Query {
 		LedgerTransaction[] txList = service.getTransactions(LEDGER_HASH, ledgerNumber, 0, 100);
 
 		// 根据交易的 hash 获得交易；注：客户端生成 PrepareTransaction 时得到交易hash；
-		HashDigest txHash = txList[0].getTransactionContent().getHash();
-		Transaction tx = service.getTransactionByContentHash(LEDGER_HASH, txHash);
+		HashDigest txHash = txList[0].getRequest().getTransactionHash();
+		LedgerTransaction tx = service.getTransactionByContentHash(LEDGER_HASH, txHash);
 
 		// 获取数据；
 		String commerceAccount = "GGhhreGeasdfasfUUfehf9932lkae99ds66jf==";

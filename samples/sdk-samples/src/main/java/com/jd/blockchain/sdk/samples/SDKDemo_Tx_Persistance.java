@@ -40,10 +40,7 @@ public class SDKDemo_Tx_Persistance {
 
 		// 注册相关class
 		DataContractRegistry.register(TransactionContent.class);
-		DataContractRegistry.register(TransactionContentBody.class);
 		DataContractRegistry.register(TransactionRequest.class);
-		DataContractRegistry.register(NodeRequest.class);
-		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 
 		PrivKey privKey1 = SDKDemo_Params.privkey0;
@@ -87,7 +84,7 @@ public class SDKDemo_Tx_Persistance {
 		TransactionContent txContent = BinaryProtocol.decode(txContentBytes, TransactionContent.class);
 		
 		// 对交易内容签名；
-		DigitalSignature signature1 = SignatureUtils.sign(txContent, keyPair1);
+		DigitalSignature signature1 = SignatureUtils.sign(keyPair1.getAlgorithm(), txContent, keyPair1);
 		
 		// 根据交易内容重新准备交易；
 		PreparedTransaction decodedPrepTx = blockchainService.prepareTransaction(txContent);

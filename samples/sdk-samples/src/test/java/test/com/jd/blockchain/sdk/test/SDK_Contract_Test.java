@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import com.jd.blockchain.crypto.base.DefaultCryptoEncoding;
+import com.jd.blockchain.crypto.base.HashDigestBytes;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -286,7 +288,7 @@ public class SDK_Contract_Test {
 
 		// TX 准备就绪；
 		PreparedTransaction prepTx = txTemp.prepare();
-		String txHash = ByteArray.toBase64(prepTx.getHash().toBytes());
+		String txHash = ByteArray.toBase64(prepTx.getTransactionHash().toBytes());
 
 		// 使用私钥进行签名；
 		AsymmetricKeypair keyPair = getSponsorKey();
@@ -297,7 +299,7 @@ public class SDK_Contract_Test {
 	}
 
 	private static HashDigest getLedgerHash() {
-		return new HashDigest(Base58Utils.decode(ledgerAddress));
+		return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(Base58Utils.decode(ledgerAddress)), Base58Utils.decode(ledgerAddress));
 	}
 
 	/**

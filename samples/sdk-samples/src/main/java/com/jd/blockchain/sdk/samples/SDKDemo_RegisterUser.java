@@ -38,10 +38,7 @@ public class SDKDemo_RegisterUser {
 
 		// 注册相关class
 		DataContractRegistry.register(TransactionContent.class);
-		DataContractRegistry.register(TransactionContentBody.class);
 		DataContractRegistry.register(TransactionRequest.class);
-		DataContractRegistry.register(NodeRequest.class);
-		DataContractRegistry.register(EndpointRequest.class);
 		DataContractRegistry.register(TransactionResponse.class);
 
 		PrivKey privKey = SDKDemo_Params.privkey1;

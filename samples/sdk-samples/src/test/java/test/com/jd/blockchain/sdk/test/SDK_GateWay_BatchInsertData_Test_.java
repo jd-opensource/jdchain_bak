@@ -10,6 +10,8 @@ package test.com.jd.blockchain.sdk.test;
 
 import static org.junit.Assert.assertEquals;
 
+import com.jd.blockchain.crypto.base.DefaultCryptoEncoding;
+import com.jd.blockchain.crypto.base.HashDigestBytes;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,11 +23,8 @@ import com.jd.blockchain.crypto.HashFunction;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.EndpointRequest;
-import com.jd.blockchain.ledger.NodeRequest;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionContent;
-import com.jd.blockchain.ledger.TransactionContentBody;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
@@ -68,10 +67,7 @@ public class SDK_GateWay_BatchInsertData_Test_ {
         service = serviceFactory.getBlockchainService();
 
         DataContractRegistry.register(TransactionContent.class);
-        DataContractRegistry.register(TransactionContentBody.class);
         DataContractRegistry.register(TransactionRequest.class);
-        DataContractRegistry.register(NodeRequest.class);
-        DataContractRegistry.register(EndpointRequest.class);
         DataContractRegistry.register(TransactionResponse.class);
     }
 
@@ -118,8 +114,7 @@ public class SDK_GateWay_BatchInsertData_Test_ {
     }
 
     private HashDigest getLedgerHash() {
-        byte[] hashBytes = Base58Utils.decode(ledgerHash);
-        return new HashDigest(hashBytes);
+        return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(Base58Utils.decode(ledgerHash)), Base58Utils.decode(ledgerHash));
     }
 
 
