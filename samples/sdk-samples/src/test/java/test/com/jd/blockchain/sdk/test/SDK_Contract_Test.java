@@ -299,8 +299,7 @@ public class SDK_Contract_Test {
 	}
 
 	private static HashDigest getLedgerHash() {
-		byte[] addressBytes = Base58Utils.decode(ledgerAddress);
-		return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(addressBytes), addressBytes);
+		return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(Base58Utils.decode(ledgerAddress)), Base58Utils.decode(ledgerAddress));
 	}
 
 	/**

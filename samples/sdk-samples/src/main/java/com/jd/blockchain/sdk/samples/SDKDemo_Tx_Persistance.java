@@ -84,7 +84,7 @@ public class SDKDemo_Tx_Persistance {
 		TransactionContent txContent = BinaryProtocol.decode(txContentBytes, TransactionContent.class);
 		
 		// 对交易内容签名；
-		DigitalSignature signature1 = SignatureUtils.sign(keyPair1.getAlgorithm(),txContent, keyPair1);
+		DigitalSignature signature1 = SignatureUtils.sign(keyPair1.getAlgorithm(), txContent, keyPair1);
 		
 		// 根据交易内容重新准备交易；
 		PreparedTransaction decodedPrepTx = blockchainService.prepareTransaction(txContent);

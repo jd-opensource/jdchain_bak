@@ -1,4 +1,3 @@
-
 #调用当前脚本目录下 env.sh 脚本，设置环境变量，处理当前传入参数；
 if [ ! $ENV_SHELL ]
 then 
@@ -102,6 +101,10 @@ do
 
     cd $BASE_DIR
 done
+
+#首次执行同步更新子模块的远程仓库 origin 的地址会将主项目地址更改，以下操作确保主项目远程仓库地址正确
+git config remote.origin.url $REMOTE_ORIGIN_URL
+git config remote.origin.pushurl $REMOTE_ORIGIN_URL
 
 #检查是否要跳过子模块更新环节；
 if [ $SKIP_SUBMODULES_UPDATE == 1 ]

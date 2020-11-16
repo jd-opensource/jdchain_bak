@@ -3,23 +3,23 @@
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>1.3.0.RELEASE</version>
+    <version>1.4.0.RELEASE</version>
 </dependency>
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>contract-starter</artifactId>
-    <version>1.3.0.RELEASE</version>
+    <version>1.4.0.RELEASE</version>
 </dependency>
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>crypto-classic</artifactId>
-    <version>1.3.0.RELEASE</version>
+    <version>1.4.0.RELEASE</version>
 </dependency>
 
 <dependency>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>crypto-sm</artifactId>
-    <version>1.3.0.RELEASE</version>
+    <version>1.4.0.RELEASE</version>
 </dependency>
 ```
 # 2. 数据快速上链

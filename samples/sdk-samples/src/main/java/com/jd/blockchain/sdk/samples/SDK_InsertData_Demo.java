@@ -101,7 +101,7 @@ public class SDK_InsertData_Demo extends SDK_Base_Demo {
 		}
 
 		//根据交易的 hash 获得交易；注：客户端生成 PrepareTransaction 时得到交易hash；
-		HashDigest txHash = txList[0].getTransactionHash();
+		HashDigest txHash = txList[0].getRequest().getTransactionHash();
 //		Transaction tx = blockchainService.getTransactionByContentHash(ledgerHash, txHash);
 //		String[] objKeys = new String[] { "x001", "x002" };
 //		KVDataEntry[] kvData = blockchainService.getDataEntries(ledgerHash, commerceAccount, objKeys);

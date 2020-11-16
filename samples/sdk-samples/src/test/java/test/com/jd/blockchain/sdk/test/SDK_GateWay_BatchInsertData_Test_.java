@@ -114,8 +114,7 @@ public class SDK_GateWay_BatchInsertData_Test_ {
     }
 
     private HashDigest getLedgerHash() {
-        byte[] hashBytes = Base58Utils.decode(ledgerHash);
-        return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(hashBytes), hashBytes);
+        return new HashDigestBytes(DefaultCryptoEncoding.decodeAlgorithm(Base58Utils.decode(ledgerHash)), Base58Utils.decode(ledgerHash));
     }
 
 

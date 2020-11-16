@@ -48,4 +48,9 @@ public abstract class SDK_Base_Demo {
         ptx.sign(adminKey);
         return ptx.commit();
     }
+
+    protected void printTxResponse(TransactionResponse response) {
+        System.out.printf("TxResponse's state = [%s][%s], blockHeight = [%s] ! \r\n",
+                response.isSuccess(), response.getExecutionState(), response.getBlockHeight());
+    }
 }
