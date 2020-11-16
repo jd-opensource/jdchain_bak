@@ -1,32 +1,65 @@
 #!/bin/bash
 
-#启动Home路径
-BOOT_HOME=$(cd `dirname $0`;cd ../; pwd)
+#定义程序启动的Jar包前缀
+APP_JAR_PREFIX=deploy-peer-
 
-#进程启动后PID.log所在路径
-PID_LOG=$BOOT_HOME/bin/PID.log
+#获取当前的根目录
+APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 
-#从启动文件中读取PID
-if [ -f "$PID_LOG" ]; then
-    # File exist
-    echo "Read PID From File:[$PID_LOG] ..."
-    PID_LINE=`sed -n '$p' $PID_LOG`
-    echo "Last Peer Boot Info = $PID_LINE ..."
-    if [[ $PID_LINE == *PEER_BOOT_PID* ]]; then
-        LOG_PID=$(echo $PID_LINE | cut -d "=" -f 2 | cut -d "[" -f 2 | cut -d "]" -f 1)
-        echo "Last Peer Boot PID = $LOG_PID ..."
-        PID=`ps -ef | grep deploy-peer- | grep $LOG_PID | grep -v grep | awk '{print $2}'`
+#System路径
+APP_SYSTEM_PATH=$APP_HOME/system
+
+#获取Peer节点的启动Jar包
+APP_JAR=$(ls $APP_SYSTEM_PATH | grep $APP_JAR_PREFIX)
+
+#APP_JAR的具体路径
+APP_JAR_PATH=$APP_SYSTEM_PATH/$APP_JAR
+
+###################################
+#(函数)判断程序是否已启动
+#
+#说明：
+#使用awk，分割出pid ($1部分)，及Java程序名称($2部分)
+###################################
+#初始化psid变量（全局）
+psid=0
+
+checkpid() {
+  psid=`ps -ef | grep $APP_JAR_PATH | grep -v grep | awk '{print $2}'`
+}
+
+###################################
+#(函数)停止程序
+#
+#说明：
+#1. 首先调用checkpid函数，刷新$psid全局变量
+#2. 如果程序已经启动（$psid不等于0），则开始执行停止，否则，提示程序未运行
+#3. 使用kill -9 pid命令进行强制杀死进程
+#4. 执行kill命令行紧接其后，马上查看上一句命令的返回值: $?
+#5. 如果步骤4的结果$?等于0,则打印[OK]，否则打印[Failed]
+#注意：echo -n 表示打印字符后，不换行
+#注意: 在shell编程中，"$?" 表示上一句命令或者一个函数的返回值
+###################################
+stop() {
+  checkpid
+
+  if [[ $psid -ne 0 ]]; then
+    echo "Stopping Peer ......(pid=$psid) "
+    JAVA_CMD="kill -9 $psid"
+    sleep 1
+    $JAVA_CMD
+    if [[ $? -eq 0 ]]; then
+      echo "[OK]"
+    else
+      echo "[Failed]"
     fi
-#启动文件不存在则直接通过PS进行过滤
-else
-    PID=`ps -ef | grep $BOOT_HOME/system/deploy-peer- | grep -v grep | awk '{print $2}'`
-fi
+  else
+    echo "================================"
+    echo "WARN: Peer is not running"
+    echo "================================"
+  fi
+}
 
-#通过Kill命令将进程杀死
-if [ -z "$PID" ]; then
-    echo "Unable to find peer PID. stop aborted."
-else
-    echo "Start to kill PID = $PID ..."
-    kill -9 $PID
-    echo "Peer has been stopped ..."
-fi
+
+#真正停止的处理流程
+stop
