@@ -45,3 +45,6 @@ test/test-integration/runtime/
 deploy/docker/docker-demo/docker/zip/docker-sdk-1.4.0.RELEASE.jar
 deploy/docker/docker-demo/docker/zip/jdchain-gateway-1.4.0.RELEASE.zip
 deploy/docker/docker-demo/docker/zip/jdchain-peer-1.4.0.RELEASE.zip
+deploy/docker/docker-demo/src/main/docker/zip/docker-sdk-1.4.0.RELEASE.jar
+deploy/docker/docker-demo/src/main/docker/zip/jdchain-gateway-1.4.0.RELEASE.zip
+deploy/docker/docker-demo/src/main/docker/zip/jdchain-peer-1.4.0.RELEASE.zip

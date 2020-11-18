@@ -126,7 +126,7 @@
                     	<imageTag>${project.version}</imageTag>
                     </imageTags>
                     <!-- 指定 Dockerfile 路径-->
-                    <dockerDirectory>${project.basedir}/src/main/target</dockerDirectory>
+                    <dockerDirectory>${project.basedir}/target</dockerDirectory>
                 </configuration>
             </plugin>
         </plugins>
