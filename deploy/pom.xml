@@ -14,6 +14,7 @@
 
 	<properties>
 		<core.version>1.4.1-SNAPSHOT</core.version>
+                <framework.version>1.4.0.RELEASE</framework.version>
 	</properties>
 
 	<modules>
