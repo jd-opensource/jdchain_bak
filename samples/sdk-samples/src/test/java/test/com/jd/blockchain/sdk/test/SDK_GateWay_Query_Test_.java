@@ -16,14 +16,11 @@ import com.jd.blockchain.crypto.AsymmetricKeypair;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.crypto.HashFunction;
-import com.jd.blockchain.crypto.PubKey;
-import com.jd.blockchain.crypto.SignatureDigest;
 import com.jd.blockchain.crypto.SignatureFunction;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.DigitalSignature;
-import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
 import com.jd.blockchain.ledger.LedgerTransaction;
@@ -32,10 +29,10 @@ import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionRequest;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionState;
+import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.transaction.TxResponseMessage;
-import com.jd.blockchain.utils.serialize.json.JSONSerializeUtils;
 
 /**
  * 插入数据测试
@@ -112,12 +109,12 @@ public class SDK_GateWay_Query_Test_ {
 
 		LedgerTransaction[] txList = service.getTransactions(ledgerHash, ledgerNumber, 0, 100);
 		for (LedgerTransaction ledgerTransaction : txList) {
-			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getTransactionHash());
+			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getRequest().getTransactionHash());
 		}
 
 		txList = service.getTransactions(ledgerHash, hashDigest, 0, 100);
 		for (LedgerTransaction ledgerTransaction : txList) {
-			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getTransactionHash());
+			System.out.println("ledgerTransaction.Hash=" + ledgerTransaction.getRequest().getTransactionHash());
 		}
 
 		LedgerTransaction tx = service.getTransactionByContentHash(ledgerHash, hashDigest);
@@ -125,8 +122,8 @@ public class SDK_GateWay_Query_Test_ {
 		for (DigitalSignature signature : signatures) {
 			System.out.println(signature.getDigest().getAlgorithm());
 		}
-		System.out.println("transaction.blockHeight=" + tx.getBlockHeight());
-		System.out.println("transaction.executionState=" + tx.getExecutionState());
+		System.out.println("transaction.blockHeight=" + tx.getResult().getBlockHeight());
+		System.out.println("transaction.executionState=" + tx.getResult().getExecutionState());
 
 		ParticipantNode[] participants = service.getConsensusParticipants(ledgerHash);
 		for (ParticipantNode participant : participants) {
