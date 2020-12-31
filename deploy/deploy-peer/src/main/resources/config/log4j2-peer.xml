@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" monitorInterval="60">
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </console>
+        <RollingFile name="PeerRolling" fileName="${sys:jdchain.log}/peer.log"
+                     filePattern="${sys:jdchain.log}/$${date:yyyy-MM}/peer-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <logger name="org.springframework" level="ERROR"></logger>
+        <!--修改此处，以变更日志等级-->
+        <root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="PeerRolling"/>
+        </root>
+    </loggers>
+</configuration>
