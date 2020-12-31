@@ -26,7 +26,7 @@ public class DataAccountSample extends SampleBase {
         BlockchainKeypair dataAccount = BlockchainKeyGenerator.getInstance().generate();
         System.out.println("数据账户地址：" + dataAccount.getAddress());
         // 注册数据账户
-        txTemp.dataAccounts().register(adminKey.getIdentity());
+        txTemp.dataAccounts().register(dataAccount.getIdentity());
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
         // 交易签名
