@@ -20,7 +20,7 @@ APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 APP_LIB_PATH=$APP_HOME/lib
 
 #节点输出日志路径
-LOG_OUT=$APP_HOME/bin/gw.out
+LOG_OUT=$APP_HOME/logs
 
 #获取Peer节点的启动Jar包
 APP_JAR=$(ls $APP_LIB_PATH | grep $APP_JAR_PREFIX)
@@ -32,7 +32,7 @@ CONFIG_PATH=$APP_HOME/config
 GATEWAY_CONFIG=$CONFIG_PATH/gateway.conf
 
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m"
+JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m  -Djdchain.log=$LOG_OUT -Dlogging.config=file:$APP_HOME/config/log4j2-gw.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_LIB_PATH/$APP_JAR" -c "$GATEWAY_CONFIG
@@ -90,7 +90,7 @@ if [[ $psid -ne 0 ]]; then
   echo "================================"
 else
   echo "Starting Gateway ......"
-  nohup $JAVA_BIN $JAVA_OPTS $APP_CMD $* >$LOG_OUT 2>&1 &
+  nohup $JAVA_BIN $JAVA_OPTS $APP_CMD $* &
   JAVA_CMD="$JAVA_BIN $JAVA_OPTS $APP_CMD $*"
   sleep 1
   checkpid
