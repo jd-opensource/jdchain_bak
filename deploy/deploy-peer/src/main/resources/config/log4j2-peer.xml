@@ -7,6 +7,7 @@
         </console>
         <RollingFile name="PeerRolling" fileName="${sys:jdchain.log}/peer.log"
                      filePattern="${sys:jdchain.log}/$${date:yyyy-MM}/peer-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss:SSS}] [%thread] [%p] - %l - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
