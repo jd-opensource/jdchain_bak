@@ -30,6 +30,9 @@ APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 #System目录
 APP_SYSTEM_PATH=$APP_HOME/system
 
+#nohup输出日志路径
+LOG_OUT=$APP_HOME/bin/peer.out
+
 #获取Peer节点的启动Jar包
 APP_JAR=$(ls $APP_SYSTEM_PATH | grep $APP_JAR_PREFIX)
 
@@ -101,7 +104,7 @@ if [[ $psid -ne 0 ]]; then
   echo "================================"
 else
   echo "Starting Peer ......"
-  nohup $JAVA_BIN $JAVA_OPTS $APP_CMD $* &
+  nohup $JAVA_BIN $JAVA_OPTS $APP_CMD $* >$LOG_OUT 2>&1 &
   JAVA_CMD="$JAVA_BIN $JAVA_OPTS $APP_CMD $*"
   sleep 1
   checkpid
