@@ -2,17 +2,18 @@
 <configuration status="WARN" monitorInterval="60">
     <appenders>
         <console name="Console" target="SYSTEM_OUT">
-            <ThresholdFilter level="all" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="fatal" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </console>
         <RollingFile name="GWRolling" fileName="${sys:jdchain.log}/gw.log"
                      filePattern="${sys:jdchain.log}/$${date:yyyy-MM}/gw-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss:SSS}] [%thread] [%p] - %l - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="250 MB"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="10"/>
+            <DefaultRolloverStrategy max="100"/>
         </RollingFile>
         <RollingFile name="GWRollingError" fileName="${sys:jdchain.log}/gw.error.log"
                      filePattern="${sys:jdchain.log}/$${date:yyyy-MM}/gw.error-%d{yyyy-MM-dd}-%i.log">
@@ -26,9 +27,10 @@
     </appenders>
 
     <loggers>
-        <logger name="org.springframework" level="ERROR"></logger>
+        <logger name="org.springframework" level="error"></logger>
+        <logger name="bftsmart" level="error"></logger>
         <!--修改此处，以变更日志等级-->
-        <root level="all">
+        <root level="info">
             <appender-ref ref="Console"/>
             <appender-ref ref="GWRolling"/>
             <appender-ref ref="GWRollingError"/>

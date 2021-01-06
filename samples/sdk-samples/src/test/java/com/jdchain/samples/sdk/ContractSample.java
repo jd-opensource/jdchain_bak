@@ -2,13 +2,22 @@ package com.jdchain.samples.sdk;
 
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.BytesDataList;
+import com.jd.blockchain.ledger.BytesValue;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
+import com.jd.blockchain.ledger.TypedValue;
+import com.jd.blockchain.transaction.ContractEventSendOperationBuilder;
+import com.jd.blockchain.transaction.ContractReturnValue;
+import com.jd.blockchain.transaction.GenericValueHolder;
+import com.jd.blockchain.utils.io.BytesUtils;
 import com.jd.blockchain.utils.io.FileUtils;
 import com.jdchain.samples.contract.SampleContract;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.UUID;
 
 /**
  * 合约相关操作示例：
@@ -40,16 +49,48 @@ public class ContractSample extends SampleBase {
     }
 
     /**
-     * 合约调用
+     * 基于动态代理方式合约调用，需要依赖合约接口
      */
     @Test
-    public void testExecute() {
+    public void testExecuteByProxy() {
         // 新建交易
         TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
 
         // 运行前，填写正确的合约地址
+        // 一次交易中可调用多个（多次调用）合约方法
         // 调用合约的 registerUser 方法
-        txTemp.contract("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye", SampleContract.class).registerUser("至少32位字节数-----------------------------");
+        SampleContract sampleContract = txTemp.contract("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye", SampleContract.class);
+        GenericValueHolder<String> userAddress = ContractReturnValue.decode(sampleContract.registerUser(UUID.randomUUID().toString()));
+
+        // 准备交易
+        PreparedTransaction ptx = txTemp.prepare();
+        // 交易签名
+        ptx.sign(adminKey);
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+
+        // 获取返回值
+        System.out.println(userAddress.get());
+    }
+
+    /**
+     * 非动态代理方式合约调用，不需要依赖合约接口及实现
+     */
+    @Test
+    public void testExecuteWithArgus() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+
+        ContractEventSendOperationBuilder builder = txTemp.contract();
+        // 运行前，填写正确的合约地址，数据账户地址等参数
+        // 一次交易中可调用多个（多次调用）合约方法
+        // 调用合约的 registerUser 方法，传入合约地址，合约方法名，合约方法参数列表
+        builder.send("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye", "registerUser",
+                new BytesDataList(new TypedValue[]{
+                        TypedValue.fromText(UUID.randomUUID().toString())
+                })
+        );
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
         // 交易签名
@@ -59,7 +100,24 @@ public class ContractSample extends SampleBase {
         Assert.assertTrue(response.isSuccess());
 
         Assert.assertEquals(1, response.getOperationResults().length);
-        System.out.println(response.getOperationResults()[0].getResult().getBytes().toString());
+        // 解析合约方法调用返回值
+        for (int i = 0; i < response.getOperationResults().length; i++) {
+            BytesValue content = response.getOperationResults()[i].getResult();
+            switch (content.getType()) {
+                case TEXT:
+                    System.out.println(content.getBytes().toUTF8String());
+                    break;
+                case INT64:
+                    System.out.println(BytesUtils.toLong(content.getBytes().toBytes()));
+                    break;
+                case BOOLEAN:
+                    System.out.println(BytesUtils.toBoolean(content.getBytes().toBytes()[0]));
+                    break;
+                default: // byte[], Bytes
+                    System.out.println(content.getBytes().toBase58());
+                    break;
+            }
+        }
     }
 
 }
