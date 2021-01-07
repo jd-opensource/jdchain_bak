@@ -30,7 +30,7 @@ APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 #System目录
 APP_SYSTEM_PATH=$APP_HOME/system
 
-#节点输出日志路径
+#nohup输出日志路径
 LOG_OUT=$APP_HOME/bin/peer.out
 
 #获取Peer节点的启动Jar包
@@ -43,7 +43,7 @@ CONFIG_PATH=$APP_HOME/config
 LEDGER_BINDING_CONFIG=$CONFIG_PATH/ledger-binding.conf
 
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m"
+JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m -Djdchain.log=$APP_HOME/logs -Dlogging.config=file:$APP_HOME/config/log4j2-peer.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_SYSTEM_PATH/$APP_JAR" -home="$APP_HOME" -c "$LEDGER_BINDING_CONFIG" -p "$WEB_PORT

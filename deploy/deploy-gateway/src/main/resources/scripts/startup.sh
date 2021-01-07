@@ -19,7 +19,7 @@ APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 #Lib目录
 APP_LIB_PATH=$APP_HOME/lib
 
-#节点输出日志路径
+#nohup输出日志路径
 LOG_OUT=$APP_HOME/bin/gw.out
 
 #获取Peer节点的启动Jar包
@@ -32,7 +32,7 @@ CONFIG_PATH=$APP_HOME/config
 GATEWAY_CONFIG=$CONFIG_PATH/gateway.conf
 
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m"
+JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m  -Djdchain.log=$APP_HOME/logs -Dlogging.config=file:$APP_HOME/config/log4j2-gw.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_LIB_PATH/$APP_JAR" -c "$GATEWAY_CONFIG
