@@ -1,46 +1,79 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.jd.blockchain</groupId>
-		<artifactId>jdchain-samples</artifactId>
-		<version>1.2.1.RELEASE</version>
-	</parent>
-	<artifactId>sdk-samples</artifactId>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jd.blockchain</groupId>
+        <artifactId>jdchain-samples</artifactId>
+        <version>1.4.0.RELEASE</version>
+    </parent>
+    <artifactId>sdk-samples</artifactId>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>sdk-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>ledger-model</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
-			<artifactId>contract-samples</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <!--以下依赖用于SDK常规使用-->
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>sdk-client</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<!--<plugin> -->
-			<!--<groupId>org.springframework.boot</groupId> -->
-			<!--<artifactId>spring-boot-maven-plugin</artifactId> -->
-			<!--<configuration> -->
-			<!--<mainClass>com.jd.blockchain.sdk.samples.SDKDemo_RegisterTest</mainClass> -->
-			<!--</configuration> -->
-			<!--</plugin> -->
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>sdk-rpc</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>crypto-classic</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>ledger-model</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <!--样例程序中使用到的合约-->
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>contract-samples</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <!--以下依赖用于 com.jdchain.samples.Network 中四节点网路环境初始化和启动 -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>tools-initializer</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>peer</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>utils-common</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jd.blockchain</groupId>
+            <artifactId>gateway</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <!--Junit-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+    </dependencies>
 </project>

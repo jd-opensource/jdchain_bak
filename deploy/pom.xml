@@ -9,19 +9,18 @@
 		<relativePath>../project/parent</relativePath>
 	</parent>
 	<artifactId>deploy-root</artifactId>
-	<version>1.3.0.RELEASE</version>
+	<version>1.4.0.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<core.version>1.3.0.RELEASE</core.version>
-		<kvdb.version>1.0.1.RELEASE</kvdb.version>
+		<core.version>1.4.0.RELEASE</core.version>
 	</properties>
 
 	<modules>
 		<module>../core</module>
 		<module>deploy-gateway</module>
 		<module>deploy-peer</module>
-		<module>deploy-kvdb</module>
-	</modules>
+        <module>docker</module>
+    </modules>
 
 </project>

@@ -42,3 +42,9 @@ contract-libs/coreLib/sdk-base-0.6.0-SNAPSHOT.jar
 contract-libs/coreLib/utils-common-1.6.1-SNAPSHOT.jar
 source/tools/tools-initializer/bftsmart.config
 test/test-integration/runtime/
+deploy/docker/docker-demo/docker/zip/docker-sdk-1.4.0.RELEASE.jar
+deploy/docker/docker-demo/docker/zip/jdchain-gateway-1.4.0.RELEASE.zip
+deploy/docker/docker-demo/docker/zip/jdchain-peer-1.4.0.RELEASE.zip
+deploy/docker/docker-demo/src/main/docker/zip/docker-sdk-1.4.0.RELEASE.jar
+deploy/docker/docker-demo/src/main/docker/zip/jdchain-gateway-1.4.0.RELEASE.zip
+deploy/docker/docker-demo/src/main/docker/zip/jdchain-peer-1.4.0.RELEASE.zip
