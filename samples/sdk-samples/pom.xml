@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.jd.blockchain</groupId>
         <artifactId>jdchain-samples</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
     <artifactId>sdk-samples</artifactId>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>contract-samples</artifactId>
-            <version>${framework.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--以下依赖用于 com.jdchain.samples.Network 中四节点网路环境初始化和启动 -->
@@ -51,12 +51,12 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>tools-initializer</artifactId>
-            <version>${framework.version}</version>
+            <version>${core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>peer</artifactId>
-            <version>${framework.version}</version>
+            <version>${core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jd.blockchain</groupId>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>gateway</artifactId>
-            <version>${framework.version}</version>
+            <version>${core.version}</version>
         </dependency>
 
         <!--Junit-->
