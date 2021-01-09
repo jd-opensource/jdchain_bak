@@ -26,3 +26,6 @@
 [submodule "libs/utils"]
 	path = libs/utils
 	url = git@github.com:blockchain-jd-com/utils.git
+[submodule "libs/httpservice"]
+	path = libs/httpservice
+	url = git@github.com:blockchain-jd-com/httpservice.git
