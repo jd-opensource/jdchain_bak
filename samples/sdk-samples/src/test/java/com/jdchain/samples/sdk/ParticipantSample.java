@@ -20,8 +20,8 @@ import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.utils.codec.Base58Utils;
 import com.jd.blockchain.utils.security.ShaUtils;
-import com.jd.blockchain.utils.web.model.WebResponse;
 import com.jd.httpservice.converters.JsonResponseConverter;
+import com.jd.httpservice.utils.web.WebResponse;
 
 /**
  * 参与方节点相关操作示例：
