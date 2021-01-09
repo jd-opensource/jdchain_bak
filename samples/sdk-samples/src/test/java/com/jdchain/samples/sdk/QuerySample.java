@@ -22,8 +22,10 @@ import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.TypedKVEntry;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.UserPrivilegeSet;
-import com.jd.blockchain.utils.codec.Base58Utils;
-import com.jd.blockchain.utils.io.BytesUtils;
+
+import utils.codec.Base58Utils;
+import utils.io.BytesUtils;
+
 import org.junit.Assert;
 import org.junit.Test;
 

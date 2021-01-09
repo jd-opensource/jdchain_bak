@@ -7,7 +7,9 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.utils.Bytes;
+
+import utils.Bytes;
+
 import org.junit.Assert;
 import org.junit.Test;
 

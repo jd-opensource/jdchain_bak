@@ -4,7 +4,8 @@ import com.jd.blockchain.crypto.AddressEncoding;
 import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.ParticipantNode;
 import com.jd.blockchain.ledger.ParticipantNodeState;
-import com.jd.blockchain.utils.Bytes;
+
+import utils.Bytes;
 
 public class PartNode implements ParticipantNode {
 

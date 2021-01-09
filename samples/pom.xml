@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <framework.version>1.4.0.RELEASE</framework.version>
+        <framework.version>1.4.1.RELEASE</framework.version>
     </properties>
 
     <modules>

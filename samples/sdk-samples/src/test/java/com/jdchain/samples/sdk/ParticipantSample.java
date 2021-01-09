@@ -18,10 +18,11 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.utils.codec.Base58Utils;
-import com.jd.blockchain.utils.security.ShaUtils;
 import com.jd.httpservice.converters.JsonResponseConverter;
 import com.jd.httpservice.utils.web.WebResponse;
+
+import utils.codec.Base58Utils;
+import utils.security.ShaUtils;
 
 /**
  * 参与方节点相关操作示例：

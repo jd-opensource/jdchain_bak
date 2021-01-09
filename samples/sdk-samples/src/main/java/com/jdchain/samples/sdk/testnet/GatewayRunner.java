@@ -2,10 +2,13 @@ package com.jdchain.samples.sdk.testnet;
 
 import com.jd.blockchain.gateway.GatewayConfigProperties;
 import com.jd.blockchain.gateway.GatewayConfigProperties.KeyPairConfig;
+
+import utils.concurrent.ThreadInvoker;
+import utils.concurrent.ThreadInvoker.AsyncCallback;
+import utils.net.NetworkAddress;
+
 import com.jd.blockchain.gateway.GatewayServerBooter;
-import com.jd.blockchain.utils.concurrent.ThreadInvoker;
-import com.jd.blockchain.utils.concurrent.ThreadInvoker.AsyncCallback;
-import com.jd.blockchain.utils.net.NetworkAddress;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.CollectionUtils;
 

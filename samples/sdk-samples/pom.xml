@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.jd.blockchain</groupId>
             <artifactId>contract-samples</artifactId>
-            <version>${framework.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--以下依赖用于 com.jdchain.samples.Network 中四节点网路环境初始化和启动 -->
