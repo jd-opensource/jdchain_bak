@@ -11,9 +11,11 @@ import com.jd.blockchain.ledger.TypedValue;
 import com.jd.blockchain.transaction.ContractEventSendOperationBuilder;
 import com.jd.blockchain.transaction.ContractReturnValue;
 import com.jd.blockchain.transaction.GenericValueHolder;
-import com.jd.blockchain.utils.io.BytesUtils;
-import com.jd.blockchain.utils.io.FileUtils;
 import com.jdchain.samples.contract.SampleContract;
+
+import utils.io.BytesUtils;
+import utils.io.FileUtils;
+
 import org.junit.Assert;
 import org.junit.Test;
 

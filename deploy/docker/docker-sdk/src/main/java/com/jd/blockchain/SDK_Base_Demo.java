@@ -1,15 +1,21 @@
 package com.jd.blockchain;
 
+import static com.jd.blockchain.SDKDemo_Constant.readChainCodes;
+import static com.jd.blockchain.transaction.ContractReturnValue.decode;
+
 import com.jd.blockchain.crypto.HashDigest;
-import com.jd.blockchain.ledger.*;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainKeyGenerator;
+import com.jd.blockchain.ledger.BlockchainKeypair;
+import com.jd.blockchain.ledger.PreparedTransaction;
+import com.jd.blockchain.ledger.TransactionResponse;
+import com.jd.blockchain.ledger.TransactionTemplate;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
 import com.jd.blockchain.transaction.GenericValueHolder;
-import com.jd.blockchain.utils.Bytes;
 import com.jd.chain.contract.TransferContract;
 
-import static com.jd.blockchain.SDKDemo_Constant.readChainCodes;
-import static com.jd.blockchain.transaction.ContractReturnValue.decode;
+import utils.Bytes;
 
 public abstract class SDK_Base_Demo {
     protected BlockchainKeypair adminKey;

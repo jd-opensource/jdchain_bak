@@ -8,8 +8,10 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.SystemEvent;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-import com.jd.blockchain.utils.Bytes;
-import com.jd.blockchain.utils.io.BytesUtils;
+
+import utils.Bytes;
+import utils.io.BytesUtils;
+
 import org.junit.Assert;
 import org.junit.Test;
 

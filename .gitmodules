@@ -20,3 +20,12 @@
 	path = libs/kvdb
 	url = git@github.com:blockchain-jd-com/jdchain-kvdb.git 
 
+[submodule "libs/binary-proto"]
+	path = libs/binary-proto
+	url = git@github.com:blockchain-jd-com/binary-proto.git
+[submodule "libs/utils"]
+	path = libs/utils
+	url = git@github.com:blockchain-jd-com/utils.git
+[submodule "libs/httpservice"]
+	path = libs/httpservice
+	url = git@github.com:blockchain-jd-com/httpservice.git

@@ -19,13 +19,15 @@ import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerBindingConfig;
 import com.jd.blockchain.tools.initializer.PresetAnswerPrompter;
 import com.jd.blockchain.tools.initializer.Prompter;
-import com.jd.blockchain.utils.concurrent.ThreadInvoker;
-import com.jd.blockchain.utils.io.FileUtils;
-import com.jd.blockchain.utils.net.NetworkAddress;
 import com.jdchain.samples.sdk.testnet.GatewayRunner;
 import com.jdchain.samples.sdk.testnet.NodeWebContext;
 import com.jdchain.samples.sdk.testnet.PartNode;
 import com.jdchain.samples.sdk.testnet.PeerServer;
+
+import utils.concurrent.ThreadInvoker;
+import utils.io.FileUtils;
+import utils.net.NetworkAddress;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.Assert;

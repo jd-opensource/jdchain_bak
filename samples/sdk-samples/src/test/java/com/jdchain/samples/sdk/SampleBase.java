@@ -8,7 +8,8 @@ import com.jd.blockchain.crypto.PubKey;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.sdk.BlockchainService;
 import com.jd.blockchain.sdk.client.GatewayServiceFactory;
-import com.jd.blockchain.utils.codec.Base58Utils;
+
+import utils.codec.Base58Utils;
 
 import java.util.Properties;
 

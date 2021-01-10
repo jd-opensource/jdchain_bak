@@ -9,12 +9,11 @@
 		<relativePath>../project/parent</relativePath>
 	</parent>
 	<artifactId>deploy-root</artifactId>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.4.1.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<core.version>1.5.0-SNAPSHOT</core.version>
-                <framework.version>1.4.0.RELEASE</framework.version>
+		<core.version>1.4.1.RELEASE</core.version>
 	</properties>
 
 	<modules>
