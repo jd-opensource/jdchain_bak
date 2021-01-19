@@ -280,7 +280,7 @@ V1.0|2020-04-17|huanghaiquan
 
                <!-- 合约部署交易的签名账户；该账户必须具备合约部署的权限； -->
                <signer>
-                  <pubKey>3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9</pubKey>
+                  <pubKey>7VeRLdGtSz1Y91gjLTqEdnkotzUfaAqdap3xw6fQ1yKHkvVq</pubKey>
                   <privKey>177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x</privKey>
                   <privKeyPwd>DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY</privKeyPwd>
                </signer>
@@ -334,9 +334,9 @@ V1.0|2020-04-17|huanghaiquan
             -Dledger=j5tW5HUvMjEtm2yB7E6MHoSByoH1DXvMwvF2HurEgMSaLW \
             -DgatewayHost=127.0.0.1 \
             -DgatewayPort=11000 \
-            -DcontractPubKey= 3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX \
+            -DcontractPubKey= 7VeRBsHM2nsGwP8b2ufRxz36hhNtSqjKTquzoa4WVKWty5sD \
             -DcontractAddress= LdeNt7sEmTirh9PmE7axKvA2txTrbB9kxz6KB \
-            -DsignerPubKey=3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9 \
+            -DsignerPubKey=7VeRLdGtSz1Y91gjLTqEdnkotzUfaAqdap3xw6fQ1yKHkvVq \
             -DsignerPrivKey=177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x \
             -DsignerPrivKeyPwd=DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY
   ```
@@ -426,7 +426,7 @@ V1.0|2020-04-17|huanghaiquan
 
                <!-- 合约部署交易的签名账户；该账户必须具备合约部署的权限； -->
                <signer>
-                  <pubKey>3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9</pubKey>
+                  <pubKey>7VeRLdGtSz1Y91gjLTqEdnkotzUfaAqdap3xw6fQ1yKHkvVq</pubKey>
                   <privKey>177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x</privKey>
                   <privKeyPwd>DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY</privKeyPwd>
                </signer>

@@ -33,7 +33,7 @@ docker-compose -f docker-compose-all.yaml down
 ip=localhost
 port=8080
 #默认公钥的内容（Base58编码数据）；
-keys.default.pubkey=3snPdw7i7PisoLpqqtETdqzQeKVjQReP2Eid9wYK67q9z6trvByGZs
+keys.default.pubkey=7VeRL1kWpYpvawkgFbM9N9ao1YiAE9HW65QpwLvpw6oPjCnZ
 #默认私钥的内容（加密的Base58编码数据）；在 pk-path 和 pk 之间必须设置其一；
 keys.default.privkey=177gk2PbxhHeEdfAAqGfShJQyeV4XvGsJ9CvJFUbToBqwW1YJd5obicySE1St6SvPPaRrUP
 #默认私钥的解码密码；
