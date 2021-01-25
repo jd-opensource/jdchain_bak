@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jd.blockchain</groupId>
     <artifactId>jdchain-samples</artifactId>
-    <version>1.4.0.RELEASE</version>
+    <version>1.4.2.RELEASE</version>
     <packaging>pom</packaging>
 
     <properties>
-        <framework.version>1.4.1.RELEASE</framework.version>
+        <framework.version>1.4.2.RELEASE</framework.version>
     </properties>
 
     <modules>
