@@ -52,10 +52,10 @@ public class TestNet {
 
     // 测试网络公私钥及私钥密码信息
     private static final String[] PUB_KEYS = {
-            "3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9",
-            "3snPdw7i7PajLB35tEau1kmixc6ZrjLXgxwKbkv5bHhP7nT5dhD9eX",
-            "3snPdw7i7PZi6TStiyc6mzjprnNhgs2atSGNS8wPYzhbKaUWGFJt7x",
-            "3snPdw7i7PifPuRX7fu3jBjsb3rJRfDe9GtbDfvFJaJ4V4hHXQfhwk"};
+            "7VeRLdGtSz1Y91gjLTqEdnkotzUfaAqdap3xw6fQ1yKHkvVq",
+            "7VeRBsHM2nsGwP8b2ufRxz36hhNtSqjKTquzoa4WVKWty5sD",
+            "7VeRAr3dSbi1xatq11ZcF7sEPkaMmtZhV9shonGJWk9T4pLe",
+            "7VeRKoM5RE6iFXr214Hsiic2aoqCQ7MEU1dHQFRnjXQcReAS"};
     private static final String[] PRIV_KEYS = {
             "177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x",
             "177gju9p5zrNdHJVEQnEEKF4ZjDDYmAXyfG84V5RPGVc5xFfmtwnHA7j51nyNLUFffzz5UT",
@@ -261,7 +261,7 @@ public class TestNet {
     private static void initSampleData(HashDigest ledgerHash) throws IOException {
         BlockchainKeypair admin = new BlockchainKeypair(KeyGenUtils.decodePubKey(PUB_KEYS[0]), KeyGenUtils.decodePrivKeyWithRawPassword(PRIV_KEYS[0], PASSWORD));
         BlockchainKeypair user = new BlockchainKeypair(
-                KeyGenUtils.decodePubKey("3snPdw7i7PbXVQoUX1Ywo6Cenm9gDB6DFztVazXWrq2qbbmzcAMUVC"),
+                KeyGenUtils.decodePubKey("7VeRCfSaoBW3uRuvTqVb26PYTNwvQ1iZ5HBY92YKpEVN7Qht"),
                 KeyGenUtils.decodePrivKey("177gjuGapUVdLnEDAkqjQWhZxHh5jL5W6Hg1q8kbdsbk1BKht4QkmuB6dKvyJrgKTRmXSgK", "8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG"));
 
         BlockchainService blockchainService = GatewayServiceFactory.connect(
