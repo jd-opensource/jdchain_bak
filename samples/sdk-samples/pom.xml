@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.jd.blockchain</groupId>
         <artifactId>jdchain-samples</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.4.2.RELEASE</version>
     </parent>
     <artifactId>sdk-samples</artifactId>
 

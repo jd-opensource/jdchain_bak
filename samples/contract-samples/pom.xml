@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.jd.blockchain</groupId>
         <artifactId>jdchain-samples</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.4.2.RELEASE</version>
     </parent>
 
     <!-- 声明为合约代码工程，编译输出扩展名为".car"合约代码 -->
@@ -68,7 +68,7 @@
 
                         <!-- 用户信息，必选项，任何一个合约发布都需要拥有者进行签名 -->
                         <signer>
-                            <pubKey>3snPdw7i7PjVKiTH2VnXZu5H8QmNaSXpnk4ei533jFpuifyjS5zzH9</pubKey>
+                            <pubKey>7VeRLdGtSz1Y91gjLTqEdnkotzUfaAqdap3xw6fQ1yKHkvVq</pubKey>
                             <privKey>177gjzHTznYdPgWqZrH43W3yp37onm74wYXT4v9FukpCHBrhRysBBZh7Pzdo5AMRyQGJD7x</privKey>
                             <privKeyPwd>DYu3G8aGTMBW1WrTw76zxQJQU4DHLw9MLyy7peG4LKkY</privKeyPwd>
                         </signer>

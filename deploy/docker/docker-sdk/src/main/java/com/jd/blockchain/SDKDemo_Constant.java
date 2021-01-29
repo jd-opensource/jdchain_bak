@@ -14,7 +14,7 @@ public class SDKDemo_Constant {
 
     public static String GW_IPADDR = "localhost";
     public static int GW_PORT = 8080;
-    public static String GW_PUB_KEY = "3snPdw7i7PisoLpqqtETdqzQeKVjQReP2Eid9wYK67q9z6trvByGZs";
+    public static String GW_PUB_KEY = "7VeRL1kWpYpvawkgFbM9N9ao1YiAE9HW65QpwLvpw6oPjCnZ";
     public static String GW_PRIV_KEY = "177gk2PbxhHeEdfAAqGfShJQyeV4XvGsJ9CvJFUbToBqwW1YJd5obicySE1St6SvPPaRrUP";
     public static String GW_PASSWORD = "8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG";
 
