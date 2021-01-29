@@ -1,5 +1,8 @@
 package com.jdchain.samples.sdk;
 
+import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.ledger.BlockchainIdentity;
+import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.BytesDataList;
@@ -40,7 +43,30 @@ public class ContractSample extends SampleBase {
         BlockchainKeypair contractAccount = BlockchainKeyGenerator.getInstance().generate();
         System.out.println("合约地址：" + contractAccount.getAddress());
         // 部署合约
-        txTemp.contracts().deploy(contractAccount.getIdentity(), FileUtils.readBytes("src/main/resources/contract-samples-1.4.0.RELEASE.car"));
+        txTemp.contracts().deploy(contractAccount.getIdentity(), FileUtils.readBytes("src/main/resources/contract-samples-1.4.2.RELEASE.car"));
+        // 准备交易
+        PreparedTransaction ptx = txTemp.prepare();
+        // 交易签名
+        ptx.sign(adminKey);
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
+
+    /**
+     * 有两种方式更新合约代码：
+     * 1. contract-samples模块下，配置好pom里面的参数，其中contractAddress设置为已部署上链合约公钥信息，执行 mvn clean deploy 即可
+     * 2. 打包contract-samples项目生成 car包，参考testUpdate测试代码部署
+     */
+    @Test
+    public void testUpdate() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 解析合约身份信息
+        BlockchainIdentity contractIdentity = new BlockchainIdentityData(KeyGenUtils.decodePubKey("7VeRCfSaoBW3uRuvTqVb26PYTNwvQ1iZ5HBY92YKpEVN7Qht"));
+        System.out.println("合约地址：" + contractIdentity.getAddress());
+        // 部署合约
+        txTemp.contracts().deploy(contractIdentity, FileUtils.readBytes("src/main/resources/contract-samples-1.4.2.RELEASE.car"));
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
         // 交易签名

@@ -27,7 +27,10 @@ public class SampleContractImpl implements EventProcessingAware, SampleContract 
     @Override
     public void setKV(String address, String key, String value) {
         // 查询最新版本，初始为-1
-        TypedKVEntry[] entries = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(), address, key);
+        // 查询已提交区块数据，不包括此操作所在未提交区块的所有数据
+        // TypedKVEntry[] entries = eventContext.getLedger().getDataEntries(eventContext.getCurrentLedgerHash(), address, key);
+        // 可查询包括此操作所在未提交区块的所有数据
+        TypedKVEntry[] entries = eventContext.getUncommittedLedger().getDataEntries(address, key);
         long version = -1;
         if (null != entries && entries.length > 0) {
             version = entries[0].getVersion();
@@ -76,7 +79,10 @@ public class SampleContractImpl implements EventProcessingAware, SampleContract 
     @Override
     public void publishEvent(String address, String topic, String content) {
         // 查询最新序号，初始为-1
-        Event event = eventContext.getLedger().getLatestEvent(eventContext.getCurrentLedgerHash(), address, topic);
+        // 查询已提交区块数据，不包括此操作所在未提交区块的所有数据
+        // Event event = eventContext.getLedger().getRuntimeLedger().getLatestEvent(address, topic);
+        // 可查询包括此操作所在未提交区块的所有数据
+        Event event = eventContext.getUncommittedLedger().getLatestEvent(address, topic);
         long sequence = -1;
         if (null != event) {
             sequence = event.getSequence();
