@@ -98,7 +98,7 @@ public class EventSample extends SampleBase {
         TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
 
         // 请正确填写数据账户地址
-        // sequence是针对此消息name的插入更新操作次数严格递增，初始为-1
+        // sequence是针对此消息name的插入更新操作次数严格递增，初始为-1，再次运行本测试用例请修改该值，否则服务端将报版本冲突异常。
         txTemp.eventAccount(Bytes.fromBase58("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye"))
                 .publish("topic1", "content1", -1)
                 .publish("topic1", "content2", 0)
