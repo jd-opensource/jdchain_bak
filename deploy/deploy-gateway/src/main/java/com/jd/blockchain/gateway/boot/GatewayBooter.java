@@ -1,6 +1,7 @@
 package com.jd.blockchain.gateway.boot;
 
 import com.jd.blockchain.gateway.GatewayServerBooter;
+import utils.ConsoleUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,7 +18,7 @@ public class GatewayBooter {
 		try {
 			GatewayServerBooter.main(args);
 		} catch (Exception e) {
-			System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
+			ConsoleUtils.error("Gateway start error!", e);
 		}
 	}
 }

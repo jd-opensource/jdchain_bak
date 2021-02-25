@@ -95,6 +95,9 @@ public class TestNet {
             // 启动网关
             startGateway(peerNodes);
 
+            // 睡10秒，等待网关启动成功
+            Thread.sleep(10000);
+
             // 初始化样例数据
             initSampleData(ledgerHash);
 
