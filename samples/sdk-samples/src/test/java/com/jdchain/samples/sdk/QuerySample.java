@@ -392,7 +392,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getLatestEvent() {
-        Event event = blockchainService.getLatestEvent(ledger, sampleEvent);
+        Event event = blockchainService.getLatestSystemEvent(ledger, sampleEvent);
         Assert.assertNull(event);
     }
 
