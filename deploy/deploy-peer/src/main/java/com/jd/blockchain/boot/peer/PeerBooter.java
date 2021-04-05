@@ -37,6 +37,7 @@ public class PeerBooter {
 			startPeer(homeContext);
 		} catch (Exception e) {
 			System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
