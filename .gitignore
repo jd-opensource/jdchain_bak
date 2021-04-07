@@ -48,3 +48,7 @@ deploy/docker/docker-demo/docker/zip/jdchain-peer-1.4.0.RELEASE.zip
 deploy/docker/docker-demo/src/main/docker/zip/docker-sdk-1.4.0.RELEASE.jar
 deploy/docker/docker-demo/src/main/docker/zip/jdchain-gateway-1.4.0.RELEASE.zip
 deploy/docker/docker-demo/src/main/docker/zip/jdchain-peer-1.4.0.RELEASE.zip
+docker-sdk-1.4.1.RELEASE.jar
+jdchain-gateway-1.4.1.RELEASE.zip
+jdchain-peer-1.4.1.RELEASE.zip
+deploy/docker/docker-demo/src/main/docker/zip
