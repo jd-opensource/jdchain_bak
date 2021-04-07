@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <framework.version>1.4.2.RELEASE</framework.version>
+        <framework.version>1.4.3-SNAPSHOT</framework.version>
         <core.version>1.5.0-SNAPSHOT</core.version>
     </properties>
 
