@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class PeerBooter {
 			HomeContext homeContext = HomeBooter.createHomeContext(args);
 			startPeer(homeContext);
 		} catch (Exception e) {
-			System.err.println("Error!!! --[" + e.getClass().getName() + "] " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

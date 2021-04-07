@@ -35,7 +35,10 @@ import org.junit.Test;
 public class QuerySample extends SampleBase {
 
     HashDigest sampleHash = Crypto.resolveAsHashDigest(Base58Utils.decode("j5sTuEAWmLWKFwXgpdUCxbQN1XmZfkQdC94UT2AqQEt7hp"));
-    String sampleAddress = "LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye";
+    String sampleUserAddress = "LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye";
+    String sampleDataAccountAddress = "LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye";
+    String sampleContractAddress = "LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye";
+    String sampleEventAddress = "LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye";
     String sampleKey = "sample-key";
     String sampleEvent = "sample-event";
     long sampleVersion = 0;
@@ -287,7 +290,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUser() {
-        UserInfo user = blockchainService.getUser(ledger, sampleAddress);
+        UserInfo user = blockchainService.getUser(ledger, sampleUserAddress);
         if (null != user) {
             System.out.println(user.getAddress().toString());
         }
@@ -298,7 +301,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getDataAccount() {
-        DataAccountInfo dataAccount = blockchainService.getDataAccount(ledger, sampleAddress);
+        DataAccountInfo dataAccount = blockchainService.getDataAccount(ledger, sampleDataAccountAddress);
         if (null != dataAccount) {
             System.out.println(dataAccount.getAddress().toString());
         }
@@ -309,7 +312,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getDataEntriesByKey() {
-        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleAddress, sampleKey);
+        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleDataAccountAddress, sampleKey);
         for (TypedKVEntry kv : kvs) {
             System.out.println(kv.getKey() + ":" + kv.getVersion() + ":" + kv.getValue());
         }
@@ -320,7 +323,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getDataEntriesWithKeyAndVersion() {
-        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleAddress, new KVInfoVO(new KVDataVO[]{new KVDataVO(sampleKey, new long[]{-1})}));
+        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleDataAccountAddress, new KVInfoVO(new KVDataVO[]{new KVDataVO(sampleKey, new long[]{0})}));
         for (TypedKVEntry kv : kvs) {
             System.out.println(kv.getKey() + ":" + kv.getVersion() + ":" + kv.getValue());
         }
@@ -331,7 +334,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getDataEntriesTotalCount() {
-        long count = blockchainService.getDataEntriesTotalCount(ledger, sampleAddress);
+        long count = blockchainService.getDataEntriesTotalCount(ledger, sampleDataAccountAddress);
         System.out.println(count);
     }
 
@@ -340,7 +343,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getDataEntries() {
-        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleAddress, 0, 1);
+        TypedKVEntry[] kvs = blockchainService.getDataEntries(ledger, sampleDataAccountAddress, 0, 1);
         for (TypedKVEntry kv : kvs) {
             System.out.println(kv.getKey() + ":" + kv.getVersion() + ":" + kv.getValue());
         }
@@ -351,7 +354,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getContract() {
-        ContractInfo contract = blockchainService.getContract(ledger, sampleAddress);
+        ContractInfo contract = blockchainService.getContract(ledger, sampleContractAddress);
         if (null != contract) {
             System.out.println(contract.getAddress().toString());
         }
@@ -389,7 +392,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getLatestEvent() {
-        Event event = blockchainService.getLatestEvent(ledger, sampleEvent);
+        Event event = blockchainService.getLatestSystemEvent(ledger, sampleEvent);
         Assert.assertNull(event);
     }
 
@@ -418,7 +421,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserEventAccount() {
-        BlockchainIdentity id = blockchainService.getUserEventAccount(ledger, sampleAddress);
+        BlockchainIdentity id = blockchainService.getUserEventAccount(ledger, sampleEventAddress);
         if (null != id) {
             System.out.println(id.getAddress().toString());
         }
@@ -438,7 +441,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserEventNameTotalCount() {
-        long count = blockchainService.getUserEventNameTotalCount(ledger, sampleAddress);
+        long count = blockchainService.getUserEventNameTotalCount(ledger, sampleEventAddress);
         System.out.println(count);
     }
 
@@ -447,7 +450,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserEventNames() {
-        String[] names = blockchainService.getUserEventNames(ledger, sampleAddress, 0, 1);
+        String[] names = blockchainService.getUserEventNames(ledger, sampleEventAddress, 0, 1);
         for (String name : names) {
             System.out.println(name);
         }
@@ -458,7 +461,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getLatestUserEvent() {
-        Event event = blockchainService.getLatestEvent(ledger, sampleAddress, sampleEvent);
+        Event event = blockchainService.getLatestEvent(ledger, sampleEventAddress, sampleEvent);
         if (null != event) {
             BytesValue content = event.getContent();
             switch (content.getType()) {
@@ -483,7 +486,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserEventsTotalCount() {
-        long count = blockchainService.getUserEventsTotalCount(ledger, sampleAddress, sampleEvent);
+        long count = blockchainService.getUserEventsTotalCount(ledger, sampleEventAddress, sampleEvent);
         System.out.println(count);
     }
 
@@ -492,7 +495,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserEvents() {
-        Event[] events = blockchainService.getUserEvents(ledger, sampleAddress, sampleEvent, 0, 1);
+        Event[] events = blockchainService.getUserEvents(ledger, sampleEventAddress, sampleEvent, 0, 1);
         for (Event event : events) {
             BytesValue content = event.getContent();
             switch (content.getType()) {
@@ -517,7 +520,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getContractByAddressAndVersion() {
-        ContractInfo contract = blockchainService.getContract(ledger, sampleAddress, sampleVersion);
+        ContractInfo contract = blockchainService.getContract(ledger, sampleContractAddress, sampleVersion);
         if (null != contract) {
             System.out.println(contract.getAddress().toString());
             System.out.println(contract.getChainCodeVersion());
@@ -573,7 +576,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getUserPrivileges() {
-        UserPrivilegeSet userPrivileges = blockchainService.getUserPrivileges(ledger, sampleAddress);
+        UserPrivilegeSet userPrivileges = blockchainService.getUserPrivileges(ledger, sampleUserAddress);
         if (null != userPrivileges) {
             for (String role : userPrivileges.getUserRole()) {
                 System.out.println(role);
