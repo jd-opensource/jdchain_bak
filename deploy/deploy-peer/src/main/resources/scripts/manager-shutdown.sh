@@ -8,9 +8,14 @@ PID=`ps -ef | grep $BOOT_HOME/manager/manager-booter | grep -v grep | awk '{prin
 
 #通过Kill命令将进程杀死
 if [ -z "$PID" ]; then
-    echo "Unable to find JDChain Manager PID. stop aborted."
+    echo "================================"
+    echo "WARN: Unable to find JD Chain Manager PID($PID)."
+    echo "================================"
 else
-    echo "Start to kill PID = $PID ..."
-    kill -9 $PID
-    echo "JDChain Manager has been stopped ..."
+    echo "Stopping Manager (PID = $PID) ......"
+    kill $PID
+    while kill -0 $PID 2>/dev/null; do sleep 1; done
+    echo "================================"
+    echo "Success"
+    echo "================================"
 fi

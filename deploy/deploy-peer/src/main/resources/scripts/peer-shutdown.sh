@@ -41,24 +41,14 @@ checkpid() {
 #注意: 在shell编程中，"$?" 表示上一句命令或者一个函数的返回值
 ###################################
 stop() {
-   checkpid
+    checkpid
     if [[ $psid -ne 0 ]]; then
-      echo "Stopping Peer ......(pid=$psid) "
-      JAVA_CMD="kill $psid"
-      sleep 1
-      $JAVA_CMD
-      if [[ $? -eq 0 ]]; then
-        echo "[Kill OK]"
-      else
-          JAVA_CMD="kill -9 $psid"
-          sleep 3
-          $JAVA_CMD
-          if [[ $? -eq 0 ]]; then
-            echo "[Kill -9 OK]"
-          else
-            echo "[failed]"
-          fi
-      fi
+      echo "Stopping Peer (PID = $psid) ......"
+      kill $psid
+      while kill -0 $psid 2>/dev/null; do sleep 1; done
+      echo "================================"
+      echo "Success"
+      echo "================================"
     else
       echo "================================"
       echo "WARN: Peer is not running"
