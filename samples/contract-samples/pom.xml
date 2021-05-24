@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.jd.blockchain</groupId>
         <artifactId>jdchain-samples</artifactId>
-        <version>1.4.2.RELEASE</version>
+        <version>1.4.3.RELEASE</version>
     </parent>
 
     <!-- 声明为合约代码工程，编译输出扩展名为".car"合约代码 -->
