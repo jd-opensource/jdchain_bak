@@ -9,6 +9,7 @@
 
     <properties>
         <framework.version>1.5.0.RELEASE</framework.version>
+        <core.version>1.5.0.RELEASE</core.version>
     </properties>
 
     <modules>
