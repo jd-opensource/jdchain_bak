@@ -43,11 +43,9 @@ public class ContractSample extends SampleBase {
         BlockchainKeypair contractAccount = BlockchainKeyGenerator.getInstance().generate();
         System.out.println("合约地址：" + contractAccount.getAddress());
         // 部署合约
-        txTemp.contracts().deploy(contractAccount.getIdentity(), FileUtils.readBytes("src/main/resources/contract-samples-1.4.2.RELEASE.car"));
+        txTemp.contracts().deploy(contractAccount.getIdentity(), FileUtils.readBytes("src/main/resources/contract-samples-1.5.0.RELEASE.car"));
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -66,11 +64,9 @@ public class ContractSample extends SampleBase {
         BlockchainIdentity contractIdentity = new BlockchainIdentityData(KeyGenUtils.decodePubKey("7VeRCfSaoBW3uRuvTqVb26PYTNwvQ1iZ5HBY92YKpEVN7Qht"));
         System.out.println("合约地址：" + contractIdentity.getAddress());
         // 部署合约
-        txTemp.contracts().deploy(contractIdentity, FileUtils.readBytes("src/main/resources/contract-samples-1.4.2.RELEASE.car"));
+        txTemp.contracts().deploy(contractIdentity, FileUtils.readBytes("src/main/resources/contract-samples-1.5.0.RELEASE.car"));
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -92,8 +88,6 @@ public class ContractSample extends SampleBase {
 
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -121,8 +115,6 @@ public class ContractSample extends SampleBase {
         );
         // 准备交易
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());

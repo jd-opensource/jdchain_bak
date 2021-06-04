@@ -31,8 +31,6 @@ public class DataAccountSample extends SampleBase {
         txTemp.dataAccounts().register(dataAccount.getIdentity());
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -55,8 +53,6 @@ public class DataAccountSample extends SampleBase {
                 .setBytes("key4", Bytes.fromInt(2), -1);
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -80,8 +76,6 @@ public class DataAccountSample extends SampleBase {
                 .setText("key", "value", -1);
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
