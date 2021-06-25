@@ -1,33 +1,52 @@
 package com.jdchain.samples.sdk;
 
+import com.jd.blockchain.contract.OnLineContractProcessor;
 import com.jd.blockchain.crypto.Crypto;
 import com.jd.blockchain.crypto.HashDigest;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BytesValue;
+import com.jd.blockchain.ledger.ConsensusSettingsUpdateOperation;
+import com.jd.blockchain.ledger.ContractCodeDeployOperation;
+import com.jd.blockchain.ledger.ContractEventSendOperation;
 import com.jd.blockchain.ledger.ContractInfo;
 import com.jd.blockchain.ledger.DataAccountInfo;
+import com.jd.blockchain.ledger.DataAccountKVSetOperation;
+import com.jd.blockchain.ledger.DataAccountRegisterOperation;
+import com.jd.blockchain.ledger.DigitalSignature;
 import com.jd.blockchain.ledger.Event;
+import com.jd.blockchain.ledger.EventAccountRegisterOperation;
+import com.jd.blockchain.ledger.EventPublishOperation;
 import com.jd.blockchain.ledger.KVDataVO;
 import com.jd.blockchain.ledger.KVInfoVO;
 import com.jd.blockchain.ledger.LedgerAdminInfo;
 import com.jd.blockchain.ledger.LedgerBlock;
 import com.jd.blockchain.ledger.LedgerInfo;
+import com.jd.blockchain.ledger.LedgerInitOperation;
 import com.jd.blockchain.ledger.LedgerMetadata;
 import com.jd.blockchain.ledger.LedgerPermission;
 import com.jd.blockchain.ledger.LedgerTransaction;
+import com.jd.blockchain.ledger.Operation;
 import com.jd.blockchain.ledger.ParticipantNode;
+import com.jd.blockchain.ledger.ParticipantRegisterOperation;
 import com.jd.blockchain.ledger.PrivilegeSet;
+import com.jd.blockchain.ledger.RolesConfigureOperation;
+import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.TransactionPermission;
+import com.jd.blockchain.ledger.TransactionRequest;
+import com.jd.blockchain.ledger.TransactionResult;
 import com.jd.blockchain.ledger.TransactionState;
 import com.jd.blockchain.ledger.TypedKVEntry;
+import com.jd.blockchain.ledger.UserAuthorizeOperation;
 import com.jd.blockchain.ledger.UserInfo;
 import com.jd.blockchain.ledger.UserPrivilegeSet;
-
+import com.jd.blockchain.ledger.UserRegisterOperation;
+import org.junit.Assert;
+import org.junit.Test;
+import utils.Property;
 import utils.codec.Base58Utils;
 import utils.io.BytesUtils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Arrays;
 
 /**
  * 查询样例
@@ -51,7 +70,7 @@ public class QuerySample extends SampleBase {
     public void getLedgerHashs() {
         HashDigest[] digests = blockchainService.getLedgerHashs();
         for (HashDigest digest : digests) {
-            System.out.println(digest.toBase58());
+            System.out.println(digest);
         }
     }
 
@@ -61,7 +80,12 @@ public class QuerySample extends SampleBase {
     @Test
     public void getLedger() {
         LedgerInfo ledgerInfo = blockchainService.getLedger(ledger);
+        // 账本哈希
         System.out.println(ledgerInfo.getHash());
+        // 最新区块哈希
+        System.out.println(ledgerInfo.getLatestBlockHash());
+        // 最新区块高度
+        System.out.println(ledgerInfo.getLatestBlockHeight());
     }
 
     /**
@@ -104,6 +128,31 @@ public class QuerySample extends SampleBase {
     @Test
     public void getBlockByHeight() {
         LedgerBlock block1 = blockchainService.getBlock(ledger, -1);
+        // 账本哈希
+        System.out.println(block1.getLedgerHash());
+        // 区块高度
+        System.out.println(block1.getHeight());
+        // 区块时间
+        System.out.println(block1.getTimestamp());
+        // 区块哈希
+        System.out.println(block1.getHash());
+        // 上一区块哈希
+        System.out.println(block1.getPreviousHash());
+        // 交易数据集根哈希
+        System.out.println(block1.getTransactionSetHash());
+        // 用户角色权限数据集根哈希
+        System.out.println(block1.getAdminAccountHash());
+        // 合约数据集根哈希
+        System.out.println(block1.getContractAccountSetHash());
+        // 数据账户集根哈希
+        System.out.println(block1.getDataAccountSetHash());
+        // 系统时间集根哈希
+        System.out.println(block1.getSystemEventSetHash());
+        // 用户账户集根哈希
+        System.out.println(block1.getUserAccountSetHash());
+        // 用户事件账户根哈希
+        System.out.println(block1.getUserEventSetHash());
+
         LedgerBlock block2 = blockchainService.getBlock(ledger, Integer.MAX_VALUE);
         Assert.assertNotNull(block1);
         Assert.assertEquals(block1.getHash(), block2.getHash());
@@ -254,8 +303,211 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getAdditionalTransactionsByHeight() {
-        LedgerTransaction[] txs = blockchainService.getTransactions(ledger, 0, 0, 1);
+        LedgerTransaction[] txs = blockchainService.getAdditionalTransactions(ledger, 0, 0, 1);
         Assert.assertEquals(1, txs.length);
+        for (LedgerTransaction tx : txs) {
+            /**
+             * 交易执行结果
+             */
+            TransactionResult result = tx.getResult();
+            // 交易最终状态
+            System.out.println(result.getExecutionState());
+            // 交易所在区块高度
+            System.out.println(result.getBlockHeight());
+            /**
+             * 交易请求解析
+             */
+            TransactionRequest request = tx.getRequest();
+            // 交易哈希
+            System.out.println(request.getTransactionHash());
+            // 终端用户签名信息
+            DigitalSignature[] endpointSignatures = request.getEndpointSignatures();
+            for (DigitalSignature signature : endpointSignatures) {
+                // 签名
+                System.out.println(signature.getDigest());
+                // 公钥
+                System.out.println(signature.getPubKey());
+            }
+            // 网关签名信息
+            DigitalSignature[] nodeSignatures = request.getNodeSignatures();
+            for (DigitalSignature signature : nodeSignatures) {
+                // 签名
+                System.out.println(signature.getDigest());
+                // 公钥
+                System.out.println(signature.getPubKey());
+            }
+            // 请求内容
+            TransactionContent transactionContent = request.getTransactionContent();
+            transactionContent.getTimestamp(); // 请求时间（客户端提交上来的时间）
+            Operation[] operations = transactionContent.getOperations(); // 操作列表
+            for (Operation operation : operations) {
+                if (operation instanceof UserRegisterOperation) { // 注册用户
+                    UserRegisterOperation userRegisterOperation = (UserRegisterOperation) operation;
+                    // 地址
+                    System.out.println(userRegisterOperation.getUserID().getAddress());
+                    //公钥
+                    System.out.println(userRegisterOperation.getUserID().getPubKey());
+                } else if (operation instanceof DataAccountRegisterOperation) { // 注册数据账户
+                    DataAccountRegisterOperation dataAccountRegisterOperation = (DataAccountRegisterOperation) operation;
+                    // 地址
+                    System.out.println(dataAccountRegisterOperation.getAccountID().getAddress());
+                    // 公钥
+                    System.out.println(dataAccountRegisterOperation.getAccountID().getPubKey());
+                } else if (operation instanceof ContractCodeDeployOperation) { // 部署合约
+                    ContractCodeDeployOperation contractCodeDeployOperation = (ContractCodeDeployOperation) operation;
+                    // 地址
+                    System.out.println(contractCodeDeployOperation.getContractID().getAddress());
+                    // 公钥
+                    System.out.println(contractCodeDeployOperation.getContractID().getPubKey());
+                    // 合约代码
+                    System.out.println(OnLineContractProcessor.getInstance().decompileEntranceClass(contractCodeDeployOperation.getChainCode()));
+                    // 合约版本
+                    System.out.println(contractCodeDeployOperation.getChainCodeVersion());
+                } else if (operation instanceof EventAccountRegisterOperation) { // 注册事件账户
+                    EventAccountRegisterOperation eventAccountRegisterOperation = (EventAccountRegisterOperation) operation;
+                    // 地址
+                    System.out.println(eventAccountRegisterOperation.getEventAccountID().getAddress());
+                    // 公钥
+                    System.out.println(eventAccountRegisterOperation.getEventAccountID().getPubKey());
+                } else if (operation instanceof DataAccountKVSetOperation) { // 写入kv
+                    DataAccountKVSetOperation kvSetOperation = (DataAccountKVSetOperation) operation;
+                    // 数据账户地址
+                    System.out.println(kvSetOperation.getAccountAddress());
+                    // 写入kv数据
+                    DataAccountKVSetOperation.KVWriteEntry[] kvs = kvSetOperation.getWriteSet();
+                    for (DataAccountKVSetOperation.KVWriteEntry kv : kvs) {
+                        // key
+                        System.out.println(kv.getKey());
+                        // 预期的上一个数据版本
+                        System.out.println(kv.getExpectedVersion());
+                        // value
+                        BytesValue value = kv.getValue();
+                        switch (value.getType()) {
+                            case TEXT:
+                            case XML:
+                            case JSON:
+                                System.out.println(value.getBytes().toString());
+                                break;
+                            case INT64:
+                            case TIMESTAMP:
+                                System.out.println(BytesUtils.toLong(value.getBytes().toBytes()));
+                                break;
+                            default: // byte[], Bytes, IMG
+                                System.out.println(value.getBytes());
+                                break;
+                        }
+                    }
+                } else if (operation instanceof ContractEventSendOperation) { // 调用合约
+                    ContractEventSendOperation contractEventSendOperation = (ContractEventSendOperation) operation;
+                    // 合约地址
+                    System.out.println(contractEventSendOperation.getContractAddress());
+                    // 合约方法
+                    System.out.println(contractEventSendOperation.getEvent());
+                    // 合约参数
+                    for (BytesValue arg : contractEventSendOperation.getArgs().getValues()) {
+                        switch (arg.getType()) {
+                            case TEXT:
+                                System.out.println(BytesUtils.toString(arg.getBytes().toBytes()));
+                                break;
+                            case INT64:
+                                System.out.println(BytesUtils.toLong(arg.getBytes().toBytes()));
+                                break;
+                            case BOOLEAN:
+                                System.out.println(BytesUtils.toBoolean(arg.getBytes().toBytes()[0]));
+                                break;
+                            case BYTES:
+                                System.out.println(arg.getBytes().toBytes());
+                            default:
+                                break;
+                        }
+                    }
+                } else if (operation instanceof EventPublishOperation) { // 发布事件
+                    EventPublishOperation eventPublishOperation = (EventPublishOperation) operation;
+                    // 事件账户地址
+                    System.out.println(eventPublishOperation.getEventAddress());
+                    // 数据
+                    EventPublishOperation.EventEntry[] events = eventPublishOperation.getEvents();
+                    for (EventPublishOperation.EventEntry event : events) {
+                        // topic
+                        System.out.println(event.getName());
+                        // 预期的上一个数据序列
+                        System.out.println(event.getSequence());
+                        // 内容
+                        BytesValue value = event.getContent();
+                        switch (value.getType()) {
+                            case TEXT:
+                            case XML:
+                            case JSON:
+                                System.out.println(value.getBytes().toString());
+                                break;
+                            case INT64:
+                            case TIMESTAMP:
+                                System.out.println(BytesUtils.toLong(value.getBytes().toBytes()));
+                                break;
+                            default: // byte[], Bytes, IMG
+                                System.out.println(value.getBytes());
+                                break;
+                        }
+                    }
+                } else if (operation instanceof ConsensusSettingsUpdateOperation) { // 更新共识信息
+                    ConsensusSettingsUpdateOperation consensusSettingsUpdateOperation = (ConsensusSettingsUpdateOperation) operation;
+                    Property[] properties = consensusSettingsUpdateOperation.getProperties();
+                    for (Property property : properties) {
+                        System.out.println(property.getName());
+                        System.out.println(property.getValue());
+                    }
+                } else if (operation instanceof LedgerInitOperation) { // 账本初始化
+                    LedgerInitOperation ledgerInitOperation = (LedgerInitOperation) operation;
+                    // 共识参与方的列表
+                    ledgerInitOperation.getInitSetting().getConsensusParticipants();
+                    // 密码算法配置
+                    ledgerInitOperation.getInitSetting().getCryptoSetting();
+                    // 账本的种子
+                    ledgerInitOperation.getInitSetting().getLedgerSeed();
+                    // ...
+                } else if (operation instanceof ParticipantRegisterOperation) { // 注册参与方
+                    ParticipantRegisterOperation participantRegisterOperation = (ParticipantRegisterOperation) operation;
+                    // 参与方地址
+                    System.out.println(participantRegisterOperation.getParticipantID().getAddress());
+                    // 参与方公钥
+                    System.out.println(participantRegisterOperation.getParticipantID().getPubKey());
+                    // 参与方名称
+                    System.out.println(participantRegisterOperation.getParticipantName());
+                } else if (operation instanceof RolesConfigureOperation) { // 角色配置
+                    RolesConfigureOperation rolesConfigureOperation = (RolesConfigureOperation) operation;
+                    // 角色列表
+                    RolesConfigureOperation.RolePrivilegeEntry[] roles = rolesConfigureOperation.getRoles();
+                    for (RolesConfigureOperation.RolePrivilegeEntry role : roles) {
+                        // 角色名称
+                        System.out.println(role.getRoleName());
+                        // 拥有的账本权限
+                        System.out.println(Arrays.toString(role.getEnableLedgerPermissions()));
+                        // 禁止的账本权限
+                        System.out.println(Arrays.toString(role.getDisableLedgerPermissions()));
+                        // 拥有的交易权限
+                        System.out.println(Arrays.toString(role.getEnableTransactionPermissions()));
+                        // 禁止的交易权限
+                        System.out.println(Arrays.toString(role.getDisableTransactionPermissions()));
+                    }
+                } else if (operation instanceof UserAuthorizeOperation) { // 权限配置
+                    UserAuthorizeOperation userAuthorizeOperation = (UserAuthorizeOperation) operation;
+                    // 用户角色
+                    UserAuthorizeOperation.UserRolesEntry[] userRoles = userAuthorizeOperation.getUserRolesAuthorizations();
+                    for (UserAuthorizeOperation.UserRolesEntry userRole : userRoles) {
+                        // 用户地址
+                        System.out.println(Arrays.toString(userRole.getUserAddresses()));
+                        // 多角色权限策略
+                        System.out.println(userRole.getPolicy());
+                        // 授权的角色清单
+                        System.out.println(Arrays.toString(userRole.getAuthorizedRoles()));
+                        // 取消授权的角色清单
+                        System.out.println(Arrays.toString(userRole.getUnauthorizedRoles()));
+                    }
+                } else {
+                    System.out.println("todo");
+                }
+            }
+        }
     }
 
     /**
@@ -263,7 +515,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getAdditionalTransactionsByHash() {
-        LedgerTransaction[] txs = blockchainService.getTransactions(ledger, sampleHash, 0, 1);
+        LedgerTransaction[] txs = blockchainService.getAdditionalTransactions(ledger, sampleHash, 0, 1);
         Assert.assertNull(txs);
     }
 
@@ -356,7 +608,11 @@ public class QuerySample extends SampleBase {
     public void getContract() {
         ContractInfo contract = blockchainService.getContract(ledger, sampleContractAddress);
         if (null != contract) {
-            System.out.println(contract.getAddress().toString());
+            // 合约地址
+            System.out.println(contract.getAddress());
+            // 合约代码
+            System.out.println(BytesUtils.toString(contract.getChainCode()));
+            System.out.println(OnLineContractProcessor.getInstance().decompileEntranceClass(contract.getChainCode()));
         }
     }
 
@@ -461,7 +717,7 @@ public class QuerySample extends SampleBase {
      */
     @Test
     public void getLatestUserEvent() {
-        Event event = blockchainService.getLatestEvent(ledger, sampleEventAddress, sampleEvent);
+        Event event = blockchainService.getLatestUserEvent(ledger, sampleEventAddress, sampleEvent);
         if (null != event) {
             BytesValue content = event.getContent();
             switch (content.getType()) {
@@ -524,7 +780,7 @@ public class QuerySample extends SampleBase {
         if (null != contract) {
             System.out.println(contract.getAddress().toString());
             System.out.println(contract.getChainCodeVersion());
-            System.out.println(contract.getChainCode());
+            System.out.println(OnLineContractProcessor.getInstance().decompileEntranceClass(contract.getChainCode()));
         }
     }
 

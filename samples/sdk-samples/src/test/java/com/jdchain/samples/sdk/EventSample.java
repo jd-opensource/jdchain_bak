@@ -82,8 +82,6 @@ public class EventSample extends SampleBase {
         txTemp.eventAccounts().register(eventAccount.getIdentity());
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -108,8 +106,6 @@ public class EventSample extends SampleBase {
                 .publish("topic4", Bytes.fromInt(1), -1);
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());

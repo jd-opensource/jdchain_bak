@@ -287,7 +287,7 @@ public class TestNet {
         txTemp.eventAccounts().register(user.getIdentity());
         txTemp.eventAccount(user.getAddress()).publish("sample-event", "sample-content", -1);
         // 初始化一个合约
-        txTemp.contracts().deploy(user.getIdentity(), FileUtils.readBytes(new ClassPathResource("contract-samples-1.4.2.RELEASE.car").getFile()));
+        txTemp.contracts().deploy(user.getIdentity(), FileUtils.readBytes(new ClassPathResource("contract-samples-1.5.0.RELEASE.car").getFile()));
 
         PreparedTransaction ptx = txTemp.prepare();
         ptx.sign(admin);

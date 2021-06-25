@@ -33,8 +33,6 @@ public class UserSample extends SampleBase {
         txTemp.users().register(user.getIdentity());
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -54,8 +52,6 @@ public class UserSample extends SampleBase {
                 .enable(TransactionPermission.DIRECT_OPERATION);
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -73,8 +69,6 @@ public class UserSample extends SampleBase {
         txTemp.security().authorziations().forUser(Bytes.fromBase58("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye")).authorize("MANAGER");
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
@@ -103,8 +97,6 @@ public class UserSample extends SampleBase {
 
         // 交易主恩贝
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());

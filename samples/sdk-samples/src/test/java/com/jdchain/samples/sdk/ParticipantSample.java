@@ -22,6 +22,7 @@ import com.jd.httpservice.converters.JsonResponseConverter;
 import com.jd.httpservice.utils.web.WebResponse;
 
 import utils.codec.Base58Utils;
+import utils.crypto.classic.SHA256Utils;
 import utils.security.ShaUtils;
 
 /**
@@ -39,7 +40,7 @@ public class ParticipantSample extends SampleBase {
         TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
         // 生成用户信息
         BlockchainKeypair user = BlockchainKeyGenerator.getInstance().generate();
-        String pwd = Base58Utils.encode(ShaUtils.hash_256("1".getBytes()));
+        String pwd = Base58Utils.encode(SHA256Utils.hash("1".getBytes()));
         System.out.println("参与方私钥：" + KeyGenUtils.encodePrivKey(user.getPrivKey(), pwd));
         System.out.println("参与方私钥密码：" + pwd);
         System.out.println("参与方公钥：" + KeyGenUtils.encodePubKey(user.getPubKey()));
@@ -48,8 +49,6 @@ public class ParticipantSample extends SampleBase {
         txTemp.participants().register("new peer node", user.getIdentity());
         // 交易准备
         PreparedTransaction ptx = txTemp.prepare();
-        // 交易签名
-        ptx.sign(adminKey);
         // 提交交易
         TransactionResponse response = ptx.commit();
         Assert.assertTrue(response.isSuccess());
