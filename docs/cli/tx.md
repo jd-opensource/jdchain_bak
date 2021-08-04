@@ -455,7 +455,7 @@ return string: LdeNqvSjL4izfpMNsGpQiBpTBse4g6qLxZ6j5
 
 1. 离线交易
 
-执行以上所有交易时，若`export`参数不为空，则会执行交易写入本地操作，而非签名并发送交易，离线交易可以
+执行以上所有交易时，若`export`参数不为空，则会执行交易写入本地操作，而非签名并发送交易
 
 如构造合约调用操作交易并保存到本地：
 ```bash
@@ -466,7 +466,7 @@ INDEX  LEDGER
 > 0
 export transaction success: /txs/j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3
 ```
-交易内容会被序列化报存在`/txs/j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3`中，其中`j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3`是该交易哈希。
+交易内容会被序列化保存在`/txs/j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3`中，其中`j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3`是该交易哈希。
 
 2. 离线签名
 
@@ -485,7 +485,7 @@ Usage: jdchain-cli tx sign [-hV] [--pretty] [--export=<export>]
       --pretty             Pretty json print
   -V, --version            Print version information and exit.
 ```
-- `import`，离线交易路径
+- `tx`，离线交易路径
 
 如对步骤1中创建的离线交易添加终端用户（此用户需是链上存在的且有相关权限的用户）签名：
 ```bash
@@ -518,7 +518,7 @@ Usage: jdchain-cli tx send [-hV] [--pretty] [--export=<export>]
       --pretty             Pretty json print
   -V, --version            Print version information and exit.
 ```
-- `import`，离线交易路径
+- `tx`，离线交易路径
 
 如发送`/txs/j5xR8ty8YbujTYKNRshmbfMYsL4jfe3yRUtMparmeHppd3`中包含的交易数据：
 ```bash
