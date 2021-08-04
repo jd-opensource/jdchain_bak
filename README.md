@@ -1,10 +1,8 @@
 ![logo](http://storage.jd.com/jd.block.chain/jdt-jdchain.png)
 
-<div align="center">
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jd.blockchain/sdk-pack/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.jd.blockchain/sdk-pack/)
 [![Build Status](https://travis-ci.com/blockchain-jd-com/jdchain.svg?branch=master)](https://travis-ci.org/blockchain-jd-com/jdchain)
-</div>
 
 一个面向企业应用场景的通用区块链框架系统，能够作为企业级基础设施，为业务创新提供高效、灵活和安全的解决方案。
 
@@ -33,7 +31,7 @@ $ build/build.sh --update
 # 跳过子模块代码更新和集成测试，直接编译和打包；
 $ build/build.sh --skipTests
 
-# 首次代码拉取，跳过继承测试编译打包可执行：
+# 首次代码拉取，跳过集成测试和编译打包可执行：
 build/build.sh --update --skipTests
 ```
 
