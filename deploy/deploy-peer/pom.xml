@@ -76,6 +76,12 @@
 			<version>${core.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.jd.blockchain</groupId>
+			<artifactId>jdchain-cli</artifactId>
+			<version>${core.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

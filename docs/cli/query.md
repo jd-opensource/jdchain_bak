@@ -60,6 +60,7 @@ j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg
 
 选择账本，打印当前账本详细信息：
 ```bash
+:bin$ ./jdchain-cli.sh query ledger
 select ledger, input the index:
 INDEX  LEDGER
 0      j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg

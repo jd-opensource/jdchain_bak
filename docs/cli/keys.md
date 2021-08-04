@@ -1,6 +1,6 @@
 ### 密钥管理
 
-`jdchain-cli`提供基于本地目录的密钥管理：[密钥对列表](#密钥对列表)，[添加密钥对](#添加密钥对)，[更新私钥密码](#更新私钥密码)，[删除密钥对](#删除密钥对)
+`jdchain-cli`提供基于本地目录的密钥管理：[密钥对列表](#密钥对列表)，[显示密钥对](#显示密钥对)，[添加密钥对](#添加密钥对)，[更新私钥密码](#更新私钥密码)，[删除密钥对](#删除密钥对)
 
 ```bash
 :bin$ ./jdchain-cli.sh keys -h
@@ -13,6 +13,7 @@ List, create, update or delete keypairs.
   -V, --version       Print version information and exit.
 Commands:
   list    List all the keypairs.
+  show    Show keypair.
   add     Create a new keypair.
   update  Update privkey password.
   delete  Delete keypair.
@@ -40,6 +41,29 @@ NAME         ALGORITHM      ADDRESS      PUBKEY
 - `ALGORITHM`，算法
 - `ADDRESS`，地址
 - `PUBKEY`，公钥
+
+#### 显示密钥对
+```bash
+:bin$ ./jdchain-cli.sh keys show -h
+Show the keypair.
+Usage: jdchain-cli keys show [-hV] [--pretty] [--home=<path>] -n=<name>
+  -h, --help          Show this help message and exit.
+      --home=<path>   Set the home directory.
+  -n, --name=<name>   Name of the key
+      --pretty        Pretty json print
+  -V, --version       Print version information and exit.
+```
+- `name`，密钥对名称
+
+如：
+```bash
+:bin$ ./jdchain-cli.sh keys show -n k1
+input the password:
+> 1
+NAME           ALGORITHM        ADDRESS PUBKEY  PRIVKEY PASSWORD
+k1             ED25519          LdeNwzRRuF33BNkyzbMuzKV3zFNGMrYBsRXvm   7VeRPc4QsYJX7qpzHBBJTzwvvmXXFVvP1MwmdU7WCBv9Uvc5        177gk2XHAsWRMXyHLLcJsig2jvXWpgo4ZVg2HYgGaiXauAZqPcnsETNeLUeRShw2BKgHVbN 8EjkXVSTxMFjCvNNsTo8RBMDEVQmk7gYkW4SCDuvdsBG
+```
+会显示`k1`所有信息
 
 #### 添加密钥对
 ```bash
@@ -86,12 +110,12 @@ Usage: jdchain-cli keys update [-hV] [--pretty] [--home=<path>] -n=<name>
 如：
 ```bash
 :bin$ ./jdchain-cli.sh keys update -n k1
-input the current password: >
+input the current password:
 // 输入当前密码
-1
-input new password: >
+> 1
+input new password:
 // 输入新密码
-2
+> 2
 NAME           ALGORITHM      ADDRESS                                 PUBKEY
 k1             ED25519        LdeP1iczD3zpmcayKAxTfSywict9y2r6Jpq6n   7VeRBamwPeMb7jzTNg3Ap2DscBiy3QE3PK5NqBvv9tUjQVk4
 ```

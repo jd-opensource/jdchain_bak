@@ -143,7 +143,7 @@ Usage: jdchain-cli participant active [-hV] [--pretty] [--shutdown]
 
 在账本`j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg`中激活`node4`（以步骤2中启动的服务地址和端口为`127.0.0.1`和`7084`例），共识端口设置为`10088`，同步节点地址和端口为`127.0.0.1`和`7080`为例：
 ```bash
-./jdchain-cli.sh participant active --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 127.0.0.1 --port 7084 --consensus-port 10088 --syn-host 127.0.0.1 --syn-port 7080
+:bin$./jdchain-cli.sh participant active --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 127.0.0.1 --port 7084 --consensus-port 10088 --syn-host 127.0.0.1 --syn-port 7080
 participant activated
 ```
 
@@ -162,7 +162,7 @@ participant activated
 如将`node4`共识端口由`10088`修改为`10188`，操作指令如下：
 
 ```bash
-./jdchain-cli.sh participant update --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 127.0.0.1 --port 7084 --consensus-port 10188 --syn-host 127.0.0.1 --syn-port 7080
+:bin$./jdchain-cli.sh participant update --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 127.0.0.1 --port 7084 --consensus-port 10188 --syn-host 127.0.0.1 --syn-port 7080
 participant updated
 ```
 指令成功执行后，`peer1`的共识端口将自动变更为`10188`
@@ -176,7 +176,7 @@ participant updated
 如将`node4`共识`IP`由`127.0.0.1`修改为`192.168.1.100`（另一台机器），操作指令如下：
 
 ```bash
-./jdchain-cli.sh participant update --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 192.168.1.100 --port 7084 --consensus-port 10188 --syn-host 127.0.0.1 --syn-port 7080 -shutdown
+:bin$./jdchain-cli.sh participant update --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --host 192.168.1.100 --port 7084 --consensus-port 10188 --syn-host 127.0.0.1 --syn-port 7080 -shutdown
 participant updated
 ```
 
