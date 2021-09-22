@@ -14,8 +14,9 @@ transactions to jdchain network, query data from jdchain network.
 
 Commands:
 
-The most commonly used git commands are:
+The most commonly used commands are:
   keys         List, create, update or delete keypairs.
+  ca           List, create, update certificates.
   tx           Build, sign or send transaction.
   query        Query commands.
   participant  Add, update or delete participant.
@@ -26,5 +27,6 @@ See 'jdchain-cli help <command>' to read about a specific subcommand or concept.
 
 - `keys` [密钥管理](cli/keys.md)
 - `tx` [交易](cli/tx.md)
+- `ca` [证书](cli/ca.md)
 - `query` [链上信息查询](cli/query.md)
 - `participant` [共识节点变更](cli/participant.md)

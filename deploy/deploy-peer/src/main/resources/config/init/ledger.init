@@ -4,6 +4,12 @@ ledger.seed=932dfe23-fe23232f-283f32fa-dd32aa76-8322ca2f-56236cda-7136b322-cb323
 #账本的描述名称；此属性不参与共识，仅仅在当前参与方的本地节点用于描述用途；
 ledger.name=
 
+#身份认证模式：KEYPAIR/CA，默认KEYPAIR即公私钥对模式
+identity-mode=KEYPAIR
+
+#账本根证书路径，identity-mode 为 CA 时，此选项不能为空，支持多个，半角逗号相隔
+root-ca-path=
+
 #声明的账本创建时间；格式为 “yyyy-MM-dd HH:mm:ss.SSSZ”，表示”年-月-日 时:分:秒:毫秒时区“；例如：“2019-08-01 14:26:58.069+0800”，其中，+0800 表示时区是东8区
 created-time=2019-08-01 14:26:58.069+0800
 
@@ -76,6 +82,8 @@ cons_parti.0.name=
 cons_parti.0.pubkey-path=
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.0.pubkey=
+#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+cons_parti.0.ca-path=
 
 #第0个参与方的角色清单；可选项；
 #cons_parti.0.roles=ADMIN, MANAGER
@@ -96,6 +104,8 @@ cons_parti.1.name=
 cons_parti.1.pubkey-path=
 #第1个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.1.pubkey=
+#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+cons_parti.1.ca-path=
 
 #第1个参与方的角色清单；可选项；
 #cons_parti.1.roles=MANAGER
@@ -116,6 +126,8 @@ cons_parti.2.name=
 cons_parti.2.pubkey-path=
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.2.pubkey=
+#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+cons_parti.2.ca-path=
 
 #第2个参与方的角色清单；可选项；
 #cons_parti.2.roles=MANAGER
@@ -136,6 +148,8 @@ cons_parti.3.name=
 cons_parti.3.pubkey-path=
 #第3个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.3.pubkey=
+#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+cons_parti.3.ca-path=
 
 #第3个参与方的角色清单；可选项；
 #cons_parti.3.roles=GUEST

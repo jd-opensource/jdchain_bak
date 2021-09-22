@@ -77,6 +77,8 @@ Usage: jdchain-cli keys add [-hV] [--pretty] [-a=<algorithm>] [--home=<path>]
       --home=<path>   Set the home directory.
   -n, --name=<name>   Name of the key
       --pretty        Pretty json print
+  -p, --password=<password>
+                      Password of the key
   -V, --version       Print version information and exit.
 ```
 

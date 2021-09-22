@@ -27,35 +27,39 @@ Commands:
 ```bash
 :bin$ ./jdchain-cli.sh participant register -h
 Register new participant.
-Usage: jdchain-cli participant register [-hV] [--pretty] [--gw-host=<gwHost>]
+Usage: jdchain-cli participant register [-hV] [--ca-mode] [--pretty]
+                                        [--crt=<caPath>] [--gw-host=<gwHost>]
                                         [--gw-port=<gwPort>] [--home=<path>]
-                                        --name=<name>
+                                        [-n=<name>]
+                                        --participant-name=<participantName>
+                                        [--pubkey=<pubkey>]
+      --ca-mode            Register with CA
+      --crt=<caPath>       File of the X509 certificate
       --gw-host=<gwHost>   Set the gateway host. Default: 127.0.0.1
       --gw-port=<gwPort>   Set the gateway port. Default: 8080
   -h, --help               Show this help message and exit.
       --home=<path>        Set the home directory.
-      --name=<name>        Name of the participant
+  -n, --name=<name>        Name of the key
+      --participant-name=<participantName>
+                           Name of the participant
       --pretty             Pretty json print
+      --pubkey=<pubkey>    Pubkey of the user
   -V, --version            Print version information and exit.
 ```
-- `name`，新节点名称
+- `participant-name`，新节点名称
+- `ca-mode`，身份认证模式是否为证书（`CA`）模式，默认`false`
+- `name`，当`ca-mode`为`true`时会读取本地`${home}/config/keys/${name}.crt`文件，反之读取`${home}/config/keys/${name}.pub`
+- `crt`，证书文件路径
+- `pubkey`，`Base58`编码公钥信息，仅在非`ca-mode`情况下使用
 
 注册新节点：
 ```bash
-:bin$ ./jdchain-cli.sh participant register --name node4
+:bin$ ./jdchain-cli.sh participant register --participant-name node4 --name node4
 select ledger, input the index:
 INDEX  LEDGER
 0      j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg
 // 选择账本
 > 0
-// 选择待注册节点公私钥（链上必须不存在此公私钥对应的用户）
-select keypair to register, input the index:
-0  k1                                      LdeNq3862vtUCeptww1T5mVvLbAeppYqVNdqD
-1  1627618939                              LdeNyibeafrAQXgHjBxgQxoLbna6hL4BcXZiw
-2  node4                                   LdeNwG6ECEGz57o2ufhwSbnW4C35TvPqANK7T
-2
-input password of the key:
-> 1
 // 选择此交易签名用户（必须是链上存在的用户，且有相应操作权限）
 select keypair to sign tx, input the index:
 0  k1                                      LdeNq3862vtUCeptww1T5mVvLbAeppYqVNdqD
@@ -199,20 +203,16 @@ Usage: jdchain-cli participant inactive [-hV] [--pretty] --address=<address>
       --ledger=<ledger>      Set the ledger.
       --port=<port>          Set the participant service port.
       --pretty               Pretty json print
-      --syn-host=<synHost>   Set synchronization participant host.
-      --syn-port=<synPort>   Set synchronization participant port.
   -V, --version              Print version information and exit.
 ```
 - `ledger`，账本哈希
 - `address`，待移除节点共识端口
 - `host`，待移除节点服务地址
 - `port`，待移除节点服务端口
-- `syn-host`，数据同步节点地址
-- `syn-port`，数据同步节点服务端口
 
 如移除`node4`：
 ```bash
-:bin$ ./jdchain-cli.sh participant inactive --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --address LdeNwG6ECEGz57o2ufhwSbnW4C35TvPqANK7T --host 127.0.0.1 --port 7084 --syn-host 127.0.0.1 --syn-port 7080
+:bin$ ./jdchain-cli.sh participant inactive --ledger j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg --address LdeNwG6ECEGz57o2ufhwSbnW4C35TvPqANK7T --host 127.0.0.1 --port 7084
 participant inactivated
 ```
 
