@@ -1,16 +1,13 @@
 #!/bin/bash
 
 #定义程序启动的Jar包前缀
-APP_JAR_PREFIX=deploy-peer-
+APP_JAR=deploy-peer-
 
 #获取当前的根目录
 APP_HOME=$(cd `dirname $0`;cd ../; pwd)
 
 #System路径
 APP_SYSTEM_PATH=$APP_HOME/system
-
-#获取Peer节点的启动Jar包
-APP_JAR=$(ls $APP_SYSTEM_PATH | grep $APP_JAR_PREFIX)
 
 #APP_JAR的具体路径
 APP_JAR_PATH=$APP_SYSTEM_PATH/$APP_JAR
