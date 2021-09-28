@@ -104,11 +104,11 @@ public class ContractSample extends SampleBase {
         // 新建交易
         TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
 
-        ContractEventSendOperationBuilder builder = txTemp.contract();
+        ContractEventSendOperationBuilder builder = txTemp.contract("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye");
         // 运行前，填写正确的合约地址，数据账户地址等参数
         // 一次交易中可调用多个（多次调用）合约方法
         // 调用合约的 registerUser 方法，传入合约地址，合约方法名，合约方法参数列表
-        builder.send("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye", "registerUser",
+        builder.invoke("registerUser",
                 new BytesDataList(new TypedValue[]{
                         TypedValue.fromText(UUID.randomUUID().toString())
                 })
