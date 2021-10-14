@@ -53,6 +53,8 @@ created-time=2019-08-01 14:26:58.069+0800
 #security.role.GUEST.ledger-privileges=
 #security.role.GUEST.tx-privileges=CONTRACT_OPERATION
 
+#账本数据库的锚定类型，分为：default, simple两种
+ledger.database.anchor=default
 
 #-----------------------------------------------
 #共识服务提供者；必须；
