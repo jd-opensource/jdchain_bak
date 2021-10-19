@@ -7,8 +7,6 @@ import com.jd.blockchain.ledger.TransactionContent;
 import com.jd.blockchain.ledger.core.LedgerInitDecision;
 import com.jd.blockchain.ledger.core.LedgerInitProposal;
 import com.jd.blockchain.ledger.core.LedgerManager;
-import com.jd.blockchain.ledger.core.LedgerQuery;
-import com.jd.blockchain.storage.service.DbConnection;
 import com.jd.blockchain.storage.service.impl.composite.CompositeConnectionFactory;
 import com.jd.blockchain.tools.initializer.DBConnectionConfig;
 import com.jd.blockchain.tools.initializer.LedgerInitProcess;
@@ -61,12 +59,6 @@ public class NodeWebContext {
     public NodeWebContext(int id, NetworkAddress serverAddress) {
         this.id = id;
         this.serverAddress = serverAddress;
-    }
-
-    public LedgerQuery registLedger(HashDigest ledgerHash) {
-        DbConnection conn = db.connect(dbConnConfig.getUri());
-        LedgerQuery ledgerRepo = ledgerManager.register(ledgerHash, conn.getStorageService(), dbConnConfig.getAnchor());
-        return ledgerRepo;
     }
 
     public ThreadInvoker.AsyncCallback<HashDigest> startInit(PrivKey privKey, LedgerInitProperties setting,

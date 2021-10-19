@@ -13,6 +13,8 @@ root-ca-path=
 #声明的账本创建时间；格式为 “yyyy-MM-dd HH:mm:ss.SSSZ”，表示”年-月-日 时:分:秒:毫秒时区“；例如：“2019-08-01 14:26:58.069+0800”，其中，+0800 表示时区是东8区
 created-time=2019-08-01 14:26:58.069+0800
 
+#账本数据底层结构，分为：MERKLE_TREE, KV两种，默认MERKLE_TREE
+ledger.data.structure=MERKLE_TREE
 
 #-----------------------------------------------
 # 初始的角色名称列表；可选项；
@@ -52,9 +54,6 @@ created-time=2019-08-01 14:26:58.069+0800
 # 访客角色：不具备任何的账本权限，只有数据读取的操作；也只能够通过调用合约来读取数据；
 #security.role.GUEST.ledger-privileges=
 #security.role.GUEST.tx-privileges=CONTRACT_OPERATION
-
-#账本数据库的锚定类型，分为：default, simple两种
-ledger.database.anchor=default
 
 #-----------------------------------------------
 #共识服务提供者；必须；

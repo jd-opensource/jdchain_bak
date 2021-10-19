@@ -17,8 +17,8 @@ consensus.conf=classpath:testnet/bftsmart.config
 crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
 com.jd.blockchain.crypto.service.sm.SMCryptoService
 
-#账本数据库的锚定类型，分为：default, simple两种
-ledger.database.anchor=default
+#账本数据底层结构，分为：MERKLE_TREE, KV两种，默认MERKLE_TREE
+ledger.data.structure=MERKLE_TREE
 
 #参与方的个数，后续以 cons_parti.id 分别标识每一个参与方的配置；
 cons_parti.count=4
