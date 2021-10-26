@@ -16,23 +16,27 @@ Build, sign or send transaction.
       --pretty             Pretty json print
   -V, --version            Print version information and exit.
 Commands:
-  ledger-ca-update        Update ledger certificates.
-  user-register           Register new user.
-  user-ca-update          Update user certificate.
-  user-state-update       Update user(certificate) state.
-  role                    Create or config role.
-  authorization           User role authorization.
-  data-account-register   Register new data account.
-  kv                      Set key-value.
-  event                   Publish event.
-  event-listen            Subscribe event.
-  contract-deploy         Deploy or update contract.
-  contract                Call contract method.
-  contract-state-update   Update contract state.
-  event-account-register  Register event account.
-  sign                    Sign transaction.
-  send                    Send transaction.
-  help                    Displays help information about the specified command
+  ledger-ca-update          Update ledger certificates.
+  user-register             Register new user.
+  user-ca-update            Update user certificate.
+  user-state-update         Update user(certificate) state.
+  role                      Create or config role.
+  authorization             User role authorization.
+  data-account-register     Register new data account.
+  data-account-permission   Update data account permission.
+  kv                        Set key-value.
+  event-account-register    Register event account.
+  event-account-permission  Update event account permission.
+  event                     Publish event.
+  event-listen              Subscribe event.
+  contract-deploy           Deploy or update contract.
+  contract-permission       Update contract permission.
+  contract                  Call contract method.
+  contract-state-update     Update contract state.
+  sign                      Sign transaction.
+  send                      Send transaction.
+  help                      Displays help information about the specified
+                              command
 ```
 
 参数：
@@ -49,11 +53,14 @@ Commands:
 - `role`，[角色管理](#角色管理)
 - `authorization`，[权限配置](#权限配置)
 - `data-account-register`，[注册数据账户](#注册数据账户)
+- `data-account-permission`，[修改数据账户权限](#修改数据账户权限)
 - `kv`，[KV设值](#KV设值)
 - `event-account-register`，[注册事件账户](#注册事件账户)
+- `event-account-permission`，[修改事件账户权限](#修改事件账户权限)
 - `event`，[发布事件](#发布事件)
 - `event-listen`，[监听事件](#监听事件)
 - `contract-deploy`，[部署合约](#部署合约)
+- `contract-permission`，[修改合约权限](#修改合约权限)
 - `contract`，[合约调用](#合约调用)
 - `contract-state-update`，[更新合约状态](#更新合约状态)
 - `sign`，[离线交易签名](#离线交易签名)
@@ -359,7 +366,7 @@ Usage: jdchain-cli tx data-account-register [-hV] [--pretty]
       --pubkey=<pubkey>    The pubkey of the exist data account
   -V, --version            Print version information and exit.
 ```
-- `pubkey`，待注册数据账户私钥
+- `pubkey`，待注册数据账户公钥
 
 如：
 ```bash
@@ -378,6 +385,46 @@ input password of the key:
 register data account: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC]
 ```
 会在链上注册地址为`LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC`的数据账户信息。
+
+#### 修改数据账户权限
+
+```bash
+:bin$ ./jdchain-cli.sh tx data-account-permission -h
+Update data account permission.
+Usage: jdchain-cli tx data-account-permission [-hV] [--pretty]
+       [--address=<address>] [--export=<export>] [--gw-host=<gwHost>]
+       [--gw-port=<gwPort>] [--home=<path>] [--mode=<mode>] [--role=<role>]
+      --address=<address>   Address of the data account
+      --export=<export>     Transaction export directory
+      --gw-host=<gwHost>    Set the gateway host. Default: 127.0.0.1
+      --gw-port=<gwPort>    Set the gateway port. Default: 8080
+  -h, --help                Show this help message and exit.
+      --home=<path>         Set the home directory.
+      --mode=<mode>         Mode value of the data account
+      --pretty              Pretty json print
+      --role=<role>         Role of the data account
+  -V, --version             Print version information and exit.
+```
+- `address`，数据账户地址
+- `role`，数据账户所属角色
+- `mode`，数据账户权限值
+
+如：
+```bash
+:bin$ ./jdchain-cli.sh tx data-account-permission --address LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC --role ROLE1 --mode 777
+select ledger, input the index:
+INDEX  LEDGER
+0      j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg
+> 0
+select keypair to sign tx:
+INDEX  KEY                                     ADDRESS
+0      peer0                                   LdeNyibeafrAQXgHjBxgQxoLbna6hL4BcXZiw
+> 0
+input password of the key:
+> 1
+update data account: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC] permission
+```
+将修改数据账户`LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC`所属角色为`ROLE1`，权限值为`777`（所有用户可读可写）。
 
 #### KV设值
 
@@ -458,6 +505,46 @@ input password of the key:
 register event account: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC]
 ```
 会在链上注册地址为`LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC`的事件账户信息。
+
+#### 修改事件账户权限
+
+```bash
+:bin$ ./jdchain-cli.sh tx event-account-permission -h
+Update event account permission.
+Usage: jdchain-cli tx event-account-permission [-hV] [--pretty]
+       [--address=<address>] [--export=<export>] [--gw-host=<gwHost>]
+       [--gw-port=<gwPort>] [--home=<path>] [--mode=<mode>] [--role=<role>]
+      --address=<address>   Address of the event account
+      --export=<export>     Transaction export directory
+      --gw-host=<gwHost>    Set the gateway host. Default: 127.0.0.1
+      --gw-port=<gwPort>    Set the gateway port. Default: 8080
+  -h, --help                Show this help message and exit.
+      --home=<path>         Set the home directory.
+      --mode=<mode>         Mode value of the event account
+      --pretty              Pretty json print
+      --role=<role>         Role of the event account
+  -V, --version             Print version information and exit.
+```
+- `address`，事件账户地址
+- `role`，事件账户所属角色
+- `mode`，事件账户权限值
+
+如：
+```bash
+:bin$ ./jdchain-cli.sh tx event-account-permission --address LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC --role ROLE1 --mode 777
+select ledger, input the index:
+INDEX  LEDGER
+0      j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg
+> 0
+select keypair to sign tx:
+INDEX  KEY                                     ADDRESS
+0      peer0                                   LdeNyibeafrAQXgHjBxgQxoLbna6hL4BcXZiw
+> 0
+input password of the key:
+> 1
+update event account: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC] permission
+```
+将修改事件账户`LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC`所属角色为`ROLE1`，权限值为`777`（所有用户可读可写）。
 
 #### 发布事件
 ```bash
@@ -577,6 +664,46 @@ input password of the key:
 deploy contract: [LdeNyF6jdNry5iCqmHdAFTQPvC8UkbJ9avoXH]
 ```
 合约地址：`LdeNyF6jdNry5iCqmHdAFTQPvC8UkbJ9avoXH`
+
+#### 修改合约权限
+
+```bash
+:bin$ ./jdchain-cli.sh tx contract-permission -h
+Update contract permission.
+Usage: jdchain-cli tx contract-permission [-hV] [--pretty]
+       [--address=<address>] [--export=<export>] [--gw-host=<gwHost>]
+       [--gw-port=<gwPort>] [--home=<path>] [--mode=<mode>] [--role=<role>]
+      --address=<address>   Address of the contract
+      --export=<export>     Transaction export directory
+      --gw-host=<gwHost>    Set the gateway host. Default: 127.0.0.1
+      --gw-port=<gwPort>    Set the gateway port. Default: 8080
+  -h, --help                Show this help message and exit.
+      --home=<path>         Set the home directory.
+      --mode=<mode>         Mode value of the contract
+      --pretty              Pretty json print
+      --role=<role>         Role of the contract
+  -V, --version             Print version information and exit.
+```
+- `address`，合约地址
+- `role`，合约所属角色
+- `mode`，合约权限值
+
+如：
+```bash
+:bin$ ./jdchain-cli.sh tx contract-permission --address LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC --role ROLE1 --mode 777
+select ledger, input the index:
+INDEX  LEDGER
+0      j5sB3sVTFgTqTYzo7KtQjBLSy8YQGPpJpvQZaW9Eqk46dg
+> 0
+select keypair to sign tx:
+INDEX  KEY                                     ADDRESS
+0      peer0                                   LdeNyibeafrAQXgHjBxgQxoLbna6hL4BcXZiw
+> 0
+input password of the key:
+> 1
+update contract: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC] permission
+```
+将修改合约`LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC`所属角色为`ROLE1`，权限值为`777`（所有用户可读可写）。
 
 #### 合约调用
 
