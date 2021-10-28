@@ -52,3 +52,5 @@ docker-sdk-1.4.1.RELEASE.jar
 jdchain-gateway-1.4.1.RELEASE.zip
 jdchain-peer-1.4.1.RELEASE.zip
 deploy/docker/docker-demo/src/main/docker/zip
+runtime
+.run

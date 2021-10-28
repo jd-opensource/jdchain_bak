@@ -2,14 +2,12 @@ package com.jdchain.samples.contract;
 
 import com.jd.blockchain.contract.ContractEventContext;
 import com.jd.blockchain.contract.EventProcessingAware;
-import com.jd.blockchain.crypto.AsymmetricKeypair;
-import com.jd.blockchain.crypto.Crypto;
-import com.jd.blockchain.crypto.CryptoAlgorithm;
-import com.jd.blockchain.crypto.SignatureFunction;
-import com.jd.blockchain.ledger.BlockchainKeypair;
-import com.jd.blockchain.ledger.Event;
-import com.jd.blockchain.ledger.TypedKVEntry;
+import com.jd.blockchain.crypto.*;
+import com.jd.blockchain.crypto.base.DefaultCryptoEncoding;
+import com.jd.blockchain.crypto.service.classic.ClassicAlgorithm;
+import com.jd.blockchain.ledger.*;
 
+import com.jd.blockchain.transaction.SimpleSecurityOperationBuilder;
 import utils.Bytes;
 
 /**
@@ -18,6 +16,8 @@ import utils.Bytes;
 public class SampleContractImpl implements EventProcessingAware, SampleContract {
 
     private ContractEventContext eventContext;
+
+
 
     @Override
     public void setKVWithVersion(String address, String key, String value, long version) {
@@ -110,4 +110,124 @@ public class SampleContractImpl implements EventProcessingAware, SampleContract 
     public void postEvent(ContractEventContext eventContext, Exception error) {
 
     }
+
+    @Override
+    public void createRoleAndPermissions(String role, String ledgerPermissionSemicolonStr, String txPermissionSemicolonStr) {
+
+        SimpleSecurityOperationBuilder.SimpleRoleConfigurer roleConfigurer = eventContext.getLedger().security().role(role);
+
+        if(ledgerPermissionSemicolonStr != null){
+            for(String perm : ledgerPermissionSemicolonStr.split(";")){
+                LedgerPermission permission = LedgerPermission.valueOf(perm.trim().toUpperCase());
+                roleConfigurer.enable(permission);
+            }
+        }
+
+        if(txPermissionSemicolonStr != null){
+            for(String perm : txPermissionSemicolonStr.split(";")){
+                TransactionPermission permission = TransactionPermission.valueOf(perm.trim().toUpperCase());
+                roleConfigurer.enable(permission);
+            }
+        }
+
+    }
+
+    @Override
+    public void registerUserByPubKey(String pubkey) {
+        PubKey pubKey = DefaultCryptoEncoding.createPubKey(ClassicAlgorithm.ED25519.code(), Bytes.fromBase58(pubkey).toBytes());
+        BlockchainIdentityData identityData = new BlockchainIdentityData(pubKey);
+        eventContext.getLedger().users().register(identityData);
+    }
+
+    @Override
+    public void modifyUserRole(String address, String role) {
+        eventContext.getLedger()
+                .security()
+                .authorziation(Bytes.fromBase58(address))
+                .authorize(role);
+
+    }
+
+    @Override
+    public void modifyUserState(String userAddress, String state) {
+        AccountState accountState = AccountState.valueOf(state.trim().toUpperCase());
+        eventContext.getLedger().user(userAddress)
+                .state(accountState);
+    }
+
+    @Override
+    public void modifyDataAccountRoleAndMode(String dataAccountAddress, String role, String mode) {
+        eventContext.getLedger().dataAccount(dataAccountAddress)
+                .permission()
+                .role(role)
+                .mode(Integer.parseInt(mode));
+    }
+
+    @Override
+    public void setKV(String dataAccountAddress, String key, String value, String version) {
+        eventContext.getLedger().dataAccount(dataAccountAddress)
+                .setText(key, value, Integer.parseInt(version));
+    }
+
+    @Override
+    public void modifyEventAccountRoleAndMode(String eventAccountAddress, String role, String mode) {
+        eventContext.getLedger().eventAccount(eventAccountAddress)
+                .permission()
+                .role(role)
+                .mode(Integer.parseInt(mode));
+    }
+
+    @Override
+    public void publishEventAccount(String eventAccountAddress, String eventName, String value, String sequence) {
+        eventContext.getLedger().eventAccount(eventAccountAddress)
+                .publish(eventName, value, Integer.parseInt(sequence));
+    }
+
+    @Override
+    public void invokeContract(String contractAddress, String method, String argSemicolonStr) {
+        String[] args = argSemicolonStr.split(";");
+        BytesValue[] bytesValues = new BytesValue[args.length];
+
+        for(int i = 0; i < args.length; i++){
+            bytesValues[i] = TypedValue.fromText(args[i]);
+        }
+
+        eventContext.getLedger()
+                .contract(contractAddress)
+                .invoke(method, new BytesValueList() {
+                    @Override
+                    public BytesValue[] getValues() {
+                        return bytesValues;
+                    }
+                });
+    }
+
+    @Override
+    public String deployContract(String pubkey, byte[] carBytes) {
+
+        PubKey pubKey = KeyGenUtils.decodePubKey(pubkey);
+
+        ContractCodeDeployOperation deployOperation = eventContext.getLedger().contracts()
+                .deploy(new BlockchainIdentityData(pubKey), carBytes);
+
+        return deployOperation.getContractID().getAddress().toString();
+    }
+
+    @Override
+    public void modifyContractRoleAndMode(String contractAddress, String role, String mode) {
+        eventContext.getLedger().contract(contractAddress)
+                .permission()
+                .role(role)
+                .mode(Integer.parseInt(mode));
+    }
+
+    @Override
+    public void modifyContractState(String contractAddress, String state) {
+        AccountState accountState = AccountState.valueOf(state.trim().toUpperCase());
+        eventContext.getLedger().contract(contractAddress)
+                .state(accountState);
+    }
+
+
+
 }
