@@ -16,10 +16,10 @@ Build, sign or send transaction.
       --pretty             Pretty json print
   -V, --version            Print version information and exit.
 Commands:
-  ledger-ca-update          Update ledger certificates.
+  root-ca                   Update ledger certificates.
   user-register             Register new user.
-  user-ca-update            Update user certificate.
-  user-state-update         Update user(certificate) state.
+  user-ca                   Update user certificate.
+  user-state                Update user(certificate) state.
   role                      Create or config role.
   authorization             User role authorization.
   data-account-register     Register new data account.
@@ -32,7 +32,7 @@ Commands:
   contract-deploy           Deploy or update contract.
   contract-permission       Update contract permission.
   contract                  Call contract method.
-  contract-state-update     Update contract state.
+  contract-state            Update contract state.
   sign                      Sign transaction.
   send                      Send transaction.
   help                      Displays help information about the specified
