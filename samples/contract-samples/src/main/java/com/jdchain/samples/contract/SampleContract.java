@@ -9,6 +9,61 @@ import com.jd.blockchain.contract.ContractEvent;
 @Contract
 public interface SampleContract {
 
+    // a. 创建角色，并分配权限
+    @ContractEvent(name = "createRoleAndPermissions")
+    void createRoleAndPermissions(String role, String ledgerPermissionSemicolonStr, String txPermissionSemicolonStr);
+
+    // b. 注册用户
+    @ContractEvent(name = "registerUserByPubKey")
+    void registerUserByPubKey(String pubkey);
+
+    // c. 修改用户角色
+    @ContractEvent(name = "modifyUserRole")
+    void modifyUserRole(String address, String role);
+
+    // d. 修改用户状态
+    @ContractEvent(name = "modifyUserState")
+    void modifyUserState(String userAddress, String state);
+
+    // e. 注册数据账户
+    //void registerDataAccount(String seed);
+
+    // f. 修改数据账户角色及mode
+    @ContractEvent(name = "modifyDataAccountRoleAndMode")
+    void modifyDataAccountRoleAndMode(String dataAccountAddress, String role, String mode);
+
+    // h. 数据账户赋值，更新值
+    @ContractEvent(name = "dataAccountAddress")
+    void setKV(String dataAccountAddress, String key, String value, String version);
+
+    // i. 注册事件账户
+    // String registerEventAccount(String seed)
+
+    // j. 修改事件账户角色及mode
+    @ContractEvent(name = "modifyEventAccountRoleAndMode")
+    void modifyEventAccountRoleAndMode(String eventAccountAddress, String role, String mode);
+
+    // k. 发布事件
+    @ContractEvent(name = "publishEventAccount")
+    void publishEventAccount(String eventAccountAddress, String eventName, String value, String sequence);
+
+    // l. 合约中调用合约
+    @ContractEvent(name = "invokeContract")
+    void invokeContract(String contractAddress, String method, String argDotStr);
+
+    // m. 合约中部署合约
+    @ContractEvent(name = "deployContract")
+    String deployContract(String pubkey, byte[] carBytes);
+
+    // n. 修改合约角色及mode
+    @ContractEvent(name = "modifyContractRoleAndMode")
+    void modifyContractRoleAndMode(String contractAddress, String role, String mode);
+
+    // o. 修改合约状态
+    @ContractEvent(name = "modifyContractState")
+    void modifyContractState(String contractAddress, String state);
+
+
     /**
      * 设置KV
      *
