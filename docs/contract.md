@@ -90,7 +90,7 @@ JD Chain 以 Java 语言作为合约代码语言，合约引擎是基于 JVM 构
   <packaging>contract</packaging>
 
   <properties>
-     <jdchain.version>1.4.2.RELEASE</jdchain.version>
+     <jdchain.version>1.6.0.RELEASE</jdchain.version>
   </properties>
   
   <dependencies>
