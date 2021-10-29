@@ -22,8 +22,11 @@ peer.port=7080
 #共识节点的服务是否启用安全证书；
 peer.secure=false
 
-#是否存储共识拓扑信息，网关重启后若存储存在有效的拓扑信息可快速建立与拓扑中所有节点的连接
+#账本节点拓扑信息落盘，默认false。配置为true后重启网关节点时将直接使用存储中的拓扑连接；
 topology.store=false
+
+#是否开启动态感知，默认true，即根据初始共识节点获取整个共识网络拓扑连接，网关保持对所有共识节点连接，发送交易和查询会自动选择区块高度最新的节点；
+topology.aware=true
 
 #共识节点的服务提供解析器
 #BftSmart共识Provider：com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
@@ -35,15 +38,16 @@ peer.providers=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
 data.retrieval.url=
 schema.retrieval.url=
 
-#默认公钥的内容（Base58编码数据）；
+#默认公钥的内容（Base58编码数据），非CA模式下必填；
 keys.default.pubkey=
+#默认网关证书路径（X509,PEM），CA模式下必填；
+keys.default.ca-path=
 #默认私钥的路径；在 pk-path 和 pk 之间必须设置其一；
 keys.default.privkey-path=
-#默认私钥的内容（加密的Base58编码数据）；在 pk-path 和 pk 之间必须设置其一；
+#默认私钥的内容；在 pk-path 和 pk 之间必须设置其一；
 keys.default.privkey=
 #默认私钥的解码密码；
 keys.default.privkey-password=
-
 ```
 
 其中：
