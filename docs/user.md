@@ -36,12 +36,8 @@ public enum RolesPolicy {
 
 - `CONFIGURE_ROLES`配置角色
 - `AUTHORIZE_USER_ROLES`授权用户角色
-- SET_CONSENSUS 设置共识协议
-- SET_CRYPTO 设置密码体系
 - `APPROVE_TX`参与方核准交易，如果不具备此项权限，则无法作为节点签署由终端提交的交易
-- `CONSENSUS_TX`参与方共识交易
 - `REGISTER_PARTICIPANT`注册参与方
-- SET_USER_ATTRIBUTES 设置用户属性
 - `REGISTER_USER`注册用户
 - `REGISTER_EVENT_ACCOUNT`注册事件账户
 - `WRITE_EVENT_ACCOUNT`发布事件
@@ -49,6 +45,10 @@ public enum RolesPolicy {
 - `WRITE_DATA_ACCOUNT`写入数据账户
 - `REGISTER_CONTRACT`注册合约
 - `UPGRADE_CONTRACT`升级合约
+- `UPDATE_USER_STATE`更新用户（证书）状态
+- `UPDATE_ROOT_CA`更新账本根证书
+- `UPDATE_USER_CA`更新用户（证书）状态
+- `UPDATE_CONTRACT_STATE`更新合约状态
 
 #### 3.2 交易权限
 

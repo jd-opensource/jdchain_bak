@@ -129,7 +129,7 @@ TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
 txTemp.metaInfo().ca(X509Utils.resolveCertificate("*.crt"));
 ```
 
-命令行方式：[更新账本证书](tx.md#更新账本证书)
+命令行方式：[更新账本根证书](cli/tx.md#更新账本根证书)
 
 2. 节点/网关/普通用户证书
 
@@ -141,7 +141,7 @@ txTemp.metaInfo().ca(X509Utils.resolveCertificate("*.crt"));
 txTemp.user("user address").ca(X509Utils.resolveCertificate("*.crt"));
 ```
 
-命令行方式：[更新用户证书](tx.md#更新用户证书)
+命令行方式：[更新用户证书](cli/tx.md#更新用户证书)
 
 ### 证书生成
 

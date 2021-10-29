@@ -16,7 +16,7 @@ Build, sign or send transaction.
       --pretty             Pretty json print
   -V, --version            Print version information and exit.
 Commands:
-  root-ca                   Update ledger certificates.
+  root-ca                   Update ledger root certificates.
   user-register             Register new user.
   user-ca                   Update user certificate.
   user-state                Update user(certificate) state.
@@ -46,10 +46,10 @@ Commands:
 - `home`，指定密钥存储相关目录，`${home}/config/keys`
 
 命令：
-- `ledger-ca-update`，[更新账本证书](#更新账本证书)
+- `root-ca`，[更新账本根证书](#更新账本根证书)
 - `user-register`，[注册用户](#注册用户)
-- `user-ca-update`，[更新用户证书](#更新用户证书)
-- `user-state-update`，[更新用户(证书)状态](#更新用户(证书)状态)
+- `user-ca`，[更新用户证书](#更新用户证书)
+- `user-state`，[更新用户(证书)状态](#更新用户(证书)状态)
 - `role`，[角色管理](#角色管理)
 - `authorization`，[权限配置](#权限配置)
 - `data-account-register`，[注册数据账户](#注册数据账户)
@@ -62,15 +62,15 @@ Commands:
 - `contract-deploy`，[部署合约](#部署合约)
 - `contract-permission`，[修改合约权限](#修改合约权限)
 - `contract`，[合约调用](#合约调用)
-- `contract-state-update`，[更新合约状态](#更新合约状态)
+- `contract-state`，[更新合约状态](#更新合约状态)
 - `sign`，[离线交易签名](#离线交易签名)
 - `send`，[离线交易发送](#离线交易发送)
 
-#### 更新账本证书
+#### 更新账本根证书
 
 ```bash
-:bin$ ./jdchain-cli.sh tx ledger-ca-update -h
-Update ledger certificates.
+:bin$ ./jdchain-cli.sh tx root-ca -h
+Update ledger root certificates.
 Usage: jdchain-cli tx ledger-ca-update [-hV] [--pretty] --crt=<caPath>
                                        [--export=<export>] [--gw-host=<gwHost>]
                                        [--gw-port=<gwPort>] [--home=<path>]
@@ -89,7 +89,7 @@ Usage: jdchain-cli tx ledger-ca-update [-hV] [--pretty] --crt=<caPath>
 
 如：
 ```bash
-:bin$ $ ./jdchain-cli.sh tx ledger-ca-update --crt /home/imuge/jd/nodes/peer0/config/keys/ledger.crt --operation UPDATE
+:bin$ $ ./jdchain-cli.sh tx root-ca --crt /home/imuge/jd/nodes/peer0/config/keys/ledger.crt --operation UPDATE
 select ledger, input the index:
 INDEX   LEDGER
 0       j5pFrMigE47t6TobQJXsztnoeA29H31v1vHHF1wqCp4rzi
@@ -161,9 +161,9 @@ register user: [LdeNwQWabrf6WSjZ35saFo52MfQFhVKvm11aC]
 #### 更新用户证书
 
 ```bash
-:bin$ ./jdchain-cli.sh tx ledger-ca-update -h
+:bin$ ./jdchain-cli.sh tx user-ca -h
 Update user certificate.
-Usage: jdchain-cli tx user-ca-update [-hV] [--pretty] [--crt=<caPath>]
+Usage: jdchain-cli tx user-ca [-hV] [--pretty] [--crt=<caPath>]
                                      [--export=<export>] [--gw-host=<gwHost>]
                                      [--gw-port=<gwPort>] [--home=<path>]
       --crt=<caPath>       File of the X509 certificate
@@ -179,7 +179,7 @@ Usage: jdchain-cli tx user-ca-update [-hV] [--pretty] [--crt=<caPath>]
 
 如：
 ```bash
-:bin$ $ ./jdchain-cli.sh tx user-ca-update --crt /home/imuge/jd/nodes/peer0/config/keys/peer0.crt
+:bin$ $ ./jdchain-cli.sh tx user-ca --crt /home/imuge/jd/nodes/peer0/config/keys/peer0.crt
 select ledger, input the index:
 INDEX   LEDGER
 0       j5pFrMigE47t6TobQJXsztnoeA29H31v1vHHF1wqCp4rzi
@@ -200,9 +200,9 @@ user: [LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W] ca updated
 #### 更新用户(证书)状态
 
 ```bash
-:bin$ ./jdchain-cli.sh tx user-state-update -h
+:bin$ ./jdchain-cli.sh tx user-state -h
 Update user(certificate) state.
-Usage: jdchain-cli tx user-state-update [-hV] [--pretty] --address=<address>
+Usage: jdchain-cli tx user-state [-hV] [--pretty] --address=<address>
                                         [--export=<export>]
                                         [--gw-host=<gwHost>]
                                         [--gw-port=<gwPort>] [--home=<path>]
@@ -222,7 +222,7 @@ Usage: jdchain-cli tx user-state-update [-hV] [--pretty] --address=<address>
 
 如冻结用户`LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W`：
 ```bash
-:bin$ $ ./jdchain-cli.sh tx user-state-update --address LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W  --state FREEZE
+:bin$ $ ./jdchain-cli.sh tx user-state --address LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W  --state FREEZE
 select ledger, input the index:
 INDEX   LEDGER
 0       j5pFrMigE47t6TobQJXsztnoeA29H31v1vHHF1wqCp4rzi
@@ -752,9 +752,9 @@ return string: LdeNqvSjL4izfpMNsGpQiBpTBse4g6qLxZ6j5
 #### 更新合约状态
 
 ```bash
-:bin$ ./jdchain-cli.sh tx contract-state-update -h
+:bin$ ./jdchain-cli.sh tx contract-state -h
 Update contract state.
-Usage: jdchain-cli tx contract-state-update [-hV] [--pretty]
+Usage: jdchain-cli tx contract-state [-hV] [--pretty]
        --address=<address> [--export=<export>] [--gw-host=<gwHost>]
        [--gw-port=<gwPort>] [--home=<path>] --state=<state>
       --address=<address>   Contract address
@@ -773,7 +773,7 @@ Usage: jdchain-cli tx contract-state-update [-hV] [--pretty]
 
 如冻结合约`LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W`：
 ```bash
-:bin$ $ ./jdchain-cli.sh tx contract-state-update --address LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W  --state FREEZE
+:bin$ $ ./jdchain-cli.sh tx contract-state --address LdeNpEmyh5DMwbAwamxNaiJgMVGn6aTtQDA5W  --state FREEZE
 select ledger, input the index:
 INDEX   LEDGER
 0       j5pFrMigE47t6TobQJXsztnoeA29H31v1vHHF1wqCp4rzi
