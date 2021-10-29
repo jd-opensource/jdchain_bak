@@ -1,5 +1,6 @@
 package com.jdchain.samples.sdk;
 
+import com.jd.blockchain.ledger.AccountState;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
 import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.LedgerPermission;
@@ -7,11 +8,9 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionPermission;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-
-import utils.Bytes;
-
 import org.junit.Assert;
 import org.junit.Test;
+import utils.Bytes;
 
 /**
  * 用户账户相关操作示例：
@@ -102,4 +101,20 @@ public class UserSample extends SampleBase {
         Assert.assertTrue(response.isSuccess());
     }
 
+    /**
+     * 更新用户状态
+     */
+    @Test
+    public void updateUserState() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 用户（证书）状态分为：NORMAL（正常） FREEZE（冻结） REVOKE（销毁）
+        // 冻结用户（证书）
+        txTemp.user("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye").state(AccountState.FREEZE);
+        // 交易准备
+        PreparedTransaction ptx = txTemp.prepare();
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
 }

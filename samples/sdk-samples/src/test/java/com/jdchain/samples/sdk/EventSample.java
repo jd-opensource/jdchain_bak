@@ -8,12 +8,10 @@ import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.SystemEvent;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-
-import utils.Bytes;
-import utils.io.BytesUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
+import utils.Bytes;
+import utils.io.BytesUtils;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -132,4 +130,20 @@ public class EventSample extends SampleBase {
         Assert.assertTrue(response.isSuccess());
     }
 
+    /**
+     * 更新事件账户权限
+     */
+    @Test
+    public void updateDPermission() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 配置事件账户权限
+        // 如下配置表示仅有 ROLE 角色用户才有写入 LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye 权限
+        txTemp.eventAccount("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye").permission().mode(70).role("ROLE");
+        // 交易准备
+        PreparedTransaction ptx = txTemp.prepare();
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
 }

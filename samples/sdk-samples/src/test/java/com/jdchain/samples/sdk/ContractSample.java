@@ -1,6 +1,7 @@
 package com.jdchain.samples.sdk;
 
 import com.jd.blockchain.crypto.KeyGenUtils;
+import com.jd.blockchain.ledger.AccountState;
 import com.jd.blockchain.ledger.BlockchainIdentity;
 import com.jd.blockchain.ledger.BlockchainIdentityData;
 import com.jd.blockchain.ledger.BlockchainKeyGenerator;
@@ -15,12 +16,10 @@ import com.jd.blockchain.transaction.ContractEventSendOperationBuilder;
 import com.jd.blockchain.transaction.ContractReturnValue;
 import com.jd.blockchain.transaction.GenericValueHolder;
 import com.jdchain.samples.contract.SampleContract;
-
-import utils.io.BytesUtils;
-import utils.io.FileUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
+import utils.io.BytesUtils;
+import utils.io.FileUtils;
 
 import java.util.UUID;
 
@@ -140,4 +139,37 @@ public class ContractSample extends SampleBase {
         }
     }
 
+    /**
+     * 更新合约状态
+     */
+    @Test
+    public void updateContractState() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 合约状态分为：NORMAL（正常） FREEZE（冻结） REVOKE（销毁）
+        // 冻结合约
+        txTemp.contract("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye").state(AccountState.FREEZE);
+        // 交易准备
+        PreparedTransaction ptx = txTemp.prepare();
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
+
+    /**
+     * 更新合约权限
+     */
+    @Test
+    public void updateDPermission() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 配置合约权限
+        // 如下配置表示仅有 ROLE 角色用户才有调用 LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye 权限
+        txTemp.contract("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye").permission().mode(70).role("ROLE");
+        // 交易准备
+        PreparedTransaction ptx = txTemp.prepare();
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
 }

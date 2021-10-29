@@ -5,11 +5,9 @@ import com.jd.blockchain.ledger.BlockchainKeypair;
 import com.jd.blockchain.ledger.PreparedTransaction;
 import com.jd.blockchain.ledger.TransactionResponse;
 import com.jd.blockchain.ledger.TransactionTemplate;
-
-import utils.Bytes;
-
 import org.junit.Assert;
 import org.junit.Test;
+import utils.Bytes;
 
 /**
  * 数据账户相关操作示例：
@@ -81,4 +79,20 @@ public class DataAccountSample extends SampleBase {
         Assert.assertTrue(response.isSuccess());
     }
 
+    /**
+     * 更新数据账户权限
+     */
+    @Test
+    public void updateDPermission() {
+        // 新建交易
+        TransactionTemplate txTemp = blockchainService.newTransaction(ledger);
+        // 配置数据账户权限
+        // 如下配置表示仅有 ROLE 角色用户才有写入 LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye 权限
+        txTemp.dataAccount("LdeNr7H1CUbqe3kWjwPwiqHcmd86zEQz2VRye").permission().mode(70).role("ROLE");
+        // 交易准备
+        PreparedTransaction ptx = txTemp.prepare();
+        // 提交交易
+        TransactionResponse response = ptx.commit();
+        Assert.assertTrue(response.isSuccess());
+    }
 }
