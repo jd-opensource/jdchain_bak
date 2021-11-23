@@ -46,7 +46,7 @@ LEDGER_BINDING_CONFIG=$CONFIG_PATH/ledger-binding.conf
 SPRING_CONFIG=$CONFIG_PATH/application-peer.properties
 
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m -Djdchain.log=$APP_HOME/logs -Dlogging.config=file:$APP_HOME/config/log4j2-peer.xml"
+JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-peer.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_SYSTEM_PATH/$APP_JAR" -home="$APP_HOME" -c "$LEDGER_BINDING_CONFIG" -p "$WEB_PORT" -sp "$SPRING_CONFIG

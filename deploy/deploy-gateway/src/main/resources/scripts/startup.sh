@@ -35,7 +35,7 @@ GATEWAY_CONFIG=$CONFIG_PATH/gateway.conf
 SPRING_CONFIG=$CONFIG_PATH/application-gw.properties
 
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m  -Djdchain.log=$APP_HOME/logs -Dlogging.config=file:$APP_HOME/config/log4j2-gw.xml"
+JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m  -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-gw.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_LIB_PATH/$APP_JAR" -c "$GATEWAY_CONFIG" -sp "$SPRING_CONFIG
