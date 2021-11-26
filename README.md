@@ -42,24 +42,23 @@ build/build.sh --update --skipTests
 
 ### 快速部署
 
-使用[源码构建](#源码构建)生成的部署安装包，或者下载[官方部署安装包](http://ledger.jd.com/downloadapps.html) 参照[快速部署文档](docs/quick_start.md)可快速部署运行`JD Chain`网络。
+使用[源码构建](#源码构建)生成的部署安装包，或者下载[官方部署安装包](https://blockchain-jd-com.github.io/#/download) 参照[快速部署文档](https://blockchain-jd-com.github.io/#/install/testnet?id=%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%96%b9%e5%bc%8f%e3%80%90%e6%8e%a8%e8%8d%90%e3%80%91)可快速部署运行`JD Chain`网络。
 
 ### 数据上链
 
 1. 命令行工具
 
-`JD Chain` 命令行工具集，即[jdchain-cli](docs/jdchain_cli.md)，提供密钥管理，实时交易，链上信息查询，离线交易，共识节点变更等操作。可快速执行数据上链和链上数据查询。
+`JD Chain` 命令行工具集，即[jdchain-cli](https://blockchain-jd-com.github.io/#/cli/tx)，可快速执行数据上链和链上数据查询。
 
 2. SDK
 
-`JD Chain`提供了`Java`和`Go`版本的`SDK`。实际项目开发中`Java`可参照[示例代码](https://github.com/blockchain-jd-com/jdchain/tree/master/samples)，`Go`语言`SDK`参照[framework-go](https://github.com/blockchain-jd-com/framework-go)。
+`JD Chain`提供了`Java`和`Go`版本的`SDK`。实际项目开发中`Java`可参照[示例代码](https://github.com/blockchain-jd-com/jdchain-samples)，`Go`语言`SDK`参照[framework-go](https://github.com/blockchain-jd-com/framework-go/blob/master/sdk/test/tx_test.go)。
 
 ### 更多
 
 `JD Chain`功能开发，使用问题等欢迎`issue`中探讨，也欢迎广大开发者积极参与`JD Chain`社区活动及代码开发~
 
-- `JD Chain`官方网站：https://ledger.jd.com/
-- 文档：[wiki](https://github.com/blockchain-jd-com/jdchain/wiki)，[docs](docs/)
+- 文档：[docs](https://blockchain-jd-com.github.io)
+- `JD Chain`官网：https://ledger.jd.com/
 - 京东智臻链官网：https://blockchain.jd.com/
 - 服务邮箱：jdchain-support@jd.com
-- `FAQ`：https://github.com/blockchain-jd-com/jdchain/wiki/FAQ
