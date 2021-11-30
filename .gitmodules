@@ -10,6 +10,7 @@
 [submodule "framework"]
 	path = framework
 	url = git@github.com:blockchain-jd-com/jdchain-framework.git
+	branch = 1b8f848
 [submodule "core"]
 	path = core
 	url = git@github.com:blockchain-jd-com/jdchain-core.git
