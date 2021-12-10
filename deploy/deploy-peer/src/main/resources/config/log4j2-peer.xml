@@ -29,6 +29,8 @@
     <loggers>
         <logger name="org.springframework" level="error"></logger>
         <logger name="bftsmart" level="error"></logger>
+        <logger name="com.alipay.sofa" level="error"></logger>
+        <logger name="io.netty" level="error"></logger>
         <!--修改此处，以变更日志等级-->
         <root level="all">
             <appender-ref ref="Console"/>
