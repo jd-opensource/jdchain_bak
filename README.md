@@ -32,7 +32,7 @@ $ build/build.sh --update
 $ build/build.sh --skipTests
 
 # 首次代码拉取，跳过集成测试和编译打包可执行：
-build/build.sh --update --skipTests
+$ build/build.sh --update --skipTests
 ```
 
 构建完成后会在`deploy`模块，`deploy-gateway`和`deploy-peer`目录`target`中生成网关安装部署包（`jdchain-gateway-*.zip`）和共识节点安装部署包（`jdchain-peer-*.zip`）。
