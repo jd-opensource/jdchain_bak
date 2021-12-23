@@ -83,7 +83,7 @@ cons_parti.0.name=
 cons_parti.0.pubkey-path=
 #第0个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.0.pubkey=
-#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+#第0个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
 cons_parti.0.ca-path=
 
 #第0个参与方的角色清单；可选项；
@@ -127,7 +127,7 @@ cons_parti.2.name=
 cons_parti.2.pubkey-path=
 #第2个参与方的公钥内容（由keygen工具生成）；此参数优先于 pubkey-path 参数；
 cons_parti.2.pubkey=
-#第1个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
+#第2个参与方的证书路径，identity-mode 为 CA 时，此选项不能为空
 cons_parti.2.ca-path=
 
 #第2个参与方的角色清单；可选项；
