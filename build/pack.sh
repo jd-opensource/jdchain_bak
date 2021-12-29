@@ -21,7 +21,7 @@ fi
 echo "--------------- 开始编译打包 ---------------"
 
 cd $DEPLOY_DIR
-echo "当前目录：`pwd`"
+echo "当前目录：$(pwd)"
 
 #初始化变量 SKIP_TESTS；
 if [ ! $SKIP_TESTS ]
