@@ -30,7 +30,7 @@
         <logger name="org.springframework" level="error"></logger>
         <logger name="bftsmart" level="error"></logger>
         <!--修改此处，以变更日志等级-->
-        <root level="all">
+        <root level="info">
             <appender-ref ref="Console"/>
             <appender-ref ref="GWRolling"/>
             <appender-ref ref="GWRollingError"/>
