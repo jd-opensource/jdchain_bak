@@ -34,8 +34,19 @@ GATEWAY_CONFIG=$CONFIG_PATH/gateway.conf
 #application-gw.properties完整路径
 SPRING_CONFIG=$CONFIG_PATH/application-gw.properties
 
+JDK_VERSION=$(java -version 2>&1 | sed '1!d' | sed -e 's/"//g' | awk '{print $3}')
+if [[ $JDK_VERSION == 1.8.* ]]; then
+  opens=""
+else
+  opens="--add-opens java.base/java.lang=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/java.util=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/java.net=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/sun.security.x509=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/sun.security.util=ALL-UNNAMED"
+fi
+
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m  -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-gw.xml"
+JAVA_OPTS="-jar -server -Xms1024m -Xmx1024m $opens -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-gw.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_LIB_PATH/$APP_JAR" -c "$GATEWAY_CONFIG" -sp "$SPRING_CONFIG

@@ -27,11 +27,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.jd.blockchain</groupId>
-			<artifactId>manager-booter</artifactId>
-			<version>${core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jd.blockchain</groupId>
 			<artifactId>storage-redis</artifactId>
 			<version>${core.version}</version>
 		</dependency>

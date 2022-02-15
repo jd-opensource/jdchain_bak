@@ -45,8 +45,19 @@ LEDGER_BINDING_CONFIG=$CONFIG_PATH/ledger-binding.conf
 #application-peer.properties完整路径
 SPRING_CONFIG=$CONFIG_PATH/application-peer.properties
 
+JDK_VERSION=$(java -version 2>&1 | sed '1!d' | sed -e 's/"//g' | awk '{print $3}')
+if [[ $JDK_VERSION == 1.8.* ]]; then
+  opens=""
+else
+  opens="--add-opens java.base/java.lang=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/java.util=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/java.net=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/sun.security.x509=ALL-UNNAMED"
+  opens=$opens" --add-opens java.base/sun.security.util=ALL-UNNAMED"
+fi
+
 #定义程序启动的参数
-JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-peer.xml"
+JAVA_OPTS="-jar -server -Xms2048m -Xmx2048m $opens -Djdchain.log=$APP_HOME/logs -Dlog4j.configurationFile=file:$APP_HOME/config/log4j2-peer.xml"
 
 #APP具体相关命令
 APP_CMD=$APP_SYSTEM_PATH/$APP_JAR" -home="$APP_HOME" -c "$LEDGER_BINDING_CONFIG" -p "$WEB_PORT" -sp "$SPRING_CONFIG
