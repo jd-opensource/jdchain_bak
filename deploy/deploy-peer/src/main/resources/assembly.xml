@@ -24,6 +24,14 @@
             <outputDirectory>docs</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/../../libs/utils/utils-sm-tls/lib</directory>
+            <outputDirectory>libs</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../../core/consensus/consensus-raft/lib</directory>
+            <outputDirectory>libs</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>

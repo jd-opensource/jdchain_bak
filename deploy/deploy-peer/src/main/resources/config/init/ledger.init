@@ -14,7 +14,7 @@ root-ca-path=
 created-time=2019-08-01 14:26:58.069+0800
 
 #账本数据底层结构，分为：MERKLE_TREE, KV两种，默认MERKLE_TREE
-ledger.data.structure=MERKLE_TREE
+ledger.data.structure=KV
 
 #-----------------------------------------------
 # 初始的角色名称列表；可选项；
@@ -57,10 +57,19 @@ ledger.data.structure=MERKLE_TREE
 
 #-----------------------------------------------
 #共识服务提供者；必须；
-consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
-
+#consensus.service-provider
 #共识服务的参数配置；推荐使用绝对路径；必须；
+#consensus.conf
+
+# BFT共识配置
+consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
 consensus.conf=bftsmart.config
+
+# RAFT共识配置
+#consensus.service-provider=com.jd.blockchain.consensus.raft.RaftConsensusProvider
+#consensus.conf=raft.config
+
+#------------------------------------------------
 
 #密码服务提供者列表，以英文逗点“,”分隔；必须；
 crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
