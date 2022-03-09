@@ -14,7 +14,7 @@ root-ca-path=
 created-time=2019-08-01 14:26:58.069+0800
 
 #账本数据底层结构，分为：MERKLE_TREE, KV两种，默认MERKLE_TREE
-ledger.data.structure=KV
+ledger.data.structure=MERKLE_TREE
 
 #合约运行超时时间，单位：毫秒，默认1分钟
 contract.timeout=60000
