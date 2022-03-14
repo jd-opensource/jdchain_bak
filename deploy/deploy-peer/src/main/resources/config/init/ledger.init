@@ -66,11 +66,15 @@ contract.timeout=60000
 
 # BFT共识配置
 consensus.service-provider=com.jd.blockchain.consensus.bftsmart.BftsmartConsensusProvider
-consensus.conf=bftsmart.config
+consensus.conf=bftsmart/bftsmart.config
 
 # RAFT共识配置
 #consensus.service-provider=com.jd.blockchain.consensus.raft.RaftConsensusProvider
-#consensus.conf=raft.config
+#consensus.conf=raft/raft.config
+
+# MQ共识配置
+#consensus.service-provider=com.jd.blockchain.consensus.mq.MsgQueueConsensusProvider
+#consensus.conf=mq/mq.config
 
 #------------------------------------------------
 
