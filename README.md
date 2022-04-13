@@ -4,6 +4,12 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jd.blockchain/sdk-pack/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.jd.blockchain/sdk-pack/)
 [![Build Status](https://travis-ci.com/blockchain-jd-com/jdchain.svg?branch=master)](https://travis-ci.org/blockchain-jd-com/jdchain)
 
+> **管理工具(`manager-startup.sh`)不再推荐使用，1.6.3版本已完全移除管理工具相关代码，组网和节点管理请参照最新官方文档，使用命令行方式更安全更便捷！**
+
+> **管理工具设计初衷仅做网络初始化使用，可执行节点启停操作，本身不涉及鉴权逻辑，使用旧版本管理工具的用户请停止管理工具服务进程或做好严格的外部访问控制。**
+
+> **不要对外暴露管理工具访问地址！！！**
+
 一个面向企业应用场景的通用区块链框架系统，能够作为企业级基础设施，为业务创新提供高效、灵活和安全的解决方案。
 
 ## 源码构建
