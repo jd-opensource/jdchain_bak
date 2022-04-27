@@ -32,6 +32,10 @@
             <directory>${basedir}/../../core/consensus/consensus-raft/lib</directory>
             <outputDirectory>libs</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/../../core/contract/contract-jvm/lib</directory>
+            <outputDirectory>libs</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>
