@@ -27,7 +27,7 @@ public class PeerBooter {
 
 	public static final String MODULAR_FACTORY_METHOD = "startSystem";
 
-	public static final Class<?>[] MODULAR_FACTORY_METHOD_ARG_TYPES = { String.class, boolean.class, ClassLoader.class,
+	public static final Class<?>[] MODULAR_FACTORY_METHOD_ARG_TYPES = { String.class, String.class, boolean.class, ClassLoader.class,
 			String.class, ClassLoader.class, String[].class };
 
 	public static final String SYSTEM_MAIN_CLASS = "com.jd.blockchain.peer.PeerServerBooter";
@@ -49,7 +49,7 @@ public class PeerBooter {
 		Method modularFactoryMethod = modularFactoryClass.getMethod(MODULAR_FACTORY_METHOD,
 				MODULAR_FACTORY_METHOD_ARG_TYPES);
 
-		Object[] systemStartingArgs = { home.getRuntimeDir(), home.isProductMode(), home.getLibsClassLoader(),
+		Object[] systemStartingArgs = { home.getRuntimeDir(), home.getLibsDir(), home.isProductMode(), home.getLibsClassLoader(),
 				SYSTEM_MAIN_CLASS, home.getSystemClassLoader(), home.getStartingArgs() };
 		modularFactoryMethod.invoke(null, systemStartingArgs);
 	}
