@@ -80,7 +80,8 @@ consensus.conf=bftsmart/bftsmart.config
 
 #密码服务提供者列表，以英文逗点“,”分隔；必须；
 crypto.service-providers=com.jd.blockchain.crypto.service.classic.ClassicCryptoService, \
-com.jd.blockchain.crypto.service.sm.SMCryptoService
+com.jd.blockchain.crypto.service.sm.SMCryptoService, \
+com.jd.blockchain.crypto.service.adv.AdvCryptoService
 
 #从存储中加载账本数据时，是否校验哈希；可选；
 crypto.verify-hash=true
