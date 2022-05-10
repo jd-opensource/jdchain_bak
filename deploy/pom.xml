@@ -9,11 +9,11 @@
 		<relativePath>../project/parent</relativePath>
 	</parent>
 	<artifactId>deploy-root</artifactId>
-	<version>1.6.3.RELEASE</version>
+	<version>1.6.4.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<core.version>1.6.3.RELEASE</core.version>
+		<core.version>1.6.4.RELEASE</core.version>
 	</properties>
 
 	<modules>
