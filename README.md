@@ -64,7 +64,7 @@ $ build/build.sh --update --skipTests
 
 `JD Chain`功能开发，使用问题等欢迎`issue`中探讨，也欢迎广大开发者积极参与`JD Chain`社区活动及代码开发~
 
-- 文档：[docs](https://blockchain-jd-com.github.io)
+- 文档：[docs](https://ledger.jd.com/doc/)
 - `JD Chain`官网：https://ledger.jd.com/
 - 京东智臻链官网：https://blockchain.jd.com/
 - 服务邮箱：jdchain-support@jd.com
