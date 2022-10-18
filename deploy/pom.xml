@@ -5,15 +5,15 @@
 	<parent>
 		<groupId>com.jd.blockchain</groupId>
 		<artifactId>jdchain-parent</artifactId>
-		<version>1.1.8.RELEASE</version>
+		<version>1.1.9.RELEASE</version>
 		<relativePath>../project/parent</relativePath>
 	</parent>
 	<artifactId>deploy-root</artifactId>
-	<version>1.6.4.RELEASE</version>
+	<version>1.6.5.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<core.version>1.6.4.RELEASE</core.version>
+		<core.version>1.6.5.RELEASE</core.version>
 	</properties>
 
 	<modules>
